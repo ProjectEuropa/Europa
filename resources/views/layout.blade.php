@@ -74,11 +74,11 @@
         
 
         <div class="container main">
-
+            <h2>Welcome to Project Europa</h2>
+            <p>This is informal uploader of Carnage Heart EXA.</p>  
             {{-- 子のビューで指定される、contentセクションを読み込む --}}
             @yield('content')
 
-            
             <footer>
                 <p>&copy; 2016 Team Project Europa</p>
             </footer>

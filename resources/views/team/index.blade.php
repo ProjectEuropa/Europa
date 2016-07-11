@@ -4,6 +4,7 @@
 
 {{-- ユーザーレコード一覧表示 --}}
 @section('content')
+
 <table class="table table-bordered table-hover">
     <thead>
         <tr>
