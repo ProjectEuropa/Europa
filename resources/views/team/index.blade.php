@@ -18,7 +18,9 @@
     <tbody>
         @forelse($teams as $team)
         <tr>
-            <td><a href="#"><span class="glyphicon glyphicon-cloud-download"></span></a></td>
+            <td>
+                <a href="{!! url('/team/download', [$team->id]) !!}"><span class="glyphicon glyphicon-cloud-download"></span></a>
+            </td>
             <td><a href="#"><span class="glyphicon glyphicon glyphicon-file"></span></a></td>
             <td>{{ $team->upload_user_name }}</td>
             <td>{{ $team->file_comment }}</td>

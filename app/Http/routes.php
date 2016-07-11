@@ -16,5 +16,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+// チーム一覧
 Route::get('/team', 'TeamController@index');
+
+// チーム一覧
+Route::get('/team/download/{id}', 'TeamController@download');
