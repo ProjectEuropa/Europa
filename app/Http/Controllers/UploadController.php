@@ -11,7 +11,6 @@ const UPLOAD_TYPE_SIMPLE = '2';
 /*
   アップロード操作実行コントローラ
  */
-
 class UploadController extends Controller {
 
     //
