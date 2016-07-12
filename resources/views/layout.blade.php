@@ -48,12 +48,12 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="#">Top/</a>
-                        <a class="navbar-brand" href="#">Team data/</a>
+                        <a class="navbar-brand" href="{!! url('/') !!}">Top/</a>
+                        <a class="navbar-brand" href="{!! url('/team') !!}">Team data/</a>
                         <a class="navbar-brand" href="#">Match Data/</a>
                         <a class="navbar-brand" href="#">Replay Data/</a>
                         <a class="navbar-brand" href="#">Upload/</a>
-                        <a class="navbar-brand" href="#">Simple Upload/</a>
+                        <a class="navbar-brand" href="{!! url('/simpleUpload') !!}">Simple Upload/</a>
                         <a class="navbar-brand" href="#">Help</a>
                     </div>
 
@@ -73,15 +73,14 @@
         </header>
         
 
-        <div class="container main">
-            <h2>Welcome to Project Europa</h2>
-            <p>This is informal uploader of Carnage Heart EXA.</p>  
+        <div class="container" style="margin-top: 50px;">
             {{-- 子のビューで指定される、contentセクションを読み込む --}}
             @yield('content')
 
             <footer>
                 <p>&copy; 2016 Team Project Europa</p>
             </footer>
-        </div> 
+        </div>
+
     </body>
 </html>

@@ -23,7 +23,8 @@ class CreateTeamsTable extends Migration
             $table->binary('file_data');
             $table->timestamps();
             
-            // file_nameを足す
+            // file_title⇒file_name変更
+            // upload_user_id userとのJoin用追加
         });
     }
 

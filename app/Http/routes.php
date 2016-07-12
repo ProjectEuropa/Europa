@@ -13,7 +13,6 @@
 
 use App\Http\Requests;
 use App\Team;
-use Illuminate\Support\Facades\Input;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,19 +30,4 @@ Route::get('/simpleUpload', 'UploadController@index');
 // チーム一覧
 //post（受け取り）
 // TODO コントろらーで作成 Onwer名取得
-Route::post('/simpleUpload/upload', function() {
-
-    $team = new Team;
-
-    // fileデータ取得
-    $file = Input::file('up_file');
-    //$file = Request::file('up_file');
-
-    $team->file_data = file_get_contents($file);
-    $team->file_title = $file->getClientOriginalName();
-    $team->data_type = '2'; // 定数か
-
-    $team->save();
-
-    return view('upload.index');
-});
+Route::post('/simpleUpload/upload', 'UploadController@upload');
