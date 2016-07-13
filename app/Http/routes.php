@@ -18,16 +18,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// チーム一覧
-Route::get('/team', 'TeamController@index');
+// 検索一覧（チーム・マッチ共用）
+Route::get('/search/{type}', 'SearchController@index');
 
-// チームダウンロード
-Route::get('/team/download/{id}', 'TeamController@download');
+// ダウンロード（チーム・マッチ共用）
+Route::get('/search/download/{id}', 'SearchController@download');
+// 削除（チーム・マッチ共用）
+Route::post('/search/delete', 'SearchController@delete');
 
-// チーム一覧
+// アップロード画面
 Route::get('/simpleUpload', 'UploadController@index');
 
-// チーム一覧
+// アップロード（チーム・マッチデータ）
 //post（受け取り）
 // TODO コントろらーで作成 Onwer名取得
-Route::post('/simpleUpload/upload', 'UploadController@upload');
+Route::post('/simpleUpload/teamUpload', 'UploadController@teamUpload');
+Route::post('/simpleUpload/matchUpload', 'UploadController@matchUpload');

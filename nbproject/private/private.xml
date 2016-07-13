@@ -5,9 +5,8 @@
         <group>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/welcome.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/lang/ja/validation.php</file>
-            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/Controller.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/layout.blade.php</file>
-            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/TeamController.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/SearchController.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/UploadController.php</file>
         </group>
     </open-files>

@@ -49,8 +49,8 @@
                             <span class="icon-bar"></span>
                         </button>
                         <a class="navbar-brand" href="{!! url('/') !!}">Top/</a>
-                        <a class="navbar-brand" href="{!! url('/team') !!}">Team data/</a>
-                        <a class="navbar-brand" href="#">Match Data/</a>
+                        <a class="navbar-brand" href="{!! url('/search/team') !!}">Team data/</a>
+                        <a class="navbar-brand" href="{!! url('/search/match') !!}">Match Data/</a>
                         <a class="navbar-brand" href="#">Replay Data/</a>
                         <a class="navbar-brand" href="#">Upload/</a>
                         <a class="navbar-brand" href="{!! url('/simpleUpload') !!}">Simple Upload/</a>

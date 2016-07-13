@@ -22,9 +22,11 @@ class CreateTeamsTable extends Migration
             $table->string('delete_password');
             $table->binary('file_data');
             $table->timestamps();
+            // TODO ALTER TABLE `teams` CHANGE `file_data` `file_data` MEDIUMBLOB NOT NULL;
             
             // file_title⇒file_name変更
             // upload_user_id userとのJoin用追加
+            $table->binary;
         });
     }
 
