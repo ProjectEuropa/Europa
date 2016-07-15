@@ -24,7 +24,7 @@ Route::get('/search/{type}', 'SearchController@index');
 // ダウンロード（チーム・マッチ共用）
 Route::get('/search/download/{id}', 'SearchController@download');
 // 削除（チーム・マッチ共用）
-Route::post('/search/delete', 'SearchController@delete');
+Route::post('/search/{type}/delete', 'SearchController@delete');
 
 // アップロード画面
 Route::get('/simpleUpload', 'UploadController@index');

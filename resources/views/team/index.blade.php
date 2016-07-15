@@ -50,19 +50,18 @@
         @forelse($teams as $team)
         <tr>
             <td class="col-md-1">
-                <a href="{!! url('/search/download', [$team->id]) !!}"><span class="glyphicon glyphicon-cloud-download"></span></a>
+                <a href="/search/download/{{$team->id}}"><span class="glyphicon glyphicon-cloud-download"></span></a>
             </td>
             <td class="col-md-1">{{ $team->upload_user_name }}</td>
-            <td class="col-md-3">{{ $team->file_comment }}</td>
+            <td class="col-md-3">{!! nl2br(e($team->file_comment)) !!}</td>
             <td class="col-md-1">{{ $team->file_title }}</td>
             <td class="col-md-2">{{ $team->created_at }}</td>
             <td class="col-md-3">
-            <form method="post" action="/search/delete" class="form-horizontal">
+            <form method="post" action="/search/{{$type}}/delete" class="form-horizontal">
                 <div class="form-group">
                     <div class="col-xs-12 form-inline">
                         <input type="text" name="deletePassword" class="form-control" id="usr">
                         <input type="hidden" name="id" class="form-control" value="{{ $team->id }}">
-                        <input type="hidden" name="dataType" class="form-control" value="{{ $team->data_type }}">
                         <button type="submit" class="btn btn-info">削除</button>
                     </div>
                 </div>
