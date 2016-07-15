@@ -26,7 +26,6 @@ class CreateTeamsTable extends Migration
             
             // file_title⇒file_name変更
             // upload_user_id userとのJoin用追加
-            $table->binary;
         });
     }
 
