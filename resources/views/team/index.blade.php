@@ -60,7 +60,7 @@
             <form method="post" action="/search/{{$type}}/delete" class="form-horizontal">
                 <div class="form-group">
                     <div class="col-xs-12 form-inline">
-                        <input type="text" name="deletePassword" class="form-control" id="usr">
+                        <input type="text" name="deletePassword" class="form-control" placeholder="削除パスワード">
                         <input type="hidden" name="id" class="form-control" value="{{ $team->id }}">
                         <button type="submit" class="btn btn-info">削除</button>
                     </div>

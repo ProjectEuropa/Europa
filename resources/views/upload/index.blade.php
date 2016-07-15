@@ -34,19 +34,19 @@
                     <fieldset>
                         <div class="form-group">
                             <label for="owner">オーナー名:</label>
-                            <input type="text" name="ownerName" class="form-control" id="usr">
+                            <input type="text" name="ownerName" class="form-control" id="teamOwnerName">
                         </div>
                         <div class="form-group">
                             <label for="comment">コメント:</label>
-                            <textarea name="comment" class="form-control" rows="5" id="comment"></textarea>
+                            <textarea name="comment" class="form-control" rows="5" id="teamComment"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="deletePassWord">削除パスワード:</label>
-                            <input type="text" name="deletePassWord" class="form-control" rows="5" id="comment">
+                            <input type="text" name="deletePassWord" class="form-control" rows="5" id="teamDeletePassWord">
                         </div>
                         <div class="form-group">
                             <label for="exampleInputFile">チームファイル</label>
-                            <input type="file" name="teamFile" id="exampleInputFile" >
+                            <input type="file" name="teamFile" id="teamFile" >
                             <p class="help-block">CHEチームデータが選択可能です</p>
                         </div>
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
@@ -69,19 +69,19 @@
                     <fieldset>
                         <div class="form-group">
                             <label for="owner">オーナー名:</label>
-                            <input type="text" name="ownerName" class="form-control" id="usr">
+                            <input type="text" name="ownerName" class="form-control" id="matchOwnerName">
                         </div>
                         <div class="form-group">
                             <label for="comment">コメント:</label>
-                            <textarea name="comment" class="form-control" rows="5" id="comment"></textarea>
+                            <textarea name="comment" class="form-control" rows="5" id="matchComment"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="deletePassWord">削除パスワード:</label>
-                            <input type="text" name="deletePassWord" class="form-control" rows="5" id="comment">
+                            <input type="text" name="deletePassWord" class="form-control" rows="5" id="matchDeletePassWord">
                         </div>
                         <div class="form-group">
                             <label for="exampleInputFile">マッチファイル</label>
-                            <input type="file" name="matchFile" id="exampleInputFile" >
+                            <input type="file" name="matchFile" id="matchFile" >
                             <p class="help-block">CHEマッチデータが選択可能です</p>
                         </div>
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">

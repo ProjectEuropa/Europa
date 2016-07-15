@@ -23,19 +23,23 @@ class UploadController extends Controller {
         return view('upload.index');
     }
 
-    /*
-      チームアップロード操作実行コントローラ
+    /**
+     * チームアップロード操作実行Action
+     *
+     * @param  Request  $request
+     * @return view upload.index
      */
     public function teamUpload(Request $request) {
 
         /*
-          　オーナー名・コメント・チームファイル必須
+          　オーナー名・コメント・削除パスワード・チームファイル必須
           　チームフファイルCHEのみ・260KBまで
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
                     'ownerName' => 'required|max:12',
                     'comment' => 'required|max:60',
+                    'deletePassWord' => 'required|max:12',
                     'teamFile' => 'required|no_che_file|max:24'
         ]);
 
@@ -55,19 +59,23 @@ class UploadController extends Controller {
         return view('upload.index');
     }
 
-    /*
-      マッチデータアップロード操作実行コントローラ
+    /**
+     * マッチデータアップロード操作実行Action
+     *
+     * @param  Request  $request
+     * @return view upload.index
      */
     public function matchUpload(Request $request) {
 
         /*
-          　オーナー名・コメント・マッチファイル必須
+          　オーナー名・コメント・削除パスワード・マッチファイル必須
           　マッチファイルCHEのみ・260KBまで
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
                     'ownerName' => 'required|max:12',
                     'comment' => 'required|max:60',
+                    'deletePassWord' => 'required|max:12',
                     'matchFile' => 'required|no_che_file|max:260',
         ]);
 
@@ -86,11 +94,12 @@ class UploadController extends Controller {
         return view('upload.index');
     }
 
-    /*
-      ファイルデータ設定処理
-      第二引数がtrueの場合チーム、falseの場合マッチデータアップロード
+    /**
+     * ファイルデータモデル設定処理
+     * @param Request リクエスト
+     * @param  bool  true場合チーム falseの場合マッチデータ
+     * @return $team プロパティ設定済Teamモデル
      */
-
     private function setFileDataToModel(Request $request, bool $teamFlg) {
 
         $team = new Team;

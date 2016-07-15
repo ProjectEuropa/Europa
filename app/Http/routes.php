@@ -18,6 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/underconstruction', function () {
+    return view('errors.503');
+});
+
 // 検索一覧（チーム・マッチ共用）
 Route::get('/search/{type}', 'SearchController@index');
 

@@ -101,7 +101,8 @@ return [
         'ownerName' => 'オーナー名',
         'comment' => 'コメント',
         'teamFile' => 'チームファイル',
-        'matchFile' => 'マッチファイル'
+        'matchFile' => 'マッチファイル',
+        'deletePassWord' => '削除パスワード'
         
 
         

@@ -7,10 +7,13 @@ namespace App\CommonUtils;
  */
 class Constants
 {
-    // データタイプ1:チーム
+    // データタイプチーム:'1'
     const DB_STR_DATA_TYPE_TEAM = '1';
-    // データタイプ2:マッチ
+    // データタイプマッチ:'2'
     const DB_STR_DATA_TYPE_MATCH = '2';
+    
+    //簡易アップロード:'2'
+    const DB_UPLOAD_TYPE_SIMPLE = '2';
     
     // 検索タイプチーム:team
     const URL_SEARCH_TYPE_TEAM = 'team';
