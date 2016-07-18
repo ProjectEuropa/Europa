@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Team;
+use App\File;
 use App\CommonUtils\Constants;
 use Illuminate\Http\Request;
 
 // TODO 定数クラス作成
-const DATA_TYPE_TEAM = '1';
-const DATA_TYPE_MATCH = '2';
-const SEARCH_TYPE_TEAM = 'team';
-const SEARCH_TYPE_MATCH = 'match';
 const ORDER_TYPE_NEW = 'new';
 
 /*
@@ -23,28 +19,28 @@ class SearchController extends Controller {
      * ページング機能を実装
      *
      * @param  Request  $request
-     * @param type search/{type} teamの場合はチーム検索、matchの場合は
+     * @param type search/{type} teamの場合はチーム検索、matchの場合はマッチ検索
      * @return view search/team or search/match
      */
     public function index(Request $request, $type) {
 
         //チームデータ検索Query生成
-        $query = Team::query();
+        $query = File::query();
         // 検索ワード取得
         $keyword = $request->input('keyword');
 
         //キーワード存在時の処理
         if (!empty($keyword)) {
-            $query->Where('upload_user_name', 'like', '%' . $keyword . '%')
-                    ->orWhere('file_title', 'like', '%' . $keyword . '%')
+            $query->Where('upload_owner_name', 'like', '%' . $keyword . '%')
+                    ->orWhere('file_name', 'like', '%' . $keyword . '%')
                     ->orWhere('file_comment', 'like', '%' . $keyword . '%');
         }
 
         // search/{type}のurlがチームかマッチかで分岐
-        if ($type == SEARCH_TYPE_TEAM) {
-            $teams = $query->where('data_type', '=', DATA_TYPE_TEAM);
-        } elseif ($type == SEARCH_TYPE_MATCH) {
-            $teams = $query->where('data_type', '=', DATA_TYPE_MATCH);
+        if ($type == Constants::URL_SEARCH_TYPE_TEAM) {
+            $query->where('data_type', '=', Constants::DB_STR_DATA_TYPE_TEAM);
+        } elseif ($type == Constants::URL_SEARCH_TYPE_MATCH) {
+            $query->where('data_type', '=', Constants::DB_STR_DATA_TYPE_MATCH);
         } else {
             return null;
         }
@@ -58,12 +54,12 @@ class SearchController extends Controller {
 //        } else {
 //            $query->orderBy('id','asc');
 //        }
-        //ページング機能を実装
-        $teams = $query->paginate(5);
+        //ページング機能:1ページ10レコード
+        $files = $query->paginate(Constants::NUM_PAGENATION_TEN);
 
         // 検索ワードと検索結果、検索タイプを送信
         return view('team.index', [
-            'teams' => $teams,
+            'files' => $files,
             'keyword' => $keyword,
             'type' => $type
         ]);
@@ -78,12 +74,12 @@ class SearchController extends Controller {
      * @return response DBに登録済みのバイナリデータ
      */
     public function download($id) {
-        $team = Team::where('id', '=', $id)->first();
+        $file = File::where('id', '=', $id)->first();
 
         // タイトル取得
-        $title = $team->file_title;
+        $title = $file->file_name;
         // CHEバイナリデータ取得
-        $fileData = $team->file_data;
+        $fileData = $file->file_data;
 
         // 取得したバイナリデータを書き込み
         $cheData = '.CHE';
@@ -107,7 +103,7 @@ class SearchController extends Controller {
         $id = $request->input('id');
 
         //DBから削除パスワード取得
-        $dbDeletePassWord = Team::where('id', '=', $id)->select('delete_password')->first()->delete_password;
+        $dbDeletePassWord = File::where('id', '=', $id)->select('delete_password')->first()->delete_password;
 
         // 削除パスワード取得
         $inputDeletePassWord = $request->input('deletePassword');
@@ -119,14 +115,14 @@ class SearchController extends Controller {
         }
 
         // id, delete_passwordをキーとして削除実行
-        Team::where('id', '=', $id)->where('delete_password', '=', $inputDeletePassWord)->delete();
+        File::where('id', '=', $id)->where('delete_password', '=', $inputDeletePassWord)->delete();
 
-        if ($type == SEARCH_TYPE_TEAM) {
+        if ($type == Constants::URL_SEARCH_TYPE_TEAM) {
             \Session::flash('flash_message', 'チームデータの削除が完了しました。');
         } else {
             \Session::flash('flash_message', 'マッチデータの削除が完了しました。');
         }
-        return redirect('search/' . $type);
+        return redirect('search/'. $type);
     }
 
 }

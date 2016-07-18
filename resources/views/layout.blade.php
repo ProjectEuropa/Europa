@@ -51,10 +51,10 @@
                         <a class="navbar-brand" href="{!! url('/') !!}">Top/</a>
                         <a class="navbar-brand" href="{!! url('/search/team') !!}">Team data/</a>
                         <a class="navbar-brand" href="{!! url('/search/match') !!}">Match Data/</a>
-                        <a class="navbar-brand" href="{!! url('/underconstruction') !!}">Replay Data/</a>
-                        <a class="navbar-brand" href="{!! url('/underconstruction') !!}">Upload/</a>
+                        <a class="navbar-brand" href="{!! url('/replayData') !!}">Replay Data/</a>
+                        <a class="navbar-brand" href="{!! url('/upload') !!}">Upload/</a>
                         <a class="navbar-brand" href="{!! url('/simpleUpload') !!}">Simple Upload/</a>
-                        <a class="navbar-brand" href="{!! url('/underconstruction') !!}">Help</a>
+                        <a class="navbar-brand" href="{!! url('/help') !!}">Help</a>
                     </div>
 
                     <!--<div id="navbar" class="navbar-collapse collapse">

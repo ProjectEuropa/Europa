@@ -66,6 +66,7 @@ return [
             'engine' => null,
         ],
 
+        
         'pgsql' => [
             'driver'   => 'pgsql',
             'host'     => parse_url(getenv("DATABASE_URL"))["host"],
@@ -76,6 +77,19 @@ return [
             'prefix'   => '',
             'schema'   => 'public',
         ],
+        
+        /* 本番用 ローカル用 todo 本番とローカル分岐ロジック
+        'pgsql' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'schema' => 'public',
+        ],*/
 
     ],
 

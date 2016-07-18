@@ -47,21 +47,21 @@
         </tr>
     </thead>
     <tbody>
-        @forelse($teams as $team)
+        @forelse($files as $file)
         <tr>
             <td class="col-md-1">
-                <a href="/search/download/{{$team->id}}"><span class="glyphicon glyphicon-cloud-download"></span></a>
+                <a href="/search/download/{{$file->id}}"><span class="glyphicon glyphicon-cloud-download"></span></a>
             </td>
-            <td class="col-md-1">{{ $team->upload_user_name }}</td>
-            <td class="col-md-3">{!! nl2br(e($team->file_comment)) !!}</td>
-            <td class="col-md-1">{{ $team->file_title }}</td>
-            <td class="col-md-2">{{ $team->created_at }}</td>
+            <td class="col-md-1">{{ $file->upload_owner_name }}</td>
+            <td class="col-md-3">{!! nl2br(e($file->file_comment)) !!}</td>
+            <td class="col-md-1">{{ $file->file_name }}</td>
+            <td class="col-md-2">{{ $file->created_at }}</td>
             <td class="col-md-3">
             <form method="post" action="/search/{{$type}}/delete" class="form-horizontal">
                 <div class="form-group">
                     <div class="col-xs-12 form-inline">
                         <input type="text" name="deletePassword" class="form-control" placeholder="削除パスワード">
-                        <input type="hidden" name="id" class="form-control" value="{{ $team->id }}">
+                        <input type="hidden" name="id" class="form-control" value="{{ $file->id }}">
                         <button type="submit" class="btn btn-info">削除</button>
                     </div>
                 </div>
@@ -81,6 +81,6 @@
 </table>
 
 {{-- ページネーションリンク キーワード返却含む--}}
-{!! $teams->appends(['keyword'=>$keyword])->render() !!}
+{!! $files->appends(['keyword'=>$keyword])->render() !!}
 
 @endsection

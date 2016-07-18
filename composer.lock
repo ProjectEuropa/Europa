@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e1041d01506f9f3eadc9005073a20e0f",
-    "content-hash": "948df7d115bd70f6c1f980efac5553ce",
+    "hash": "b0a12eccd382b68eadb3cd0e10b9df3b",
+    "content-hash": "eecf54b692c2fdb16901e713467b9e30",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -852,6 +852,53 @@
                 "php"
             ],
             "time": "2016-04-19 13:41:41"
+        },
+        {
+            "name": "ooxif/laravel-query-param",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ooxif/laravel-query-param.git",
+                "reference": "0d0a88047b99ef2ebb6ede52cfd9b351299caca0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ooxif/laravel-query-param/zipball/0d0a88047b99ef2ebb6ede52cfd9b351299caca0",
+                "reference": "0d0a88047b99ef2ebb6ede52cfd9b351299caca0",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "5.0.*||5.1.*||5.2.*",
+                "php": ">=5.4.0"
+            },
+            "suggest": {
+                "ooxif/laravel-spec-schema": "Extends Laravel's Schema/Grammar/Blueprint to describe drivers' specific features"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ooxif\\LaravelQueryParam\\": "src/Ooxif/LaravelQueryParam"
+                },
+                "files": [
+                    "src/Ooxif/LaravelQueryParam/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "ooxif",
+                    "email": "oo@xif.at"
+                }
+            ],
+            "description": "Treats binary data in a correct way with Laravel's database system (Eloquent)",
+            "keywords": [
+                "eloquent",
+                "laravel"
+            ],
+            "time": "2016-06-15 06:07:19"
         },
         {
             "name": "paragonie/random_compat",
@@ -2097,6 +2144,50 @@
                 "test"
             ],
             "time": "2015-05-11 14:41:42"
+        },
+        {
+            "name": "heroku/heroku-buildpack-php",
+            "version": "v108",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/heroku/heroku-buildpack-php.git",
+                "reference": "afca47645064b9d28a6a7d9e470eb76c076d75b6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/heroku/heroku-buildpack-php/zipball/afca47645064b9d28a6a7d9e470eb76c076d75b6",
+                "reference": "afca47645064b9d28a6a7d9e470eb76c076d75b6",
+                "shasum": ""
+            },
+            "bin": [
+                "bin/heroku-hhvm-apache2",
+                "bin/heroku-hhvm-nginx",
+                "bin/heroku-php-apache2",
+                "bin/heroku-php-nginx"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Zuelke",
+                    "email": "dz@heroku.com"
+                }
+            ],
+            "description": "Toolkit for starting a PHP application locally, with or without foreman, using the same config for PHP/HHVM and Apache2/Nginx as on Heroku",
+            "homepage": "https://github.com/heroku/heroku-buildpack-php",
+            "keywords": [
+                "apache",
+                "apache2",
+                "foreman",
+                "heroku",
+                "hhvm",
+                "nginx",
+                "php"
+            ],
+            "time": "2016-07-08 21:43:10"
         },
         {
             "name": "mockery/mockery",

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Team;
+use App\File;
 use Validator;
+use DB;
 
-const DATA_TYPE_TEAM = '1';
-const DATA_TYPE_MATCH = '2';
-const UPLOAD_TYPE_SIMPLE = '2';
+use App\CommonUtils\Constants;
+
 const TEAM_FLG_TRUE = true;
 const TEAM_FLG_FALSE = false;
 
@@ -49,10 +49,8 @@ class UploadController extends Controller {
                             ->withErrors($validator);
         }
 
-        // ファイルデータをモデルにセット
-        $team = $this->setFileDataToModel($request, TEAM_FLG_TRUE);
-
-        $team->save();
+        // ファイルデータ登録処理
+        $this->insertFileData($request, TEAM_FLG_TRUE);
 
         \Session::flash('flash_message', 'チームデータのアップロードが完了しました。');
 
@@ -84,10 +82,9 @@ class UploadController extends Controller {
                             ->withInput()
                             ->withErrors($validator);
         }
-
-        $team = $this->setFileDataToModel($request, TEAM_FLG_FALSE);
-
-        $team->save();
+        
+        // ファイルデータ登録処理
+        $this->insertFileData($request, TEAM_FLG_FALSE);
 
         \Session::flash('flash_message', 'マッチデータのアップロードが完了しました。');
 
@@ -95,34 +92,53 @@ class UploadController extends Controller {
     }
 
     /**
-     * ファイルデータモデル設定処理
+     * ファイルデータ登録処理
      * @param Request リクエスト
      * @param  bool  true場合チーム falseの場合マッチデータ
-     * @return $team プロパティ設定済Teamモデル
+     * @return void
      */
-    private function setFileDataToModel(Request $request, bool $teamFlg) {
+    private function insertFileData(Request $request, bool $teamFlg) {
 
-        $team = new Team;
+        $dataType = null;
         $file = null;
 
         // チームFlgがオンならばチームデータを取得、offならばマッチデータ
         if ($teamFlg) {
-            $team->data_type = DATA_TYPE_TEAM;
+            $dataType = Constants::DB_STR_DATA_TYPE_TEAM;
             $file = $request->file('teamFile');
         } else {
-            $team->data_type = DATA_TYPE_MATCH;
+            $dataType = Constants::DB_STR_DATA_TYPE_MATCH;
             $file = $request->file('matchFile');
         }
-
-        $team->upload_user_name = $request->input('ownerName');
-        $team->file_comment = $request->input('comment');
-        $team->delete_password = $request->input('deletePassWord');
-        $team->file_data = file_get_contents($file);
-        $team->file_title = $file->getClientOriginalName();
+ 
+        $fileData = file_get_contents($file);       // ファイルのバイナリデータ取得
+        $uploadType = Constants::DB_UPLOAD_TYPE_SIMPLE; //現在簡易アップロードのみの対応
+        $fileName = $file->getClientOriginalName();     // ファイル名
+        $uploadOwnerName = $request->input('ownerName');   // アップロードオーナー名（編集可能）
+        $fileComment = $request->input('comment');          // コメント
+        $deletePassword = $request->input('deletePassWord'); // 削除パスワード
+        $now = date('Y/m/d H:i:s'); // 現在日付
         
-        // 現在簡易アップロードのみの対応
-        $team->upload_type = UPLOAD_TYPE_SIMPLE;
-        return $team;
+        // LOB仕様のためPDOを取得し直接SQLを実行する
+        $db = DB::connection('pgsql')->getPdo();
+        
+        $stmt = $db->prepare("INSERT INTO files (file_data, upload_type, file_name, upload_owner_name, file_comment, delete_password, data_type, created_at, updated_at) "
+                . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        
+        $stmt->bindParam(1, $fileData, $db::PARAM_LOB);//ラージオブジェクトとして登録
+        $stmt->bindParam(2, $uploadType, $db::PARAM_STR);
+        $stmt->bindParam(3, $fileName, $db::PARAM_STR);
+        $stmt->bindParam(4, $uploadOwnerName, $db::PARAM_STR);
+        $stmt->bindParam(5, $fileComment, $db::PARAM_STR);
+        $stmt->bindParam(6, $deletePassword, $db::PARAM_STR);
+        $stmt->bindParam(7, $dataType, $db::PARAM_STR);
+        $stmt->bindParam(8, $now, $db::PARAM_STR);
+        $stmt->bindParam(9, $now, $db::PARAM_STR);
+
+        // 登録実行
+        $stmt->execute();
+        // 切断
+        unset($db);
     }
 
 }

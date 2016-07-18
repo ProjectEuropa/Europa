@@ -18,7 +18,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/underconstruction', function () {
+Route::get('/replayData', function () {
+    return view('errors.503');
+});
+Route::get('/upload', function () {
+    return view('errors.503');
+});
+Route::get('/help', function () {
     return view('errors.503');
 });
 

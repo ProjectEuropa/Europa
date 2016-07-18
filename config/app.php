@@ -152,6 +152,11 @@ return [
          * Laravel Helper Service Providers...
          */
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        
+        /*
+         * laravel-query-param
+         */
+        Ooxif\LaravelQueryParam\QueryParamServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -160,6 +165,8 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        
+
         
 
 
