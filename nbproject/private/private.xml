@@ -6,11 +6,12 @@
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/welcome.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/User.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/layout.blade.php</file>
-            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Team.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/errors/503.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/config/app.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/config/database.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/CommonUtils/Constants.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/UploadController.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/File.php</file>
         </group>
     </open-files>
 </project-private>

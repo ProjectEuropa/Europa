@@ -26,16 +26,10 @@ class SearchController extends Controller {
 
         //チームデータ検索Query生成
         $query = File::query();
+
         // 検索ワード取得
         $keyword = $request->input('keyword');
-
-        //キーワード存在時の処理
-        if (!empty($keyword)) {
-            $query->Where('upload_owner_name', 'like', '%' . $keyword . '%')
-                    ->orWhere('file_name', 'like', '%' . $keyword . '%')
-                    ->orWhere('file_comment', 'like', '%' . $keyword . '%');
-        }
-
+        
         // search/{type}のurlがチームかマッチかで分岐
         if ($type == Constants::URL_SEARCH_TYPE_TEAM) {
             $query->where('data_type', '=', Constants::DB_STR_DATA_TYPE_TEAM);
@@ -43,6 +37,16 @@ class SearchController extends Controller {
             $query->where('data_type', '=', Constants::DB_STR_DATA_TYPE_MATCH);
         } else {
             return null;
+        }        
+
+        //キーワード存在時の処理
+        if (!empty($keyword)) {
+            $query->where(function($query) use ($keyword){
+                $query->orwhere('upload_owner_name', 'like', '%' . $keyword . '%')
+                    ->orWhere('file_name', 'like', '%' . $keyword . '%')
+                    ->orWhere('file_comment', 'like', '%' . $keyword . '%');
+            });
+
         }
         // ソートタイプ
         $query->orderBy('id', 'desc');
@@ -54,11 +58,13 @@ class SearchController extends Controller {
 //        } else {
 //            $query->orderBy('id','asc');
 //        }
+//        
+//        
         //ページング機能:1ページ10レコード
         $files = $query->paginate(Constants::NUM_PAGENATION_TEN);
 
         // 検索ワードと検索結果、検索タイプを送信
-        return view('team.index', [
+        return view('search.index', [
             'files' => $files,
             'keyword' => $keyword,
             'type' => $type

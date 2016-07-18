@@ -66,7 +66,7 @@ return [
             'engine' => null,
         ],
 
-        
+        // 本番用
         'pgsql' => [
             'driver'   => 'pgsql',
             'host'     => parse_url(getenv("DATABASE_URL"))["host"],
@@ -78,7 +78,8 @@ return [
             'schema'   => 'public',
         ],
         
-        /* 本番用 ローカル用 todo 本番とローカル分岐ロジック
+        //ローカル用 todo 本番とローカル分岐ロジック
+        /*
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', 'localhost'),
