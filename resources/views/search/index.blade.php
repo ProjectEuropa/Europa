@@ -26,11 +26,10 @@
         <div class="form-group">
             <label for="word">検索ワード:</label>
             <input type="text" name="keyword" class="form-control" value="{{$keyword}}">
-            <!-- ソート順未実装
-            <select name="orderType" class="form-control" id="sel1">
-                <option value="new">投稿日時の新しい順</option>
-                <option value="old">投稿日時の古い順</option>
-            </select>-->
+            {{Form::select('orderType', [
+                'new' => '投稿日時の新しい順',
+                'old' => '投稿日時の古い順']
+                , $orderType, ['class' => 'form-control'])}}
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
     </form>
@@ -62,7 +61,8 @@
                     <div class="col-xs-12 form-inline">
                         <input type="text" name="deletePassword" class="form-control" placeholder="削除パスワード">
                         <input type="hidden" name="id" class="form-control" value="{{ $file->id }}">
-                        <button type="submit" class="btn btn-info">削除</button>
+                        <button type="submit" class="btn btn-info btn-delete" value="{{ $file->file_name}}">削除</button>
+                        <!-- 削除ボタンクリックイベントを92行目に定義-->
                     </div>
                 </div>
                 <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
@@ -81,6 +81,17 @@
 </table>
 
 {{-- ページネーションリンク キーワード返却含む--}}
-{!! $files->appends(['keyword'=>$keyword])->render() !!}
+{!! $files->appends(['keyword'=>$keyword, 'orderType'=>$orderType])->render() !!}
 
+<script>
+ $(function(){
+    $(".btn-delete").click(function(){
+        if (confirm($(this).val() + "を本当に削除しますか？")){
+        } else {
+            //cancel
+            return false;
+        }
+    });
+});
+</script>
 @endsection

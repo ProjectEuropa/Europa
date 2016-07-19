@@ -20,9 +20,12 @@ class Constants
     // 検索タイプマッチ:match
     const URL_SEARCH_TYPE_MATCH = 'match';
    
-    
     // ページネーション:10
     const NUM_PAGENATION_TEN = 10;
+    
+    // ソート順 
+    const STR_ORDER_TYPE_NEW = 'new';
+    const STR_ORDER_TYPE_OLD = 'old';
     
 }
 

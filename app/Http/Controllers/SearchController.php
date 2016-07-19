@@ -6,8 +6,6 @@ use App\File;
 use App\CommonUtils\Constants;
 use Illuminate\Http\Request;
 
-// TODO 定数クラス作成
-const ORDER_TYPE_NEW = 'new';
 
 /*
  * 　チームデータ検索コントローラ
@@ -46,20 +44,17 @@ class SearchController extends Controller {
                     ->orWhere('file_name', 'like', '%' . $keyword . '%')
                     ->orWhere('file_comment', 'like', '%' . $keyword . '%');
             });
-
         }
-        // ソートタイプ
-        $query->orderBy('id', 'desc');
+        // ソート順指定
+        $orderType = $request->input('orderType');
+        if (($orderType == ORDER_TYPE_NEW) || (empty($orderType))) {
+            $query->orderBy('id','desc');
+            $orderType = Constants::STR_ORDER_TYPE_NEW;
+        } else {
+            $query->orderBy('id','asc');
+            $orderType = Constants::STR_ORDER_TYPE_OLD;
+        }
 
-        // ソート順未実装
-//        $orderType = $request->input('orderType');
-//        if ($orderType == ORDER_TYPE_NEW) {
-//            $query->orderBy('id','desc');
-//        } else {
-//            $query->orderBy('id','asc');
-//        }
-//        
-//        
         //ページング機能:1ページ10レコード
         $files = $query->paginate(Constants::NUM_PAGENATION_TEN);
 
@@ -67,7 +62,8 @@ class SearchController extends Controller {
         return view('search.index', [
             'files' => $files,
             'keyword' => $keyword,
-            'type' => $type
+            'type' => $type,// team or match
+            'orderType' => $orderType       
         ]);
     }
 
