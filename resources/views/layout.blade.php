@@ -5,8 +5,7 @@
 
         <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cerulean/bootstrap.min.css" rel="stylesheet" id="themesid">
         <link href="css/common.css" rel="stylesheet">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
         <!--<style>
             html, body {
                 height: 100%;
@@ -78,9 +77,10 @@
             @yield('content')
 
             <footer>
-                <p>&copy; 2016 Team Project Europa</p>
+                <p>&copy; 2016 Team Project Europa <br>
             </footer>
         </div>
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     </body>
 </html>

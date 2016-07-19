@@ -52,7 +52,7 @@ class UploadController extends Controller {
         // ファイルデータ登録処理
         $this->insertFileData($request, TEAM_FLG_TRUE);
 
-        \Session::flash('flash_message', 'チームデータのアップロードが完了しました。');
+        \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'チームデータ']));
 
         return view('upload.index');
     }
@@ -86,7 +86,7 @@ class UploadController extends Controller {
         // ファイルデータ登録処理
         $this->insertFileData($request, TEAM_FLG_FALSE);
 
-        \Session::flash('flash_message', 'マッチデータのアップロードが完了しました。');
+        \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'マッチデータ']));
 
         return view('upload.index');
     }

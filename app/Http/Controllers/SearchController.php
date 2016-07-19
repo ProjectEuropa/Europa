@@ -116,7 +116,7 @@ class SearchController extends Controller {
 
         // 入力パスとDBのパスが一致していない場合、削除処理をせずViewを返却
         if ($dbDeletePassWord != $inputDeletePassWord) {
-            \Session::flash('error_message', '削除パスワードに誤りがあります。');
+            \Session::flash('error_message', trans('messages.run_mistake', ['name' => '削除パスワード']));
             return redirect('search/' . $type);
         }
 
@@ -124,9 +124,9 @@ class SearchController extends Controller {
         File::where('id', '=', $id)->where('delete_password', '=', $inputDeletePassWord)->delete();
 
         if ($type == Constants::URL_SEARCH_TYPE_TEAM) {
-            \Session::flash('flash_message', 'チームデータの削除が完了しました。');
+            \Session::flash('flash_message', trans('messages.delete_complete', ['name' => 'チームデータ']));
         } else {
-            \Session::flash('flash_message', 'マッチデータの削除が完了しました。');
+            \Session::flash('flash_message', trans('messages.delete_complete', ['name' => 'マッチデータ']));
         }
         return redirect('search/'. $type);
     }
