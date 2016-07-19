@@ -47,7 +47,7 @@ class SearchController extends Controller {
         }
         // ソート順指定
         $orderType = $request->input('orderType');
-        if (($orderType == ORDER_TYPE_NEW) || (empty($orderType))) {
+        if (($orderType == Constants::STR_ORDER_TYPE_NEW) || (empty($orderType))) {
             $query->orderBy('id','desc');
             $orderType = Constants::STR_ORDER_TYPE_NEW;
         } else {
