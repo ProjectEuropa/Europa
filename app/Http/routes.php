@@ -27,6 +27,9 @@ Route::get('/upload', function () {
 Route::get('/help', function () {
     return view('errors.503');
 });
+Route::get('/links', function () {
+    return view('links.index');
+});
 
 // 検索一覧（チーム・マッチ共用）
 Route::get('/search/{type}', 'SearchController@index');
@@ -41,6 +44,5 @@ Route::get('/simpleUpload', 'UploadController@index');
 
 // アップロード（チーム・マッチデータ）
 //post（受け取り）
-// TODO コントろらーで作成 Onwer名取得
 Route::post('/simpleUpload/teamUpload', 'UploadController@teamUpload');
 Route::post('/simpleUpload/matchUpload', 'UploadController@matchUpload');

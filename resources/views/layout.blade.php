@@ -5,37 +5,10 @@
 
         <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cerulean/bootstrap.min.css" rel="stylesheet" id="themesid">
         <link href="css/common.css" rel="stylesheet">
+        <!-- 固有のcss読み込み-->
+        @yield('css')
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-        <!--<style>
-            html, body {
-                height: 100%;
-            }
-
-            body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                display: table;
-                font-weight: 100;
-                font-family: 'Lato';
-            }
-
-            .container {
-                text-align: center;
-                display: table-cell;
-                vertical-align: middle;
-            }
-
-            .content {
-                text-align: center;
-                display: inline-block;
-            }
-
-            .title {
-                font-size: 96px;
-            }
-        </style>-->
     </head>
     <body>
         <header>
@@ -54,7 +27,8 @@
                         <a class="navbar-brand" href="{!! url('/replayData') !!}">Replay Data/</a>
                         <a class="navbar-brand" href="{!! url('/upload') !!}">Upload/</a>
                         <a class="navbar-brand" href="{!! url('/simpleUpload') !!}">Simple Upload/</a>
-                        <a class="navbar-brand" href="{!! url('/help') !!}">Help</a>
+                        <a class="navbar-brand" href="{!! url('/help') !!}">Help/</a>
+                        <a class="navbar-brand" href="{!! url('/links') !!}">Links</a>
                     </div>
 
                     <!--<div id="navbar" class="navbar-collapse collapse">
