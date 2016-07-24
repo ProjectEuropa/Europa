@@ -38,7 +38,7 @@ return [
     'twitter' => [
         'client_id'     => env('TWITTER_ID'),
         'client_secret' => env('TWITTER_SECRET'),
-        'redirect'      => env('TWITTER_CALLBACKURL'),
+        'redirect'      => "http://project-europa.herokuapp.com/auth/twitter/callback",
     ],
 
 ];
