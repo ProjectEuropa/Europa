@@ -36,8 +36,8 @@ return [
     ],
 
     'twitter' => [
-        'client_id'     => env('TWITTER_ID'),
-        'client_secret' => env('TWITTER_SECRET'),
+        'client_id'     => "621n3TQqChQpFrHcRhOM8gO6i",
+        'client_secret' => "d91honxTadEi72v1BNlPl6dWOHXCuLKOVTkgq3DiAmjrim7dvi",
         'redirect'      => "http://project-europa.herokuapp.com/auth/twitter/callback",
     ],
 
