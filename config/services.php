@@ -41,5 +41,4 @@ return [
         'redirect'      => env('TWITTER_CALLBACKURL'),
     ],
 
-
 ];
