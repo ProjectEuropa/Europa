@@ -1,7 +1,6 @@
 {{-- 親ビューの指定 --}}
 @extends('layout')
 
-
 @section('content')
 <!-- Example row of columns -->  
 <h2>Welcome to Europa version β</h2>

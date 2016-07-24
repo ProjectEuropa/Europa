@@ -171,10 +171,15 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         
+        /*
+         * Laravel Socialite:Twitter認証に使用
+         */
+        Laravel\Socialite\SocialiteServiceProvider::class,
 
-        
-
-
+        /*
+         * Laravel デバッガー
+         */
+        Barryvdh\Debugbar\ServiceProvider::class,
     ],
 
     /*
@@ -223,6 +228,10 @@ return [
         
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
+
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        
+        'Debugbar'  => Barryvdh\Debugbar\Facade::class,
 
     ],
 ];

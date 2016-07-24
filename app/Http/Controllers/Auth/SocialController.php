@@ -8,10 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Socialite;
-use Auth;
-use Exception;
 
-class AuthController extends Controller
+class SocialController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -23,6 +21,7 @@ class AuthController extends Controller
     | a simple trait to add these behaviors. Why don't you explore it?
     |
     */
+
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
     /**
@@ -39,7 +38,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => ['logout', 'getLogout']]);
+        $this->middleware($this->guestMiddleware(), ['except' => 'logout']);
     }
 
     /**
@@ -72,51 +71,21 @@ class AuthController extends Controller
         ]);
     }
 
-    public function redirectToProvider()
-    {
+
+    public function getTwitterAuth() {
         return Socialite::driver('twitter')->redirect();
     }
 
-
-    /**
-     * Obtain the user information from Twitter.
-     *
-     * @return Response
-     */
-    public function handleProviderCallback()
-    {
+    public function getTwitterAuthCallback() {
         try {
-            $user = Socialite::driver('twitter')->user();
-        } catch (Exception $e) {
-            return redirect('auth/twitter');
+            $tuser = Socialite::driver('twitter')->user();
+        } catch (\Exception $e) {
+            return redirect("/");
         }
- 
-        $authUser = $this->findOrCreateUser($user);
- 
-        Auth::login($authUser, true);
- 
-        return redirect()->route('/');
-    }
-
-       /**
-     * Return user if exists; create and return if doesn't
-     *
-     * @param $twitterUser
-     * @return User
-     */
-    private function findOrCreateUser($twitterUser)
-    {
-        $authUser = User::where('twitter_id', $twitterUser->id)->first();
- 
-        if ($authUser){
-            return $authUser;
+        if ($tuser) {
+            dd($tuser);
+        } else {
+            return 'something went wrong';
         }
- 
-        return User::create([
-            'name' => $twitterUser->name,
-            'handle' => $twitterUser->nickname,
-            'twitter_id' => $twitterUser->id,
-            'avatar' => $twitterUser->avatar_original
-        ]);
     }
 }

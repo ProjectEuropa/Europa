@@ -1,6 +1,8 @@
 {{-- 親ビューの指定 --}}
 @extends('layout')
 
+{{-- Javascript読み込み --}}
+
 
 {{-- ユーザーレコード一覧表示 --}}
 @section('content')
@@ -56,6 +58,7 @@
             <td class="col-md-1">{{ $file->file_name }}</td>
             <td class="col-md-2">{{ $file->created_at }}</td>
             <td class="col-md-3">
+            @if ($file->upload_type == '2')<!---簡易アップロードのみ検索画面で削除可能-->
             <form method="post" action="/search/{{$type}}/delete" class="form-horizontal">
                 <div class="form-group">
                     <div class="col-xs-12 form-inline">
@@ -67,9 +70,9 @@
                 </div>
                 <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
             </form>
+            @endif
             </td>
         </tr>
-
         @empty
         <tr>
             <td></td>
@@ -82,7 +85,6 @@
 
 {{-- ページネーションリンク キーワード返却含む--}}
 {!! $files->appends(['keyword'=>$keyword, 'orderType'=>$orderType])->render() !!}
-
 <script>
  $(function(){
     $(".btn-delete").click(function(){
@@ -95,3 +97,4 @@
 });
 </script>
 @endsection
+

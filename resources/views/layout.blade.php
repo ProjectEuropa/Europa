@@ -24,12 +24,36 @@
                         <a class="navbar-brand" href="{!! url('/') !!}">Top/</a>
                         <a class="navbar-brand" href="{!! url('/search/team') !!}">Team data/</a>
                         <a class="navbar-brand" href="{!! url('/search/match') !!}">Match Data/</a>
-                        <a class="navbar-brand" href="{!! url('/replayData') !!}">Replay Data/</a>
-                        <a class="navbar-brand" href="{!! url('/upload') !!}">Upload/</a>
-                        <a class="navbar-brand" href="{!! url('/simpleUpload') !!}">Simple Upload/</a>
+                        @if (Auth::guest())
+                        {{-- 未ログイン時は簡易アップロード表示 --}}
+                            <a class="navbar-brand" href="{!! url('/simpleUpload') !!}">Simple Upload/</a>
+                        @else
+                        {{-- ログイン中は通常アップロード表示 --}}
+                            <a class="navbar-brand" href="{!! url('/upload') !!}">Upload/</a>
+                        @endif
                         <a class="navbar-brand" href="{!! url('/help') !!}">Help/</a>
                         <a class="navbar-brand" href="{!! url('/links') !!}">Links</a>
                     </div>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        @if (Auth::guest())
+                        {{-- 未ログイン時はSign in表示 --}}
+                            <a class="navbar-brand" href="{!! url('/twitter') !!}">Sign in</a>
+                        @else
+                        {{-- ログイン中はSign Out マイページ表示--}}
+	                    <li class="dropdown">
+	                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+	                            Sign in: {{ Auth::user()->name }} 
+	                            <img src="{{ Auth::user()->avatar }}" height="20" width="20"/>
+	                            <span class="caret"></span>
+	                        </a>
+	                        <ul class="dropdown-menu" role="menu">
+                                    <li><a href="/mypage">My Page</a></li>
+	                            <li><a href="/auth/logout">Sign out</a></li>
+	                        </ul>
+	                    </li>
+                        @endif
+                    </ul>
 
                     <!--<div id="navbar" class="navbar-collapse collapse">
                       <form class="navbar-form navbar-right">
@@ -55,5 +79,8 @@
                 <p>&copy; 2016 Team Project Europa <br>
             </footer>
         </div>
+        
+        <!-- 固有のJavaScript読み込み-->
+        @yield('js')
     </body>
 </html>

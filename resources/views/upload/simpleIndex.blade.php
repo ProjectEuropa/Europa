@@ -6,8 +6,6 @@
 <h2>Simple Upload</h2>
 <p>ユーザー登録処理をせずにチームデータ・マッチデータのアップロードが可能です。</p>
 
-
-
 <div class="row">
     <div class="col-md-9 col-md-offset-0">
             {{-- フラッシュメッセージの表示 --}}

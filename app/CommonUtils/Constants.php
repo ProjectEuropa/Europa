@@ -13,6 +13,7 @@ class Constants
     const DB_STR_DATA_TYPE_MATCH = '2';
     
     //簡易アップロード:'2'
+    const DB_UPLOAD_TYPE_NORMAL = '1';
     const DB_UPLOAD_TYPE_SIMPLE = '2';
     
     // 検索タイプチーム:team
