@@ -28,6 +28,7 @@ Route::get('/help', function () {
     return view('errors.503');
 });
 
+
 // リンク集画面
 Route::get('/links', function () {
     return view('links.index');
