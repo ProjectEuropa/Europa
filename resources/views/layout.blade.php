@@ -37,9 +37,9 @@
 
                     <ul class="nav navbar-nav navbar-right">
                         @if (Auth::guest())
-                        {{-- 未ログイン時はSign in表示 --}}
-                            <a class="navbar-brand" href="{!! url('/twitter') !!}">Sign in</a>
                         @else
+                        {{-- 未ログイン時はSign in表示 認証機能未実装のため常に非表示 --}}
+                            <a class="navbar-brand" href="{!! url('/twitter') !!}">Sign in</a>
                         {{-- ログイン中はSign Out マイページ表示--}}
 	                    <li class="dropdown">
 	                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
