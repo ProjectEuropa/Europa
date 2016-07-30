@@ -41,12 +41,12 @@ class UploadController extends Controller {
 
         /*
           　オーナー名・コメント・削除パスワード・チームファイル必須
-          　チームフファイルCHEのみ・260KBまで
+          　コメント100文字まで（改行コード含む）・チームファイルCHEのみ・260KBまで
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
                     'ownerName' => 'required|max:12',
-                    'comment' => 'required|max:60',
+                    'comment' => 'required|max:100',
                     'deletePassWord' => 'required|max:12',
                     'teamFile' => 'required|no_che_file|max:24'
         ]);
@@ -74,12 +74,12 @@ class UploadController extends Controller {
     public function normalTeamUpload(Request $request) {
         /*
           　オーナー名・コメント・チームファイル必須
-          　チームフファイルCHEのみ・260KBまで
+          　コメント100文字まで（改行コード含む）・チームフファイルCHEのみ・260KBまで
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
                     'ownerName' => 'required|max:12',
-                    'comment' => 'required|max:60',
+                    'comment' => 'required|max:100',
                     'teamFile' => 'required|no_che_file|max:24'
         ]);
 
@@ -107,12 +107,12 @@ class UploadController extends Controller {
 
         /*
           　オーナー名・コメント・削除パスワード・マッチファイル必須
-          　マッチファイルCHEのみ・260KBまで
+          　コメント100文字まで（改行コード含む）・マッチファイルCHEのみ・260KBまで
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
                     'ownerName' => 'required|max:12',
-                    'comment' => 'required|max:60',
+                    'comment' => 'required|max:100',
                     'deletePassWord' => 'required|max:12',
                     'matchFile' => 'required|no_che_file|max:260',
         ]);
@@ -140,12 +140,12 @@ class UploadController extends Controller {
 
         /*
           　オーナー名・コメント・マッチファイル必須
-          　マッチファイルCHEのみ・260KBまで
+          　コメント100文字まで（改行コード含む）・マッチファイルCHEのみ・260KBまで
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
                     'ownerName' => 'required|max:12',
-                    'comment' => 'required|max:60',
+                    'comment' => 'required|max:100',
                     'matchFile' => 'required|no_che_file|max:260',
         ]);
 

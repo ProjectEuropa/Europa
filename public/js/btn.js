@@ -9,5 +9,12 @@
             return false;
         }
     });
+    $(".btn-edit").click(function(){
+        if (confirm("この内容でユーザ情報を更新しますか？")){
+        } else {
+            //cancel
+            return false;
+        }
+    });
 });
 

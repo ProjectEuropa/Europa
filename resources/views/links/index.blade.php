@@ -3,7 +3,7 @@
 
 {{-- css読み込みフォーム --}}
 @section('css')
-    <link rel="stylesheet" href="css/links.css" type="text/css">
+    <link rel ="stylesheet" href= "{{ asset('css/links.css') }}">
 @endsection
 
 {{-- アップロードフォーム --}}
@@ -13,7 +13,7 @@
 
 <div class="row no-gutter">
                 <div class="col-lg-4 col-sm-6">
-                    <a href="http://chehl.main.jp/" class="portfolio-box">
+                    <a href="http://chehl.main.jp/" target="_blank" class="portfolio-box">
                         <img src="image/headline.png" class="img-responsive" alt="">
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
@@ -28,7 +28,7 @@
                     </a>
                 </div>
                 <div class="col-lg-4 col-sm-6">
-                    <a href="http://www37.atwiki.jp/chex/" class="portfolio-box">
+                    <a href="http://www37.atwiki.jp/chex/" target="_blank" class="portfolio-box">
                         <img src="image/carnagewiki.png" class="img-responsive" alt="">
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
@@ -43,7 +43,7 @@
                     </a>
                 </div>
                 <div class="col-lg-4 col-sm-6">
-                    <a href="http://jbbs.shitaraba.net/game/58835/" class="portfolio-box">
+                    <a href="http://jbbs.shitaraba.net/game/58835/" target="_blank" class="portfolio-box">
                         <img src="image/sitaraba.png" class="img-responsive" alt="">
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
@@ -57,7 +57,7 @@
                     </a>
                 </div>
                 <div class="col-lg-4 col-sm-6">
-                    <a href="http://satloke.jp/" class="portfolio-box">
+                    <a href="http://satloke.jp/" target="_blank" class="portfolio-box">
                         <img src="image/SATLOKE.png" class="img-responsive" alt="">
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
@@ -72,7 +72,7 @@
                     </a>
                 </div>
                 <div class="col-lg-4 col-sm-6">
-                    <a href="http://mixi.jp/view_community.pl?id=5138413" class="portfolio-box">
+                    <a href="http://mixi.jp/view_community.pl?id=5138413" target="_blank" class="portfolio-box">
                         <img src="image/mixi.png" class="img-responsive" alt="">
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
@@ -87,7 +87,7 @@
                     </a>
                 </div>
                 <div class="col-lg-4 col-sm-6">
-                    <a href="http://exa.orz.hm/pandit3/uploader.php" class="portfolio-box">
+                    <a href="http://exa.orz.hm/pandit3/uploader.php" target="_blank" class="portfolio-box">
                         <img src="image/pandit.png" class="img-responsive" alt="">
                         <div class="portfolio-box-caption">
                             <div class="portfolio-box-caption-content">
@@ -95,7 +95,6 @@
                                     pandit3
                                 </div>
                                 <div class="project-name">
-                                    非公式アップロードサーバ
                                 </div>
                             </div>
                         </div>

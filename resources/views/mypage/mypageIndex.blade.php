@@ -136,24 +136,7 @@
 </div>
 @endsection
 
-{{-- Javascript読み込み --}}
+{{-- btn.js読み込み --}}
 @section('js')
-<script>
- $(function(){
-    $(".btn-delete").click(function(){
-        if (confirm($(this).val() + "を本当に削除しますか？")){
-        } else {
-            //cancel
-            return false;
-        }
-    });
-    $(".btn-edit").click(function(){
-        if (confirm("この内容でユーザ情報を更新しますか？")){
-        } else {
-            //cancel
-            return false;
-        }
-    });
-});
-</script>
+<script type="text/javascript" src="{{ asset('js/btn.js') }}"></script>
 @endsection
