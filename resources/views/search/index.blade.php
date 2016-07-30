@@ -85,16 +85,9 @@
 
 {{-- ページネーションリンク キーワード返却含む--}}
 {!! $files->appends(['keyword'=>$keyword, 'orderType'=>$orderType])->render() !!}
-<script>
- $(function(){
-    $(".btn-delete").click(function(){
-        if (confirm($(this).val() + "を本当に削除しますか？")){
-        } else {
-            //cancel
-            return false;
-        }
-    });
-});
-</script>
 @endsection
 
+{{-- btn.js読み込み --}}
+@section('js')
+<script type="text/javascript" src="{{ asset('js/btn.js') }}"></script>
+@endsection

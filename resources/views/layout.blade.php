@@ -4,7 +4,7 @@
         <title>Project Europa</title>
 
         <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cerulean/bootstrap.min.css" rel="stylesheet" id="themesid">
-        <link href="css/common.css" rel="stylesheet">
+        <link rel ="stylesheet" href= "{{ asset('css/common.css') }}">
         <!-- 固有のcss読み込み-->
         @yield('css')
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -71,7 +71,7 @@
         </header>
         
 
-        <div class="container" style="margin-top: 50px;">
+        <div class="container main">
             {{-- 子のビューで指定される、contentセクションを読み込む --}}
             @yield('content')
 
