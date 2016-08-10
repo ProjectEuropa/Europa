@@ -114,8 +114,6 @@ class MypageController extends Controller {
         $userId = Auth::user()->id;
         // オーナー名をリクエストから取得
         $ownerName = $request->input('ownerName');
-        
-        var_dump($ownerName);
 
         $userQuery = User::query();
         // ユーザ名をUpdate
