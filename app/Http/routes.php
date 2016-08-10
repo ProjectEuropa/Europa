@@ -62,6 +62,11 @@ Route::get('/mypage/download/{id}', 'MypageController@download');
 //マイページ・ダウンロード
 Route::post('/mypage/editUserInfo', 'MypageController@editUserInfo');
 
+//イベント告知
+Route::get('/eventNotice', 'EventNoticeController@index');
+//イベント告知登録
+Route::post('/eventNotice/register', 'EventNoticeController@register');
+
 //Twitter認証用
 Route::get('twitter', function () {
     return view('twitterAuth');

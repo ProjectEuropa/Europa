@@ -28,8 +28,9 @@
                         {{-- 未ログイン時は簡易アップロード表示 --}}
                             <a class="navbar-brand" href="{!! url('/simpleUpload') !!}">Simple Upload/</a>
                         @else
-                        {{-- ログイン中は通常アップロード表示 --}}
+                        {{-- ログイン中は通常アップロード・イベント告知表示 --}}
                             <a class="navbar-brand" href="{!! url('/upload') !!}">Upload/</a>
+                            <a class="navbar-brand" href="{!! url('/eventNotice') !!}">Upload/</a>
                         @endif
                         <a class="navbar-brand" href="{!! url('/help') !!}">Help/</a>
                         <a class="navbar-brand" href="{!! url('/links') !!}">Links</a>

@@ -102,10 +102,11 @@ return [
         'comment' => 'コメント',
         'teamFile' => 'チームファイル',
         'matchFile' => 'マッチファイル',
-        'deletePassWord' => '削除パスワード'
-        
-
-        
+        'deletePassWord' => '削除パスワード',
+        'eventName' => 'イベント名',
+        'eventDetails' => 'イベント情報詳細',
+        'eventClosingDay' => 'イベント受付期間締切日',
+        'eventDisplayingDay' => 'イベント表示最終日',
         
     ],
 ];
