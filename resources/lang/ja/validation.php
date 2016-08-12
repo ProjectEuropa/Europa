@@ -105,8 +105,10 @@ return [
         'deletePassWord' => '削除パスワード',
         'eventName' => 'イベント名',
         'eventDetails' => 'イベント情報詳細',
-        'eventClosingDay' => 'イベント受付期間締切日',
-        'eventDisplayingDay' => 'イベント表示最終日',
+        'eventClosingDate' => 'イベント受付期間締切日',
+        'eventClosingTime' => 'イベント受付期間締切時刻',
+        'eventDisplayingDate' => 'イベント表示最終日',
+        'eventDisplayingTime' => 'イベント表示最終時刻',
         
     ],
 ];

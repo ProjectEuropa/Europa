@@ -1,6 +1,12 @@
 {{-- 親ビューの指定 --}}
 @extends('layout')
 
+{{-- css読み込みフォーム・カレンダー・日付関連 --}}
+@section('css')
+<link rel="stylesheet" href= "{{ asset('css/bootstrap/bootstrap-datepicker.min.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+@endsection
+
 {{-- アップロードフォーム --}}
 @section('content')
 <h2>Event Notice</h2>
@@ -35,27 +41,33 @@
                 <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/eventNotice/register') }}">
                     <fieldset>
                         <div class="form-group">
-                            <label for="owner">イベント名:</label>
+                            <label for="eventName">イベント名:</label>
                             <input type="text" name="eventName" class="form-control" id="eventName" placeholder="告知したいイベント名をご入力ください">
                         </div>
                         <div class="form-group">
-                            <label for="comment">イベント詳細情報:</label>
+                            <label for="eventDetails">イベント詳細情報:</label>
                             <textarea name="eventDetails" class="form-control" rows="5" id="eventDetails" placeholder="イベントの詳細情報をご入力ください"></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="comment">イベント参照URL:</label>
+                            <label for="eventReferenceUrl">イベント参照URL:</label>
                             <input type="url" name="eventReferenceUrl" class="form-control" rows="5" id="eventReferenceUrl" placeholder="イベントの参照となる掲示板やブログのURLをご入力ください">
                         </div>
                         <div class="form-group">
-                            <label for="owner">イベント受付期間締切日:</label>
-                            <input type="datetime-local" name="eventClosingDay" class="form-control" id="eventClosingDay" placeholder="イベントの詳細情報をご入力ください"">
+                            <label for="eventClosingDay">イベント受付期間締切日:</label>
+                            <div class="form-inline">
+                                <input type="text" name="eventClosingDate" class="form-control datepicker" id="eventClosingDate" placeholder="締切日付をご入力ください">
+                                <input type="text" name="eventClosingTime" class="form-control timepicker" id="eventClosingTime" value="23:59" placeholder="締切時刻をご入力ください">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="owner">イベント表示最終日:</label>
-                            <input type="datetime-local" name="eventDisplayingDay" class="form-control" id="teamOwnerName">
+                            <label for="eventDisplayingDay">イベント表示最終日:</label>
+                            <div class="form-inline">
+                                <input type="text" name="eventDisplayingDate" class="form-control datepicker" id="eventDisplayingDate" placeholder="表示最終日をご入力ください">
+                                <input type="text" name="eventDisplayingTime" class="form-control timepicker" id="eventDisplayingTime" value="23:59" placeholder="表示最終日時刻をご入力ください">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="word">イベント種別</label>
+                            <label for="eventType">イベント種別</label>
                             {{Form::select('eventType', [
                                 '1' => '大会',
                                 '2' => 'その他']
@@ -69,4 +81,12 @@
         </div>
     </div>
 </div>
+@endsection
+
+{{-- カレンダー・日付関連js読み込み --}}
+@section('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+<script type="text/javascript" src="{{ asset('js/bootstrap/bootstrap-datepicker.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/bootstrap/bootstrap-datepicker.ja.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/datepicker-config.js') }}"></script>
 @endsection

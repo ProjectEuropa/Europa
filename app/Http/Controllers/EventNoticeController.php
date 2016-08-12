@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\BusinessModel\EventBusiness;
+use App\BusinessService\EventService;
 use Validator;
 
 class EventNoticeController extends Controller {
@@ -33,23 +33,21 @@ class EventNoticeController extends Controller {
         $validator = Validator::make($request->all(), [
                     'eventName' => 'required|max:20',
                     'eventDetails' => 'required|max:100',
-                    'eventClosingDay' => 'required|date_format:yyyy-mm-dd hh:mm:ss',
-                    'eventDisplayingDay' => 'required|date_format:yyyy/mm/dd HH:MM',
+                    'eventClosingDate' => 'required|date_format:Y/m/d',
+                    'eventClosingTime' => 'required|date_format:H:i',
+                    'eventDisplayingDate' => 'required|date_format:Y/m/d',
+                    'eventDisplayingTime' => 'required|date_format:H:i',
         ]);
-        
-        var_dump($request);
 
-        var_dump($request->input('eventClosingDay'));
-        
         if ($validator->fails()) {
-            return view('eventNotice.eventNoticeIndex');
-//            return redirect('/eventNotice')
-//                            ->withInput()
-//                            ->withErrors($validator);
+//            return view('eventNotice.eventNoticeIndex');
+            return redirect('/eventNotice')
+                            ->withInput()
+                            ->withErrors($validator);
         }
 
         // EventBusinessクラスでイベント登録処理を実行
-        $isRegisterSucess = EventBusiness::registerEvent($request);
+        $isRegisterSucess = EventService::registerEvent($request);
 
         if ($isRegisterSucess) {
             \Session::flash('flash_message', trans('messages.register_complete', ['name' => 'イベント']));

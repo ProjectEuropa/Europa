@@ -22,6 +22,7 @@
                             <span class="icon-bar"></span>
                         </button>
                         <a class="navbar-brand" href="{!! url('/') !!}">Top/</a>
+                        <a class="navbar-brand" href="{!! url('/infomation') !!}">Infomation/</a>
                         <a class="navbar-brand" href="{!! url('/search/team') !!}">Team data/</a>
                         <a class="navbar-brand" href="{!! url('/search/match') !!}">Match Data/</a>
                         @if (Auth::guest())
@@ -30,7 +31,7 @@
                         @else
                         {{-- ログイン中は通常アップロード・イベント告知表示 --}}
                             <a class="navbar-brand" href="{!! url('/upload') !!}">Upload/</a>
-                            <a class="navbar-brand" href="{!! url('/eventNotice') !!}">Upload/</a>
+                            <a class="navbar-brand" href="{!! url('/eventNotice') !!}">Event Notice/</a>
                         @endif
                         <a class="navbar-brand" href="{!! url('/help') !!}">Help/</a>
                         <a class="navbar-brand" href="{!! url('/links') !!}">Links</a>

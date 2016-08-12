@@ -67,6 +67,9 @@ Route::get('/eventNotice', 'EventNoticeController@index');
 //イベント告知登録
 Route::post('/eventNotice/register', 'EventNoticeController@register');
 
+//インフォメーション
+Route::get('/infomation', 'InfomationController@index');
+
 //Twitter認証用
 Route::get('twitter', function () {
     return view('twitterAuth');
