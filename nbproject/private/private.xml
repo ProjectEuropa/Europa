@@ -7,10 +7,10 @@
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/EventNoticeController.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/links/index.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/layout.blade.php</file>
-            <file>file:/C:/linuxWork/workspace/laravel/laravel/database/migrations/2016_07_18_115651_create_files_table.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/infomation/informationIndex.blade.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/upload/simpleIndex.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/upload/normalIndex.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/Auth/AuthController.php</file>
-            <file>file:/C:/linuxWork/workspace/laravel/laravel/database/migrations/2014_10_12_000000_create_users_table.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/UploadController.php</file>
         </group>
     </open-files>

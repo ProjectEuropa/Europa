@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\BusinessService\EventService;
 use Validator;
+use Auth;
 
 class EventNoticeController extends Controller {
 
@@ -32,7 +33,7 @@ class EventNoticeController extends Controller {
          */
         $validator = Validator::make($request->all(), [
                     'eventName' => 'required|max:20',
-                    'eventDetails' => 'required|max:100',
+                    'eventDetails' => 'required|max:200',
                     'eventClosingDate' => 'required|date_format:Y/m/d',
                     'eventClosingTime' => 'required|date_format:H:i',
                     'eventDisplayingDate' => 'required|date_format:Y/m/d',
@@ -47,7 +48,8 @@ class EventNoticeController extends Controller {
         }
 
         // EventBusinessクラスでイベント登録処理を実行
-        $isRegisterSucess = EventService::registerEvent($request);
+        $registerUserId = Auth::user()->id;
+        $isRegisterSucess = EventService::registerEvent($request, $registerUserId);
 
         if ($isRegisterSucess) {
             \Session::flash('flash_message', trans('messages.register_complete', ['name' => 'イベント']));

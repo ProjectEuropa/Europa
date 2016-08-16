@@ -1,6 +1,8 @@
 {{-- 親ビューの指定 --}}
 @extends('layout')
 
+
+
 {{-- css読み込みフォーム・カレンダー・日付関連 --}}
 @section('css')
 <link rel="stylesheet" href= "{{ asset('css/bootstrap/bootstrap-datepicker.min.css') }}">
@@ -12,6 +14,9 @@
 <h2>Event Notice</h2>
 <p>イベントの告知が可能です。ここで登録した内容はInfomationに表示されます。</p>
 
+@if (Auth::guest())
+<div class="alert alert-danger">Sign in時のみイベント告知が可能です。Sign inをお願い致します。</div>
+@else
 <div class="row">
     <div class="col-md-9 col-md-offset-0">
         {{-- フラッシュメッセージの表示 --}}
@@ -42,7 +47,7 @@
                     <fieldset>
                         <div class="form-group">
                             <label for="eventName">イベント名:</label>
-                            <input type="text" name="eventName" class="form-control" id="eventName" placeholder="告知したいイベント名をご入力ください">
+                            <input type="text" name="eventName" class="form-control" id="eventName" placeholder="イベント名をご入力ください">
                         </div>
                         <div class="form-group">
                             <label for="eventDetails">イベント詳細情報:</label>
@@ -56,14 +61,14 @@
                             <label for="eventClosingDay">イベント受付期間締切日:</label>
                             <div class="form-inline">
                                 <input type="text" name="eventClosingDate" class="form-control datepicker" id="eventClosingDate" placeholder="締切日付をご入力ください">
-                                <input type="text" name="eventClosingTime" class="form-control timepicker" id="eventClosingTime" value="23:59" placeholder="締切時刻をご入力ください">
+                                <input type="text" name="eventClosingTime" class="form-control timepicker" id="eventClosingTime" value="23:59" placeholder="締切時刻をご入力ください"> までイベント受付
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="eventDisplayingDay">イベント表示最終日:</label>
                             <div class="form-inline">
                                 <input type="text" name="eventDisplayingDate" class="form-control datepicker" id="eventDisplayingDate" placeholder="表示最終日をご入力ください">
-                                <input type="text" name="eventDisplayingTime" class="form-control timepicker" id="eventDisplayingTime" value="23:59" placeholder="表示最終日時刻をご入力ください">
+                                <input type="text" name="eventDisplayingTime" class="form-control timepicker" id="eventDisplayingTime" value="23:59" placeholder="表示最終日時刻をご入力ください"> までInfomationに表示
                             </div>
                         </div>
                         <div class="form-group">
@@ -81,6 +86,8 @@
         </div>
     </div>
 </div>
+@endif
+
 @endsection
 
 {{-- カレンダー・日付関連js読み込み --}}
