@@ -32,7 +32,7 @@
                 'new' => '投稿日時の新しい順',
                 'old' => '投稿日時の古い順']
                 , $orderType, ['class' => 'form-control'])}}
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-primary">検索</button>
         </div>
     </form>
 </h5>
