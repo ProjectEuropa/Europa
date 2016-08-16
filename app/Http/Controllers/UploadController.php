@@ -14,7 +14,7 @@ const TEAM_FLG_TRUE = true;
 const TEAM_FLG_FALSE = false;
 
 const NORMAL_UPLOAD_FLG_TRUE = true;
-const NORMAL_UPLOAD_FLG_FALSE = true;
+const NORMAL_UPLOAD_FLG_FALSE = false;
 
 /*
   アップロード操作実行コントローラ
