@@ -41,4 +41,5 @@ return [
         'redirect'      => "http://project-europa.herokuapp.com/auth/twitter/callback",
     ],
 
+    
 ];
