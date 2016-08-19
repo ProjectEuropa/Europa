@@ -31,12 +31,12 @@
                 <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/upload/teamUpload') }}"  enctype="multipart/form-data">
                     <fieldset>
                         <div class="form-group">
-                            <label for="owner">オーナー名:</label>
-                            <input type="text" name="ownerName" class="form-control" id="teamOwnerName" value="{{ Auth::user()->name }}">
+                            <label for="teamOwnerName">オーナー名:</label>
+                            <input type="text" name="teamOwnerName" class="form-control" id="teamOwnerName" value="{{ Auth::user()->name }}">
                         </div>
                         <div class="form-group">
-                            <label for="comment">コメント:</label>
-                            <textarea name="comment" class="form-control" rows="5" id="teamComment"></textarea>
+                            <label for="teamComment">コメント:</label>
+                            <textarea name="teamComment" class="form-control" rows="5" id="teamComment">{!! old('teamComment') !!}</textarea>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputFile">チームファイル</label>
@@ -62,12 +62,12 @@
                 <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/upload/matchUpload') }}"  enctype="multipart/form-data">
                     <fieldset>
                         <div class="form-group">
-                            <label for="owner">オーナー名:</label>
-                            <input type="text" name="ownerName" class="form-control" id="teamOwnerName" value="{{ Auth::user()->name }}">
+                            <label for="matchOwnerName">オーナー名:</label>
+                            <input type="text" name="matchOwnerName" class="form-control" id="teamOwnerName" value="{{ Auth::user()->name }}">
                         </div>
                         <div class="form-group">
-                            <label for="comment">コメント:</label>
-                            <textarea name="comment" class="form-control" rows="5" id="matchComment"></textarea>
+                            <label for="matchComment">コメント:</label>
+                            <textarea name="matchComment" class="form-control" rows="5" id="matchComment">{!! old('matchComment') !!}</textarea>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputFile">マッチファイル</label>

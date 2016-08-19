@@ -45,9 +45,9 @@ class UploadController extends Controller {
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
-                    'ownerName' => 'required|max:12',
-                    'comment' => 'required|max:100',
-                    'deletePassWord' => 'required|max:12',
+                    'teamOwnerName' => 'required|max:12',
+                    'teamComment' => 'required|max:100',
+                    'teamDeletePassWord' => 'required|max:12',
                     'teamFile' => 'required|no_che_file|max:24'
         ]);
 
@@ -62,7 +62,7 @@ class UploadController extends Controller {
 
         \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'チームデータ']));
 
-        return view('upload.simpleIndex');
+        return redirect('/simpleUpload');
     }
 
     /**
@@ -78,8 +78,8 @@ class UploadController extends Controller {
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
-                    'ownerName' => 'required|max:12',
-                    'comment' => 'required|max:100',
+                    'teamOwnerName' => 'required|max:12',
+                    'teamComment' => 'required|max:100',
                     'teamFile' => 'required|no_che_file|max:24'
         ]);
 
@@ -94,7 +94,7 @@ class UploadController extends Controller {
 
         \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'チームデータ']));
 
-        return view('upload.normalIndex');
+        return redirect('/upload');
     }
 
     /**
@@ -111,9 +111,9 @@ class UploadController extends Controller {
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
-                    'ownerName' => 'required|max:12',
-                    'comment' => 'required|max:100',
-                    'deletePassWord' => 'required|max:12',
+                    'matchOwnerName' => 'required|max:12',
+                    'matchComment' => 'required|max:100',
+                    'matchDeletePassWord' => 'required|max:12',
                     'matchFile' => 'required|no_che_file|max:260',
         ]);
 
@@ -128,7 +128,7 @@ class UploadController extends Controller {
 
         \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'マッチデータ']));
 
-        return view('upload.simpleIndex');
+        return redirect('/simpleUpload');
     }
         /**
      * マッチデータアップロード操作実行Action
@@ -144,13 +144,13 @@ class UploadController extends Controller {
           　 no_che_fileはApp\Validation\CustomValidatorで設定
          */
         $validator = Validator::make($request->all(), [
-                    'ownerName' => 'required|max:12',
-                    'comment' => 'required|max:100',
+                    'matchOwnerName' => 'required|max:12',
+                    'matchComment' => 'required|max:100',
                     'matchFile' => 'required|no_che_file|max:260',
         ]);
 
         if ($validator->fails()) {
-            return redirect('/simpleUpload')
+            return redirect('/upload')
                             ->withInput()
                             ->withErrors($validator);
         }
@@ -160,7 +160,7 @@ class UploadController extends Controller {
 
         \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'マッチデータ']));
 
-        return view('upload.simpleIndex');
+        return redirect('/upload');;
     }
 
     /**
@@ -174,21 +174,27 @@ class UploadController extends Controller {
 
         $dataType = null;
         $file = null;
+        $uploadOwnerName = null;
+        $fileComment = null;
+        $deletePassword = null;
 
         // チームFlgがオンならばチームデータを取得、offならばマッチデータ
         if ($teamFlg) {
             $dataType = Constants::DB_STR_DATA_TYPE_TEAM;
             $file = $request->file('teamFile');
+            $uploadOwnerName = $request->input('teamOwnerName');// アップロードオーナー名（編集可能）
+            $fileComment = $request->input('teamComment');// コメント
+            $deletePassword = $request->input('teamDeletePassWord'); // 削除パスワード
         } else {
             $dataType = Constants::DB_STR_DATA_TYPE_MATCH;
             $file = $request->file('matchFile');
+            $uploadOwnerName = $request->input('matchOwnerName');// アップロードオーナー名（編集可能）
+            $fileComment = $request->input('matchComment');// コメント
+            $deletePassword = $request->input('matchDeletePassWord'); // 削除パスワード
         }
  
         $fileData = file_get_contents($file);       // ファイルのバイナリデータ取得
         $fileName = $file->getClientOriginalName();     // ファイル名
-        $uploadOwnerName = $request->input('ownerName');   // アップロードオーナー名（編集可能）
-        $fileComment = $request->input('comment');          // コメント
-        $deletePassword = $request->input('deletePassWord'); // 削除パスワード
         $now = date('Y/m/d H:i:s'); // 現在日付
 
         $uploadUserId = null;

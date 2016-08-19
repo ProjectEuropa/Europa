@@ -47,27 +47,27 @@
                     <fieldset>
                         <div class="form-group">
                             <label for="eventName">イベント名:</label>
-                            <input type="text" name="eventName" class="form-control" id="eventName" placeholder="イベント名をご入力ください">
+                            <input type="text" name="eventName" class="form-control" id="eventName" value="{!! old('eventName') !!}" placeholder="イベント名をご入力ください">
                         </div>
                         <div class="form-group">
                             <label for="eventDetails">イベント詳細情報:</label>
-                            <textarea name="eventDetails" class="form-control" rows="5" id="eventDetails" placeholder="イベントの詳細情報をご入力ください"></textarea>
+                            <textarea name="eventDetails" class="form-control" rows="5" id="eventDetails" placeholder="イベントの詳細情報をご入力ください">{!! old('eventDetails') !!}</textarea>
                         </div>
                         <div class="form-group">
                             <label for="eventReferenceUrl">イベント参照URL:</label>
-                            <input type="url" name="eventReferenceUrl" class="form-control" rows="5" id="eventReferenceUrl" placeholder="イベントの参照となる掲示板やブログのURLをご入力ください">
+                            <input type="url" name="eventReferenceUrl" class="form-control" rows="5" id="eventReferenceUrl" value="{!! old('eventReferenceUrl') !!}" placeholder="イベントの参照となる掲示板やブログのURLをご入力ください">
                         </div>
                         <div class="form-group">
                             <label for="eventClosingDay">イベント受付期間締切日:</label>
                             <div class="form-inline">
-                                <input type="text" name="eventClosingDate" class="form-control datepicker" id="eventClosingDate" placeholder="締切日付をご入力ください">
+                                <input type="text" name="eventClosingDate" class="form-control datepicker" id="eventClosingDate" value="{!! old('eventClosingDate') !!}" placeholder="締切日付をご入力ください">
                                 <input type="text" name="eventClosingTime" class="form-control timepicker" id="eventClosingTime" value="23:59" placeholder="締切時刻をご入力ください"> までイベント受付
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="eventDisplayingDay">イベント表示最終日:</label>
                             <div class="form-inline">
-                                <input type="text" name="eventDisplayingDate" class="form-control datepicker" id="eventDisplayingDate" placeholder="表示最終日をご入力ください">
+                                <input type="text" name="eventDisplayingDate" class="form-control datepicker" id="eventDisplayingDate" value="{!! old('eventDisplayingDate') !!}" placeholder="表示最終日をご入力ください">
                                 <input type="text" name="eventDisplayingTime" class="form-control timepicker" id="eventDisplayingTime" value="23:59" placeholder="表示最終日時刻をご入力ください"> までInfomationに表示
                             </div>
                         </div>

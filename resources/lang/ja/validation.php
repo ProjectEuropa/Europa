@@ -98,11 +98,14 @@ return [
     |
     */
     'attributes' => [
-        'ownerName' => 'オーナー名',
-        'comment' => 'コメント',
+        'teamOwnerName' => 'オーナー名',
+        'matchOwnerName' => 'オーナー名',
+        'teamComment' => 'コメント',
+        'matchComment' => 'コメント',
         'teamFile' => 'チームファイル',
         'matchFile' => 'マッチファイル',
-        'deletePassWord' => '削除パスワード',
+        'teamDeletePassWord' => '削除パスワード',
+        'matchDeletePassWord' => '削除パスワード',
         'eventName' => 'イベント名',
         'eventDetails' => 'イベント情報詳細',
         'eventClosingDate' => 'イベント受付期間締切日',

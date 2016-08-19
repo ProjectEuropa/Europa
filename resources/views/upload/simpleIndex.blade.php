@@ -31,16 +31,16 @@
                 <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/simpleUpload/teamUpload') }}"  enctype="multipart/form-data">
                     <fieldset>
                         <div class="form-group">
-                            <label for="owner">オーナー名:</label>
-                            <input type="text" name="ownerName" class="form-control" id="teamOwnerName">
+                            <label for="teamOwnerName">オーナー名:</label>
+                            <input type="text" name="teamOwnerName" class="form-control" id="teamOwnerName" value="{!! old('teamOwnerName') !!}">
                         </div>
                         <div class="form-group">
-                            <label for="comment">コメント:</label>
-                            <textarea name="comment" class="form-control" rows="5" id="teamComment"></textarea>
+                            <label for="teamComment">コメント:</label>
+                            <textarea name="teamComment" class="form-control" rows="5" id="teamComment">{!! old('teamComment') !!}</textarea>
                         </div>
                         <div class="form-group">
-                            <label for="deletePassWord">削除パスワード:</label>
-                            <input type="text" name="deletePassWord" class="form-control" rows="5" id="teamDeletePassWord">
+                            <label for="teamDeletePassWord">削除パスワード:</label>
+                            <input type="text" name="teamDeletePassWord" class="form-control" rows="5" id="teamDeletePassWord" value="{!! old('teamDeletePassWord') !!}">
                         </div>
                         <div class="form-group">
                             <label for="exampleInputFile">チームファイル</label>
@@ -66,16 +66,16 @@
                 <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/simpleUpload/matchUpload') }}"  enctype="multipart/form-data">
                     <fieldset>
                         <div class="form-group">
-                            <label for="owner">オーナー名:</label>
-                            <input type="text" name="ownerName" class="form-control" id="matchOwnerName">
+                            <label for="matchOwnerName">オーナー名:</label>
+                            <input type="text" name="matchOwnerName" class="form-control" id="matchOwnerName" value="{!! old('matchOwnerName') !!}">
                         </div>
                         <div class="form-group">
-                            <label for="comment">コメント:</label>
-                            <textarea name="comment" class="form-control" rows="5" id="matchComment"></textarea>
+                            <label for="matchComment">コメント:</label>
+                            <textarea name="matchComment" class="form-control" rows="5" id="matchComment">{!! old('matchComment') !!}</textarea>
                         </div>
                         <div class="form-group">
-                            <label for="deletePassWord">削除パスワード:</label>
-                            <input type="text" name="deletePassWord" class="form-control" rows="5" id="matchDeletePassWord">
+                            <label for="matchDeletePassWord">削除パスワード:</label>
+                            <input type="text" name="matchDeletePassWord" class="form-control" rows="5" id="matchDeletePassWord" value="{!! old('matchDeletePassWord') !!}">
                         </div>
                         <div class="form-group">
                             <label for="exampleInputFile">マッチファイル</label>
