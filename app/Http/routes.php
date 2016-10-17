@@ -41,17 +41,23 @@ Route::get('/search/download/{id}', 'SearchController@download');
 // 削除（チーム・マッチ共用）
 Route::post('/search/{type}/delete', 'SearchController@delete');
 
+
+// まとめてダウンロード検索一覧（チーム・マッチ共用）
+Route::get('/sumdownload/{type}', 'SumDownloadController@index');
+// 削除（チーム・マッチ共用）
+Route::post('/sumdownload/download', 'SumDownloadController@download');
+
 // アップロード画面・簡易
-Route::get('/simpleUpload', 'UploadController@simpleIndex');
+Route::get('/simpleupload', 'UploadController@simpleIndex');
 // アップロード画面・通常
 Route::get('/upload', 'UploadController@normalIndex');
 
 // アップロード（チーム・マッチデータ）
 //post（受け取り）
-Route::post('/simpleUpload/teamUpload', 'UploadController@teamUpload');
-Route::post('/simpleUpload/matchUpload', 'UploadController@matchUpload');
-Route::post('/upload/teamUpload', 'UploadController@normalTeamUpload');
-Route::post('/upload/matchUpload', 'UploadController@normalMatchUpload');
+Route::post('/simpleupload/teamupload', 'UploadController@teamUpload');
+Route::post('/simpleupload/matchupload', 'UploadController@matchUpload');
+Route::post('/upload/teamupload', 'UploadController@normalTeamUpload');
+Route::post('/upload/matchupload', 'UploadController@normalMatchUpload');
 
 // マイページ
 Route::get('/mypage', 'MypageController@index');
@@ -63,9 +69,9 @@ Route::get('/mypage/download/{id}', 'MypageController@download');
 Route::post('/mypage/editUserInfo', 'MypageController@editUserInfo');
 
 //イベント告知
-Route::get('/eventNotice', 'EventNoticeController@index');
+Route::get('/eventnotice', 'EventNoticeController@index');
 //イベント告知登録
-Route::post('/eventNotice/register', 'EventNoticeController@register');
+Route::post('/eventnotice/register', 'EventNoticeController@register');
 
 //インフォメーション
 Route::get('/infomation', 'InfomationController@index');
