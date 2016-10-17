@@ -43,7 +43,7 @@
                 <h3 class="panel-title">イベント情報告知</h3>
             </div>
             <div class="panel-body">
-                <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/eventNotice/register') }}">
+                <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/eventnotice/register') }}">
                     <fieldset>
                         <div class="form-group">
                             <label for="eventName">イベント名:</label>

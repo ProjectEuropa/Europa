@@ -41,8 +41,7 @@ class EventNoticeController extends Controller {
         ]);
 
         if ($validator->fails()) {
-//            return view('eventNotice.eventNoticeIndex');
-            return redirect('/eventNotice')
+            return redirect('/eventnotice')
                             ->withInput()
                             ->withErrors($validator);
         }
@@ -53,10 +52,10 @@ class EventNoticeController extends Controller {
 
         if ($isRegisterSucess) {
             \Session::flash('flash_message', trans('messages.register_complete', ['name' => 'イベント']));
-            return redirect('eventNotice');
+            return redirect('eventnotice');
         } else {
             \Session::flash('error_message', trans('messages.register_fail', ['name' => 'イベント']));
-            return redirect('eventNotice');
+            return redirect('eventnotice');
         }
     }
 
