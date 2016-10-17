@@ -52,7 +52,7 @@ class UploadController extends Controller {
         ]);
 
         if ($validator->fails()) {
-            return redirect('/simpleUpload')
+            return redirect('/simpleupload')
                             ->withInput()
                             ->withErrors($validator);
         }
@@ -62,7 +62,7 @@ class UploadController extends Controller {
 
         \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'チームデータ']));
 
-        return redirect('/simpleUpload');
+        return redirect('/simpleupload');
     }
 
     /**
@@ -118,7 +118,7 @@ class UploadController extends Controller {
         ]);
 
         if ($validator->fails()) {
-            return redirect('/simpleUpload')
+            return redirect('/simpleupload')
                             ->withInput()
                             ->withErrors($validator);
         }
@@ -128,7 +128,7 @@ class UploadController extends Controller {
 
         \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'マッチデータ']));
 
-        return redirect('/simpleUpload');
+        return redirect('/simpleupload');
     }
         /**
      * マッチデータアップロード操作実行Action
