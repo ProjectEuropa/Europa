@@ -28,7 +28,7 @@
                 <h3 class="panel-title">チームデータアップロード</h3>
             </div>
             <div class="panel-body">
-                <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/upload/teamUpload') }}"  enctype="multipart/form-data">
+                <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/upload/teamupload') }}"  enctype="multipart/form-data">
                     <fieldset>
                         <div class="form-group">
                             <label for="teamOwnerName">オーナー名:</label>
@@ -44,7 +44,7 @@
                             <p class="help-block">CHEチームデータが選択可能です</p>
                         </div>
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                        <input class="btn btn-block btn-primary" type="submit" value="チームデータアップロード">
+                        <button type="submit" class="btn btn-block btn-primary">チームデータアップロード</button>
                     </fieldset>
                 </form>
             </div>
@@ -59,7 +59,7 @@
                 <h3 class="panel-title">マッチデータアップロード</h3>
             </div>
             <div class="panel-body">
-                <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/upload/matchUpload') }}"  enctype="multipart/form-data">
+                <form accept-charset="UTF-8" role="form" method="post" action="{{ url('/upload/matchupload') }}"  enctype="multipart/form-data">
                     <fieldset>
                         <div class="form-group">
                             <label for="matchOwnerName">オーナー名:</label>
@@ -75,7 +75,7 @@
                             <p class="help-block">CHEマッチデータが選択可能です</p>
                         </div>
                         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-                        <input class="btn btn-block btn-info" type="submit" value="マッチデータアップロード">
+                        <button type="submit" class="btn btn-block btn-info">マッチデータアップロード</button>
                     </fieldset>
                 </form>
             </div>
