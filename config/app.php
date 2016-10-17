@@ -180,6 +180,11 @@ return [
          * Laravel デバッガー
          */
         Barryvdh\Debugbar\ServiceProvider::class,
+        
+        /*
+         * Zipper
+         */
+        Chumper\Zipper\ZipperServiceProvider::class,
     ],
 
     /*
@@ -232,6 +237,8 @@ return [
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
+        
+        'Zipper' => Chumper\Zipper\Zipper::class,
 
     ],
 ];
