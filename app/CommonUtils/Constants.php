@@ -23,6 +23,8 @@ class Constants
    
     // ページネーション:10
     const NUM_PAGENATION_TEN = 10;
+    // ページネーション:100
+    const NUM_PAGENATION_HUNDRED = 100;
     
     // ソート順 
     const STR_ORDER_TYPE_NEW = 'new';
