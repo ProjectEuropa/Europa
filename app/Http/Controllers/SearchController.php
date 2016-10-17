@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\File;
 use App\CommonUtils\Constants;
+use App\BusinessService\FileService;
 use Illuminate\Http\Request;
-
 
 /*
  * 　チームデータ検索コントローラ
  */
+
 class SearchController extends Controller {
 
     /**
@@ -22,51 +23,22 @@ class SearchController extends Controller {
      */
     public function index(Request $request, $type) {
 
-        //チームデータ検索Query生成
-        $query = File::query();
-
-        // 検索ワード取得
-        $keyword = $request->input('keyword');
-        
-        // search/{type}のurlがチームかマッチかで分岐
-        if ($type == Constants::URL_SEARCH_TYPE_TEAM) {
-            $query->where('data_type', '=', Constants::DB_STR_DATA_TYPE_TEAM);
-        } elseif ($type == Constants::URL_SEARCH_TYPE_MATCH) {
-            $query->where('data_type', '=', Constants::DB_STR_DATA_TYPE_MATCH);
-        } else {
-            return null;
-        }        
-
-        //キーワード存在時の処理
-        if (!empty($keyword)) {
-            $query->where(function($query) use ($keyword){
-                $query->orwhere('upload_owner_name', 'like', '%' . $keyword . '%')
-                    ->orWhere('file_name', 'like', '%' . $keyword . '%')
-                    ->orWhere('file_comment', 'like', '%' . $keyword . '%');
-            });
-        }
         // ソート順指定
         $orderType = $request->input('orderType');
-        if (($orderType == Constants::STR_ORDER_TYPE_NEW) || (empty($orderType))) {
-            $query->orderBy('id','desc');
-            $orderType = Constants::STR_ORDER_TYPE_NEW;
-        } else {
-            $query->orderBy('id','asc');
-            $orderType = Constants::STR_ORDER_TYPE_OLD;
-        }
+        // 検索ワード取得
+        $keyword = $request->input('keyword');
 
         //ページング機能:1ページ10レコード
-        $files = $query->paginate(Constants::NUM_PAGENATION_TEN);
+        $files = FileService::searchFiles($request, $type, Constants::NUM_PAGENATION_TEN);
 
         // 検索ワードと検索結果、検索タイプを送信
-        return view('search.index', [
+        return view('search.searchIndex', [
             'files' => $files,
             'keyword' => $keyword,
-            'type' => $type,// team or match
-            'orderType' => $orderType       
+            'type' => $type, // team or match
+            'orderType' => $orderType
         ]);
     }
-
 
     /**
      * ファイルダウンロード実行Action
@@ -93,6 +65,7 @@ class SearchController extends Controller {
 
         return response()->download($cheData, $title, $headers);
     }
+
 
     /**
      * ファイル削除実行Action
@@ -124,7 +97,7 @@ class SearchController extends Controller {
         } else {
             \Session::flash('flash_message', trans('messages.delete_complete', ['name' => 'マッチデータ']));
         }
-        return redirect('search/'. $type);
+        return redirect('search/' . $type);
     }
 
 }
