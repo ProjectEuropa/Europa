@@ -112,6 +112,7 @@ return [
         'eventClosingTime' => 'イベント受付期間締切時刻',
         'eventDisplayingDate' => 'イベント表示最終日',
         'eventDisplayingTime' => 'イベント表示最終時刻',
+        'checkFileId' => 'チェックボックスのチェック',        
         
     ],
 ];
