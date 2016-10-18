@@ -14,5 +14,5 @@
     <a class="btn btn-block btn-social btn-twitter"  href="auth/twitter">
         <span class="fa fa-twitter"></span> Sign in with Twitter
     </a>
-</dv>
+</div>
 @endsection
