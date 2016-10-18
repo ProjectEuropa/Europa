@@ -6,11 +6,11 @@
 
 @if (($type) == 'team')
 <h2>Sum DL Team</h2>
-<p>チームデータをまとめてダウンロードが可能です。</p>
+<p>チームデータの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れてください。</p>
 @endif
 @if (($type) == 'match')
 <h2>Sum DL Match</h2>
-<p>マッチデータをまとめてダウンロードが可能です。</p>
+<p>マッチデータの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れてください。</p>
 @endif
 
 {{-- バリデーションメッセージの表示 --}}
@@ -40,7 +40,7 @@
     <table class="table table-bordered table-hover">
         <thead>
             <tr class="something">
-                <th><input type="checkbox" id="parentCheck">DL</th>
+                <th><input type="checkbox" id="parentCheck">全チェック</th>
                 <th>オーナー名</th>
                 <th>コメント</th>
                 <th>ファイル名</th>
@@ -51,7 +51,7 @@
             @forelse($files as $file)
             <tr>
                 <td class="col-md-1">
-                    <input type="checkbox" name="checkFileId[]" class="" value="{{$file->id}}">
+                    <input type="checkbox" name="checkFileId[]" class="childCheck" value="{{$file->id}}">
                 </td>
                 <td class="col-md-1">{{ $file->upload_owner_name }}</td>
                 <td class="col-md-6">{!! nl2br(e($file->file_comment)) !!}</td>
@@ -68,7 +68,8 @@
         </tbody>
     </table>
     <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-    <button type="submit" class="btn btn-info" value="">まとめてダウンロード</button>
+    <input type="hidden" name="type" value="{{$type}}">
+    <button type="submit" class="btn btn-info" value="">一括ダウンロード</button>
 </form>
 
 {{-- ページネーションリンク キーワード返却含む--}}

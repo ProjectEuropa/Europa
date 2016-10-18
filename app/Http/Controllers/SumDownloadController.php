@@ -56,8 +56,10 @@ class SumDownloadController extends Controller {
                     'checkFileId' => 'required|max:20',
         ]);
 
+        $type = $request->input('type');
+
         if ($validator->fails()) {
-            return redirect('/sumdownload/team')
+            return redirect('/sumdownload/'.$type)
                             ->withInput()
                             ->withErrors($validator);
         }
