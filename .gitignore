@@ -5,3 +5,7 @@ Homestead.yaml
 Homestead.json
 .env
 /.git-rewrite/t/nbproject/private/
+zipdldir/*  
+!.gitkeep
+prezipfiles/*  
+!.gitkeep
