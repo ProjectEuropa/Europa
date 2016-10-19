@@ -31,7 +31,7 @@ Route::get('/help', function () {
 
 // リンク集画面
 Route::get('/links', function () {
-    return view('links.index');
+    return view('links.linksIndex');
 });
 
 // 検索一覧（チーム・マッチ共用）
