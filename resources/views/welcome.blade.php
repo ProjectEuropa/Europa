@@ -10,7 +10,7 @@
 <div id="main-carousel" class="carousel">
     <div class="europa-inner">
         <div class="item active">
-            <img src="image/europa.jpg">
+            <img src="image/Europa.jpg">
             <div class="carousel-caption">
                 <h1>Welcome To Europa</h1>
                 <p>Carnage Heart Exa 非公式アップローダーEuropaにようこそ！</p>
