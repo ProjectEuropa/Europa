@@ -85,10 +85,8 @@
             </nav>
         </header>
 
-        <div class="container main">
-            {{-- 子のビューで指定される、contentセクションを読み込む --}}
-            @yield('content')
-        </div>
+        {{-- 子のビューで指定される、contentセクションを読み込む --}}
+        @yield('content')
 
         <div class="container">
             <footer>

@@ -2,11 +2,9 @@
 @extends('layout')
 
 @section('content')
-
-
-
-<h2>Under construction</h2>
-<p>お試し版のためリプレイデータ検索・通常アップロード・ヘルプは未実装です。<br>
-    ファイルをアップロードをされる際は、簡易アップロードをお試しください。</p>
+<div class="container main">
+    <h2>Under construction</h2>
+    <p>お試し版のためヘルプは未実装です。</p>
+</div>
 @endsection
 
