@@ -8,6 +8,7 @@ use Validator;
 use Auth;
 use App\CommonUtils\Constants;
 use Illuminate\Http\Request;
+use App\BusinessService\FileService;
 
 /*
  * 　マイページコントローラ
@@ -16,29 +17,22 @@ use Illuminate\Http\Request;
 class MypageController extends Controller {
 
     /**
+     * Mypageは認証必須
+     */
+    public function __construct() {
+        $this->middleware('auth');
+    }
+
+    /**
      * 初期表示処理。チーム・マッチデータ検索
      *
-     * @param  Request  $request
      * @return view mypage.mypageInde
      */
-    public function index(Request $request) {
-
-        //チーム・マッチデータ検索Query生成
-        $teamQuery = File::query();
-        $matchQuery = File::query();
-
-        // ユーザーIDをセッションから取得
-        $userId = Auth::user()->id;
-
-        $teamQuery->where('upload_user_id', '=', $userId);
-        $matchQuery->where('upload_user_id', '=', $userId);
-
-        // チームデータとマッチデータを取得し、Viewに返却
-        $teams = $teamQuery->where('data_type', '=', Constants::DB_STR_DATA_TYPE_TEAM)
-                        ->orderBy('id', 'desc')->get();
-
-        $matchs = $matchQuery->where('data_type', '=', Constants::DB_STR_DATA_TYPE_MATCH)
-                        ->orderBy('id', 'desc')->get();
+    public function index() {
+        
+        //ユーザの持つチームデータマッチデータ検索
+        $teams = FileService::searchUserFiles(Auth::user()->id, Constants::DB_STR_DATA_TYPE_TEAM);
+        $matchs = FileService::searchUserFiles(Auth::user()->id, Constants::DB_STR_DATA_TYPE_MATCH);
 
         //チームデータマッチデータの検索結果を送信
         return view('mypage.mypageIndex', [
@@ -47,7 +41,7 @@ class MypageController extends Controller {
         ]);
     }
 
-    /**
+    /** TODO 不要
      * ファイルダウンロード実行Action
      * download/{id}のURLのidから指定したidのファイルをDLする
      *
@@ -101,7 +95,7 @@ class MypageController extends Controller {
           　オーナー名必須
          */
         $validator = Validator::make($request->all(), [
-                   'ownerName' => 'required|max:12'
+                    'ownerName' => 'required|max:12'
         ]);
 
         if ($validator->fails()) {
@@ -122,7 +116,6 @@ class MypageController extends Controller {
         \Session::flash('flash_message', trans('messages.update_complete', ['name' => 'オーナー名']));
 
         return redirect('mypage');
-        //return view('mypage.mypageIndex');
     }
 
 }
