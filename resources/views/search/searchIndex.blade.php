@@ -5,22 +5,18 @@
 @section('content')
 <div class="container main">
     
-    @if (($type) == 'team')
+    @if (($type) === 'team')
     <h2>Team Data</h2>
-    <p>チームデータの検索が可能です。</p>
+    <p>チームデータの検索が可能です。ダウンロードアイコンをクリックするとダウンロードが始まります。</p>
     @endif
-    @if (($type) == 'match')
+    @if (($type) === 'match')
     <h2>Match Data</h2>
-    <p>マッチデータの検索が可能です。</p>
+    <p>マッチデータの検索が可能です。ダウンロードアイコンをクリックするとダウンロードが始まります。</p>
     @endif
+    
     {{-- フラッシュメッセージの表示 --}}
-    @if (Session::has('flash_message'))
-    <div class="alert alert-success">{{ Session::get('flash_message') }}</div>
-    @endif
-    {{-- エラーメッセージの表示 --}}
-    @if (Session::has('error_message'))
-    <div class="alert alert-danger">{{ Session::get('error_message') }}</div>
-    @endif
+    @include('common.flash')
+    
     <h5>
         <form method="get" action="{!! url('/search', [$type]) !!}" class="form-inline" role="form">
             <div class="form-group">
@@ -34,6 +30,7 @@
             </div>
         </form>
     </h5>
+    <p>全{{$files->total()}}件中{{$files->currentPage()}}ページ目</p>
     <table class="table table-bordered table-hover">
         <thead>
             <tr class="something">
