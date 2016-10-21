@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\BusinessService\EventService;
 
-class InfomationController extends Controller {
+class InformationController extends Controller {
 
     /**
      * 初期表示処理。
@@ -18,7 +18,7 @@ class InfomationController extends Controller {
         
         $events = EventService::searchAllEvents();
 
-        return view('infomation.informationIndex', [
+        return view('information.informationIndex', [
             'events' => $events,
         ]);
     }
