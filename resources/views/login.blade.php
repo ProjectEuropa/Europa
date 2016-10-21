@@ -8,12 +8,12 @@
 
 @section('content')
 <div class="container main">
-    <h2>Sign in</h2>
-    <p>現在TwitterでのSign inのみが有効です。</p>
+    <h2>Login</h2>
+    <p>現在TwitterでのLoginのみが有効です。</p>
 
     <div class="col-md-3">
         <a class="btn btn-block btn-social btn-twitter"  href="auth/twitter">
-            <span class="fa fa-twitter"></span> Sign in with Twitter
+            <span class="fa fa-twitter"></span> Login with Twitter
         </a>
     </div>
 </div>
