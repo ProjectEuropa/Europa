@@ -27,7 +27,7 @@
                         <!-- main navbar -->
                         <ul class="nav navbar-nav navbar-left">
                             <li><a class="navbar-brand" href="{!! url('/') !!}">Top</a></li>
-                            <li><a class="navbar-brand" href="{!! url('/infomation') !!}">Infomation</a></li>
+                            <li><a class="navbar-brand" href="{!! url('/information') !!}">Information</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle navbar-brand" data-toggle="dropdown" role="button" aria-expanded="false">
                                     Search
@@ -62,18 +62,18 @@
                         <ul class="nav navbar-nav navbar-right">
                             @if (Auth::guest())
                             {{-- 未ログイン時はSign in表示 --}}
-                            <a class="navbar-brand" href="{!! url('/twitter') !!}">Sign in</a>
+                            <a class="navbar-brand" href="{!! url('/login') !!}">Login</a>
                             @else
                             {{-- ログイン中はSign Out マイページ表示--}}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                    Sign in: {{ Auth::user()->name }} 
+                                    Login: {{ Auth::user()->name }} 
                                     <img src="{{ Auth::user()->avatar }}" height="20" width="20"/>
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="/mypage">My Page</a></li>
-                                    <li><a href="/auth/logout">Sign out</a></li>
+                                    <li><a href="/auth/logout">Logout</a></li>
                                 </ul>
                             </li>
                             @endif

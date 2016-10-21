@@ -74,11 +74,11 @@ Route::get('/eventnotice', 'EventNoticeController@index');
 Route::post('/eventnotice/register', 'EventNoticeController@register');
 
 //インフォメーション
-Route::get('/infomation', 'InfomationController@index');
+Route::get('/information', 'InformationController@index');
 
 //Twitter認証用
-Route::get('twitter', function () {
-    return view('twitterAuth');
+Route::get('login', function () {
+    return view('login');
 });
 Route::get('auth/twitter', 'Auth\AuthController@redirectToProvider');
 Route::get('auth/twitter/callback', 'Auth\AuthController@handleProviderCallback');
