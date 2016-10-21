@@ -5,25 +5,18 @@
 @section('content')
 <div class="container main">
 
-    @if (($type) == 'team')
+    @if (($type) === 'team')
     <h2>Sum DL Team</h2>
-    <p>チームデータの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れてください。</p>
+    <p>チームデータの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れて一括ダウンロードボタンをクリックしてください。</p>
     @endif
-    @if (($type) == 'match')
+    @if (($type) === 'match')
     <h2>Sum DL Match</h2>
-    <p>マッチデータの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れてください。</p>
+    <p>マッチデータの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れて一括ダウンロードボタンをクリックしてください。</p>
     @endif
 
     {{-- バリデーションメッセージの表示 --}}
-    @if (count($errors) > 0)
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
+    @include('common.validation')
+
     <h5>
         <form method="get" action="{!! url('/sumdownload', [$type]) !!}" class="form-inline" role="form">
             <div class="form-group">
@@ -37,6 +30,7 @@
             </div>
         </form>
     </h5>
+    <p>全{{$files->total()}}件中{{$files->currentPage()}}ページ目</p>
     <form method="post" action="/sumdownload/download" class="form-horizontal">
         <table class="table table-bordered table-hover">
             <thead>

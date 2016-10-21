@@ -10,19 +10,10 @@
     <div class="row">
         <div class="col-md-9 col-md-offset-0">
             {{-- フラッシュメッセージの表示 --}}
-            @if (Session::has('flash_message'))
-            <div class="alert alert-success">{{ Session::get('flash_message') }}</div>
-            @endif
+            @include('common.flash')
+
             {{-- バリデーションメッセージの表示 --}}
-            @if (count($errors) > 0)
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
+            @include('common.validation')
 
             <div class="panel panel-default">
                 <div class="panel-heading">

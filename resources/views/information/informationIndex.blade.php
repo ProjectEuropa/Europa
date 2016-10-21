@@ -6,7 +6,7 @@
 @section('content')
 <div class="container main">
 
-    <h2>Infomation</h2>
+    <h2>Information</h2>
     <p>お知らせ情報の閲覧が可能です。</p>
 
     @forelse($events as $index => $event)
