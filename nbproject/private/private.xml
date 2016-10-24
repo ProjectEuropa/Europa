@@ -7,20 +7,24 @@
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/welcome.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/EventNoticeController.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/tests/HeaderLinkTest.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/User.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/Controller.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/tests/TestCase.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/search/searchIndex.blade.php</file>
-            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/routes.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/public/css/common.css</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/auth/login.blade.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/Auth/AuthController.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/config/services.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/sumdownload/sumdownloadIndex.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/information/informationIndex.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/common/validation.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/InformationController.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/login.blade.php</file>
-            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/SumDownloadController.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/upload/normalIndex.blade.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/eventNotice/eventNoticeIndex.blade.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/app/Http/Controllers/Auth/SocialController.php</file>
             <file>file:/C:/linuxWork/workspace/laravel/laravel/resources/views/mypage/mypageIndex.blade.php</file>
+            <file>file:/C:/linuxWork/workspace/laravel/laravel/database/migrations/2016_07_21_194531_add_twitter_id_avatar_to_users_table.php</file>
         </group>
     </open-files>
 </project-private>
