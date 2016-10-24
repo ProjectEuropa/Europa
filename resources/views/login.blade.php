@@ -9,11 +9,14 @@
 @section('content')
 <div class="container main">
     <h2>Login</h2>
-    <p>現在TwitterでのLoginのみが有効です。</p>
+    <p>TwitterおよびGoogleアカウントでのログインが有効です。</p>
 
     <div class="col-md-3">
-        <a class="btn btn-block btn-social btn-twitter"  href="auth/twitter">
+        <a class="btn btn-block btn-social btn-twitter"  href="/auth/twitter">
             <span class="fa fa-twitter"></span> Login with Twitter
+        </a>
+        <a class="btn btn-block btn-social btn-google"  href="/auth/google">
+            <span class="fa fa-google-plus"></span> Login with Google
         </a>
     </div>
 </div>

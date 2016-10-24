@@ -76,10 +76,17 @@ Route::post('/eventnotice/register', 'EventNoticeController@register');
 //インフォメーション
 Route::get('/information', 'InformationController@index');
 
-//Twitter認証用
+//ログイン認証用
 Route::get('login', function () {
     return view('login');
 });
-Route::get('auth/twitter', 'Auth\AuthController@redirectToProvider');
-Route::get('auth/twitter/callback', 'Auth\AuthController@handleProviderCallback');
+/*
+Route::get('auth/twitter', 'Auth\AuthController@redirectToTwitter');
+Route::get('auth/twitter/callback', 'Auth\AuthController@handleProviderCallback');*/
+Route::get('/auth/twitter', 'Auth\SocialController@getTwitterAuth');
+Route::get('/auth/twitter/callback', 'Auth\SocialController@getTwitterAuthCallback');
+Route::get('/auth/google', 'Auth\SocialController@getGoogleAuth');
+Route::get('/auth/google/callback', 'Auth\SocialController@getGoogleAuthCallback');
+
+
 Route::get('auth/logout', 'Auth\AuthController@logout');

@@ -12,7 +12,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','twitter_id', 'avatar'
+        'name', 'email', 'password','provider_id', 'avatar', 'provider'
     ];
 
     /**
@@ -26,7 +26,7 @@ class User extends Authenticatable
 
     public function addNew($input)
     {
-        $check = static::where('twitter_id',$input['twitter_id'])->first();
+        $check = static::where('provider_id',$input['provider_id'])->first();
 
         if(is_null($check)){
             return static::create($input);
