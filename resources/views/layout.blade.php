@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Project Europa</title>
+        <meta charset="UTF-8">
 
         <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cerulean/bootstrap.min.css" rel="stylesheet" id="themesid">
         <link rel ="stylesheet" href= "{{ asset('css/common.css') }}">
@@ -61,10 +62,10 @@
                         <!-- right navbar -->
                         <ul class="nav navbar-nav navbar-right">
                             @if (Auth::guest())
-                            {{-- 未ログイン時はSign in表示 --}}
+                            {{-- 未ログイン時はLogin表示 --}}
                             <a class="navbar-brand" href="{!! url('/login') !!}">Login</a>
                             @else
-                            {{-- ログイン中はSign Out マイページ表示--}}
+                            {{-- ログイン中はLogout マイページ表示--}}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     Login: {{ Auth::user()->name }} 
@@ -85,7 +86,7 @@
             </nav>
         </header>
 
-        {{-- 子のビューで指定される、contentセクションを読み込む --}}
+        {{--contentセクション読込--}}
         @yield('content')
 
         <div class="container">
