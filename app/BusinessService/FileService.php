@@ -5,11 +5,14 @@ namespace App\BusinessService;
 use Illuminate\Http\Request;
 use App\CommonUtils\Constants;
 use App\File;
+use Auth;
+use DB;
 
 /*
  * FileService
  * Fileモデルに関わるロジックを記述
  */
+
 class FileService {
 
     /**
@@ -56,13 +59,13 @@ class FileService {
             //Oldの場合は、id昇順（旧登録順）
             $query->orderBy('id', 'asc');
         }
-        
+
         $files = $query->paginate($numPagenation);
-        
+
         return $files;
     }
 
-     /**
+    /**
      * 
      * ユーザファイル検索
      * @param String $userId ユーザID
@@ -70,13 +73,83 @@ class FileService {
      * @return $files ユーザファイルデータ
      */
     public static function searchUserFiles(String $userId, int $fileType) {
-        
+
         $fileQuery = File::query();
-        
+
         $files = $fileQuery->where('upload_user_id', '=', $userId)
-                ->where('data_type', '=', $fileType)
+                        ->where('data_type', '=', $fileType)
                         ->orderBy('id', 'desc')->get();
-        
+
         return $files;
     }
+
+    /**
+     * ファイルデータ登録処理
+     * @param Request リクエスト
+     * @param  bool  true場合チーム falseの場合マッチデータ
+     * @param  bool  true通常アップロード場合チーム falseの場合簡易アップロード     
+     * @return void
+     */
+    public static function registerFileData(Request $request, bool $teamFlg, bool $normalUploadFlg) {
+
+        $dataType = null;
+        $file = null;
+        $uploadOwnerName = null;
+        $fileComment = null;
+        $deletePassword = null;
+
+        // チームFlgがオンならばチームデータを取得、offならばマッチデータ
+        if ($teamFlg) {
+            $dataType = Constants::DB_STR_DATA_TYPE_TEAM;
+            $file = $request->file('teamFile');
+            $uploadOwnerName = $request->input('teamOwnerName'); // アップロードオーナー名（編集可能）
+            $fileComment = $request->input('teamComment'); // コメント
+            $deletePassword = $request->input('teamDeletePassWord'); // 削除パスワード
+        } else {
+            $dataType = Constants::DB_STR_DATA_TYPE_MATCH;
+            $file = $request->file('matchFile');
+            $uploadOwnerName = $request->input('matchOwnerName'); // アップロードオーナー名（編集可能）
+            $fileComment = $request->input('matchComment'); // コメント
+            $deletePassword = $request->input('matchDeletePassWord'); // 削除パスワード
+        }
+
+        $fileData = file_get_contents($file);       // ファイルのバイナリデータ取得
+        $fileName = $file->getClientOriginalName();     // ファイル名
+        $now = date('Y/m/d H:i:s'); // 現在日付
+
+        $uploadUserId = null;
+        $uploadType = null;
+
+        // 通常アップロードであるならばセッションのユーザーIDを登録
+        if ($normalUploadFlg) {
+            $uploadUserId = Auth::user()->id;
+            $uploadType = Constants::DB_UPLOAD_TYPE_NORMAL; //通常アップロード
+        } else {
+            $uploadUserId = 0;
+            $uploadType = Constants::DB_UPLOAD_TYPE_SIMPLE; //簡易アップロード
+        }
+
+        // LOB使用のためPDOを取得し直接SQLを実行する
+        $db = DB::connection('pgsql')->getPdo();
+
+        $stmt = $db->prepare("INSERT INTO files (file_data, upload_type, file_name, upload_owner_name, file_comment, delete_password, data_type, created_at, updated_at, upload_user_id) "
+                . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        $stmt->bindParam(1, $fileData, $db::PARAM_LOB); //ラージオブジェクトとして登録
+        $stmt->bindParam(2, $uploadType, $db::PARAM_STR);
+        $stmt->bindParam(3, $fileName, $db::PARAM_STR);
+        $stmt->bindParam(4, $uploadOwnerName, $db::PARAM_STR);
+        $stmt->bindParam(5, $fileComment, $db::PARAM_STR);
+        $stmt->bindParam(6, $deletePassword, $db::PARAM_STR);
+        $stmt->bindParam(7, $dataType, $db::PARAM_STR);
+        $stmt->bindParam(8, $now, $db::PARAM_STR);
+        $stmt->bindParam(9, $now, $db::PARAM_STR);
+        $stmt->bindParam(10, $uploadUserId, $db::PARAM_INT);
+
+        // 登録実行
+        $stmt->execute();
+        // 切断
+        unset($db);
+    }
+
 }
