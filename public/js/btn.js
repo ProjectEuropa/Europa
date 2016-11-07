@@ -1,18 +1,18 @@
 /* 
-    ボタン制御関連Javascript
+ ボタン制御関連Javascript
  */
- $(function(){
-    $(".btn-delete").click(function(){
-        if (confirm($(this).val() + "を本当に削除しますか？")){
+$(function () {
+    $(".btn-delete").on('click', function () {
+        if (confirm($(this).val() + "を本当に削除しますか？")) {
         } else {
-            //cancel
+            //確認ダイアログキャンセル時はsubmitキャンセル
             return false;
         }
     });
-    $(".btn-edit").click(function(){
-        if (confirm("この内容でユーザ情報を更新しますか？")){
+    $(".btn-edit").on('click', function () {
+        if (confirm("この内容でユーザ情報を更新しますか？")) {
         } else {
-            //cancel
+            //確認ダイアログキャンセル時はsubmitキャンセル
             return false;
         }
     });
