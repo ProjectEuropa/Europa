@@ -5,11 +5,11 @@
 @section('content')
 <div class="container main">
     
-    @if (($type) === 'team')
+    @if (($searchType) === 'team')
     <h2>Team Data</h2>
     <p>チームデータの検索が可能です。ダウンロードアイコンをクリックするとダウンロードが始まります。</p>
     @endif
-    @if (($type) === 'match')
+    @if (($searchType) === 'match')
     <h2>Match Data</h2>
     <p>マッチデータの検索が可能です。ダウンロードアイコンをクリックするとダウンロードが始まります。</p>
     @endif
@@ -18,7 +18,7 @@
     @include('common.flash')
     
     <h5>
-        <form method="get" action="{!! url('/search', [$type]) !!}" class="form-inline" role="form">
+        <form method="get" action="/search/{{$searchType}}" class="form-inline" role="form">
             <div class="form-group">
                 <label for="word">検索ワード:</label>
                 <input type="text" name="keyword" class="form-control" value="{{$keyword}}">
@@ -54,7 +54,7 @@
                 <td class="col-md-2">{{ $file->created_at }}</td>
                 <td class="col-md-3">
                     @if ($file->upload_type == '2')<!---簡易アップロードのみ検索画面で削除可能-->
-                    <form method="post" action="/search/{{$type}}/delete" class="form-horizontal">
+                    <form method="post" action="/search/{{$searchType}}/delete" class="form-horizontal">
                         <div class="form-group">
                             <div class="col-xs-12 form-inline">
                                 <input type="text" name="deletePassword" class="form-control" placeholder="削除パスワード">

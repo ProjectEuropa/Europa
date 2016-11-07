@@ -35,15 +35,15 @@ Route::get('/links', function () {
 });
 
 // 検索一覧（チーム・マッチ共用）
-Route::get('/search/{type}', 'SearchController@index');
+Route::get('/search/{searchType}', 'SearchController@index');
 // ダウンロード（チーム・マッチ共用）
 Route::get('/search/download/{id}', 'SearchController@download');
 // 削除（チーム・マッチ共用）
-Route::post('/search/{type}/delete', 'SearchController@delete');
+Route::post('/search/{searchType}/delete', 'SearchController@delete');
 
 
 // まとめてダウンロード検索一覧（チーム・マッチ共用）
-Route::get('/sumdownload/{type}', 'SumDownloadController@index');
+Route::get('/sumdownload/{searchType}', 'SumDownloadController@index');
 // 削除（チーム・マッチ共用）
 Route::post('/sumdownload/download', 'SumDownloadController@download');
 
@@ -87,6 +87,5 @@ Route::get('/auth/twitter', 'Auth\SocialController@getTwitterAuth');
 Route::get('/auth/twitter/callback', 'Auth\SocialController@getTwitterAuthCallback');
 Route::get('/auth/google', 'Auth\SocialController@getGoogleAuth');
 Route::get('/auth/google/callback', 'Auth\SocialController@getGoogleAuthCallback');
-
 
 Route::get('auth/logout', 'Auth\AuthController@logout');

@@ -5,11 +5,11 @@
 @section('content')
 <div class="container main">
 
-    @if (($type) === 'team')
+    @if (($searchType) === 'team')
     <h2>Sum DL Team</h2>
     <p>チームデータの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れて一括ダウンロードボタンをクリックしてください。</p>
     @endif
-    @if (($type) === 'match')
+    @if (($searchType) === 'match')
     <h2>Sum DL Match</h2>
     <p>マッチデータの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れて一括ダウンロードボタンをクリックしてください。</p>
     @endif
@@ -18,7 +18,7 @@
     @include('common.validation')
 
     <h5>
-        <form method="get" action="{!! url('/sumdownload', [$type]) !!}" class="form-inline" role="form">
+        <form method="get" action="/sumdownload/{{$searchType}}" class="form-inline" role="form">
             <div class="form-group">
                 <label for="word">検索ワード:</label>
                 <input type="text" name="keyword" class="form-control" value="{{$keyword}}">
@@ -63,7 +63,7 @@
             </tbody>
         </table>
         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
-        <input type="hidden" name="type" value="{{$type}}">
+        <input type="hidden" name="searchType" value="{{$searchType}}">
         <button type="submit" class="btn btn-info" value="">一括ダウンロード</button>
     </form>
 

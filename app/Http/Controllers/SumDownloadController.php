@@ -10,20 +10,20 @@ use Zipper;
 use Validator;
 
 /*
- * 　まとめでダウンロード
+ * 　一括でダウンロード画面コントローラ
  */
 
 class SumDownloadController extends Controller {
 
     /**
-     * チーム・マッチデータ検索処理
+     * 一括ダウンロード画面、チーム・マッチデータ検索処理
      * ページング機能を実装
      *
-     * @param  Request  $request
-     * @param type sumdonwload/{type} teamの場合はチーム検索、matchの場合はマッチ検索
+     * @param Request  $request
+     * @param searchType sumdonwload/{searchType} teamの場合はチーム検索、matchの場合はマッチ検索
      * @return view search/team or search/match
      */
-    public function index(Request $request, $type) {
+    public function index(Request $request, $searchType) {
 
         // ソート順指定
         $orderType = $request->input('orderType');
@@ -31,13 +31,13 @@ class SumDownloadController extends Controller {
         $keyword = $request->input('keyword');
 
         //ページング機能:1ページ100レコード
-        $files = FileService::searchFiles($request, $type, Constants::NUM_PAGENATION_HUNDRED);
+        $files = FileService::searchFiles($request, $searchType, Constants::NUM_PAGENATION_HUNDRED);
 
         // 検索ワードと検索結果、検索タイプを送信
         return view('sumdownload.sumdownloadIndex', [
             'files' => $files,
             'keyword' => $keyword,
-            'type' => $type, // team or match
+            'searchType' => $searchType, // team or match
             'orderType' => $orderType
         ]);
     }
@@ -56,10 +56,11 @@ class SumDownloadController extends Controller {
                     'checkFileId' => 'required|max:20',
         ]);
 
-        $type = $request->input('type');
+        // hiddenから検索タイプ取得（validation発生時に使用）
+        $searchType = $request->input('searchType');
 
         if ($validator->fails()) {
-            return redirect('/sumdownload/'.$type)
+            return redirect('/sumdownload/'.$searchType)
                             ->withInput()
                             ->withErrors($validator);
         }

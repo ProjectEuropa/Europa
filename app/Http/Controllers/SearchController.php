@@ -18,10 +18,10 @@ class SearchController extends Controller {
      * ページング機能を実装
      *
      * @param  Request  $request
-     * @param type search/{type} teamの場合はチーム検索、matchの場合はマッチ検索
+     * @param searchType search/{searchType} teamの場合はチーム検索、matchの場合はマッチ検索
      * @return view search/team or search/match
      */
-    public function index(Request $request, $type) {
+    public function index(Request $request, $searchType) {
 
         // ソート順指定
         $orderType = $request->input('orderType');
@@ -29,13 +29,13 @@ class SearchController extends Controller {
         $keyword = $request->input('keyword');
 
         //ページング機能:1ページ10レコード
-        $files = FileService::searchFiles($request, $type, Constants::NUM_PAGENATION_TEN);
+        $files = FileService::searchFiles($request, $searchType, Constants::NUM_PAGENATION_TEN);
 
         // 検索ワードと検索結果、検索タイプを送信
         return view('search.searchIndex', [
             'files' => $files,
             'keyword' => $keyword,
-            'type' => $type, // team or match
+            'searchType' => $searchType, // team or match
             'orderType' => $orderType
         ]);
     }
@@ -71,10 +71,10 @@ class SearchController extends Controller {
      * ファイル削除実行Action
      *
      * @param  Requesty  $request
-     * @param $type search/{type} 'team'または'match'
+     * @param $searchType search/{type} 'team'または'match'
      * @return view search/team or search/match
      */
-    public function delete(Request $request, $type) {
+    public function delete(Request $request, $searchType) {
         $id = $request->input('id');
 
         //DBから削除パスワード取得
@@ -86,18 +86,18 @@ class SearchController extends Controller {
         // 入力パスとDBのパスが一致していない場合、削除処理をせずViewを返却
         if ($dbDeletePassWord != $inputDeletePassWord) {
             \Session::flash('error_message', trans('messages.run_mistake', ['name' => '削除パスワード']));
-            return redirect('search/' . $type);
+            return redirect('search/' . $searchType);
         }
 
         // id, delete_passwordをキーとして削除実行
         File::where('id', '=', $id)->where('delete_password', '=', $inputDeletePassWord)->delete();
 
-        if ($type == Constants::URL_SEARCH_TYPE_TEAM) {
+        if ($searchType == Constants::URL_SEARCH_TYPE_TEAM) {
             \Session::flash('flash_message', trans('messages.delete_complete', ['name' => 'チームデータ']));
         } else {
             \Session::flash('flash_message', trans('messages.delete_complete', ['name' => 'マッチデータ']));
         }
-        return redirect('search/' . $type);
+        return redirect('search/' . $searchType);
     }
 
 }
