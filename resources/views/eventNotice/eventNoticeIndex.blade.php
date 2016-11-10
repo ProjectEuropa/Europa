@@ -66,7 +66,7 @@
                                 '2' => 'その他']
                                 , '', ['class' => 'form-control'])}}
                             </div>
-                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                            {{ csrf_field() }}
                             <button type="submit" class="btn btn-block btn-primary">イベント情報登録</button>
                         </fieldset>
                     </form>

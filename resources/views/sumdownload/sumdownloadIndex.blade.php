@@ -1,7 +1,7 @@
 {{-- 親ビューの指定 --}}
 @extends('layout')
 
-{{-- ユーザーレコード一覧表示 --}}
+{{-- 一括ダウンロード表示 --}}
 @section('content')
 <div class="container main">
 
@@ -62,7 +62,7 @@
                 @endforelse
             </tbody>
         </table>
-        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+        {{ csrf_field() }}
         <input type="hidden" name="searchType" value="{{$searchType}}">
         <button type="submit" class="btn btn-info" value="">一括ダウンロード</button>
     </form>

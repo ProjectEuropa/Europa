@@ -28,7 +28,7 @@
                         <input type="text" name="ownerName" value="{{ Auth::user()->name }}">
                         <button type="submit" class="btn btn-primary btn-edit">編集</button>
                     </div>
-                    <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                    {{ csrf_field() }}
                 </form>
             </div>
         </div>
@@ -65,7 +65,7 @@
                                     <button type="submit" class="btn btn-info btn-delete" value="{{ $team->file_name}}">削除</button>
                                 </div>
                             </div>
-                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                            {{ csrf_field() }}
                         </form>
                     </td>
                 </tr>
@@ -112,7 +112,7 @@
                                     <!-- 削除ボタンクリックイベントを92行目に定義-->
                                 </div>
                             </div>
-                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                            {{ csrf_field() }}
                         </form>
                     </td>
                 </tr>

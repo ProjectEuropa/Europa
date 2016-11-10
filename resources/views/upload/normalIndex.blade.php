@@ -35,7 +35,7 @@
                                 <input type="file" name="teamFile" id="teamFile" >
                                 <p class="help-block">CHEチームデータが選択可能です</p>
                             </div>
-                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                            {{ csrf_field() }}
                             <button type="submit" class="btn btn-block btn-primary">チームデータアップロード</button>
                         </fieldset>
                     </form>
@@ -66,7 +66,7 @@
                                 <input type="file" name="matchFile" id="matchFile" >
                                 <p class="help-block">CHEマッチデータが選択可能です</p>
                             </div>
-                            <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                            {{ csrf_field() }}
                             <button type="submit" class="btn btn-block btn-info">マッチデータアップロード</button>
                         </fieldset>
                     </form>

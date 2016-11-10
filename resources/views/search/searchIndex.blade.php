@@ -63,7 +63,7 @@
                                 <!-- 削除ボタンクリックイベントを92行目に定義-->
                             </div>
                         </div>
-                        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+                        {{ csrf_field() }}
                     </form>
                     @endif
                 </td>
