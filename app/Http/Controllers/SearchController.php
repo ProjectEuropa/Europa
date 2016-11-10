@@ -84,7 +84,7 @@ class SearchController extends Controller {
         $inputDeletePassWord = $request->input('deletePassword');
 
         // 入力パスとDBのパスが一致していない場合、削除処理をせずViewを返却
-        if ($dbDeletePassWord != $inputDeletePassWord) {
+        if ($dbDeletePassWord !== $inputDeletePassWord) {
             \Session::flash('error_message', trans('messages.run_mistake', ['name' => '削除パスワード']));
             return redirect('search/' . $searchType);
         }
