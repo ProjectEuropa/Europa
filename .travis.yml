@@ -1,0 +1,17 @@
+language: php
+
+php:
+    - 7.0
+
+services:
+    - postgresql
+
+before_script:
+    - cp .env.travis .env
+    - psql -c 'create database travis_ci_test;' -U postgres
+    - composer self-update
+    - composer install --no-interaction
+    - php artisan key:generate
+
+script:
+    - phpunit
