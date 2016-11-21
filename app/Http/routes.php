@@ -77,12 +77,11 @@ Route::post('/eventnotice/register', 'EventNoticeController@register');
 Route::get('/information', 'InformationController@index');
 
 //ログイン認証用
-Route::get('login', function () {
-    return view('login');
+Route::group(['middleware' => 'guest'], function () {
+    Route::get('/login', function ()    {
+        return view('login');
+    });
 });
-/*
-Route::get('auth/twitter', 'Auth\AuthController@redirectToTwitter');
-Route::get('auth/twitter/callback', 'Auth\AuthController@handleProviderCallback');*/
 Route::get('/auth/twitter', 'Auth\SocialController@getTwitterAuth');
 Route::get('/auth/twitter/callback', 'Auth\SocialController@getTwitterAuthCallback');
 Route::get('/auth/google', 'Auth\SocialController@getGoogleAuth');

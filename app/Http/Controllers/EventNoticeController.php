@@ -7,7 +7,17 @@ use App\BusinessService\EventService;
 use Validator;
 use Auth;
 
+/*
+ * 　イベント告知画面コントローラ
+ */
 class EventNoticeController extends Controller {
+
+    /**
+     * イベント告知は認証必須
+     */
+    public function __construct() {
+        $this->middleware('auth');
+    }
 
     /**
      * 初期表示処理。
