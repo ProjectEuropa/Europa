@@ -21,7 +21,7 @@ class SumDownloadController extends Controller {
      *
      * @param Request  $request
      * @param searchType sumdonwload/{searchType} teamの場合はチーム検索、matchの場合はマッチ検索
-     * @return view search/team or search/match
+     * @return view sumdownload/team or sumdownload/match
      */
     public function index(Request $request, $searchType) {
 
@@ -30,8 +30,8 @@ class SumDownloadController extends Controller {
         // 検索ワード取得
         $keyword = $request->input('keyword');
 
-        //ページング機能:1ページ100レコード
-        $files = FileService::searchFiles($request, $searchType, Constants::NUM_PAGENATION_HUNDRED);
+        //ページング機能:1ページ50レコード
+        $files = FileService::searchFiles($request, $searchType, Constants::NUM_PAGENATION_FIFTY);
 
         // 検索ワードと検索結果、検索タイプを送信
         return view('sumdownload.sumdownloadIndex', [
