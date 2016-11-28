@@ -55,10 +55,25 @@ class EventService {
      */
     public static function searchAllEvents() {
 
-        $events = DB::table('events')
-                ->select('event_name', 'event_details', 'event_reference_url', 'event_type',
-                        DB::raw("to_char(event_closing_day, 'YYYY/MM/DD HH24:MI') as event_closing_day, "
+        $events = Event::select('id', 'event_name', 'event_details', 'event_reference_url', 'event_type', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD HH24:MI') as event_closing_day, "
                                 . "to_char(event_displaying_day, 'YYYY/MM/DD HH24:MI') as event_displaying_day "))
+                ->get();
+
+        return $events;
+    }
+
+    /**
+     * 
+     * ユーザイベント検索
+     * 特定ユーザが登録したイベントを検索する
+     * @param String $registerUserId 登録ユーザID
+     * @return Event
+     */
+    public static function searchUserEvents(String $registerUserId) {
+        
+        $events = Event::select('id', 'event_name', 'event_details', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD HH24:MI') as event_closing_day, "
+                                . "to_char(event_displaying_day, 'YYYY/MM/DD HH24:MI') as event_displaying_day "))
+                ->where('register_user_id', '=', $registerUserId)
                 ->get();
 
         return $events;
@@ -70,12 +85,29 @@ class EventService {
      * @return int 削除件数
      */
     public static function deletePastDisplayingEvents() {
-        
+
         // 表示日時が現在日付以前のイベントを削除
-        $now = date('Y/m/d H:i:s'); 
-        $count = DB::table('events')->where('event_displaying_day', '<', $now)->delete();
-        
+        $now = date('Y/m/d H:i:s');
+        $count = Event::where('event_displaying_day', '<', $now)->delete();
+
         return $count;
+    }
+
+    /**
+     * 
+     * 特定ユーザのイベント削除
+     * 
+     * @param String $eventId イベントID
+     * @param String $registerUserId 登録ユーザID
+     * @return int $deleteCount 削除件数
+     */
+    public static function deleteUserEvent(String $eventId, String $registerUserId) {
+
+        $deleteCount = Event::where('id', '=', $eventId)
+                ->where('register_user_id', '=', $registerUserId)
+                ->delete();
+
+        return $deleteCount;
     }
 
 }

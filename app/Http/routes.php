@@ -61,8 +61,10 @@ Route::post('/upload/matchupload', 'UploadController@normalMatchUpload');
 
 // マイページ
 Route::get('/mypage', 'MypageController@index');
-//マイページ・データ削除
-Route::post('/mypage/delete', 'MypageController@delete');
+//マイページ・ファイル削除
+Route::post('/mypage/file/delete', 'MypageController@fileDelete');
+//マイページ・イベント削除
+Route::post('/mypage/event/delete', 'MypageController@eventDelete');
 //マイページ・ダウンロード
 Route::get('/mypage/download/{id}', 'MypageController@download');
 //マイページ・ダウンロード

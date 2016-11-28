@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\File;
+use App\BusinessService\EventService;
 use App\User;
 use Validator;
 use Auth;
@@ -29,42 +29,18 @@ class MypageController extends Controller {
      * @return view mypage.mypageInde
      */
     public function index() {
-        
-        //ユーザの持つチームデータマッチデータ検索
+
+        //ユーザの持つチームデータマッチデータ登録イベント検索
         $teams = FileService::searchUserFiles(Auth::user()->id, Constants::DB_STR_DATA_TYPE_TEAM);
         $matchs = FileService::searchUserFiles(Auth::user()->id, Constants::DB_STR_DATA_TYPE_MATCH);
+        $events = EventService::searchUserEvents(Auth::user()->id);
 
         //チームデータマッチデータの検索結果を送信
         return view('mypage.mypageIndex', [
             'teams' => $teams,
-            'matchs' => $matchs
+            'matchs' => $matchs,
+            'events' => $events
         ]);
-    }
-
-    /** TODO 不要
-     * ファイルダウンロード実行Action
-     * download/{id}のURLのidから指定したidのファイルをDLする
-     *
-     * @param  id  URL：指定したファイルのid
-     * @return response DBに登録済みのバイナリデータ
-     */
-    public function download($id) {
-        $file = File::where('id', '=', $id)->first();
-
-        // タイトル取得
-        $title = $file->file_name;
-        // CHEバイナリデータ取得
-        $fileData = $file->file_data;
-
-        // 取得したバイナリデータを書き込み
-        $cheData = '.CHE';
-        file_put_contents($cheData, $fileData);
-
-        $headers = array(
-            'Content-Type: application/CHE',
-        );
-
-        return response()->download($cheData, $title, $headers);
     }
 
     /**
@@ -73,20 +49,48 @@ class MypageController extends Controller {
      * @param  Requesty  $request
      * @return view mypage
      */
-    public function delete(Request $request) {
+    public function fileDelete(Request $request) {
         $id = $request->input('id');
 
-        // id, delete_passwordをキーとして削除実行
-        File::where('id', '=', $id)->delete();
+        // id, アップロードユーザIDをキーとして削除実行
+        $deleteCount = FileService::deleteUserFile($id, Auth::user()->id);
 
-        \Session::flash('flash_message', trans('messages.delete_complete', ['name' => 'データ']));
+        if ($deleteCount === 0) {
+            // 削除カウントが0の場合削除失敗
+            \Session::flash('error_message', trans('messages.delete_fail', ['name' => 'データ']));
+        } else {
+            \Session::flash('flash_message', trans('messages.delete_complete', ['name' => 'データ']));
+        }
+
+        return redirect('mypage');
+    }
+
+    /**
+     * イベント削除実行Action
+     *
+     * @param  Requesty  $request
+     * @return view mypage
+     */
+    public function eventDelete(Request $request) {
+        $id = $request->input('id');
+
+        // id, 登録ユーザIDをキーとして削除実行
+        $deleteCount = EventService::deleteUserEvent($id, Auth::user()->id);
+
+        if ($deleteCount === 0) {
+            // 削除カウントが0の場合削除失敗
+            \Session::flash('error_message', trans('messages.delete_fail', ['name' => 'イベント']));
+        } else {
+            \Session::flash('flash_message', trans('messages.delete_complete', ['name' => 'イベント']));
+        }
+
         return redirect('mypage');
     }
 
     /**
      * ユーザ情報編集Action
      * ユーザ情報（現状オーナー名のみ）を編集し、DBのusersテーブルをUpdateする
-     *
+     * @param Request
      * @return view mypage
      */
     public function editUserInfo(Request $request) {
