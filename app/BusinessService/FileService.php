@@ -152,4 +152,19 @@ class FileService {
         unset($db);
     }
 
+    /**
+     * 特定ユーザのファイル削除
+     * @param String fileId 削除対象ファイルID
+     * @param String  $upLoadUserId アップロードユーザID   
+     * @return int $deleteCount 削除実行レコード数
+     */
+    public static function deleteUserFile(String $fileId, String $upLoadUserId) {
+        
+        //指定したファイルとアップロードユーザIDを対象として削除
+        $deleteCount = File::where('id', '=', $fileId)
+                ->where('upload_user_id', '=', $upLoadUserId)
+                ->delete();
+        
+        return $deleteCount;
+    }
 }
