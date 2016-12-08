@@ -4,7 +4,7 @@
 {{-- ユーザーレコード一覧表示 --}}
 @section('content')
 <div class="container main">
-    
+
     @if (($searchType) === 'team')
     <h2>Team Data</h2>
     <p>チームデータの検索が可能です。ダウンロードアイコンをクリックするとダウンロードが始まります。</p>
@@ -13,10 +13,10 @@
     <h2>Match Data</h2>
     <p>マッチデータの検索が可能です。ダウンロードアイコンをクリックするとダウンロードが始まります。</p>
     @endif
-    
+
     {{-- フラッシュメッセージの表示 --}}
     @include('common.flash')
-    
+
     <h5>
         <form method="get" action="/search/{{$searchType}}" class="form-inline" role="form">
             <div class="form-group">
@@ -49,7 +49,22 @@
                     <a href="/search/download/{{$file->id}}"><span class="glyphicon glyphicon-cloud-download"></span></a>
                 </td>
                 <td class="col-md-1">{{ $file->upload_owner_name }}</td>
-                <td class="col-md-3">{!! nl2br(e($file->file_comment)) !!}</td>
+                <td class="col-md-3">              
+                    {!! nl2br(e($file->file_comment)) !!}
+                    @if (!(empty($file->search_tag1)))
+                    <br>
+                    <span class="glyphicon glyphicon-search">{{ $file->search_tag1 }}</span>
+                    @endif
+                    @if (!(empty($file->search_tag2)))
+                    <span class="glyphicon glyphicon-search">{{ $file->search_tag2 }}</span>
+                    @endif
+                    @if (!(empty($file->search_tag3)))
+                    <span class="glyphicon glyphicon-search">{{ $file->search_tag3 }}</span>
+                    @endif
+                    @if (!(empty($file->search_tag4)))
+                    <span class="glyphicon glyphicon-search">{{ $file->search_tag4 }}</span>
+                    @endif
+                </td>
                 <td class="col-md-1">{{ $file->file_name }}</td>
                 <td class="col-md-2">{{ $file->created_at }}</td>
                 <td class="col-md-3">

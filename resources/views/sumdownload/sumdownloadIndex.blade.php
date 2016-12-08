@@ -49,7 +49,22 @@
                         <input type="checkbox" name="checkFileId[]" class="childCheck" value="{{$file->id}}">
                     </td>
                     <td class="col-md-1">{{ $file->upload_owner_name }}</td>
-                    <td class="col-md-6">{!! nl2br(e($file->file_comment)) !!}</td>
+                    <td class="col-md-6">
+                        {!! nl2br(e($file->file_comment)) !!}
+                        @if (!(empty($file->search_tag1)))
+                        <br>
+                        <span class="glyphicon glyphicon-search">{{ $file->search_tag1 }}</span>
+                        @endif
+                        @if (!(empty($file->search_tag2)))
+                        <span class="glyphicon glyphicon-search">{{ $file->search_tag2 }}</span>
+                        @endif
+                        @if (!(empty($file->search_tag3)))
+                        <span class="glyphicon glyphicon-search">{{ $file->search_tag3 }}</span>
+                        @endif
+                        @if (!(empty($file->search_tag4)))
+                        <span class="glyphicon glyphicon-search">{{ $file->search_tag4 }}</span>
+                        @endif
+                    </td>
                     <td class="col-md-2">{{ $file->file_name }}</td>
                     <td class="col-md-2">{{ $file->created_at }}</td>
                 </tr>

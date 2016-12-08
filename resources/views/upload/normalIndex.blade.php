@@ -1,6 +1,11 @@
 {{-- 親ビューの指定 --}}
 @extends('layout')
 
+{{-- magicsuggestcss読み込み --}}
+@section('css')
+<link rel ="stylesheet" href= "{{ asset('css/magicsuggest-min.css') }}">
+@endsection
+
 {{-- アップロードフォーム --}}
 @section('content')
 <div class="container main">
@@ -30,6 +35,13 @@
                                 <label for="teamComment">コメント:</label>
                                 <textarea name="teamComment" class="form-control" rows="5" id="teamComment">{!! old('teamComment') !!}</textarea>
                             </div>
+                             <div class="form-group">
+                                <label for="teamSearchTags">検索タグ</label>
+                                {{Form::select('teamSearchTags', [
+                                '大会ゲスト許可' => '大会ゲスト許可',
+                                'フリーOKE' => 'フリーOKE']
+                                , "{!! old('teamSearchTags') !!}", ['id' => 'teamSearchTags', 'class' => 'form-control'])}}
+                            </div>                           
                             <div class="form-group">
                                 <label for="exampleInputFile">チームファイル</label>
                                 <input type="file" name="teamFile" id="teamFile" >
@@ -62,6 +74,15 @@
                                 <textarea name="matchComment" class="form-control" rows="5" id="matchComment">{!! old('matchComment') !!}</textarea>
                             </div>
                             <div class="form-group">
+                                <label for="matchSearchTags">検索タグ</label>
+                                {{Form::select('matchSearchTags', [
+                                'ハーフリーグ' => 'ハーフリーグ',
+                                'フルリーグ' => 'フルリーグ',
+                                'トーナメント' => 'トーナメント',
+                                '上級演習所' => '上級演習所']
+                                , "{!! old('matchSearchTags') !!}", ['id' => 'matchSearchTags', 'class' => 'form-control'])}}
+                            </div>
+                            <div class="form-group">
                                 <label for="exampleInputFile">マッチファイル</label>
                                 <input type="file" name="matchFile" id="matchFile" >
                                 <p class="help-block">CHEマッチデータが選択可能です</p>
@@ -75,4 +96,10 @@
         </div>
     </div>
 </div>
+@endsection
+
+{{-- magicsuggest.js関連ファイル読み込み --}}
+@section('js')
+<script type="text/javascript" src="{{ asset('js/magicsuggest-min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/magicsuggest-conf.js') }}"></script>
 @endsection
