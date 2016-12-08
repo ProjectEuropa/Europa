@@ -42,12 +42,16 @@ class FileService {
         // 検索ワード取得
         $keyword = $request->input('keyword');
 
-        //キーワード(検索ワード)存在時のオーナー名・ファイル名・ファイルコメント部分一致検索
+        //キーワード(検索ワード)存在時のオーナー名・ファイル名・ファイルコメント・検索タグ部分一致検索
         if (!empty($keyword)) {
             $query->where(function($query) use ($keyword) {
                 $query->orwhere('upload_owner_name', 'like', '%' . $keyword . '%')
                         ->orWhere('file_name', 'like', '%' . $keyword . '%')
-                        ->orWhere('file_comment', 'like', '%' . $keyword . '%');
+                        ->orWhere('file_comment', 'like', '%' . $keyword . '%')
+                        ->orWhere('search_tag1', 'like', '%' . $keyword . '%')
+                        ->orWhere('search_tag2', 'like', '%' . $keyword . '%')
+                        ->orWhere('search_tag3', 'like', '%' . $keyword . '%')
+                        ->orWhere('search_tag4', 'like', '%' . $keyword . '%');
             });
         }
         // ソート順指定
@@ -97,6 +101,7 @@ class FileService {
         $uploadOwnerName = null;
         $fileComment = null;
         $deletePassword = null;
+        $searchTags = null;
 
         // チームFlgがオンならばチームデータを取得、offならばマッチデータ
         if ($teamFlg) {
@@ -105,12 +110,14 @@ class FileService {
             $uploadOwnerName = $request->input('teamOwnerName'); // アップロードオーナー名（編集可能）
             $fileComment = $request->input('teamComment'); // コメント
             $deletePassword = $request->input('teamDeletePassWord'); // 削除パスワード
+            $searchTags = $request->input('teamSearchTags'); // 検索タグ
         } else {
             $dataType = Constants::DB_STR_DATA_TYPE_MATCH;
             $file = $request->file('matchFile');
             $uploadOwnerName = $request->input('matchOwnerName'); // アップロードオーナー名（編集可能）
             $fileComment = $request->input('matchComment'); // コメント
             $deletePassword = $request->input('matchDeletePassWord'); // 削除パスワード
+            $searchTags = $request->input('matchSearchTags'); // 検索タグ
         }
 
         $fileData = file_get_contents($file);       // ファイルのバイナリデータ取得
@@ -129,11 +136,29 @@ class FileService {
             $uploadType = Constants::DB_UPLOAD_TYPE_SIMPLE; //簡易アップロード
         }
 
+        //検索タグ1,2,3,4をつけるロジックだが、動的に変数名を付ける方法があればかなり簡略化できると思う
+        $searchTag1 = null;
+        $searchTag2 = null;
+        $searchTag3 = null;
+        $searchTag4 = null;
+
+        switch (count($searchTags)) {
+            case 4:
+                $searchTag4 = $searchTags[3];
+            case 3:
+                $searchTag3 = $searchTags[2];
+            case 2:
+                $searchTag2 = $searchTags[1];
+            case 1:
+                $searchTag1 = $searchTags[0];
+                break;
+        }
+
         // LOB使用のためPDOを取得し直接SQLを実行する
         $db = DB::connection('pgsql')->getPdo();
 
-        $stmt = $db->prepare("INSERT INTO files (file_data, upload_type, file_name, upload_owner_name, file_comment, delete_password, data_type, created_at, updated_at, upload_user_id) "
-                . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO files (file_data, upload_type, file_name, upload_owner_name, file_comment, delete_password, data_type, created_at, updated_at, upload_user_id, search_tag1, search_tag2, search_tag3, search_tag4) "
+                . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         $stmt->bindParam(1, $fileData, $db::PARAM_LOB); //ラージオブジェクトとして登録
         $stmt->bindParam(2, $uploadType, $db::PARAM_STR);
@@ -145,6 +170,10 @@ class FileService {
         $stmt->bindParam(8, $now, $db::PARAM_STR);
         $stmt->bindParam(9, $now, $db::PARAM_STR);
         $stmt->bindParam(10, $uploadUserId, $db::PARAM_INT);
+        $stmt->bindParam(11, $searchTag1, $db::PARAM_STR);
+        $stmt->bindParam(12, $searchTag2, $db::PARAM_STR);
+        $stmt->bindParam(13, $searchTag3, $db::PARAM_STR);
+        $stmt->bindParam(14, $searchTag4, $db::PARAM_STR);
 
         // 登録実行
         $stmt->execute();
@@ -159,12 +188,13 @@ class FileService {
      * @return int $deleteCount 削除実行レコード数
      */
     public static function deleteUserFile(String $fileId, String $upLoadUserId) {
-        
+
         //指定したファイルとアップロードユーザIDを対象として削除
         $deleteCount = File::where('id', '=', $fileId)
                 ->where('upload_user_id', '=', $upLoadUserId)
                 ->delete();
-        
+
         return $deleteCount;
     }
+
 }
