@@ -86,6 +86,12 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+    	'teamSearchTags.*' => [
+    		'max' => 'チームデータ検索タグは1つにつき20文字以下にしてください。',
+    	],
+    	'matchSearchTags.*' => [
+    		'max' => 'マッチデータ検索タグは1つにつき20文字以下にしてください。',
+   		],
     ],
     /*
     |--------------------------------------------------------------------------
@@ -112,7 +118,7 @@ return [
         'eventClosingTime' => 'イベント受付期間締切時刻',
         'eventDisplayingDate' => 'イベント表示最終日',
         'eventDisplayingTime' => 'イベント表示最終時刻',
-        'checkFileId' => 'チェックボックスのチェック',        
-        
+        'checkFileId' => 'チェックボックスのチェック',
+
     ],
 ];

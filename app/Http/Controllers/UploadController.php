@@ -39,7 +39,8 @@ class UploadController extends Controller {
                     'teamOwnerName' => 'required|max:12',
                     'teamComment' => 'required|max:100',
                     'teamDeletePassWord' => 'required|max:12',
-                    'teamFile' => 'required|no_che_file|max:24'
+                    'teamFile' => 'required|no_che_file|max:24',
+        			'teamSearchTags.*' => 'max:20'
         ]);
 
         if ($validator->fails()) {
@@ -71,7 +72,8 @@ class UploadController extends Controller {
         $validator = Validator::make($request->all(), [
                     'teamOwnerName' => 'required|max:12',
                     'teamComment' => 'required|max:100',
-                    'teamFile' => 'required|no_che_file|max:24'
+                    'teamFile' => 'required|no_che_file|max:24',
+        			'teamSearchTags.*' => 'max:20'
         ]);
 
         if ($validator->fails()) {
@@ -106,6 +108,7 @@ class UploadController extends Controller {
                     'matchComment' => 'required|max:100',
                     'matchDeletePassWord' => 'required|max:12',
                     'matchFile' => 'required|no_che_file|max:260',
+        			'matchSearchTags.*' => 'max:20'
         ]);
 
         if ($validator->fails()) {
@@ -113,7 +116,7 @@ class UploadController extends Controller {
                             ->withInput()
                             ->withErrors($validator);
         }
-        
+
         // ファイルデータ登録処理
         FileService::registerFileData($request, Constants::IS_TEAM_FLG_FALSE, Constants::IS_NORMAL_UPLOAD_FLG_FALSE);
 
@@ -121,7 +124,7 @@ class UploadController extends Controller {
 
         return redirect('/simpleupload');
     }
-    
+
      /**
      * マッチデータアップロード操作実行Action
      *
@@ -139,6 +142,7 @@ class UploadController extends Controller {
                     'matchOwnerName' => 'required|max:12',
                     'matchComment' => 'required|max:100',
                     'matchFile' => 'required|no_che_file|max:260',
+        			'matchSearchTags.*' => 'max:20'
         ]);
 
         if ($validator->fails()) {
@@ -146,7 +150,7 @@ class UploadController extends Controller {
                             ->withInput()
                             ->withErrors($validator);
         }
-        
+
         // ファイルデータ登録処理
         FileService::registerFileData($request, Constants::IS_TEAM_FLG_FALSE, Constants::IS_NORMAL_UPLOAD_FLG_TRUE);
 
