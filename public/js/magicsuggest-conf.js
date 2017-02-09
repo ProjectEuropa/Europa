@@ -2,7 +2,8 @@
  */
 $(function () {
     $('#teamSearchTags, #matchSearchTags').magicSuggest({
-        maxSelection: 4
+    	placeholder: '選択 or 入力',
+    	maxSelection: 4
     });
 });
 
