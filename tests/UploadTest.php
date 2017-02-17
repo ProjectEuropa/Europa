@@ -45,39 +45,39 @@ class UploadTest extends TestCase {
      *
      * @return void
      */
-    public function testSimpleUploadTeam() {
-        $this->visit('/simpleupload')
-                ->type('テストユーザ', 'teamOwnerName')
-                ->type('簡易アップロードチームテスト', 'teamComment')
-                ->type('test', 'teamDeletePassWord')
-                ->attach(public_path('testfiles/HROHM6.CHE'), 'teamFile')
-                ->press('チームデータアップロード')
-                ->seePageIs('/simpleupload')
-                ->see('チームデータのアップロードが完了しました。')
-                ->visit('/search/team')
-                ->see('テストユーザ')
-                ->see('簡易アップロードチームテスト')
-                ->see('HROHM6.CHE');
-    }
+//     public function testSimpleUploadTeam() {
+//         $this->visit('/simpleupload')
+//                 ->type('テストユーザ', 'teamOwnerName')
+//                 ->type('簡易アップロードチームテスト', 'teamComment')
+//                 ->type('test', 'teamDeletePassWord')
+//                 ->attach(public_path('testfiles/HROHM6.CHE'), 'teamFile')
+//                 ->press('チームデータアップロード')
+//                 ->seePageIs('/simpleupload')
+//                 ->see('チームデータのアップロードが完了しました。')
+//                 ->visit('/search/team')
+//                 ->see('テストユーザ')
+//                 ->see('簡易アップロードチームテスト')
+//                 ->see('HROHM6.CHE');
+//     }
 
     /**
      * 簡易アップロードマッチtest.
      *
      * @return void
      */
-    public function testSimpleUploadMatch() {
-        $this->visit('/simpleupload')
-                ->type('テストユーザ', 'matchOwnerName')
-                ->type('簡易アップロードマッチテスト', 'matchComment')
-                ->type('test', 'matchDeletePassWord')
-                ->attach(public_path('testfiles/4MSH.CHE'), 'matchFile')
-                ->press('マッチデータアップロード')
-                ->seePageIs('/simpleupload')
-                ->see('マッチデータのアップロードが完了しました。')
-                ->visit('/search/match')
-                ->see('テストユーザ')
-                ->see('簡易アップロードマッチテスト')
-                ->see('4MSH.CHE');
-    }
+//     public function testSimpleUploadMatch() {
+//         $this->visit('/simpleupload')
+//                 ->type('テストユーザ', 'matchOwnerName')
+//                 ->type('簡易アップロードマッチテスト', 'matchComment')
+//                 ->type('test', 'matchDeletePassWord')
+//                 ->attach(public_path('testfiles/4MSH.CHE'), 'matchFile')
+//                 ->press('マッチデータアップロード')
+//                 ->seePageIs('/simpleupload')
+//                 ->see('マッチデータのアップロードが完了しました。')
+//                 ->visit('/search/match')
+//                 ->see('テストユーザ')
+//                 ->see('簡易アップロードマッチテスト')
+//                 ->see('4MSH.CHE');
+//     }
 
 }

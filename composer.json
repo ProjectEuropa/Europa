@@ -14,7 +14,8 @@
         "doctrine/dbal": "^2.5",
         "illuminate/html": "5.*",
         "barryvdh/laravel-debugbar": "^2.2",
-        "chumper/zipper": "^0.6.1"
+        "chumper/zipper": "^0.6.1",
+        "maknz/slack": "^1.7"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
