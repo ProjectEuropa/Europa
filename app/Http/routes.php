@@ -89,4 +89,9 @@ Route::get('/auth/twitter/callback', 'Auth\SocialController@getTwitterAuthCallba
 Route::get('/auth/google', 'Auth\SocialController@getGoogleAuth');
 Route::get('/auth/google/callback', 'Auth\SocialController@getGoogleAuthCallback');
 
-Route::get('auth/logout', 'Auth\AuthController@logout');
+Route::get('/auth/logout', 'Auth\AuthController@logout');
+
+// 問い合わせ
+Route::get('/inquiry', 'InquiryController@index');
+// 問い合わせ
+Route::post('/inquiry/send', 'InquiryController@send');

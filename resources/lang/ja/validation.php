@@ -119,6 +119,9 @@ return [
         'eventDisplayingDate' => 'イベント表示最終日',
         'eventDisplayingTime' => 'イベント表示最終時刻',
         'checkFileId' => 'チェックボックスのチェック',
+    	'name' => '名前',
+    	'email' => 'メールアドレス',
+    	'inquiryComment' => '問い合わせ内容',
 
     ],
 ];

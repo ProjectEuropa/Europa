@@ -57,6 +57,7 @@
                             @endif
                             <li><a class="navbar-brand" href="{!! url('/help') !!}">Help</a></li>
                             <li><a class="navbar-brand" href="{!! url('/links') !!}">Links</a></li>
+                            <li><a class="navbar-brand" href="{!! url('/inquiry') !!}">Inquiry</a></li>
                         </ul>
 
                         <!-- right navbar -->
@@ -68,7 +69,7 @@
                             {{-- ログイン中はLogout マイページ表示--}}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                    Login: {{ Auth::user()->name }} 
+                                    Login: {{ Auth::user()->name }}
                                     <img src="{{ Auth::user()->avatar }}" height="20" width="20"/>
                                     <span class="caret"></span>
                                 </a>

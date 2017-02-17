@@ -147,17 +147,17 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        
+
         /*
          * Laravel Helper Service Providers...
          */
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-        
+
         /*
          * laravel-query-param
          */
         Ooxif\LaravelQueryParam\QueryParamServiceProvider::class,
-        
+
         /*
          * Html・Formタグ使用
          */
@@ -170,7 +170,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        
+
         /*
          * Laravel Socialite:Twitter認証に使用
          */
@@ -180,11 +180,16 @@ return [
          * Laravel デバッガー
          */
         Barryvdh\Debugbar\ServiceProvider::class,
-        
+
         /*
          * Zipper
          */
         Chumper\Zipper\ZipperServiceProvider::class,
+
+    	/*
+    	 * Slack
+    	 */
+    	Maknz\Slack\SlackServiceProvider::class,
     ],
 
     /*
@@ -230,15 +235,17 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        
+
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
 
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-        
+
         'Debugbar'  => Barryvdh\Debugbar\Facade::class,
-        
+
         'Zipper' => Chumper\Zipper\Zipper::class,
+
+    	'Slack' => Maknz\Slack\Facades\Slack::class,
 
     ],
 ];
