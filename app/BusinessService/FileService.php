@@ -16,12 +16,12 @@ use DB;
 class FileService {
 
     /**
-     * 
+     *
      * ファイル検索
      * リクエストに送られたキーワード・ソート順、
      * URLの検索タイプ（team または match）をもとにファイルを検索し、
      * ページネーション済のファイルデータを返却する
-     * 
+     *
      * @param Request $request リクエスト
      * @param String $searchType 検索タイプ(team or match)
      * @param int $numPagenation ページネーション数
@@ -44,15 +44,23 @@ class FileService {
 
         //キーワード(検索ワード)存在時のオーナー名・ファイル名・ファイルコメント・検索タグ部分一致検索
         if (!empty($keyword)) {
-            $query->where(function($query) use ($keyword) {
-                $query->orwhere('upload_owner_name', 'like', '%' . $keyword . '%')
-                        ->orWhere('file_name', 'like', '%' . $keyword . '%')
-                        ->orWhere('file_comment', 'like', '%' . $keyword . '%')
-                        ->orWhere('search_tag1', 'like', '%' . $keyword . '%')
-                        ->orWhere('search_tag2', 'like', '%' . $keyword . '%')
-                        ->orWhere('search_tag3', 'like', '%' . $keyword . '%')
-                        ->orWhere('search_tag4', 'like', '%' . $keyword . '%');
-            });
+			// 全角スペースを半角に置換
+        	$replacedEmSpacetoHalfSpaceKeyword = trim(str_replace('　', ' ', $keyword));
+        	//連続する半角スペースを1つの半角スペース
+        	$replacedEmSpacetoHalfSpaceKeyword = preg_replace('/\s+/', ' ', $replacedEmSpacetoHalfSpaceKeyword);
+        	$keywordArray = explode(' ', $replacedEmSpacetoHalfSpaceKeyword);
+
+			$query->where(function($query) use ($keywordArray) {
+				foreach ($keywordArray as $key) {
+					$query->orwhere('upload_owner_name', 'like', '%' . $key . '%')
+					->orWhere('file_name', 'like', '%' . $key . '%')
+					->orWhere('file_comment', 'like', '%' . $key . '%')
+					->orWhere('search_tag1', 'like', '%' . $key . '%')
+					->orWhere('search_tag2', 'like', '%' . $key . '%')
+					->orWhere('search_tag3', 'like', '%' . $key . '%')
+					->orWhere('search_tag4', 'like', '%' . $key . '%');
+				}
+			});
         }
         // ソート順指定
         $orderType = $request->input('orderType');
@@ -70,7 +78,7 @@ class FileService {
     }
 
     /**
-     * 
+     *
      * ユーザファイル検索
      * @param String $userId ユーザID
      * @param int $fileType 検索タイプ(team:1 or match:2)
@@ -91,7 +99,7 @@ class FileService {
      * ファイルデータ登録処理
      * @param Request リクエスト
      * @param  bool  true場合チーム falseの場合マッチデータ
-     * @param  bool  true通常アップロード場合チーム falseの場合簡易アップロード     
+     * @param  bool  true通常アップロード場合チーム falseの場合簡易アップロード
      * @return void
      */
     public static function registerFileData(Request $request, bool $teamFlg, bool $normalUploadFlg) {
@@ -184,7 +192,7 @@ class FileService {
     /**
      * 特定ユーザのファイル削除
      * @param String fileId 削除対象ファイルID
-     * @param String  $upLoadUserId アップロードユーザID   
+     * @param String  $upLoadUserId アップロードユーザID
      * @return int $deleteCount 削除実行レコード数
      */
     public static function deleteUserFile(String $fileId, String $upLoadUserId) {
