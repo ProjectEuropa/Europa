@@ -14,7 +14,7 @@ use DB;
 class EventService {
 
     /**
-     * 
+     *
      * イベント登録
      * @param Request
      * @param String 登録ユーザID
@@ -49,30 +49,30 @@ class EventService {
     }
 
     /**
-     * 
+     *
      * イベント全件検索
      * @return Event
      */
     public static function searchAllEvents() {
 
-        $events = Event::select('id', 'event_name', 'event_details', 'event_reference_url', 'event_type', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD HH24:MI') as event_closing_day, "
-                                . "to_char(event_displaying_day, 'YYYY/MM/DD HH24:MI') as event_displaying_day "))
+        $events = Event::select('id', 'event_name', 'event_details', 'event_reference_url', 'event_type', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_closing_day, "
+                                . "to_char(event_displaying_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_displaying_day "))
                 ->get();
 
         return $events;
     }
 
     /**
-     * 
+     *
      * ユーザイベント検索
      * 特定ユーザが登録したイベントを検索する
      * @param String $registerUserId 登録ユーザID
      * @return Event
      */
     public static function searchUserEvents(String $registerUserId) {
-        
-        $events = Event::select('id', 'event_name', 'event_details', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD HH24:MI') as event_closing_day, "
-                                . "to_char(event_displaying_day, 'YYYY/MM/DD HH24:MI') as event_displaying_day "))
+
+        $events = Event::select('id', 'event_name', 'event_details', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_closing_day, "
+                                . "to_char(event_displaying_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_displaying_day "))
                 ->where('register_user_id', '=', $registerUserId)
                 ->get();
 
@@ -80,7 +80,7 @@ class EventService {
     }
 
     /**
-     * 
+     *
      * 過去表示の日付イベント削除
      * @return int 削除件数
      */
@@ -94,9 +94,9 @@ class EventService {
     }
 
     /**
-     * 
+     *
      * 特定ユーザのイベント削除
-     * 
+     *
      * @param String $eventId イベントID
      * @param String $registerUserId 登録ユーザID
      * @return int $deleteCount 削除件数
