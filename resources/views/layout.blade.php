@@ -4,7 +4,7 @@
         <title>Project Europa</title>
         <meta charset="UTF-8">
 
-        <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cerulean/bootstrap.min.css" rel="stylesheet" id="themesid">
+        <link href= "{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" id="themesid">
         <link rel ="stylesheet" href= "{{ asset('css/common.css') }}">
         <!-- 固有のcss読み込み-->
         @yield('css')
@@ -63,8 +63,9 @@
                         <!-- right navbar -->
                         <ul class="nav navbar-nav navbar-right">
                             @if (Auth::guest())
-                            {{-- 未ログイン時はLogin表示 --}}
+                            {{-- 未ログイン時はLogin・Register表示 --}}
                             <a class="navbar-brand" href="{!! url('/login') !!}">Login</a>
+                            <a class="navbar-brand" href="{!! url('/auth/register') !!}">Register</a>
                             @else
                             {{-- ログイン中はLogout マイページ表示--}}
                             <li class="dropdown">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Contracts\Auth\PasswordBroker;
 
 class PasswordController extends Controller
 {
@@ -21,12 +22,20 @@ class PasswordController extends Controller
     use ResetsPasswords;
 
     /**
+     * Where to redirect users after Password Reset.
+     *
+     * @var string
+     */
+    protected $redirectPath = '/';
+
+    /**
      * Create a new password controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(PasswordBroker $passwords)
     {
         $this->middleware('guest');
+        $this->subject = 'Europaパスワードリセットリンクメール';
     }
 }

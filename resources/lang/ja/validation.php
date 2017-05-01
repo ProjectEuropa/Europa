@@ -122,6 +122,7 @@ return [
     	'name' => '名前',
     	'email' => 'メールアドレス',
     	'inquiryComment' => '問い合わせ内容',
+        'password' => 'パスワード',
 
     ],
 ];
