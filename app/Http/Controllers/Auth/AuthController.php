@@ -69,6 +69,7 @@ class AuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'avatar' => 'http://project-europa.herokuapp.com/image/Europa.jpg',
         ]);
     }
 
@@ -90,11 +91,11 @@ class AuthController extends Controller
         } catch (Exception $e) {
             return redirect('auth/twitter');
         }
- 
+
         $authUser = $this->findOrCreateUser($user);
- 
+
         Auth::login($authUser, true);
- 
+
         return redirect()->route('/');
     }
 
@@ -107,11 +108,11 @@ class AuthController extends Controller
     private function findOrCreateUser($twitterUser)
     {
         $authUser = User::where('twitter_id', $twitterUser->id)->first();
- 
+
         if ($authUser){
             return $authUser;
         }
- 
+
         return User::create([
             'name' => $twitterUser->name,
             'handle' => $twitterUser->nickname,

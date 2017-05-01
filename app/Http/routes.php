@@ -88,8 +88,19 @@ Route::get('/auth/twitter', 'Auth\SocialController@getTwitterAuth');
 Route::get('/auth/twitter/callback', 'Auth\SocialController@getTwitterAuthCallback');
 Route::get('/auth/google', 'Auth\SocialController@getGoogleAuth');
 Route::get('/auth/google/callback', 'Auth\SocialController@getGoogleAuthCallback');
-
 Route::get('/auth/logout', 'Auth\AuthController@logout');
+
+// 通常ログイン
+Route::get('/auth/login', 'Auth\AuthController@getLogin');
+Route::post('/auth/login', 'Auth\AuthController@postLogin');
+Route::get('/auth/register', 'Auth\AuthController@getRegister');
+Route::post('/auth/register', 'Auth\AuthController@postRegister');
+
+// パスワードリセット
+Route::get('password/email', 'Auth\PasswordController@getEmail');
+Route::post('password/email', 'Auth\PasswordController@postEmail');
+Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
+Route::post('password/reset', 'Auth\PasswordController@postReset');
 
 // 問い合わせ
 Route::get('/inquiry', 'InquiryController@index');
