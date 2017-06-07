@@ -106,3 +106,9 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 Route::get('/inquiry', 'InquiryController@index');
 // 問い合わせ
 Route::post('/inquiry/send', 'InquiryController@send');
+
+// 動画
+Route::get('/video/upload', 'VideoController@index');
+Route::post('/video/upload', 'VideoController@upload');
+Route::get('/video/search', 'VideoController@search');
+

@@ -15,7 +15,11 @@
         "illuminate/html": "5.*",
         "barryvdh/laravel-debugbar": "^2.2",
         "chumper/zipper": "^0.6.1",
-        "maknz/slack": "^1.7"
+        "maknz/slack": "^1.7",
+        "dawson/youtube": "^2.0",
+        "madcoda/php-youtube-api": "^1.2",
+        "pbmedia/laravel-ffmpeg": "^1.1"
+
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

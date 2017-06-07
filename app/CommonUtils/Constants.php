@@ -40,6 +40,14 @@ class Constants
     const IS_NORMAL_UPLOAD_FLG_TRUE = true;
     // 通常アップロードアップフラグfalse(簡易アップロード)
     const IS_NORMAL_UPLOAD_FLG_FALSE = false;
+
+    // YoutubeゲームカテゴリID：20
+    const NUM_YOUTUBE_GAME_CATEGORY_ID_TWENTY = 20;
+    // 動画ページネーション：6
+    const NUM_VIDEO_PAGINATION_SIX = 6;
+    // 最大動画検索件数：50
+    const NUM_MAX_VIDEO_SEARCH_FIFTY = 50;
     
+    const STR_YOUTUBE_EUROPA_CHANNEL_ID = 'UCEik8DoO0k844j4l7JVuNPQ';
 }
 

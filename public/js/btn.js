@@ -23,5 +23,16 @@ $(function () {
             return false;
         }
     });
+    $("#videoUpload").on('click', function () {
+        if (confirm("この内容で動画をアップロードしますがよろしいですか？")) {
+            alert("動画のアップロードには時間がかかります。しばらくお待ちください。");
+            $("#videoUpload").prop("disabled", true);
+            $("#loading").css("display", "block");
+            $("#uploadFrom").submit();
+        } else {
+            //確認ダイアログキャンセル時はsubmitキャンセル
+            return false;
+        }
+    });
 });
 
