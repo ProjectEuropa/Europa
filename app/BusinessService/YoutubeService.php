@@ -54,7 +54,7 @@ class YoutubeService {
      * @param String　検索ワード
      * @return array　配列形式の動画情報
      */
-    public static function searchVideoFromYoutube(String $keyword, int $numSearch) : array {
+    public static function searchVideoFromYoutube(String $keyword, int $numSearch) {
 
     	return YoutubeSearch::searchChannelVideos($keyword,
     			Constants::STR_YOUTUBE_EUROPA_CHANNEL_ID, $numSearch);
