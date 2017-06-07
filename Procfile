@@ -1,2 +1,2 @@
-web: vendor/bin/heroku-php-nginx -C nginx_app.config public/
+web: vendor/bin/heroku-php-nginx -i custom_php.ini -C nginx_app.config public/
 worker: php artisan queue:listen
