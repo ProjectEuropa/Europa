@@ -55,6 +55,15 @@
                             <li><a class="navbar-brand" href="{!! url('/upload') !!}">Upload</a></li>
                             <li><a class="navbar-brand" href="{!! url('/eventnotice') !!}">Event Notice</a></li>
                             @endif
+<!--                             <li class="dropdown">
+                                <a href="#" class="dropdown-toggle navbar-brand" data-toggle="dropdown" role="button" aria-expanded="false">
+                                    Video
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="/video/upload">Video Upload</a></li>
+                                    <li><a href="/video/search">Video Search</a></li>
+                                </ul>
+                            </li> -->
                             <li><a class="navbar-brand" href="{!! url('/help') !!}">Help</a></li>
                             <li><a class="navbar-brand" href="{!! url('/links') !!}">Links</a></li>
                             <li><a class="navbar-brand" href="{!! url('/inquiry') !!}">Inquiry</a></li>

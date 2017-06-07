@@ -123,6 +123,9 @@ return [
     	'email' => 'メールアドレス',
     	'inquiryComment' => '問い合わせ内容',
         'password' => 'パスワード',
+        'title' => 'タイトル',
+        'description' => '説明文',
+        'video' => '動画',
 
     ],
 ];

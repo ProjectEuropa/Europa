@@ -3,7 +3,7 @@ namespace PHPSTORM_META {
 
    /**
     * PhpStorm Meta file, to provide autocomplete information for PhpStorm
-    * Generated on 2017-02-17.
+    * Generated on 2017-06-03.
     *
     * @author Barry vd. Heuvel <barryvdh@gmail.com>
     * @see https://github.com/barryvdh/laravel-ide-helper
@@ -42,6 +42,8 @@ namespace PHPSTORM_META {
             'zipper' instanceof \Chumper\Zipper\Zipper,
             'maknz.slack' instanceof \Maknz\Slack\Client,
             'Maknz\Slack\Client' instanceof \Maknz\Slack\Client,
+            'Dawson\Youtube\Contracts\Youtube' instanceof \Dawson\Youtube\Youtube,
+            'youtube' instanceof \Dawson\Youtube\Youtube,
             'validation.presence' instanceof \Illuminate\Validation\DatabasePresenceVerifier,
             'translation.loader' instanceof \Illuminate\Translation\FileLoader,
             'translator' instanceof \Illuminate\Translation\Translator,
@@ -125,6 +127,7 @@ namespace PHPSTORM_META {
             'html' instanceof \Collective\Html\HtmlBuilder,
             'form' instanceof \Collective\Html\FormBuilder,
             'Laravel\Socialite\Contracts\Factory' instanceof \Laravel\Socialite\SocialiteManager,
+            'Madcoda\Youtube\Youtube' instanceof \Madcoda\Youtube\Youtube,
         ],
         \Illuminate\Contracts\Container\Container::make('') => [
             '' == '@',
@@ -159,6 +162,8 @@ namespace PHPSTORM_META {
             'zipper' instanceof \Chumper\Zipper\Zipper,
             'maknz.slack' instanceof \Maknz\Slack\Client,
             'Maknz\Slack\Client' instanceof \Maknz\Slack\Client,
+            'Dawson\Youtube\Contracts\Youtube' instanceof \Dawson\Youtube\Youtube,
+            'youtube' instanceof \Dawson\Youtube\Youtube,
             'validation.presence' instanceof \Illuminate\Validation\DatabasePresenceVerifier,
             'translation.loader' instanceof \Illuminate\Translation\FileLoader,
             'translator' instanceof \Illuminate\Translation\Translator,
@@ -242,6 +247,7 @@ namespace PHPSTORM_META {
             'html' instanceof \Collective\Html\HtmlBuilder,
             'form' instanceof \Collective\Html\FormBuilder,
             'Laravel\Socialite\Contracts\Factory' instanceof \Laravel\Socialite\SocialiteManager,
+            'Madcoda\Youtube\Youtube' instanceof \Madcoda\Youtube\Youtube,
         ],
         \App::make('') => [
             '' == '@',
@@ -276,6 +282,8 @@ namespace PHPSTORM_META {
             'zipper' instanceof \Chumper\Zipper\Zipper,
             'maknz.slack' instanceof \Maknz\Slack\Client,
             'Maknz\Slack\Client' instanceof \Maknz\Slack\Client,
+            'Dawson\Youtube\Contracts\Youtube' instanceof \Dawson\Youtube\Youtube,
+            'youtube' instanceof \Dawson\Youtube\Youtube,
             'validation.presence' instanceof \Illuminate\Validation\DatabasePresenceVerifier,
             'translation.loader' instanceof \Illuminate\Translation\FileLoader,
             'translator' instanceof \Illuminate\Translation\Translator,
@@ -359,6 +367,7 @@ namespace PHPSTORM_META {
             'html' instanceof \Collective\Html\HtmlBuilder,
             'form' instanceof \Collective\Html\FormBuilder,
             'Laravel\Socialite\Contracts\Factory' instanceof \Laravel\Socialite\SocialiteManager,
+            'Madcoda\Youtube\Youtube' instanceof \Madcoda\Youtube\Youtube,
         ],
         \app('') => [
             '' == '@',
@@ -393,6 +402,8 @@ namespace PHPSTORM_META {
             'zipper' instanceof \Chumper\Zipper\Zipper,
             'maknz.slack' instanceof \Maknz\Slack\Client,
             'Maknz\Slack\Client' instanceof \Maknz\Slack\Client,
+            'Dawson\Youtube\Contracts\Youtube' instanceof \Dawson\Youtube\Youtube,
+            'youtube' instanceof \Dawson\Youtube\Youtube,
             'validation.presence' instanceof \Illuminate\Validation\DatabasePresenceVerifier,
             'translation.loader' instanceof \Illuminate\Translation\FileLoader,
             'translator' instanceof \Illuminate\Translation\Translator,
@@ -476,6 +487,7 @@ namespace PHPSTORM_META {
             'html' instanceof \Collective\Html\HtmlBuilder,
             'form' instanceof \Collective\Html\FormBuilder,
             'Laravel\Socialite\Contracts\Factory' instanceof \Laravel\Socialite\SocialiteManager,
+            'Madcoda\Youtube\Youtube' instanceof \Madcoda\Youtube\Youtube,
         ],
     ];
 }

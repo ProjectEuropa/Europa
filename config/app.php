@@ -108,7 +108,7 @@ return [
     |
     */
 
-    'log' => env('APP_LOG', 'single'),
+    'log' => 'errorlog',//env('APP_LOG', 'single'),
 
     /*
     |--------------------------------------------------------------------------
@@ -190,6 +190,17 @@ return [
     	 * Slack
     	 */
     	Maknz\Slack\SlackServiceProvider::class,
+
+        /*
+         * Youtube
+         */
+        Dawson\Youtube\YoutubeServiceProvider::class,
+        Madcoda\Youtube\YoutubeServiceProviderLaravel5::class,
+
+        /*
+         * FFMpeg
+         */
+        Pbmedia\LaravelFFMpeg\FFMpegServiceProvider::class,
     ],
 
     /*
@@ -246,6 +257,11 @@ return [
         'Zipper' => Chumper\Zipper\Zipper::class,
 
     	'Slack' => Maknz\Slack\Facades\Slack::class,
+
+        'Youtube' => Dawson\Youtube\Facades\Youtube::class,
+        'YoutubeSearch' => Madcoda\Youtube\Facades\Youtube::class,
+
+        'FFMpeg' => Pbmedia\LaravelFFMpeg\FFMpegFacade::class,
 
     ],
 ];
