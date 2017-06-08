@@ -33,7 +33,7 @@ class VideoController extends Controller {
         $validator = Validator::make($request->all(), [
                     'title' => 'required|max:20',
                     'description' => 'required|max:200',
-                    'video' => 'required|mimes:avi,mp4|max:700000',
+                    'video' => 'required|mimes:avi,mp4|max:270000',
         ]);
 
         if ($validator->fails()) {
