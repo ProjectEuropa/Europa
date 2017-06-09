@@ -25,7 +25,7 @@ return [
     /**
      * Approval Prompt
      */
-    'approval_prompt' => 'auto',
+    'approval_prompt' => 'force',
 
     /**
      * Scopes.
