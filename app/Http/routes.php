@@ -15,7 +15,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-//twitterログイン後用
+//ログイン後用
 Route::get('/', array('as' => '/', 'uses' => function(){
     return view('welcome');
 }));
@@ -28,6 +28,8 @@ Route::get('/help', function () {
     return view('errors.503');
 });
 
+//イベントカレンダー
+Route::get('/eventcalendar', 'EventCalendarController@index');
 
 // リンク集画面
 Route::get('/links', function () {

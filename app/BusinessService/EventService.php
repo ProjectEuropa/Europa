@@ -64,6 +64,16 @@ class EventService {
 
     /**
      *
+     * イベントカンレダー用検索
+     * @return Event
+     */
+    public static function searchEventCalendarData() {
+        $events = Event::select('event_name', 'event_reference_url', 'event_closing_day')->get();
+        return $events;
+    }
+
+    /**
+     *
      * ユーザイベント検索
      * 特定ユーザが登録したイベントを検索する
      * @param String $registerUserId 登録ユーザID

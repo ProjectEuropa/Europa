@@ -7,7 +7,7 @@
 <div class="container main">
 
     <h2>Information</h2>
-    <p>お知らせ情報の閲覧が可能です。</p>
+    <p>お知らせ情報の閲覧が可能です。<a href="{{ url('/eventcalendar') }}">イベントカレンダー</a>で閲覧することも可能です。</p>
 
     @forelse($events as $index => $event)
     @if (($index % 2) == 0)
