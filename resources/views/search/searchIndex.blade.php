@@ -18,7 +18,7 @@
     @include('common.flash')
 
     <h5>
-        <form method="get" action="/search/{{$searchType}}" class="form-inline" role="form">
+        <form method="get" action="{{ url('/search/'.$searchType) }}" class="form-inline" role="form">
             <div class="form-group">
                 <label for="word">検索ワード:</label>
                 <input type="text" name="keyword" class="form-control" value="{{$keyword}}">
@@ -46,7 +46,7 @@
             @forelse($files as $file)
             <tr>
                 <td class="col-md-1">
-                    <a href="/search/download/{{$file->id}}"><span class="glyphicon glyphicon-cloud-download"></span></a>
+                    <a href="{{ url('/search/download/'.$file->id) }}"><span class="glyphicon glyphicon-cloud-download"></span></a>
                 </td>
                 <td class="col-md-1">{{ $file->upload_owner_name }}</td>
                 <td class="col-md-3">              
@@ -69,7 +69,7 @@
                 <td class="col-md-2">{{ $file->created_at }}</td>
                 <td class="col-md-3">
                     @if ($file->upload_type == '2')<!---簡易アップロードのみ検索画面で削除可能-->
-                    <form method="post" action="/search/{{$searchType}}/delete" class="form-horizontal">
+                    <form method="post" action="{{ url('/search/'.$searchType.'/delete') }}" class="form-horizontal">
                         <div class="form-group">
                             <div class="col-xs-12 form-inline">
                                 <input type="text" name="deletePassword" class="form-control" placeholder="削除パスワード">

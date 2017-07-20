@@ -19,7 +19,7 @@
             <div class="row">
 				<div class="col-md-12">
 					<h5>
-						<form method="get" action="/video/search" class="form-inline" role="form">
+						<form method="get" action="{!! url('/video/search') !!}" class="form-inline" role="form">
 							<div class="form-group">
 								<label for="word">検索ワード:</label>
 								<input type="text" name="keyword" class="form-control" value="{{ $keyword }}">

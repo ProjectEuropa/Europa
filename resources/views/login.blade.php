@@ -56,10 +56,10 @@
     </div>
 
     <div class="col-md-3">
-        <a class="btn btn-block btn-social btn-twitter"  href="/auth/twitter">
+        <a class="btn btn-block btn-social btn-twitter"  href="{!! url('/auth/twitter') !!}">
             <span class="fa fa-twitter"></span> Login with Twitter
         </a>
-        <a class="btn btn-block btn-social btn-google"  href="/auth/google">
+        <a class="btn btn-block btn-social btn-google"  href="{!! url('/auth/google') !!}">
             <span class="fa fa-google-plus"></span> Login with Google
         </a>
     </div>

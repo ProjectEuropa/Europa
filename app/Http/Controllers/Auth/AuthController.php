@@ -69,7 +69,7 @@ class AuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
-            'avatar' => 'http://project-europa.herokuapp.com/image/Europa.jpg',
+            'avatar' => 'https://project-europa.herokuapp.com/image/Europa.jpg',
         ]);
     }
 

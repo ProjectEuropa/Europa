@@ -34,8 +34,8 @@
                                     Search
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="/search/team">Team Data</a></li>
-                                    <li><a href="/search/match">Match Data</a></li>
+                                    <li><a href="{!! url('/search/team') !!}">Team Data</a></li>
+                                    <li><a href="{!! url('/search/match') !!}">Match Data</a></li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -43,8 +43,8 @@
                                     Sum DL
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="/sumdownload/team">DL Team</a></li>
-                                    <li><a href="/sumdownload/match">DL Match</a></li>
+                                    <li><a href="{!! url('/sumdownload/team') !!}">DL Team</a></li>
+                                    <li><a href="{!! url('/sumdownload/match') !!}">DL Match</a></li>
                                 </ul>
                             </li>
                             @if (Auth::guest())
@@ -60,8 +60,8 @@
                                     Video
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="/video/upload">Video Upload</a></li>
-                                    <li><a href="/video/search">Video Search</a></li>
+                                    <li><a href="{!! url('/video/upload') !!}">Video Upload</a></li>
+                                    <li><a href="{!! url('/video/search') !!}">Video Search</a></li>
                                 </ul>
                             </li>
                             <li><a class="navbar-brand" href="{!! url('/help') !!}">Help</a></li>
@@ -84,8 +84,8 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="/mypage">My Page</a></li>
-                                    <li><a href="/auth/logout">Logout</a></li>
+                                    <li><a href="{!! url('/mypage') !!}">My Page</a></li>
+                                    <li><a href="{!! url('/auth/logout') !!}">Logout</a></li>
                                 </ul>
                             </li>
                             @endif
@@ -102,7 +102,7 @@
 
         <div class="container">
             <footer>
-                <p>&copy; 2016 Team Project Europa <br>
+                <p>&copy; 2016-2017 Team Project Europa <br>
             </footer>
         </div>
 

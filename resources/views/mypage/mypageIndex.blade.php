@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-md-4">  
                     <h5 class="text-left">オーナー名</h5>
-                    <form method="post" action="/mypage/editUserInfo" class="form-inline" role="form">
+                    <form method="post" action="{{ url('/mypage/editUserInfo') }}" class="form-inline" role="form">
                         <div class="form-group">
                             <input type="text" name="ownerName" value="{{ Auth::user()->name }}">
                             <button type="submit" class="btn btn-primary btn-edit">編集</button>
@@ -56,14 +56,29 @@
                     @forelse($teams as $team)
                     <tr>
                         <td class="col-md-1">
-                            <a href="/search/download/{{$team->id}}"><span class="glyphicon glyphicon-cloud-download"></span></a>
+                            <a href="{{ url('/search/download/'.$team->id) }}"><span class="glyphicon glyphicon-cloud-download"></span></a>
                         </td>
                         <td class="col-md-1">{{ $team->upload_owner_name }}</td>
-                        <td class="col-md-3">{!! nl2br(e($team->file_comment)) !!}</td>
+                        <td class="col-md-3">
+                            {!! nl2br(e($team->file_comment)) !!}
+                            @if (!(empty($team->search_tag1)))
+                            <br>
+                            <span class="glyphicon glyphicon-search">{{ $team->search_tag1 }}</span>
+                            @endif
+                            @if (!(empty($team->search_tag2)))
+                            <span class="glyphicon glyphicon-search">{{ $team->search_tag2 }}</span>
+                            @endif
+                            @if (!(empty($team->search_tag3)))
+                            <span class="glyphicon glyphicon-search">{{ $team->search_tag3 }}</span>
+                            @endif
+                            @if (!(empty($team->search_tag4)))
+                            <span class="glyphicon glyphicon-search">{{ $team->search_tag4 }}</span>
+                            @endif
+                        </td>
                         <td class="col-md-1">{{ $team->file_name }}</td>
                         <td class="col-md-2">{{ $team->created_at }}</td>
                         <td class="col-md-1">
-                            <form method="post" action="/mypage/file/delete" class="form-horizontal">
+                            <form method="post" action="{{ url('/mypage/file/delete') }}" class="form-horizontal">
                                 <div class="form-group">
                                     <div class="col-xs-12 form-inline">
                                         <input type="hidden" name="id" class="form-control" value="{{ $team->id }}">
@@ -101,14 +116,29 @@
                     @forelse($matchs as $match)
                     <tr>
                         <td class="col-md-1">
-                            <a href="/search/download/{{$match->id}}"><span class="glyphicon glyphicon-cloud-download"></span></a>
+                            <a href="{{ url('/search/download/'.$match->id) }}"><span class="glyphicon glyphicon-cloud-download"></span></a>
                         </td>
                         <td class="col-md-1">{{ $match->upload_owner_name }}</td>
-                        <td class="col-md-3">{!! nl2br(e($match->file_comment)) !!}</td>
+                        <td class="col-md-3">
+                            {!! nl2br(e($match->file_comment)) !!}
+                            @if (!(empty($match->search_tag1)))
+                            <br>
+                            <span class="glyphicon glyphicon-search">{{ $match->search_tag1 }}</span>
+                            @endif
+                            @if (!(empty($match->search_tag2)))
+                            <span class="glyphicon glyphicon-search">{{ $match->search_tag2 }}</span>
+                            @endif
+                            @if (!(empty($match->search_tag3)))
+                            <span class="glyphicon glyphicon-search">{{ $match->search_tag3 }}</span>
+                            @endif
+                            @if (!(empty($match->search_tag4)))
+                            <span class="glyphicon glyphicon-search">{{ $match->search_tag4 }}</span>
+                            @endif
+                        </td>
                         <td class="col-md-1">{{ $match->file_name }}</td>
                         <td class="col-md-2">{{ $match->created_at }}</td>
                         <td class="col-md-1">            
-                            <form method="post" action="/mypage/file/delete" class="form-horizontal">
+                            <form method="post" action="{{ url('/mypage/file/delete') }}" class="form-horizontal">
                                 <div class="form-group">
                                     <div class="col-xs-12 form-inline">
                                         <input type="hidden" name="id" class="form-control" value="{{ $match->id }}">
@@ -149,7 +179,7 @@
                         <td class="col-md-2">{{ $event->event_closing_day }}</td>
                         <td class="col-md-2">{{ $event->event_displaying_day }}</td>
                         <td class="col-md-1">            
-                            <form method="post" action="/mypage/event/delete" class="form-horizontal">
+                            <form method="post" action="{{ url('/mypage/event/delete') }}" class="form-horizontal">
                                 <div class="form-group">
                                     <div class="col-xs-12 form-inline">
                                         <input type="hidden" name="id" class="form-control" value="{{ $event->id }}">

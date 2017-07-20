@@ -18,7 +18,7 @@
     @include('common.validation')
 
     <h5>
-        <form method="get" action="/sumdownload/{{$searchType}}" class="form-inline" role="form">
+        <form method="get" action="{{ url('/sumdownload/'.$searchType) }}" class="form-inline" role="form">
             <div class="form-group">
                 <label for="word">検索ワード:</label>
                 <input type="text" name="keyword" class="form-control" value="{{$keyword}}">
@@ -31,7 +31,7 @@
         </form>
     </h5>
     <p>全{{$files->total()}}件中{{$files->currentPage()}}ページ目</p>
-    <form method="post" action="/sumdownload/download" class="form-horizontal">
+    <form method="post" action="{{ url('/sumdownload/download') }}" class="form-horizontal">
         <table class="table table-bordered table-hover">
             <thead>
                 <tr class="something">
