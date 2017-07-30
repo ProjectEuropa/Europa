@@ -19,7 +19,8 @@ class AppServiceProvider extends ServiceProvider
 
         //ローカル以外（本番環境下）ではhttpsを強制する
         if (!\App::environment('local')) {
-          \URL::forceSchema('https');
+          //\URL::forceSchema('https');
+          $this->app['request']->server->set('HTTPS','on');
         }
     }
 
