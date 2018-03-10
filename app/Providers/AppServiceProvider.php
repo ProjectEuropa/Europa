@@ -14,13 +14,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
-        Validator::extend('no_che_file', 'App\Validation\CustomValidator@validateNoCheFile');
-
+        // CHEファイルバリデーション
+        Validator::extend('che_file', 'App\Validation\CustomValidator@validateCheFile');
         //ローカル以外（本番環境下）ではhttpsを強制する
         if (!\App::environment('local')) {
-          //\URL::forceSchema('https');
-          $this->app['request']->server->set('HTTPS','on');
+            $this->app['request']->server->set('HTTPS','on');
         }
     }
 

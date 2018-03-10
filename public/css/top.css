@@ -1,11 +1,22 @@
-/* 
-    トップ画面css
-*/
-.navbar{
+html,body{
+    height: 100%;
+    margin: 0;
+  }
+
+.navbar {
     margin-bottom: 0;
 }
 
-.europa-inner img{
+h1 {
+    color: #33BFDB;
+    font-weight: bold;
+}
+
+.navbar-inverse {
+    border-radius: initial;
+}
+
+.europa-inner img {
     width: 100%;
 }
 
@@ -13,44 +24,159 @@
     top: 10%;
 }
 
-.title{
+.title {
     text-align: center;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-.text-box{
+.text-box {
     margin-bottom: 20px;
 }
 
-.panel{
+.panel {
     margin-bottom: 20px;
     background-color: #fff;
     border: 1px solid #eee;
     border-radius: 2;
 }
 
-.panel-header{
+.panel-header {
     text-align: center;
     padding-top: 10px;
     height: 40px;
-    background-color: #044a8e;
+    background-color: #33BFDB;
     color: #f5f5f5;
+    font-weight: bold;
 }
 
-.panel-body{
-    height: 180px;
-}
-
-.img-box{
+.img-box {
     text-align: center;
     margin-bottom: 10px;
 }
 
-.box-img{
+.box-img {
     width: 100%;
 }
 
 .c-c-japan {
     margin-top: 50%;
+}
+
+#main-image {
+    background-color: #fff;
+}
+.table-responsive .table {
+    max-width: none;
+}
+
+.fa-cloud-download {
+    color: deepskyblue;
+}
+
+ul.dropdown-menu li:hover {
+    background-color: #33BFDB;
+}
+ul.dropdown-menu li a {
+    display: block;
+}
+
+.table-header {
+    background-color: #33BFDB;
+    color: #ffffff;
+}
+
+tr.table-header th {
+    font-weight: bold;
+    text-align: center;
+}
+
+input.input-alternate {
+    background-color: #ffffff;
+}
+
+.navbar {
+    background-color: #33BFDB;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #33BFDB;
+}
+
+tbody {
+    background-color: #ffffff;
+}
+
+li.nav-item a {
+    color: #ffffff;
+}
+.under-header {
+    font-weight: bold;
+    color: #737373;
+}
+
+textarea {
+    padding: 4em;
+}
+
+.puerto-color {
+    background-color: #5EBABA;
+    font-weight: bold;
+    border: #5EBABA;
+}
+a.card-link {
+    display: block;
+    color: #fff;
+}
+
+.downy-color {
+    background-color: #79D1B0;
+    font-weight: bold;
+}
+.fa-bars {
+    color: #fff;
+    font-weight: bold;
+} 
+body {
+    background-color: #F5F5F5;
+}
+
+.under-header {
+    margin-top: 15px;
+}
+
+ul.nav-pills li a {
+    padding: 0 40px;
+    color: #737373;
+}
+a.active.show {
+    background-color: #5EBABA;
+    color: #fff;
+}
+
+footer {
+    background-color: #33BFDB;
+    color: #ffffff;
+}
+.thin-blue-color {
+    background-color: #33BFDB;
+}
+
+@media screen and (max-width: 767px) {
+    .c-c-japan {
+        margin-top: 10%;
+    }
+}
+
+@media screen and (max-width: 467px) {
+    .c-c-japan {
+        margin-top: 0%;
+    }
+    .carousel-caption {
+        top: -10%;
+    }
+    h1 {
+        font-size: 26px;
+    }
 }

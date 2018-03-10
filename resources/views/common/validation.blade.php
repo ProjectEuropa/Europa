@@ -1,4 +1,3 @@
-{{-- バリデーションメッセージの表示 --}}
 @if (count($errors) > 0)
 <div class="alert alert-danger">
     <ul>
@@ -8,4 +7,3 @@
     </ul>
 </div>
 @endif
-

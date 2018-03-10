@@ -1,44 +1,52 @@
-@extends('layout')
+@extends('layouts.app')
 
-<!-- Main Content -->
 @section('content')
-<div class="container main">
-    <h2>Password Reset</h2>
-    <p>パスワードのリセットが可能です。登録したメールアドレスを入力して送信ボタンをクリックしてください。</p>
+<main>
+    <div class="container">
+        <div class="under-header">
+            <h2>Password Reset</h2>
+            <p>パスワードのリセットが可能です。登録したメールアドレスを入力して送信ボタンをクリックしてください。</p>
+        </div>
+        @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+        @endif
 
-    <div class="row">
-        <div class="col-md-9 col-md-offset-0">
-            {{-- フラッシュメッセージの表示 --}}
-            @include('common.flash')
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-md-12 col-md-offset-0">
+                <div class="card">
+                    <div class="card-header lighten-1 white-text info-color text-center">パスワードリセット</div>
+                    <div class="card-body">
+                        <form class="form-horizontal" method="POST" action="{{ route('password.email') }}">
+                            {{ csrf_field() }}
 
-            @if (session('status'))
-            <div class="alert alert-success">
-              {{ session('status') }}
-            </div>
-            @endif
+                            <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                                <label for="email" class="control-label">メールアドレス:</label>
 
-            {{-- バリデーションメッセージの表示 --}}
-            @include('common.validation')
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">パスワードリセット</h3>
-                </div>
-                <div class="panel-body">
-                    <form role="form" method="post" action="{{ url('/password/email') }}">
-                        <fieldset>
-                            <div class="form-group">
-                                <label for="email">メールアドレス:</label>
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}">
+                                <div class="">
+                                    <input id="email" type="email" class="form-control input-alternate" name="email" value="{{ old('email') }}" style="padding: 0;" required >
+
+                                    @if ($errors->has('email'))
+                                        <span class="help-block">
+                                            <strong>{{ $errors->first('email') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
 
-                            {{ csrf_field() }}
-                            <button type="submit" class="btn btn-block btn-primary">パスワードリセットリンクを送信</button>
-                        </fieldset>
-                    </form>
+                            <div class="form-group">
+                                <div class="">
+                                    <button type="submit" class="btn btn-info btn-block">
+                                            パスワードリセットリンクを送信
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
+</main>
 @endsection

@@ -3,159 +3,90 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
+use App\Http\Requests\UploadRequest;
 use App\BusinessService\FileService;
-use Validator;
-use App\CommonUtils\Constants;
 
-/*
-  アップロード操作実行コントローラ
- */
 
-class UploadController extends Controller {
+class UploadController extends Controller
+{
 
-    //簡易アップロード
-    public function simpleIndex() {
-        return view('upload.simpleIndex');
-    }
-    //
-    public function normalIndex() {
-        return view('upload.normalIndex');
+    private $fileService;
+
+    public function __construct(FileService $fileService)
+    {
+        $this->fileService = $fileService;
     }
 
     /**
-     * チームアップロード操作実行Action
+     * 
      *
-     * @param  Request  $request
-     * @return view upload.index
+     * @return 
      */
-    public function teamUpload(Request $request) {
+    public function teamSimpleUpload(UploadRequest $request)
+    {
+        // チームアップロードかつ簡易アップロード
+        $arrayIsTeamOrNormarUpdate = [
+            'isTeam' => \Config::get('const.IS_TEAM_FLG_TRUE'),
+            'isNormalUpdate' => \Config::get('const.IS_NORMAL_UPLOAD_FLG_FALSE')
+        ];
 
-        /*
-          　オーナー名・コメント・削除パスワード・チームファイル必須
-          　コメント100文字まで（改行コード含む）・チームファイルCHEのみ・260KBまで
-          　 no_che_fileはApp\Validation\CustomValidatorで設定
-         */
-        $validator = Validator::make($request->all(), [
-                    'teamOwnerName' => 'required|max:12',
-                    'teamComment' => 'required|max:100',
-                    'teamDeletePassWord' => 'required|max:12',
-                    'teamFile' => 'required|no_che_file|max:24',
-        			'teamSearchTags.*' => 'max:20'
-        ]);
+        $this->fileService->registerFileData($request, $arrayIsTeamOrNormarUpdate);
 
-        if ($validator->fails()) {
-            return redirect('/simpleupload')
-                            ->withInput()
-                            ->withErrors($validator);
-        }
-
-        // ファイルデータ登録処理
-        FileService::registerFileData($request, Constants::IS_TEAM_FLG_TRUE, Constants::IS_NORMAL_UPLOAD_FLG_FALSE);
-
-        \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'チームデータ']));
-
-        return redirect('/simpleupload');
+        return redirect('/simpleupload')->with('message', 'チームデータのアップロードが完了しました');
     }
 
     /**
-     * 通常チームアップロード操作実行Action
+     * 
      *
-     * @param  Request  $request
-     * @return view upload.index
+     * @return 
      */
-    public function normalTeamUpload(Request $request) {
-        /*
-          　オーナー名・コメント・チームファイル必須
-          　コメント100文字まで（改行コード含む）・チームフファイルCHEのみ・260KBまで
-          　 no_che_fileはApp\Validation\CustomValidatorで設定
-         */
-        $validator = Validator::make($request->all(), [
-                    'teamOwnerName' => 'required|max:12',
-                    'teamComment' => 'required|max:100',
-                    'teamFile' => 'required|no_che_file|max:24',
-        			'teamSearchTags.*' => 'max:20'
-        ]);
+    public function matchSimpleUpload(UploadRequest $request)
+    {
+        // マッチデータアップロードかつ簡易アップロード
+        $arrayIsTeamOrNormarUpdate = [
+            'isTeam' => \Config::get('const.IS_TEAM_FLG_FALSE'),
+            'isNormalUpdate' => \Config::get('const.IS_NORMAL_UPLOAD_FLG_FALSE')
+        ];
 
-        if ($validator->fails()) {
-            return redirect('/upload')
-                            ->withInput()
-                            ->withErrors($validator);
-        }
+        $this->fileService->registerFileData($request, $arrayIsTeamOrNormarUpdate);
 
-        // ファイルデータ登録処理
-        FileService::registerFileData($request, Constants::IS_TEAM_FLG_TRUE, Constants::IS_NORMAL_UPLOAD_FLG_TRUE);
-
-        \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'チームデータ']));
-
-        return redirect('/upload');
+        return redirect('/simpleupload')->with('message', 'マッチデータのアップロードが完了しました');
     }
 
     /**
-     * マッチデータアップロード操作実行Action
+     * 
      *
-     * @param  Request  $request
-     * @return view upload.index
+     * @return 
      */
-    public function matchUpload(Request $request) {
+    public function teamUpload(UploadRequest $request)
+    {
+        // チームアップロードかつ通常アップロード
+        $arrayIsTeamOrNormarUpdate = [
+            'isTeam' => \Config::get('const.IS_TEAM_FLG_TRUE'),
+            'isNormalUpdate' => \Config::get('const.IS_NORMAL_UPLOAD_FLG_TRUE')
+        ];
 
-        /*
-          　オーナー名・コメント・削除パスワード・マッチファイル必須
-          　コメント100文字まで（改行コード含む）・マッチファイルCHEのみ・260KBまで
-          　 no_che_fileはApp\Validation\CustomValidatorで設定
-         */
-        $validator = Validator::make($request->all(), [
-                    'matchOwnerName' => 'required|max:12',
-                    'matchComment' => 'required|max:100',
-                    'matchDeletePassWord' => 'required|max:12',
-                    'matchFile' => 'required|no_che_file|max:260',
-        			'matchSearchTags.*' => 'max:20'
-        ]);
+        $this->fileService->registerFileData($request, $arrayIsTeamOrNormarUpdate);
 
-        if ($validator->fails()) {
-            return redirect('/simpleupload')
-                            ->withInput()
-                            ->withErrors($validator);
-        }
-
-        // ファイルデータ登録処理
-        FileService::registerFileData($request, Constants::IS_TEAM_FLG_FALSE, Constants::IS_NORMAL_UPLOAD_FLG_FALSE);
-
-        \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'マッチデータ']));
-
-        return redirect('/simpleupload');
+        return redirect('/upload')->with('message', 'チームデータのアップロードが完了しました');
     }
 
-     /**
-     * マッチデータアップロード操作実行Action
+    /**
+     * 
      *
-     * @param  Request  $request
-     * @return view upload.index
+     * @return 
      */
-    public function normalMatchUpload(Request $request) {
+    public function matchUpload(UploadRequest $request)
+    {
+        // マッチデータアップロードかつ通常アップロード
+        $arrayIsTeamOrNormarUpdate = [
+            'isTeam' => \Config::get('const.IS_TEAM_FLG_FALSE'),
+            'isNormalUpdate' => \Config::get('const.IS_NORMAL_UPLOAD_FLG_TRUE')
+        ];
 
-        /*
-          　オーナー名・コメント・マッチファイル必須
-          　コメント100文字まで（改行コード含む）・マッチファイルCHEのみ・260KBまで
-          　 no_che_fileはApp\Validation\CustomValidatorで設定
-         */
-        $validator = Validator::make($request->all(), [
-                    'matchOwnerName' => 'required|max:12',
-                    'matchComment' => 'required|max:100',
-                    'matchFile' => 'required|no_che_file|max:260',
-        			'matchSearchTags.*' => 'max:20'
-        ]);
+        $this->fileService->registerFileData($request, $arrayIsTeamOrNormarUpdate);
 
-        if ($validator->fails()) {
-            return redirect('/upload')
-                            ->withInput()
-                            ->withErrors($validator);
-        }
-
-        // ファイルデータ登録処理
-        FileService::registerFileData($request, Constants::IS_TEAM_FLG_FALSE, Constants::IS_NORMAL_UPLOAD_FLG_TRUE);
-
-        \Session::flash('flash_message', trans('messages.upload_complete', ['name' => 'マッチデータ']));
-
-        return redirect('/upload');
+        return redirect('/upload')->with('message', 'マッチデータのアップロードが完了しました');
     }
 }

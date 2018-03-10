@@ -1,4 +1,26 @@
 <?php
+switch (getenv('PHP_ENV')) {
+    case 'production'://本番用
+        $driver = getenv('MAIL_DRIVER', 'smtp');
+        $host = getenv('MAIL_HOST', 'smtp.mailgun.org');
+        $port = getenv('MAIL_PORT', 587);
+        $address = getenv('MAIL_FROM_ADDRESS', 'hello@example.com');
+        $name = getenv('MAIL_FROM_NAME', 'Example');
+        $encryption = getenv('MAIL_ENCRYPTION', 'tls');
+        $username = getenv('MAIL_USERNAME');
+        $password = getenv('MAIL_PASSWORD');
+        break;
+    default:// ローカル用
+        $driver = env('MAIL_DRIVER', 'smtp');
+        $host = env('MAIL_HOST', 'smtp.mailgun.org');
+        $port = env('MAIL_PORT', 587);
+        $address = env('MAIL_FROM_ADDRESS', 'hello@example.com');
+        $name = env('MAIL_FROM_NAME', 'Example');
+        $encryption = env('MAIL_ENCRYPTION', 'tls');
+        $username = env('MAIL_USERNAME');
+        $password = env('MAIL_PASSWORD');
+        break;
+}
 
 return [
 
@@ -11,12 +33,12 @@ return [
     | sending of e-mail. You may specify which one you're using throughout
     | your application here. By default, Laravel is setup for SMTP mail.
     |
-    | Supported: "smtp", "mail", "sendmail", "mailgun", "mandrill",
-    |            "ses", "sparkpost", "log"
+    | Supported: "smtp", "sendmail", "mailgun", "mandrill", "ses",
+    |            "sparkpost", "log", "array"
     |
     */
 
-    'driver' => getenv('MAIL_DRIVER', 'smtp'),
+    'driver' => $driver,
 
     /*
     |--------------------------------------------------------------------------
@@ -29,7 +51,7 @@ return [
     |
     */
 
-    'host' => getenv('MAIL_HOST', 'smtp.gmail.com'),
+    'host' => $host,
 
     /*
     |--------------------------------------------------------------------------
@@ -42,7 +64,7 @@ return [
     |
     */
 
-    'port' => getenv('MAIL_PORT', 587),
+    'port' => $port,
 
     /*
     |--------------------------------------------------------------------------
@@ -55,7 +77,10 @@ return [
     |
     */
 
-    'from' => ['address' => getenv('MAIL_FROM_ADDRESS', null), 'name' => getenv('MAIL_FROM_NAME', null)],
+    'from' => [
+        'address' => $address,
+        'name' => $name,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -68,7 +93,7 @@ return [
     |
     */
 
-    'encryption' => getenv('MAIL_ENCRYPTION', 'tls'),
+    'encryption' => $encryption,
 
     /*
     |--------------------------------------------------------------------------
@@ -81,20 +106,9 @@ return [
     |
     */
 
-    'username' => getenv('MAIL_USERNAME'),
+    'username' => $username,
 
-    /*
-    |--------------------------------------------------------------------------
-    | SMTP Server Password
-    |--------------------------------------------------------------------------
-    |
-    | Here you may set the password required by your SMTP server to send out
-    | messages from your application. This will be given to the server on
-    | connection so that the application will be able to send messages.
-    |
-    */
-
-    'password' => getenv('MAIL_PASSWORD'),
+    'password' => $password,
 
     /*
     |--------------------------------------------------------------------------
@@ -109,6 +123,23 @@ return [
 
     'sendmail' => '/usr/sbin/sendmail -bs',
 
-    // Mail "Pretend"
-    'pretend' => getenv('MAIL_PRETEND', false),
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | If you are using Markdown based email rendering, you may configure your
+    | theme and component paths here, allowing you to customize the design
+    | of the emails. Or, you may simply stick with the Laravel defaults!
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'default',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];
