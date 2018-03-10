@@ -2,24 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use DB;
 use App\BusinessService\EventService;
 
-class InformationController extends Controller {
+class InformationController extends Controller
+{
+
+    private $eventService;
+
+    public function __construct(EventService $eventService)
+    {
+        $this->eventService = $eventService;
+    }
 
     /**
-     * 初期表示処理。
-     * 表示が過去日付イベント削除し、表示する全件のイベントを検索
+     * 
      *
-     * @return view infomation.informationIndex
+     * @return 
      */
-    public function index() {
-        
-        EventService::deletePastDisplayingEvents();
-        
-        $events = EventService::searchAllEvents();
+    public function index()
+    {
+        $this->eventService->deletePastDisplayingEvents();
 
-        return view('information.informationIndex', [
-            'events' => $events,
-        ]);
+        $events = $this->eventService->searchAllEvents();
+
+        return view('information.index')->with('events', $events);
+    }
+
+    /**
+     * 
+     * イベントカレンダー用データを全件検索
+     *
+     * @return view 
+     */
+    public function calendar() {
+        
+        $events = $this->eventService->searchEventCalendarData();
+
+        return view('information.calendar')->with('events', $events);
     }
 }

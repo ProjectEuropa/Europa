@@ -4,6 +4,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Name
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your application. This value is used when the
+    | framework needs to place the application's name in a notification or
+    | any other location as required by the application or its packages.
+    |
+    */
+
+    'name' => env('APP_NAME', 'Europa'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
@@ -108,7 +121,9 @@ return [
     |
     */
 
-    'log' => 'errorlog',//env('APP_LOG', 'single'),
+    'log' => env('APP_LOG', 'single'),
+
+    'log_level' => env('APP_LOG_LEVEL', 'debug'),
 
     /*
     |--------------------------------------------------------------------------
@@ -138,6 +153,7 @@ return [
         Illuminate\Foundation\Providers\FoundationServiceProvider::class,
         Illuminate\Hashing\HashServiceProvider::class,
         Illuminate\Mail\MailServiceProvider::class,
+        Illuminate\Notifications\NotificationServiceProvider::class,
         Illuminate\Pagination\PaginationServiceProvider::class,
         Illuminate\Pipeline\PipelineServiceProvider::class,
         Illuminate\Queue\QueueServiceProvider::class,
@@ -149,58 +165,21 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         /*
-         * Laravel Helper Service Providers...
+         * Package Service Providers...
          */
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-
-        /*
-         * laravel-query-param
-         */
-        Ooxif\LaravelQueryParam\QueryParamServiceProvider::class,
-
-        /*
-         * Html・Formタグ使用
-         */
-        Collective\Html\HtmlServiceProvider::class,
 
         /*
          * Application Service Providers...
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
+        // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        /*
-         * Laravel Socialite:Twitter認証に使用
-         */
         Laravel\Socialite\SocialiteServiceProvider::class,
-
-        /*
-         * Laravel デバッガー
-         */
-        Barryvdh\Debugbar\ServiceProvider::class,
-
-        /*
-         * Zipper
-         */
         Chumper\Zipper\ZipperServiceProvider::class,
 
-    	/*
-    	 * Slack
-    	 */
-    	Maknz\Slack\SlackServiceProvider::class,
-
-        /*
-         * Youtube
-         */
-        Dawson\Youtube\YoutubeServiceProvider::class,
-        Madcoda\Youtube\YoutubeServiceProviderLaravel5::class,
-
-        /*
-         * FFMpeg
-         */
-        Pbmedia\LaravelFFMpeg\FFMpegServiceProvider::class,
     ],
 
     /*
@@ -220,6 +199,8 @@ return [
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         'Auth' => Illuminate\Support\Facades\Auth::class,
         'Blade' => Illuminate\Support\Facades\Blade::class,
+        'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
+        'Bus' => Illuminate\Support\Facades\Bus::class,
         'Cache' => Illuminate\Support\Facades\Cache::class,
         'Config' => Illuminate\Support\Facades\Config::class,
         'Cookie' => Illuminate\Support\Facades\Cookie::class,
@@ -233,6 +214,7 @@ return [
         'Lang' => Illuminate\Support\Facades\Lang::class,
         'Log' => Illuminate\Support\Facades\Log::class,
         'Mail' => Illuminate\Support\Facades\Mail::class,
+        'Notification' => Illuminate\Support\Facades\Notification::class,
         'Password' => Illuminate\Support\Facades\Password::class,
         'Queue' => Illuminate\Support\Facades\Queue::class,
         'Redirect' => Illuminate\Support\Facades\Redirect::class,
@@ -246,22 +228,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
-        'Form' => Collective\Html\FormFacade::class,
-        'Html' => Collective\Html\HtmlFacade::class,
-
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-
-        'Debugbar'  => Barryvdh\Debugbar\Facade::class,
-
         'Zipper' => Chumper\Zipper\Zipper::class,
-
-    	'Slack' => Maknz\Slack\Facades\Slack::class,
-
-        'Youtube' => Dawson\Youtube\Facades\Youtube::class,
-        'YoutubeSearch' => Madcoda\Youtube\Facades\Youtube::class,
-
-        'FFMpeg' => Pbmedia\LaravelFFMpeg\FFMpegFacade::class,
-
     ],
+
 ];

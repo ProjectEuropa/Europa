@@ -1,45 +1,42 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
-
 use App\User;
 use Validator;
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Socialite;
 use Auth;
-use App\SocialAccount;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class SocialController extends Controller {
-    /*
-      |--------------------------------------------------------------------------
-      | Registration & Login Controller
-      |--------------------------------------------------------------------------
-      |
-      | This controller handles the registration of new users, as well as the
-      | authentication of existing users. By default, this controller uses
-      | a simple trait to add these behaviors. Why don't you explore it?
-      |
-     */
 
-use AuthenticatesAndRegistersUsers,
-    ThrottlesLogins;
+    /*
+    |--------------------------------------------------------------------------
+    | Login Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles authenticating users for the application and
+    | redirecting them to your home screen. The controller uses a trait
+    | to conveniently provide its functionality to your applications.
+    |
+    */
+
+    use AuthenticatesUsers;
 
     /**
-     * Where to redirect users after login / registration.
+     * Where to redirect users after login.
      *
      * @var string
      */
     protected $redirectTo = '/';
 
     /**
-     * Create a new authentication controller instance.
+     * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct() {
-        $this->middleware($this->guestMiddleware(), ['except' => 'logout']);
+    public function __construct()
+    {
+        $this->middleware('guest')->except('logout');
     }
 
     /**
@@ -74,13 +71,10 @@ use AuthenticatesAndRegistersUsers,
     public function getTwitterAuth() {
         return Socialite::driver('twitter')->redirect();
     }
-
     public function getTwitterAuthCallback() {
         $twitterUser = Socialite::driver('twitter')->user();
-
         $user = $this->findOrCreateUser($twitterUser, 'twitter');
         Auth::login($user, true);
-
         return redirect($this->redirectTo);
     }
 
@@ -88,13 +82,10 @@ use AuthenticatesAndRegistersUsers,
     public function getGoogleAuth() {
         return Socialite::driver('google')->redirect();
     }
-
     public function getGoogleAuthCallback() {
         $googleUser = Socialite::driver('google')->user();
-
         $user = $this->findOrCreateUser($googleUser, 'google');
         Auth::login($user, true);
-
         return redirect($this->redirectTo);
     }
 
@@ -106,11 +97,9 @@ use AuthenticatesAndRegistersUsers,
      */
     private function findOrCreateUser($providerUser, $provider) {
         $authUser = User::where('provider_id', $providerUser->getId())->first();
-
         if ($authUser) {
             return $authUser;
         }
-
         return User::create([
                     'name' => $providerUser->getName(),
                     'provider_id' => $providerUser->getId(),
@@ -119,5 +108,4 @@ use AuthenticatesAndRegistersUsers,
                     'provider' => $provider
         ]);
     }
-
 }

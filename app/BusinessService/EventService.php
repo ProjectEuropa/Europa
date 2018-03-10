@@ -3,73 +3,24 @@
 namespace App\BusinessService;
 
 use Illuminate\Http\Request;
-use App\Event;
 use DB;
 
 /*
  * EventServieクラス
  * Eventモデルに関わるロジックを記述
  */
-
 class EventService {
-
-    /**
-     *
-     * イベント登録
-     * @param Request
-     * @param String 登録ユーザID
-     * @return bool
-     */
-    public static function registerEvent(Request $request, String $registerUserId) {
-
-        $event = new Event();
-
-        $event->register_user_id = $registerUserId;
-        $event->event_name = $request->input('eventName');
-        $event->event_details = $request->input('eventDetails');
-        $event->event_type = $request->input('eventType');
-
-        $eventReferenceUrl = null;
-        if (empty($request->input('eventReferenceUrl'))) {
-            // イベント参照URLが空であれば「#」を代入
-            $eventReferenceUrl = '#';
-        } else {
-            $eventReferenceUrl = $request->input('eventReferenceUrl');
-        }
-        $event->event_reference_url = $eventReferenceUrl;
-
-        // イベント締切、表示日時はyyyy/mm/dd + hh:mmで登録する
-        $eventClosingDay = $request->input('eventClosingDate') . ' ' . $request->input('eventClosingTime');
-        $eventDisplayingDay = $request->input('eventDisplayingDate') . ' ' . $request->input('eventDisplayingTime');
-
-        $event->event_closing_day = $eventClosingDay;
-        $event->event_displaying_day = $eventDisplayingDay;
-
-        return $event->save();
-    }
 
     /**
      *
      * イベント全件検索
      * @return Event
      */
-    public static function searchAllEvents() {
-
-        $events = Event::select('id', 'event_name', 'event_details', 'event_reference_url', 'event_type', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_closing_day, "
+    public function searchAllEvents() 
+    {
+        return DB::table('events')->select('id', 'event_name', 'event_details', 'event_reference_url', 'event_type', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_closing_day, "
                                 . "to_char(event_displaying_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_displaying_day "))
                 ->get();
-
-        return $events;
-    }
-
-    /**
-     *
-     * イベントカンレダー用検索
-     * @return Event
-     */
-    public static function searchEventCalendarData() {
-        $events = Event::select('event_name', 'event_reference_url', 'event_closing_day')->get();
-        return $events;
     }
 
     /**
@@ -79,30 +30,39 @@ class EventService {
      * @param String $registerUserId 登録ユーザID
      * @return Event
      */
-    public static function searchUserEvents(String $registerUserId) {
-
-        $events = Event::select('id', 'event_name', 'event_details', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_closing_day, "
+    public function searchUserEvents(String $registerUserId) 
+    {
+        return DB::table('events')->select('id', 'event_name', 'event_details', DB::raw("to_char(event_closing_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_closing_day, "
                                 . "to_char(event_displaying_day, 'YYYY/MM/DD (TMDy) HH24:MI') as event_displaying_day "))
                 ->where('register_user_id', '=', $registerUserId)
                 ->get();
-
-        return $events;
     }
 
     /**
      *
-     * 過去表示の日付イベント削除
-     * @return int 削除件数
+     * イベント登録
+     * @param Request
+     * @param String 登録ユーザID
+     * @return bool
      */
-    public static function deletePastDisplayingEvents() {
-
-        // 表示日時が現在日付以前のイベントを削除
+    public function registerEvent(Request $request, String $registerUserId) 
+    {
         $now = date('Y/m/d H:i:s');
-        $count = Event::where('event_displaying_day', '<', $now)->delete();
+        $insertArray = [
+            'register_user_id' => $registerUserId,
+            'event_name' => $request->input('eventName'),
+            'event_details' => $request->input('eventDetails'),
+            'event_type' => $request->input('eventType'),
+            'event_reference_url' => $request->input('eventReferenceUrl') === null ? '#' : $request->input('eventReferenceUrl'),
+            'event_closing_day' => $request->input('eventClosingDate') . ' ' . $request->input('eventClosingTime'),
+            'event_displaying_day' => $request->input('eventDisplayingDate') . ' ' . $request->input('eventDisplayingTime'),
+            'updated_at' => $now,
+            'created_at' => $now
+        ];
 
-        return $count;
+        return DB::table('events')->insert($insertArray);
     }
-
+    
     /**
      *
      * 特定ユーザのイベント削除
@@ -111,13 +71,43 @@ class EventService {
      * @param String $registerUserId 登録ユーザID
      * @return int $deleteCount 削除件数
      */
-    public static function deleteUserEvent(String $eventId, String $registerUserId) {
-
-        $deleteCount = Event::where('id', '=', $eventId)
+    public function deleteUserEvent(String $eventId, String $registerUserId) : int 
+    {
+        return DB::table('events')
+                ->where('id', '=', $eventId)
                 ->where('register_user_id', '=', $registerUserId)
                 ->delete();
-
-        return $deleteCount;
     }
 
+    /**
+     *
+     * 過去表示の日付イベント削除
+     * @return int 削除件数
+     */
+    public function deletePastDisplayingEvents() : int
+    {
+        // 表示日時が現在日付以前のイベントを削除
+        $now = date('Y/m/d H:i:s');
+
+        $count = DB::table('events')
+                ->where('event_displaying_day', '<', $now)
+                ->count();
+
+        if ($count >= 1) {
+            return DB::table('events')
+                ->where('event_displaying_day', '<', $now)
+                ->delete();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     *
+     * イベントカンレダー用検索
+     * @return Event
+     */
+    public function searchEventCalendarData() {
+        return DB::table('events')->select('event_name', 'event_reference_url', 'event_closing_day')->get();
+    }
 }

@@ -71,7 +71,7 @@ return [
     'timezone'             => ':attributeは正しいタイムゾーンをしていしてください。',
     'unique'               => ':attributeは既に存在します。',
     'url'                  => ':attributeを正しい書式にしてください。',
-    "no_che_file"          => ":attributeはCHEファイルを指定してください。",
+    "che_file"          => ":attributeはCHEファイルを指定してください。",
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
