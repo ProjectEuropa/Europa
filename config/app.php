@@ -1,4 +1,12 @@
 <?php
+switch (getenv('PHP_ENV')) {
+    case 'production'://本番用
+        $url = getenv('APP_URL', 'http://localhost');
+        break;
+    default:// ローカル用
+        $url = env('APP_URL', 'http://localhost');
+        break;
+    }
 
 return [
 
@@ -52,7 +60,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => $url,
 
     /*
     |--------------------------------------------------------------------------
