@@ -31146,7 +31146,7 @@ exports = module.exports = __webpack_require__(4)(false);
 
 
 // module
-exports.push([module.i, "\n.alert[data-v-6406c664] {\n  padding: 0;\n}\n.table-header .download[data-v-6406c664],\n.table-header .owner[data-v-6406c664] {\n  width: 100px;\n}\n.table-header .created-at[data-v-6406c664] {\n  width: 160px;\n}\n.table-header .delete[data-v-6406c664] {\n  width: 200px;\n}\ndialog[data-v-6406c664]:not([open]) {\n  display: none;\n}\ndialog[data-v-6406c664] {\n  border: none;\n}\ndialog menu[data-v-6406c664] {\n    padding: 0;\n    margin: 0;\n}\ndialog p[data-v-6406c664] {\n    text-align: center;\n}\n@media screen and (max-width: 767px) {\ntable[data-v-6406c664] {\n    overflow: auto;\n    white-space: nowrap;\n}\n}\n", ""]);
+exports.push([module.i, "\n.alert[data-v-6406c664] {\n  padding: 0;\n}\n.table-header .download[data-v-6406c664],\n.table-header .owner[data-v-6406c664] {\n  width: 120px;\n}\n.table-header .created-at[data-v-6406c664] {\n  width: 160px;\n}\n.table-header .delete[data-v-6406c664] {\n  width: 200px;\n}\ndialog[data-v-6406c664]:not([open]) {\n  display: none;\n}\ndialog[data-v-6406c664] {\n  border: none;\n}\ndialog menu[data-v-6406c664] {\n    padding: 0;\n    margin: 0;\n}\ndialog p[data-v-6406c664] {\n    text-align: center;\n}\n@media screen and (max-width: 767px) {\ntable[data-v-6406c664] {\n    overflow: auto;\n    white-space: nowrap;\n}\n}\n", ""]);
 
 // exports
 

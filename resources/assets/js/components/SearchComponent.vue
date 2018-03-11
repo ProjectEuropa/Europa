@@ -107,7 +107,7 @@ export default {
 .table-header {
   .download,
   .owner {
-    width: 100px;
+    width: 120px;
   }
   .created-at {
     width: 160px;
