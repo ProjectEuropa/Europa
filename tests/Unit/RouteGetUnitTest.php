@@ -148,9 +148,10 @@ class RouteGetUnitTest extends TestCase
      */
     public function testDownloadRoute()
     {
-        $fileId = DB::table('files')->select('id')->inRandomOrder()->first()->id;
-        if ($fileId) {
-            $response = $this->call('GET', '/search/download/'.$fileId);
+        $files = DB::table('files')->select('id')->inRandomOrder();
+        if ($files) {
+            $id = $files->first()->id;
+            $response = $this->call('GET', '/search/download/'.$id);
             $this->assertEquals(200, $response->baseResponse->getStatusCode());
         }
     } 
