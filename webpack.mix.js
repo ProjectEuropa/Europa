@@ -1,4 +1,4 @@
-let mix = require('laravel-mix');
+const mix = require('laravel-mix');
 
 /*
  |--------------------------------------------------------------------------
@@ -11,31 +11,26 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/js')
-    .js('resources/assets/js/sumdl.js', 'public/js')
-    .scripts([
-        'resources/assets/material-js/jquery-3.2.1.min.js',
-        'resources/assets/material-js/bootstrap.min.js',
-        'resources/assets/material-js/jquery.nice-select.min.js',
-        'resources/assets/material-js/magicsuggest-min-repair.js',
-        'resources/assets/material-js/mdb.min.js',
-        'resources/assets/material-js/popper.min.js',
-        'resources/assets/material-js/prism.js',
-        'resources/assets/material-js/loadingOverlay.js',
-        'resources/assets/material-js/magicsuggest-conf.js',
-        'resources/assets/material-js/notify.min.js',
-        'resources/assets/material-js/moment.js',
-        'resources/assets/material-js/fullcalendar.min.js',
-    ], 'public/js/material.js')
-    .scripts([
-        'resources/assets/js/calendar/moment.js',
-        'resources/assets/js/calendar/fullcalendar.min.js',
-    ], 'public/js/calendar.js')
-   .sass('resources/assets/sass/app.scss', 'public/css')
-   .styles([
-    'resources/assets/css/bootstrap.min.css',
-    'resources/assets/css/mdb.min.css',
-    'resources/assets/css/nice-select.css',
-    'resources/assets/css/magic-suggest-min.css',
-    'resources/assets/css/fullcalendar.min.css',
-    ], 'public/css/material.css');
+// mix.js('resources/js/app.js', 'public/js')
+//    .sass('resources/sass/app.scss', 'public/css');
+
+mix.ts("resources/ts/app.ts", "public/js");
+
+mix.webpackConfig({
+  resolve: {
+    extensions: [".js", ".jsx", ".vue", ".ts", ".tsx"],
+    alias: {
+      vue$: "vue/dist/vue.esm.js"
+    }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        options: { appendTsSuffixTo: [/\.vue$/] },
+        exclude: /node_modules/
+      }
+    ]
+  }
+});

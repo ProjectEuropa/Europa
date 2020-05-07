@@ -1,2 +1,2 @@
-web: vendor/bin/heroku-php-nginx -i custom_php.ini -C nginx_app.config public/
-worker: php artisan queue:listen
+release: php artisan migrate --force
+web: vendor/bin/heroku-php-apache2 public/

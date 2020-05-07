@@ -1,26 +1,4 @@
 <?php
-switch (getenv('PHP_ENV')) {
-    case 'production'://本番用
-        $driver = getenv('MAIL_DRIVER', 'smtp');
-        $host = getenv('MAIL_HOST', 'smtp.mailgun.org');
-        $port = getenv('MAIL_PORT', 587);
-        $address = getenv('MAIL_FROM_ADDRESS', 'hello@example.com');
-        $name = getenv('MAIL_FROM_NAME', 'Example');
-        $encryption = getenv('MAIL_ENCRYPTION', 'tls');
-        $username = getenv('MAIL_USERNAME');
-        $password = getenv('MAIL_PASSWORD');
-        break;
-    default:// ローカル用
-        $driver = env('MAIL_DRIVER', 'smtp');
-        $host = env('MAIL_HOST', 'smtp.mailgun.org');
-        $port = env('MAIL_PORT', 587);
-        $address = env('MAIL_FROM_ADDRESS', 'hello@example.com');
-        $name = env('MAIL_FROM_NAME', 'Example');
-        $encryption = env('MAIL_ENCRYPTION', 'tls');
-        $username = env('MAIL_USERNAME');
-        $password = env('MAIL_PASSWORD');
-        break;
-}
 
 return [
 
@@ -33,12 +11,12 @@ return [
     | sending of e-mail. You may specify which one you're using throughout
     | your application here. By default, Laravel is setup for SMTP mail.
     |
-    | Supported: "smtp", "sendmail", "mailgun", "mandrill", "ses",
-    |            "sparkpost", "log", "array"
+    | Supported: "smtp", "sendmail", "mailgun", "ses",
+    |            "postmark", "log", "array"
     |
     */
 
-    'driver' => $driver,
+    'driver' => env('MAIL_DRIVER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +29,7 @@ return [
     |
     */
 
-    'host' => $host,
+    'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
 
     /*
     |--------------------------------------------------------------------------
@@ -64,7 +42,7 @@ return [
     |
     */
 
-    'port' => $port,
+    'port' => env('MAIL_PORT', 587),
 
     /*
     |--------------------------------------------------------------------------
@@ -78,8 +56,8 @@ return [
     */
 
     'from' => [
-        'address' => $address,
-        'name' => $name,
+        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
     /*
@@ -93,7 +71,7 @@ return [
     |
     */
 
-    'encryption' => $encryption,
+    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
 
     /*
     |--------------------------------------------------------------------------
@@ -106,9 +84,9 @@ return [
     |
     */
 
-    'username' => $username,
+    'username' => env('MAIL_USERNAME'),
 
-    'password' => $password,
+    'password' => env('MAIL_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------
@@ -141,5 +119,18 @@ return [
             resource_path('views/vendor/mail'),
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Log Channel
+    |--------------------------------------------------------------------------
+    |
+    | If you are using the "log" driver, you may specify the logging channel
+    | if you prefer to keep mail messages separate from other log entries
+    | for simpler reading. Otherwise, the default channel will be used.
+    |
+    */
+
+    'log_channel' => env('MAIL_LOG_CHANNEL'),
 
 ];
