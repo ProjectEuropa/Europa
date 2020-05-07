@@ -1,25 +1,51 @@
 {
-    "private": true,
-    "scripts": {
-        "dev": "npm run development",
-        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch-poll": "npm run watch -- --watch-poll",
-        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
-    },
-    "devDependencies": {
-        "axios": "^0.17",
-        "bootstrap-sass": "^3.3.7",
-        "cross-env": "^5.1",
-        "jquery": "^3.2",
-        "laravel-mix": "^1.0",
-        "lodash": "^4.17.4",
-        "vue": "^2.5.7"
-    },
-    "dependencies": {
-        "font-awesome": "^4.7.0",
-        "vue-indicator": "0.0.7"
-    }
+  "name": "nuxt",
+  "version": "1.0.0",
+  "description": "My epic Nuxt.js project",
+  "author": "masato",
+  "private": true,
+  "scripts": {
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run development -- --watch",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "postinstall": "npm run prod"
+  },
+  "dependencies": {
+    "moment": "^2.24.0",
+    "nuxt": "2.10.*",
+    "webpack": "4.28.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@mdi/font": "^5.0.45",
+    "@types/babel__core": "^7.1.6",
+    "@vue/test-utils": "^1.0.0-beta.27",
+    "axios": "^0.19.2",
+    "babel-jest": "^25.1.0",
+    "cross-env": "^7.0.2",
+    "css-loader": "^3.2.0",
+    "eslint-loader": "^3.0.2",
+    "jest": "^24.1.0",
+    "laravel-mix": "^5.0.4",
+    "resolve-url-loader": "^3.1.0",
+    "sass": "^1.26.3",
+    "sass-loader": "^8.0.2",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "vee-validate": "^3.2.5",
+    "vue": "^2.6.10",
+    "vue-jest": "^4.0.0-0",
+    "vue-property-decorator": "^8.4.1",
+    "vue-router": "^3.1.6",
+    "vue-social-sharing": "^2.4.6",
+    "vue-style-loader": "^4.1.2",
+    "vuetify": "^2.2.18"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  }
 }

@@ -1,15 +1,17 @@
 <?php
 namespace App\BusinessService;
 
-use Illuminate\Http\Request;
 use App\File;
 use Auth;
 use DB;
+use Illuminate\Http\Request;
+
 /*
  * FileService
  * Fileモデルに関わるロジックを記述
  */
-class FileService {
+class FileService
+{
 
     /**
      * ファイルデータ登録処理
@@ -17,15 +19,15 @@ class FileService {
      * @param  array ['isTeam']  true場合チーム falseの場合マッチデータ ['isNormalUpdate']true通常アップロード場合チーム falseの場合簡易アップロード
      * @return void
      */
-    public function registerFileData(Request $request, array $arrayIsTeamOrNormarUpdate) {
-
+    public function registerFileData(Request $request, array $arrayIsTeamOrNormarUpdate)
+    {
         $dataType = null;
         $file = null;
         $uploadOwnerName = null;
         $fileComment = null;
         $deletePassword = null;
         $searchTags = null;
-        
+
         // チームFlgがオンならばチームデータを取得、offならばマッチデータ
         if ($arrayIsTeamOrNormarUpdate['isTeam']) {
             $dataType = \Config::get('const.DB_STR_DATA_TYPE_TEAM');
@@ -33,17 +35,17 @@ class FileService {
             $uploadOwnerName = $request->input('teamOwnerName'); // アップロードオーナー名（編集可能）
             $fileComment = $request->input('teamComment'); // コメント
             $deletePassword = $request->input('teamDeletePassWord'); // 削除パスワード
-            $searchTags = $request->input('teamSearchTags'); // 検索タグ
+            $searchTags = explode(',', $request->input('teamSearchTags')); // 検索タグ
         } else {
             $dataType = \Config::get('const.DB_STR_DATA_TYPE_MATCH');
             $file = $request->file('matchFile');
             $uploadOwnerName = $request->input('matchOwnerName'); // アップロードオーナー名（編集可能）
             $fileComment = $request->input('matchComment'); // コメント
             $deletePassword = $request->input('matchDeletePassWord'); // 削除パスワード
-            $searchTags = $request->input('matchSearchTags'); // 検索タグ
+            $searchTags = explode(',', $request->input('matchSearchTags')); // 検索タグ
         }
-        $fileData = file_get_contents($file);       // ファイルのバイナリデータ取得
-        $fileName = $file->getClientOriginalName();     // ファイル名
+        $fileData = file_get_contents($file); // ファイルのバイナリデータ取得
+        $fileName = $file->getClientOriginalName(); // ファイル名
         $now = date('Y/m/d H:i:s'); // 現在日付
         $uploadUserId = null;
         $uploadType = null;
@@ -74,7 +76,7 @@ class FileService {
         // LOB使用のためPDOを取得し直接SQLを実行する
         $db = DB::connection('pgsql')->getPdo();
         $stmt = $db->prepare("INSERT INTO files (file_data, upload_type, file_name, upload_owner_name, file_comment, delete_password, data_type, created_at, updated_at, upload_user_id, search_tag1, search_tag2, search_tag3, search_tag4) "
-                . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bindParam(1, $fileData, $db::PARAM_LOB); //ラージオブジェクトとして登録
         $stmt->bindParam(2, $uploadType, $db::PARAM_STR);
         $stmt->bindParam(3, $fileName, $db::PARAM_STR);
@@ -93,47 +95,5 @@ class FileService {
         $stmt->execute();
         // 切断
         unset($db);
-    }
-
-    /**
-     * 検索画面からのファイル削除
-     * @param Request リクエスト
-     * @return int $deleteCount 削除実行レコード数
-     */
-    public function deleteSearchFile(Request $request) : int {
-        //指定したファイルとアップロードユーザIDを対象として削除
-        return DB::table('files')
-                ->where('id', '=', $request->input('id'))
-                ->where('delete_password', '=', $request->input('deletePassword') === null ?  '' : $request->input('deletePassword'))
-                ->delete();
-    }
-
-    /**
-     *
-     * ユーザファイル検索
-     * @param String $userId ユーザID
-     * @param int $fileType 検索タイプ(team:1 or match:2)
-     * @return $files ユーザファイルデータ
-     */
-    public function searchUserFiles(String $userId, int $fileType) {
-
-        return DB::table('files')
-                ->where('upload_user_id', '=', $userId)
-                ->where('data_type', '=', $fileType)
-                ->orderBy('id', 'desc')->get();
-    }
-
-     /**
-     * 特定ユーザのファイル削除
-     * @param String fileId 削除対象ファイルID
-     * @param String  $upLoadUserId アップロードユーザID
-     * @return int $deleteCount 削除実行レコード数
-     */
-    public function deleteUserFile(String $fileId, String $upLoadUserId) : int {
-        //指定したファイルとアップロードユーザIDを対象として削除
-        return DB::table('files')
-                ->where('id', '=', $fileId)
-                ->where('upload_user_id', '=', $upLoadUserId)
-                ->delete();
     }
 }

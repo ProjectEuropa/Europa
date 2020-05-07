@@ -1,5 +1,5 @@
 <?php
-return array(
+return [
     // データタイプチーム:'1'
     'DB_STR_DATA_TYPE_TEAM' => '1',
     // データタイプマッチ:'2'
@@ -18,5 +18,4 @@ return array(
     'IS_TEAM_FLG_TRUE' => true,
     // チームフラグfalse(マッチデータ)
     'IS_TEAM_FLG_FALSE '=> false,
-
-);
+];

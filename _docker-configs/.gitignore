@@ -1,0 +1,4 @@
+nginx/cert-key
+data/
+xdebug
+docker-entrypoint-initdb.d

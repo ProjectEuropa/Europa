@@ -1,8 +1,3 @@
 {
-    "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css",
-    "/js/sumdl.js": "/js/sumdl.js",
-    "/js/material.js": "/js/material.js",
-    "/js/calendar.js": "/js/calendar.js",
-    "/css/material.css": "/css/material.css"
+    "/js/app.js": "/js/app.js"
 }
