@@ -11,9 +11,12 @@
     "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "prod": "npm run production",
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "postinstall": "npm run prod"
+    "postinstall": "npm run prod",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
+    "cypress": "^8.4.1",
     "moment": "^2.24.0",
     "nuxt": "2.10.*",
     "webpack": "4.28.4"
