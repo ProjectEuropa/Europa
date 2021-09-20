@@ -2,15 +2,14 @@ name: E2E Test
 
 on:
   schedule:
-   - cron: "0 2 * * *"
+   - cron: "*/5 * * * *"
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: feature/cypress_test
+        with: { ref: feature/cypress_test }
 
       - name: Notify slack success
         env:
