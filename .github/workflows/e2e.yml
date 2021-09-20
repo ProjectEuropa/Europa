@@ -24,8 +24,6 @@ jobs:
       - name: 'Run tests'
         uses: cypress-io/github-action@v2
 
-
-
       - name: 'Upload screenshots and videos to Slack'
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
         if: failure()
