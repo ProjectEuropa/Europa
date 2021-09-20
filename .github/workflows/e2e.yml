@@ -3,6 +3,7 @@ name: E2E Test
 on:
   schedule:
    - cron: "*/5 * * * *"
+  workflow_dispatch:
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
