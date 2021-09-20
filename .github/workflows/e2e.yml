@@ -1,24 +1,30 @@
 name: E2E Test
 
 on:
-  pull_request:
-    branches: [ master ]
-
+  schedule:
+   - cron: "0 2 * * *"
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: feature/cypress_test
+
+      - name: Notify slack success
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: proj-クイズアプリ個別対応
+          status: SUCCESS
+          color: good
 
       - name: 'Run tests'
         uses: cypress-io/github-action@v2
 
-      - name: 'Upload screenshots and videos to Slack'
-        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        with:
-          token: ${{ secrets.SLACK_TOKEN }}
-          channels: 'proj-クイズアプリ個別対応'
+
 
       - name: 'Upload screenshots and videos to Slack'
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
