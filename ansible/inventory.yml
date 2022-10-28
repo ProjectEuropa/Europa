@@ -1,0 +1,17 @@
+all:
+  hosts:
+    #prd-web:
+      #ansible_host:
+      #ansible_user:
+      #ansible_ssh_private_key_file:
+    stg-1:
+      ansible_host: '{{ lookup("env", "STG_HOST") }}'
+      ansible_user: '{{ lookup("env", "STG_USER") }}'
+      ansible_ssh_private_key_file: '{{ lookup("env", "STG_PRIVATE_KEY_PATH") }}'
+  children:
+    production:
+      hosts:
+        prd-1:
+    staging:
+      hosts:
+        stg-1:

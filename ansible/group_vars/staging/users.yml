@@ -1,0 +1,8 @@
+---
+os_users:
+  - name: project.europa
+    state: present
+    group: docker
+    enviroment: staging
+    comment: "owner"
+    add_pubkey: yes
