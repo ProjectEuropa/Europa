@@ -30,6 +30,19 @@ mix.webpackConfig({
         loader: "ts-loader",
         options: { appendTsSuffixTo: [/\.vue$/] },
         exclude: /node_modules/
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[contenthash].[ext]',
+              outputPath: 'static/img',
+              esModule: false
+            }
+          }
+        ]
       }
     ]
   }
