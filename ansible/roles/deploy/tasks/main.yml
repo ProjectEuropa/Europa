@@ -1,0 +1,28 @@
+---
+- name: git pull latest
+  ansible.builtin.git:
+    repo: git@github.com:ProjectEuropa/Europa.git
+    dest: /home/project.europa/Europa
+    version: master
+    key_file: /home/project.europa/.ssh/github
+    accept_hostkey: true
+    force: true
+  become: true
+
+- name: set .env
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: project.europa
+    group: docker
+    mode: "{{ item.mode }}"
+    backup: yes
+  become: true
+  with_items:
+    - { src: "{{ playbook_dir + '/.env.production' }}", dest: /home/project.europa/Europa/.env, mode: '0644' }
+
+- name: deploy
+  ansible.builtin.script:
+    cmd: "{{ playbook_dir + '/deploy.sh' }}"
+    chdir: /home/project.europa/Europa
+  become: true

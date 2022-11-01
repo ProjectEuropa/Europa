@@ -1,0 +1,13 @@
+---
+- name: Create config for ssh access to git.
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: project.europa
+    group: docker
+    mode: "{{ item.mode }}"
+    backup: yes
+  become: true
+  with_items:
+    - { src: ~/.ssh/config, dest: /home/project.europa/.ssh/config, mode: '0644' }
+    - { src: ~/.ssh/github, dest: /home/project.europa/.ssh/github, mode: '0600' }
