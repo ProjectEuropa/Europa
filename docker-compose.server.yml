@@ -46,7 +46,7 @@ services:
       - db-store:/var/lib/postgresql/data
   mackerel-agent:
     image: mackerel/mackerel-agent
-    hostname: laravel-monitor
+    hostname: laravel-monitor-${APP_ENV}
     environment:
       - apikey=${MACKEREL_APIKEY}
       - enable_docker_plugin=true

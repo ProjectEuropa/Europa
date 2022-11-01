@@ -19,7 +19,7 @@
     backup: yes
   become: true
   with_items:
-    - { src: "{{ playbook_dir + '/.env.staging' }}", dest: /home/project.europa/Europa/.env, mode: '0644' }
+    - { src: "{{ playbook_dir + '/.env.production' }}", dest: /home/project.europa/Europa/.env, mode: '0644' }
 
 - name: deploy
   ansible.builtin.script:

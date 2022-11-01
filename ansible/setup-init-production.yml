@@ -1,0 +1,8 @@
+---
+- name: Set up OS users and security
+  hosts: production
+  roles:
+    - setuser
+    - docker
+    - git
+
