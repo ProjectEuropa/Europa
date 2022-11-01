@@ -34,5 +34,6 @@ return [
         'client_id' => env("TWITTER_ID"),
         'client_secret' => env("TWITTER_SECRET"),
         'redirect' => env('CALLBACK_URL'),
+        'oauth'           => 2,
     ],
 ];
