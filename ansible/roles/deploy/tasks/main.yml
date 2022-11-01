@@ -1,0 +1,16 @@
+---
+- name: git pull latest
+  ansible.builtin.git:
+    repo: git@github.com:ProjectEuropa/Europa.git
+    dest: /home/project.europa/Europa
+    version: feature/staging
+    key_file: /home/project.europa/.ssh/github
+    accept_hostkey: true
+    force: true
+  become: true
+
+- name: deploy
+  ansible.builtin.script:
+    cmd: "{{ playbook_dir + '/deploy.sh' }}"
+    chdir: /home/project.europa/Europa
+  become: true

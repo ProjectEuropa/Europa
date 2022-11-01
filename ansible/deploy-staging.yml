@@ -2,4 +2,4 @@
 - name: Deploy
   hosts: staging
   roles:
-
+    - deploy

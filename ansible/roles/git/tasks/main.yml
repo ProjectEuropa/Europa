@@ -11,12 +11,3 @@
   with_items:
     - { src: ~/.ssh/config, dest: /home/project.europa/.ssh/config, mode: '0644' }
     - { src: ~/.ssh/github, dest: /home/project.europa/.ssh/github, mode: '0600' }
-
-- name: git clone
-  ansible.builtin.git:
-    repo: git@github.com:ProjectEuropa/Europa.git
-    dest: /home/project.europa/Europa
-    version: feature/staging
-    key_file: /home/project.europa/.ssh/github
-    accept_hostkey: true
-  become: true
