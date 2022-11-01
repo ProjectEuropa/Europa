@@ -28,4 +28,7 @@
     RewriteCond %{HTTP:X-Forwarded-Proto} =""
     RewriteCond %{HTTPS} !=on
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    RewriteCond %{http_host} ^project-europa.herokuapp.com
+    RewriteRule ^(.*) https://project-europa.work/$1 [R=301,L]
 </IfModule>
