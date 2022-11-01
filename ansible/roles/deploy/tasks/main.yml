@@ -9,6 +9,18 @@
     force: true
   become: true
 
+- name: set .env
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: project.europa
+    group: docker
+    mode: "{{ item.mode }}"
+    backup: yes
+  become: true
+  with_items:
+    - { src: "{{ playbook_dir + '/.env.staging' }}", dest: /home/project.europa/Europa/.env, mode: '0644' }
+
 - name: deploy
   ansible.builtin.script:
     cmd: "{{ playbook_dir + '/deploy.sh' }}"

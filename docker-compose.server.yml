@@ -31,6 +31,7 @@ services:
     volumes:
       - ./:/var/www/html
       - node_modules_volume:/var/www/html/node_modules
+      - laravel-log:/var/www/html/storage/logs
   pg:
     image: postgres:14.2-alpine
     restart: always
@@ -43,8 +44,22 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - db-store:/var/lib/postgresql/data
-
+  mackerel-agent:
+    image: mackerel/mackerel-agent
+    hostname: laravel-monitor
+    environment:
+      - apikey=${MACKEREL_APIKEY}
+      - enable_docker_plugin=true
+      - include=/etc/mackerel-agent/conf.d/*.conf
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/mackerel-agent/:/var/lib/mackerel-agent/
+      - ./mackerel_conf:/etc/mackerel-agent/conf.d
+      - laravel-log:/laravel_log
+    depends_on:
+      - web
 volumes:
   db-store:
   https-portal-data:
   node_modules_volume:
+  laravel-log:
