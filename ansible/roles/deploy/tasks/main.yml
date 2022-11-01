@@ -3,7 +3,7 @@
   ansible.builtin.git:
     repo: git@github.com:ProjectEuropa/Europa.git
     dest: /home/project.europa/Europa
-    version: feature/staging
+    version: master
     key_file: /home/project.europa/.ssh/github
     accept_hostkey: true
     force: true
