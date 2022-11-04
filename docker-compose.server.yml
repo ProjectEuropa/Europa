@@ -25,8 +25,13 @@ services:
   php-fpm:
     build:
       context: ./_docker-configs/php-fpm
+      args:
+        - NEW_RELIC_AGENT_VERSION=10.3.0.315
+        - NEW_RELIC_LICENSE_KEY=${NRIA_LICENSE_KEY}
+        - NEW_RELIC_APPNAME="project-europa - ${APP_ENV}"
     depends_on:
       - pg
+      - newrelic-php-daemon
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
@@ -72,6 +77,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - NRIA_LICENSE_KEY=${NRIA_LICENSE_KEY}
+  newrelic-php-daemon:
+    image: newrelic/php-daemon:10.3.0
 
 volumes:
   db-store:
