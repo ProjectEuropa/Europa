@@ -1,5 +1,7 @@
 docker compose -f docker-compose.server.yml up -d --build
 
+docker compose -f docker-compose.server.yml run php-fpm php artisan down
+
 docker compose -f docker-compose.server.yml run php-fpm composer install --no-dev
 
 docker compose -f docker-compose.server.yml run php-fpm php artisan key:generate
@@ -16,3 +18,5 @@ docker compose -f docker-compose.server.yml run php-fpm npm run prod
 
 chmod 777 -R public
 chmod 777 storage
+
+docker compose -f docker-compose.server.yml run php-fpm php artisan up
