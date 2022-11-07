@@ -42,7 +42,7 @@
     "vue-social-sharing": "^2.4.6",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "2.6.14",
-    "vuetify": "^2.2.18"
+    "vuetify": "^2.6.12"
   },
   "engines": {
     "node": ">=16.0.0"
