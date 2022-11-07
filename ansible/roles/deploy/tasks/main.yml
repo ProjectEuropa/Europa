@@ -25,4 +25,11 @@
   ansible.builtin.script:
     cmd: "{{ playbook_dir + '/deploy.sh' }}"
     chdir: /home/project.europa/Europa
+  register: results
   become: true
+
+- name: show deploy shell results
+  debug:
+    msg: "{{ results.stdout }}"
+  become: true
+  when: results.stdout_lines is defined
