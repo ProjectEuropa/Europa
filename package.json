@@ -10,12 +10,11 @@
     "watch": "npm run development -- --watch",
     "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "prod": "npm run production",
-    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "production": "mix --production",
     "postinstall": "npm run prod"
   },
   "dependencies": {
-    "moment": "^2.29.4",
-    "webpack": "4.28.4"
+    "moment": "^2.29.4"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -29,25 +28,23 @@
     "css-loader": "^3.2.0",
     "eslint-loader": "^3.0.2",
     "file-loader": "^6.2.0",
-    "jest": "^24.1.0",
     "laravel-mix": "^6.0.49",
     "resolve-url-loader": "^3.1.0",
-    "sass": "^1.26.3",
-    "sass-loader": "^8.0.2",
+    "sass": "^1.56.0",
+    "sass-loader": "^13.1.0",
     "ts-loader": "^6.2.2",
-    "typescript": "^3.8.3",
+    "typescript": "^4.8.4",
     "vee-validate": "^3.2.5",
-    "vue": "^2.6.10",
-    "vue-jest": "^4.0.0-0",
-    "vue-loader": "^15.5.1",
+    "vue": "^2.6.14",
+    "vue-loader": "^15.10.0",
     "vue-property-decorator": "^8.4.1",
     "vue-router": "^3.1.6",
     "vue-social-sharing": "^2.4.6",
     "vue-style-loader": "^4.1.2",
-    "vue-template-compiler": "2.6.10",
+    "vue-template-compiler": "2.6.14",
     "vuetify": "^2.2.18"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=16.0.0"
   }
 }
