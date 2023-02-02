@@ -1,4 +1,4 @@
-FROM php:8.0-fpm
+FROM php:8.1-fpm
 
 ARG NEW_RELIC_AGENT_VERSION
 ARG NEW_RELIC_LICENSE_KEY
@@ -30,7 +30,7 @@ RUN apt update \
 
 WORKDIR /var/www/html
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
 apt-get install -y nodejs
 
-RUN npm install -g npm@9.4.0
+RUN npm install -g npm@9.4.1
