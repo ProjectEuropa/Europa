@@ -7,11 +7,9 @@ Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::get('/upload', function () {
         return view('index');
     });
-    Route::group(['middleware' => 'cacheResponse'], function () {
-      Route::get('/{any}', function () {
+    Route::get('/{any}', function () {
         return view('index');
-      })->where('any', '[^aut].*$');
-    });
+    })->where('any', '[^aut].*$');
 
     Route::post('/login', 'Auth\LoginController@login');
     Route::post('/register', 'Auth\RegisterController@register');

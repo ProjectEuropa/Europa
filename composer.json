@@ -16,8 +16,7 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.0",
         "madnest/madzipper": "^1.0",
-        "olssonm/l5-very-basic-auth": "^6.3",
-        "spatie/laravel-responsecache": "^7.4"
+        "olssonm/l5-very-basic-auth": "^6.3"
     },
     "require-dev": {
         "spatie/laravel-ignition": "^1.0",

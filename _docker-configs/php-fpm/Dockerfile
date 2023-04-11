@@ -15,8 +15,6 @@ RUN sed -i -e "s/REPLACE_WITH_REAL_KEY/${NEW_RELIC_LICENSE_KEY}/" \
     -e '$anewrelic.daemon.address="newrelic-php-daemon:31339"' \
     $(php -r "echo(PHP_CONFIG_FILE_SCAN_DIR);")/newrelic.ini
 
-COPY php.ini /usr/local/etc/php/
-
 RUN cd /usr/bin && curl -s http://getcomposer.org/installer | php -- --install-dir=/usr/bin && ln -s /usr/bin/composer.phar /usr/bin/composer
 RUN apt update \
 && apt install -y \
@@ -28,7 +26,7 @@ libfreetype6-dev libjpeg62-turbo-dev libpng-dev zlib1g-dev libzip-dev
 
 RUN apt update \
     && apt install -y libpq-dev \
-    && docker-php-ext-install pdo_mysql pdo_pgsql mysqli zip opcache
+    && docker-php-ext-install pdo_mysql pdo_pgsql mysqli zip
 
 WORKDIR /var/www/html
 
