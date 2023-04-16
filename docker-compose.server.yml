@@ -82,22 +82,23 @@ services:
   newrelic-php-daemon:
     image: newrelic/php-daemon:10.3.0
   cron:
-    build: ./cron
+    build:
+      context: ./cron
+      args:
+        - DB_USERNAME=${DB_USERNAME}
+        - DB_PASSWORD=${DB_PASSWORD}
+        - DB_DATABASE=${DB_DATABASE}
+        - RUN_CRON=${RUN_CRON}
     volumes:
       - ./backups:/backups
       - ./cron/database_backup.sh:/etc/periodic/backup/database_backup.sh
     depends_on:
       - pg
     environment:
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE=${DB_DATABASE}
       - PGUSER=${PG_USER}
       - POSTGRES_DB=${DB_DATABASE}
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - RUN_CRON=${RUN_CRON}
-    entrypoint: /entrypoint.sh
 volumes:
   db-store:
   https-portal-data:
