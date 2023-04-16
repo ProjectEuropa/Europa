@@ -1,10 +1,13 @@
 FROM postgres:14.2
 
+ENV TZ=Asia/Tokyo
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client-14 \
     rsyslog \
     vim \
     cron \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 ADD crontab /etc/cron.d/database_backup

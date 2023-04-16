@@ -99,6 +99,7 @@ services:
       - POSTGRES_DB=${DB_DATABASE}
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - TZ=Asia/Tokyo
 volumes:
   db-store:
   https-portal-data:
