@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     && rm -rf /var/lib/apt/lists/*
 
-COPY /ssh_keys/id_rsa /root/.ssh/id_rsa.pub
+COPY /ssh_keys/id_rsa /root/.ssh/id_rsa
 RUN chmod 600 /root/.ssh/id_rsa
 
 ADD crontab /etc/cron.d/database_backup
