@@ -6,3 +6,9 @@ os_users:
     enviroment: staging
     comment: "owner"
     add_pubkey: yes
+  - name: ssh.from.production
+    state: present
+    group: docker
+    enviroment: staging
+    comment: "ssh.from.production"
+    add_pubkey: yes
