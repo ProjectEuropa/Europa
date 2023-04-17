@@ -89,6 +89,7 @@ services:
         - DB_PASSWORD=${DB_PASSWORD}
         - DB_DATABASE=${DB_DATABASE}
         - RUN_CRON=${RUN_CRON}
+        - SSH_HOST=${SSH_HOST}
     volumes:
       - ./backups:/backups
     depends_on:

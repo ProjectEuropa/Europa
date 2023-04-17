@@ -26,9 +26,11 @@ ARG DB_USERNAME
 ARG DB_PASSWORD
 ARG DB_DATABASE
 ARG RUN_CRON
+ARG SSH_HOST
 RUN echo "DB_USERNAME=$DB_USERNAME" >> /etc/environment && \
     echo "DB_PASSWORD=$DB_PASSWORD" >> /etc/environment && \
     echo "DB_DATABASE=$DB_DATABASE" >> /etc/environment && \
-    echo "RUN_CRON=$RUN_CRON" >> /etc/environment
+    echo "RUN_CRON=$RUN_CRON" >> /etc/environment && \
+    echo "SSH_HOST=$SSH_HOST" >> /etc/environment
 
 CMD cron && tail -f /var/log/cron.log
