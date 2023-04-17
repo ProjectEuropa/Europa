@@ -21,15 +21,18 @@
   with_items:
     - { src: "{{ playbook_dir + '/.env.' + group_names | join('') }}", dest: /home/project.europa/Europa/.env, mode: '0644' }
 
+# ステージングでこのデプロイは行わない本番でも1回限りなので通常コメントアウトする
+# - name: Copy private key
+#   ansible.builtin.copy:
+#     src: "{{ playbook_dir + '/ssh_keys/id_rsa'}}"
+#     dest: "/ssh.from.production/.ssh/id_rsa"
+#     mode: "0600"
+#     backup: yes
+#   become: true
+
 - name: deploy
   ansible.builtin.script:
     cmd: "{{ playbook_dir + '/deploy.sh' }}"
     chdir: /home/project.europa/Europa
   register: results
   become: true
-
-- name: show deploy shell results
-  debug:
-    msg: "{{ results.stdout }}"
-  become: true
-  when: results.stdout_lines is defined
