@@ -1,1 +1,2 @@
 0 0 * * * root /database_backup.sh
+0 3 * * * root /database_restore.sh
