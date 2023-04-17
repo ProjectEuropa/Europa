@@ -2,8 +2,6 @@ docker compose -f docker-compose.server.yml run php-fpm php artisan down
 
 docker compose -f docker-compose.server.yml up -d --build
 
-docker compose -f docker-compose.server.yml run php-fpm composer update
-
 docker compose -f docker-compose.server.yml run php-fpm composer install --no-dev
 
 docker compose -f docker-compose.server.yml run php-fpm php artisan key:generate
