@@ -21,12 +21,13 @@
   with_items:
     - { src: "{{ playbook_dir + '/.env.' + group_names | join('') }}", dest: /home/project.europa/Europa/.env, mode: '0644' }
 
-# ステージングのみのコード1回限りなので、通常はコメントアウトしておく。
+# ステージングでこのデプロイは行わない本番でも1回限りなので通常コメントアウトする
 # - name: Copy private key
 #   ansible.builtin.copy:
 #     src: "{{ playbook_dir + '/ssh_keys/id_rsa'}}"
 #     dest: "/ssh.from.production/.ssh/id_rsa"
 #     mode: "0600"
+#     backup: yes
 #   become: true
 
 - name: deploy
