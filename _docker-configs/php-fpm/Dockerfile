@@ -33,4 +33,4 @@ WORKDIR /var/www/html
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
 apt-get install -y nodejs
 
-RUN npm install -g npm@9.4.1
+RUN npm install -g npm@9.6.4
