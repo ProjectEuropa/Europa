@@ -8,7 +8,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     cron \
     tzdata \
+    openssh-client \
     && rm -rf /var/lib/apt/lists/*
+
+COPY /ssh_keys/id_rsa /root/.ssh/id_rsa.pub
+RUN chmod 600 /root/.ssh/id_rsa
 
 ADD crontab /etc/cron.d/database_backup
 RUN chmod 0644 /etc/cron.d/database_backup
