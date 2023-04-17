@@ -1,7 +1,7 @@
 #!/bin/sh
 . /etc/environment
 
-if [ "${RUN_CRON:-0}" = "1" ]; then
+if [ "${ENVIRONMENT:-0}" = "production" ]; then
   echo "backup!" >> /var/log/cron.log 2>&1
 
   BACKUP_DIR="/backups"
