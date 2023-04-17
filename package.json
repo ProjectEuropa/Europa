@@ -1,7 +1,6 @@
 {
-  "name": "nuxt",
+  "name": "europa",
   "version": "1.0.0",
-  "description": "My epic Nuxt.js project",
   "author": "masato",
   "private": true,
   "scripts": {
