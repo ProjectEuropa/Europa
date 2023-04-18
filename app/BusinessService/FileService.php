@@ -14,7 +14,7 @@ class FileService
     public function registerFileData(Request $request, array $options)
     {
         $dataType = $options['isTeam'] ? 'team' : 'match';
-        $dataTypeId = $dataType ==='team' ? '1' : '2';
+        $dataTypeId = $dataType === 'team' ? '1' : '2';
         $uploadType = $options['isNormalUpdate'] ? 'normal' : 'simple';
 
         $file = $request->file("{$dataType}File");
