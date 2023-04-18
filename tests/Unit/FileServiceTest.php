@@ -42,7 +42,7 @@ class FileServiceTest extends TestCase
             'teamOwnerName' => 'Test Owner',
             'teamComment' => 'Test Comment',
             'teamDeletePassWord' => 'Test Password',
-            'teamSearchTags' => 'tag1,tag2,tag3',
+            'teamSearchTags' => 'tag1,tag2,tag3,tag4',
         ]);
 
         // Call the registerFileData method
@@ -58,12 +58,12 @@ class FileServiceTest extends TestCase
             'upload_owner_name' => 'Test Owner',
             'file_comment' => 'Test Comment',
             'delete_password' => 'Test Password',
-            'data_type' => 'team',
+            'data_type' => '1',
             'upload_user_id' => $user->id,
             'search_tag1' => 'tag1',
             'search_tag2' => 'tag2',
             'search_tag3' => 'tag3',
-            'search_tag4' => null,
+            'search_tag4' => 'tag4',
         ]);
     }
 }
