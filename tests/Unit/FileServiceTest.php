@@ -3,9 +3,10 @@
 namespace Tests\Unit;
 
 use App\BusinessService\FileService;
+use App\File;
 use App\User;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -48,7 +49,7 @@ class FileServiceTest extends TestCase
         // Call the registerFileData method
         $options = [
             'isTeam' => true,
-            'isNormalUpdate' => true
+            'isNormalUpdate' => true,
         ];
         $this->fileService->registerFileData($request, $options);
 
@@ -65,5 +66,29 @@ class FileServiceTest extends TestCase
             'search_tag3' => 'tag3',
             'search_tag4' => 'tag4',
         ]);
+    }
+    public function it_stores_binary_data_correctly()
+    {
+        $filePath = storage_path("app/public/sample.CHE");
+        $binaryData = file_get_contents($filePath);
+        $file = new UploadedFile($filePath, "sample.CHE", null, null, true);
+
+        $request = new \Illuminate\Http\Request();
+        $request->merge([
+            'teamOwnerName' => 'Test Owner',
+            'teamComment' => 'Test Comment',
+            'teamDeletePassWord' => 'Test Password',
+            'teamSearchTags' => 'tag1,tag2,tag3,tag4',
+        ]);
+
+        $request->files->add(["teamFile" => $file]);
+
+        $this->fileService->registerFileData($request, ['isTeam' => true, 'isNormalUpdate' => true]);
+
+        $storedFile = File::latest('id')->first();
+        $storedData = $storedFile->file_data;
+
+        $this->assertEquals($binaryData, $storedData);
+
     }
 }
