@@ -5,6 +5,7 @@ namespace App\BusinessService;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
+
 /*
  * FileService
  * Fileモデルに関わるロジックを記述
@@ -16,6 +17,7 @@ class FileService
         $dataType = $options['isTeam'] ? 'team' : 'match';
         $dataTypeId = $dataType === 'team' ? '1' : '2';
         $uploadType = $options['isNormalUpdate'] ? 'normal' : 'simple';
+        $uploadTypeId = $uploadType === 'normal' ? 1 : 2;
 
         $file = $request->file("{$dataType}File");
         $fileData = file_get_contents($file);
@@ -35,7 +37,7 @@ class FileService
             . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         $stmt->bindParam(1, $fileData, $db::PARAM_LOB);
-        $stmt->bindParam(2, $uploadType, $db::PARAM_STR);
+        $stmt->bindParam(2, $uploadTypeId, $db::PARAM_STR);
         $stmt->bindParam(3, $fileName, $db::PARAM_STR);
         $stmt->bindParam(4, $params['upload_owner_name'], $db::PARAM_STR);
         $stmt->bindParam(5, $params['file_comment'], $db::PARAM_STR);
