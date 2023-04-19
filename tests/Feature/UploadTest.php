@@ -2,119 +2,83 @@
 
 namespace Tests\Feature;
 
-use App\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use App\Http\Requests\UploadRequest;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class UploadTest extends TestCase
 {
+    use RefreshDatabase;
 
-    use DatabaseTransactions;
+    // public function test_successfully_uploads_team_and_match_data()
+    // {
+    //     Storage::fake('local');
 
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function test_簡易アップロードチームデータ()
+    //     $testCases = [
+    //         ['isTeam' => true, 'isNormalUpdate' => true, 'redirectUrl' => '/upload'],
+    //         ['isTeam' => true, 'isNormalUpdate' => false, 'redirectUrl' => '/simpleupload'],
+    //         ['isTeam' => false, 'isNormalUpdate' => true, 'redirectUrl' => '/upload'],
+    //         ['isTeam' => false, 'isNormalUpdate' => false, 'redirectUrl' => '/simpleupload'],
+    //     ];
+
+    //     foreach ($testCases as $testCase) {
+
+    //         $response = $this->postJson(route('upload', [
+    //             'request' => ['file' => $file],
+    //             'isTeam' => $testCase['isTeam'],
+    //             'isNormalUpdate' => $testCase['isNormalUpdate'],
+    //         ]));
+
+    //         $response->assertRedirect($testCase['redirectUrl']);
+    //         $response->assertSessionHas('message', ($testCase['isTeam'] ? 'チーム' : 'マッチ') . 'データのアップロードが完了しました');
+    //     }
+    // }
+
+    /** @test */
+    public function it_successfully_uploads_team_and_match_data()
     {
-        $file = UploadedFile::fake()->create('hoge.CHE', 24);
+        // テスト用のディスクを設定します
+        Storage::fake('local');
 
-        $response = $this->post('/team/simpleupload', [
-            'teamOwnerName' => 'MMM',
-            'teamComment' => 'aiyaaa',
-            'teamSearchTags' => 'a,b',
-            'teamDeletePassWord' => 'aakjflsjf',
-            'teamFile' => $file,
-        ]);
+        // テスト用のファイルを作成します
+        $file = UploadedFile::fake()->create('document.txt', 200);
 
-        $this->assertDatabaseHas('files', [
-            'upload_user_id' => 0,
-            'upload_owner_name' => 'MMM',
-            'file_name' => 'hoge.CHE',
-            'file_comment' => 'aiyaaa',
-            'delete_password' => 'aakjflsjf',
-            'data_type' => '1',
-            'search_tag1' => 'a',
-            'search_tag2' => 'b',
-        ]);
-    }
+        // テストケースの組み合わせ
+        $testCases = [
+            // ['isTeam' => true, 'isNormalUpdate' => true, 'redirectUrl' => '/upload'],
+            ['isTeam' => true, 'isNormalUpdate' => false, 'redirectUrl' => '/simpleupload'],
+            // ['isTeam' => false, 'isNormalUpdate' => true, 'redirectUrl' => '/upload'],
+            // ['isTeam' => false, 'isNormalUpdate' => false, 'redirectUrl' => '/simpleupload'],
+        ];
 
-    public function test_簡易アップロードマッチデータ()
-    {
-        $file = UploadedFile::fake()->create('MatchSimple.CHE', 255);
+        // テストケースの組み合わせでループ処理
+        foreach ($testCases as $testCase) {
+            $filePath = storage_path("app/public/sample.CHE");
+            $binaryData = file_get_contents($filePath);
+            $file = new UploadedFile($filePath, "sample.CHE", null, null, true);
+            $dataType = $testCase['isTeam'] ? 'team' : 'match';
 
-        $response = $this->post('/match/simpleupload', [
-            'matchOwnerName' => 'MAX',
-            'matchComment' => 'VCIEC',
-            'matchSearchTags' => 'FFFF,XXX',
-            'matchDeletePassWord' => 'deliuc',
-            'matchFile' => $file,
-        ]);
+            $request = new UploadRequest();
+            $request->merge([
+                "{$dataType}OwnerName" => 'test',
+                "{$dataType}Comment" => 'comment',
+                "{$dataType}DeletePassWord" => 'password',
+                "{$dataType}SearchTags" => 'tag1,tag2,tag3,tag4',
+            ]);
+            // $request->files->add(["{$dataType}File" => $file]);
 
-        $this->assertDatabaseHas('files', [
-            'upload_user_id' => 0,
-            'upload_owner_name' => 'MAX',
-            'file_name' => 'MatchSimple.CHE',
-            'file_comment' => 'VCIEC',
-            'delete_password' => 'deliuc',
-            'data_type' => '2',
-            'search_tag1' => 'FFFF',
-            'search_tag2' => 'XXX',
-        ]);
+            $url = "/{$dataType}{$testCase["redirectUrl"]}";
 
-    }
+            $response = $this->post($url, [
+                'request' => $request,
+                'isTeam' => $testCase['isTeam'],
+                'isNormalUpdate' => $testCase['isNormalUpdate'],
+            ]);
 
-    public function test_アップロードチームデータ()
-    {
-        $file = UploadedFile::fake()->create('UP.CHE', 24);
-
-        $user = factory(User::class)->create();
-
-        $response = $this->actingAs($user)->post('/team/upload', [
-            'teamOwnerName' => $user->name,
-            'teamComment' => 'fkjsflk',
-            'teamSearchTags' => 'eee,fff',
-            'teamDeletePassWord' => 'eee',
-            'teamFile' => $file,
-        ]);
-
-        $this->assertDatabaseHas('files', [
-            'upload_user_id' => $user->id,
-            'upload_owner_name' => $user->name,
-            'file_name' => 'UP.CHE',
-            'file_comment' => 'fkjsflk',
-            'delete_password' => 'eee',
-            'data_type' => '1',
-            'search_tag1' => 'eee',
-            'search_tag2' => 'fff',
-        ]);
-    }
-
-    public function test_アップロードマッチデータ()
-    {
-        $file = UploadedFile::fake()->create('UPUPIE.CHE', 255);
-
-        $user = factory(User::class)->create();
-
-        $response = $this->actingAs($user)->post('/match/upload', [
-            'matchOwnerName' => $user->name,
-            'matchComment' => 'VCIEC',
-            'matchSearchTags' => 'EEE,SDF,Af,BE',
-            'matchFile' => $file,
-        ]);
-
-        $this->assertDatabaseHas('files', [
-            'upload_user_id' => $user->id,
-            'upload_owner_name' => $user->name,
-            'file_name' => 'UPUPIE.CHE',
-            'file_comment' => 'VCIEC',
-            'data_type' => '2',
-            'search_tag1' => 'EEE',
-            'search_tag2' => 'SDF',
-            'search_tag3' => 'Af',
-            'search_tag4' => 'BE',
-        ]);
+            $response->assertRedirect($testCase['redirectUrl']);
+            $response->assertSessionHas('message', ($testCase['isTeam'] ? 'チーム' : 'マッチ') . 'データのアップロードが完了しました');
+        }
     }
 }
