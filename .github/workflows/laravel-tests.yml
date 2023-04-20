@@ -23,8 +23,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Copy .env
-        run: cp .env.ci .env
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -42,7 +40,7 @@ jobs:
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
       - name: Execute Migration
-        run: php artisan migrate
+        run: php artisan migrate --env=ci
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: php artisan test --env=ci
 
