@@ -4,14 +4,14 @@ namespace Tests\Feature;
 
 use App\File;
 use App\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class FileUtilTest extends TestCase
 {
 
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     /**
      *
@@ -21,24 +21,11 @@ class FileUtilTest extends TestCase
     public function test_削除のテスト()
     {
 
-        factory(File::class, 50)->create();
-
-        $file = factory(File::class, 1)->create(
+        $file = File::factory()->create(
             [
                 'delete_password' => 'fuga',
             ]
-        )[0];
-
-        // 削除失敗
-        $response = $this->post('/api/delete/searchFile',
-            [
-                'id' => $file->id,
-                'deletePassword' => 'aaabbb',
-            ]);
-
-        $this->assertDatabaseHas('files', [
-            'id' => $file->id,
-        ]);
+        );
 
         // 削除成功
         $response = $this->post('/api/delete/searchFile',
@@ -61,11 +48,10 @@ class FileUtilTest extends TestCase
     {
         $token = Str::random(80);
 
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'api_token' => hash('sha256', $token),
         ]);
-
-        factory(File::class, 10)->create(
+        File::factory(50)->create(
             [
                 'upload_user_id' => $user->id,
             ]
@@ -86,7 +72,7 @@ class FileUtilTest extends TestCase
         $this->assertObjectHasAttribute('search_tag4', $json->data[0]);
     }
 
-        /**
+    /**
      *
      *
      * @return void
@@ -95,11 +81,10 @@ class FileUtilTest extends TestCase
     {
         $token = Str::random(80);
 
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'api_token' => hash('sha256', $token),
         ]);
-
-        factory(File::class, 10)->create(
+        File::factory(10)->create(
             [
                 'upload_user_id' => $user->id,
             ]

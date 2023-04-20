@@ -3,12 +3,12 @@
 namespace Tests\Feature;
 
 use App\File;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class SearchTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     /**
      *
@@ -18,7 +18,7 @@ class SearchTest extends TestCase
     public function test_検索のテスト()
     {
 
-        factory(File::class, 50)->create();
+        File::factory(50)->create();
 
         // チーム
         $response = $this->json('GET', '/api/search/team');
@@ -82,7 +82,7 @@ class SearchTest extends TestCase
     public function test_検索orderbyのテスト()
     {
 
-        factory(File::class, 50)->create();
+        File::factory(50)->create();
 
         // チームデータ検索
         $response = $this->json('GET', '/api/search/team?orderType=2');
@@ -114,13 +114,13 @@ class SearchTest extends TestCase
      */
     public function test_検索絞り込みテスト()
     {
-        factory(File::class, 50)->create();
+        File::factory(50)->create();
 
-        factory(File::class)->create(
-          [
-            'data_type' => '1',
-            'file_comment' => '文字列'
-          ]
+        File::factory(50)->create(
+            [
+                'data_type' => '1',
+                'file_comment' => '文字列',
+            ]
         );
 
         $response = $this->json('GET', '/api/search/team?keyword=文字列');
@@ -136,7 +136,7 @@ class SearchTest extends TestCase
     public function test_一括DL検索のテスト()
     {
 
-        factory(File::class, 50)->create();
+        File::factory(50)->create();
 
         // チーム
         $response = $this->json('GET', '/api/sumDLSearch/team');
@@ -191,7 +191,7 @@ class SearchTest extends TestCase
         $this->assertObjectHasAttribute('search_tag4', $json->data[0]);
     }
 
-        /**
+    /**
      *
      *
      * @return void
@@ -199,7 +199,7 @@ class SearchTest extends TestCase
     public function test_一括DL検索orderbyのテスト()
     {
 
-        factory(File::class, 50)->create();
+        File::factory(50)->create();
 
         // チームデータ検索
         $response = $this->json('GET', '/api/sumDLSearch/team?orderType=2');
