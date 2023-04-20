@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\BusinessService\FileService;
 use App\File;
+use App\Http\Requests\UploadRequest;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -41,7 +42,7 @@ class FileServiceTest extends TestCase
                 'isTeam' => $testCase['isTeam'],
                 'isNormalUpdate' => $testCase['isNormalUpdate'],
             ];
-            $request = new \Illuminate\Http\Request();
+            $request = new UploadRequest();
             $request->setMethod('POST');
             $dataType = $options['isTeam'] ? 'team' : 'match';
             $dataTypeId = $dataType === 'team' ? '1' : '2';
@@ -88,7 +89,7 @@ class FileServiceTest extends TestCase
         $binaryData = file_get_contents($filePath);
         $file = new UploadedFile($filePath, "sample.CHE", null, null, true);
 
-        $request = new \Illuminate\Http\Request();
+        $request = new UploadRequest();
         $request->merge([
             'teamOwnerName' => 'Test Owner',
             'teamComment' => 'Test Comment',
@@ -116,7 +117,7 @@ class FileServiceTest extends TestCase
         $binaryData = file_get_contents($filePath);
         $file = new UploadedFile($filePath, "match.CHE", null, null, true);
 
-        $request = new \Illuminate\Http\Request();
+        $request = new UploadRequest();
         $request->merge([
             'matchOwnerName' => 'Test Owner',
             'matchComment' => 'Test Comment',
