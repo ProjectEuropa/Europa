@@ -5,14 +5,14 @@ namespace Tests\Feature;
 use App\Event;
 use App\File;
 use App\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class UserTest extends TestCase
 {
 
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     /**
      *
@@ -22,8 +22,9 @@ class UserTest extends TestCase
     {
         $token = Str::random(80);
 
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'name' => 'もっっっっm',
+
             'api_token' => hash('sha256', $token),
         ]);
 
@@ -31,7 +32,7 @@ class UserTest extends TestCase
             ->actingAs($user)
             ->withHeaders(
                 [
-                    'Authorization' => "Bearer ${token}",
+                    'Authorization' => "Bearer {$token}",
                 ]
             )
             ->post('/api/userUpdate',
@@ -53,11 +54,12 @@ class UserTest extends TestCase
     {
         $token = Str::random(80);
 
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
+            'name' => 'もっっっっm',
             'api_token' => hash('sha256', $token),
         ]);
 
-        $event = factory(Event::class)->create(
+        $event = Event::factory()->create(
             [
                 'event_name' => 'あああああ',
                 'event_details' => 'いいいい',
@@ -66,11 +68,12 @@ class UserTest extends TestCase
             ]
         );
 
+
         $response = $this
             ->actingAs($user)
             ->withHeaders(
                 [
-                    'Authorization' => "Bearer ${token}",
+                    'Authorization' => "Bearer {$token}",
                 ]
             )
             ->post('/api/delete/usersRegisteredCloumn',
@@ -95,11 +98,11 @@ class UserTest extends TestCase
     {
         $token = Str::random(80);
 
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'api_token' => hash('sha256', $token),
         ]);
 
-        $file = factory(File::class)->create(
+        $file = File::factory()->create(
             [
                 'upload_user_id' => $user->id,
             ]
@@ -109,7 +112,7 @@ class UserTest extends TestCase
             ->actingAs($user)
             ->withHeaders(
                 [
-                    'Authorization' => "Bearer ${token}",
+                    'Authorization' => "Bearer {$token}",
                 ]
             )
             ->post('/api/delete/usersRegisteredCloumn',

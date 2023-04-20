@@ -3,14 +3,14 @@
 namespace Tests\Feature;
 
 use App\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class UploadTest extends TestCase
 {
 
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     /**
      * A basic feature test example.
@@ -70,7 +70,7 @@ class UploadTest extends TestCase
     {
         $file = UploadedFile::fake()->create('UP.CHE', 24);
 
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post('/team/upload', [
             'teamOwnerName' => $user->name,
@@ -96,7 +96,7 @@ class UploadTest extends TestCase
     {
         $file = UploadedFile::fake()->create('UPUPIE.CHE', 255);
 
-        $user = factory(User::class)->create();
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post('/match/upload', [
             'matchOwnerName' => $user->name,
