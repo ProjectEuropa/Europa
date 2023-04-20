@@ -87,7 +87,7 @@ class FileServiceTest extends TestCase
 
         $filePath = storage_path('app/public/team.CHE');
         $binaryData = file_get_contents($filePath);
-        $file = new UploadedFile($filePath, 'sample.CHE', null, null, true);
+        $file = new UploadedFile($filePath, 'team.CHE', null, null, true);
 
         $request = new UploadRequest();
         $request->merge([
