@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\BusinessService\FileService;
 use App\File;
+use App\Http\Requests\UploadRequest;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -41,7 +42,7 @@ class FileServiceTest extends TestCase
                 'isTeam' => $testCase['isTeam'],
                 'isNormalUpdate' => $testCase['isNormalUpdate'],
             ];
-            $request = new \Illuminate\Http\Request();
+            $request = new UploadRequest();
             $request->setMethod('POST');
             $dataType = $options['isTeam'] ? 'team' : 'match';
             $dataTypeId = $dataType === 'team' ? '1' : '2';
@@ -79,13 +80,16 @@ class FileServiceTest extends TestCase
         }
     }
 
-    public function it_stores_binary_data_correctly()
+    public function testStoresBinaryCorrectlyTeam()
     {
-        $filePath = storage_path("app/public/sample.CHE");
-        $binaryData = file_get_contents($filePath);
-        $file = new UploadedFile($filePath, "sample.CHE", null, null, true);
+        $user = User::factory()->create();
+        Auth::login($user);
 
-        $request = new \Illuminate\Http\Request();
+        $filePath = storage_path('app/public/team.CHE');
+        $binaryData = file_get_contents($filePath);
+        $file = new UploadedFile($filePath, 'team.CHE', null, null, true);
+
+        $request = new UploadRequest();
         $request->merge([
             'teamOwnerName' => 'Test Owner',
             'teamComment' => 'Test Comment',
@@ -93,14 +97,42 @@ class FileServiceTest extends TestCase
             'teamSearchTags' => 'tag1,tag2,tag3,tag4',
         ]);
 
-        $request->files->add(["teamFile" => $file]);
+        $request->files->add(['teamFile' => $file]);
 
         $this->fileService->registerFileData($request, ['isTeam' => true, 'isNormalUpdate' => true]);
 
         $storedFile = File::latest('id')->first();
         $storedData = $storedFile->file_data;
+        $storedDataString = stream_get_contents($storedData);
 
-        $this->assertEquals($binaryData, $storedData);
+        $this->assertEquals($binaryData, $storedDataString);
+    }
 
+    public function testStoresBinaryCorrectlyMatch()
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $filePath = storage_path('app/public/match.CHE');
+        $binaryData = file_get_contents($filePath);
+        $file = new UploadedFile($filePath, 'match.CHE', null, null, true);
+
+        $request = new UploadRequest();
+        $request->merge([
+            'matchOwnerName' => 'Test Owner',
+            'matchComment' => 'Test Comment',
+            'matchDeletePassWord' => 'Test Password',
+            'matchSearchTags' => 'tag1,tag2,tag3,tag4',
+        ]);
+
+        $request->files->add(['matchFile' => $file]);
+
+        $this->fileService->registerFileData($request, ['isTeam' => false, 'isNormalUpdate' => true]);
+
+        $storedFile = File::latest('id')->first();
+        $storedData = $storedFile->file_data;
+        $storedDataString = stream_get_contents($storedData);
+
+        $this->assertEquals($binaryData, $storedDataString);
     }
 }

@@ -9,6 +9,7 @@ use Tests\TestCase;
 class EventNoticeTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic feature test example.
      *
@@ -28,7 +29,8 @@ class EventNoticeTest extends TestCase
                     'eventType' => 1,
                     'eventClosingDay' => $now,
                     'eventDisplayingDay' => $now,
-                ]);
+                ]
+            );
         $this->assertDatabaseHas('events', [
             'event_name' => 'phpunit name',
             'event_details' => 'phpunit details',

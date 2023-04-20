@@ -18,10 +18,10 @@ Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::post('/sumDownload', 'FileConventionalUtilController@sumDownload');
     Route::post('/eventNotice', 'EventNoticeController@store');
 
-    Route::post('/team/simpleupload', 'UploadController@teamSimpleUpload');
-    Route::post('/match/simpleupload', 'UploadController@matchSimpleUpload');
-    Route::post('/team/upload', 'UploadController@teamUpload');
-    Route::post('/match/upload', 'UploadController@matchUpload');
+    Route::post('/team/simpleupload', 'UploadController@upload')->defaults('isTeam', true)->defaults('isNormalUpdate', false);
+    Route::post('/match/simpleupload', 'UploadController@upload')->defaults('isTeam', false)->defaults('isNormalUpdate', false);
+    Route::post('/team/upload', 'UploadController@upload')->defaults('isTeam', true)->defaults('isNormalUpdate', true);
+    Route::post('/match/upload', 'UploadController@upload')->defaults('isTeam', false)->defaults('isNormalUpdate', true);
 
     Route::get('/auth/twitter', 'Auth\SocialAuthController@getTwitterAuth');
     Route::get('/auth/twitter/callback', 'Auth\SocialAuthController@getTwitterAuthCallback');

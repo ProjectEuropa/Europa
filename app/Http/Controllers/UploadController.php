@@ -15,74 +15,24 @@ class UploadController extends Controller
     }
 
     /**
+     * Upload file data.
      *
-     *
-     * @return
+     * @param UploadRequest $request
+     * @param bool $isTeam
+     * @param bool $isNormalUpdate
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function teamSimpleUpload(UploadRequest $request)
+    public function upload(UploadRequest $request, bool $isTeam, bool $isNormalUpdate)
     {
-        // チームアップロードかつ簡易アップロード
-        $arrayIsTeamOrNormarUpdate = [
-            'isTeam' => \Config::get('const.IS_TEAM_FLG_TRUE'),
-            'isNormalUpdate' => \Config::get('const.IS_NORMAL_UPLOAD_FLG_FALSE'),
+        $options = [
+            'isTeam' => $isTeam,
+            'isNormalUpdate' => $isNormalUpdate,
         ];
 
-        $this->fileService->registerFileData($request, $arrayIsTeamOrNormarUpdate);
+        $this->fileService->registerFileData($request, $options);
 
-        return redirect('/simpleupload')->with('message', 'チームデータのアップロードが完了しました');
-    }
+        $message = ($isTeam ? 'チーム' : 'マッチ') . 'データのアップロードが完了しました';
 
-    /**
-     *
-     *
-     * @return
-     */
-    public function matchSimpleUpload(UploadRequest $request)
-    {
-        // マッチデータアップロードかつ簡易アップロード
-        $arrayIsTeamOrNormarUpdate = [
-            'isTeam' => \Config::get('const.IS_TEAM_FLG_FALSE'),
-            'isNormalUpdate' => \Config::get('const.IS_NORMAL_UPLOAD_FLG_FALSE'),
-        ];
-
-        $this->fileService->registerFileData($request, $arrayIsTeamOrNormarUpdate);
-
-        return redirect('/simpleupload')->with('message', 'マッチデータのアップロードが完了しました');
-    }
-
-    /**
-     *
-     *
-     * @return
-     */
-    public function teamUpload(UploadRequest $request)
-    {
-        // チームアップロードかつ通常アップロード
-        $arrayIsTeamOrNormarUpdate = [
-            'isTeam' => \Config::get('const.IS_TEAM_FLG_TRUE'),
-            'isNormalUpdate' => \Config::get('const.IS_NORMAL_UPLOAD_FLG_TRUE'),
-        ];
-
-        $this->fileService->registerFileData($request, $arrayIsTeamOrNormarUpdate);
-
-        return redirect('/upload')->with('message', 'チームデータのアップロードが完了しました');
-    }
-
-    /**
-     *
-     *
-     * @return
-     */
-    public function matchUpload(UploadRequest $request)
-    {
-        // マッチデータアップロードかつ通常アップロード
-        $arrayIsTeamOrNormarUpdate = [
-            'isTeam' => \Config::get('const.IS_TEAM_FLG_FALSE'),
-            'isNormalUpdate' => \Config::get('const.IS_NORMAL_UPLOAD_FLG_TRUE'),
-        ];
-
-        $this->fileService->registerFileData($request, $arrayIsTeamOrNormarUpdate);
-
-        return redirect('/upload')->with('message', 'マッチデータのアップロードが完了しました');
+        return redirect($isNormalUpdate ? '/upload' : '/simpleupload')->with('message', $message);
     }
 }
