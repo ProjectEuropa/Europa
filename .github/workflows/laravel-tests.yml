@@ -1,4 +1,4 @@
-name: PHPUnit
+name: Laravel Tests
 
 on:
   push:
@@ -29,7 +29,6 @@ jobs:
       - name: Get Composer Cache Directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
       - name: Cache Composer Dependencies
         uses: actions/cache@v3
         with:
@@ -37,7 +36,6 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
-
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
       - name: Generate key
@@ -48,3 +46,16 @@ jobs:
         run: php artisan migrate --force
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: php artisan test
+
+  notify:
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    needs: laravel-tests
+    if: always()
+    steps:
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ needs.laravel-tests.result }}
+          fields: repo,message,author,job,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
