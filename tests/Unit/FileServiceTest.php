@@ -79,9 +79,12 @@ class FileServiceTest extends TestCase
         }
     }
 
-    public function it_stores_binary_data_correctly()
+    public function testStoresBinaryCorrectlyTeam()
     {
-        $filePath = storage_path("app/public/sample.CHE");
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $filePath = storage_path("app/public/team.CHE");
         $binaryData = file_get_contents($filePath);
         $file = new UploadedFile($filePath, "sample.CHE", null, null, true);
 
@@ -99,8 +102,36 @@ class FileServiceTest extends TestCase
 
         $storedFile = File::latest('id')->first();
         $storedData = $storedFile->file_data;
+        $storedDataString = stream_get_contents($storedData);
 
-        $this->assertEquals($binaryData, $storedData);
+        $this->assertEquals($binaryData, $storedDataString);
+    }
 
+    public function testStoresBinaryCorrectlyMatch()
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $filePath = storage_path("app/public/match.CHE");
+        $binaryData = file_get_contents($filePath);
+        $file = new UploadedFile($filePath, "match.CHE", null, null, true);
+
+        $request = new \Illuminate\Http\Request();
+        $request->merge([
+            'matchOwnerName' => 'Test Owner',
+            'matchComment' => 'Test Comment',
+            'matchDeletePassWord' => 'Test Password',
+            'matchSearchTags' => 'tag1,tag2,tag3,tag4',
+        ]);
+
+        $request->files->add(["matchFile" => $file]);
+
+        $this->fileService->registerFileData($request, ['isTeam' => false, 'isNormalUpdate' => true]);
+
+        $storedFile = File::latest('id')->first();
+        $storedData = $storedFile->file_data;
+        $storedDataString = stream_get_contents($storedData);
+
+        $this->assertEquals($binaryData, $storedDataString);
     }
 }
