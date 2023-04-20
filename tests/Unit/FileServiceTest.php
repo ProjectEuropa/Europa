@@ -85,9 +85,9 @@ class FileServiceTest extends TestCase
         $user = User::factory()->create();
         Auth::login($user);
 
-        $filePath = storage_path("app/public/team.CHE");
+        $filePath = storage_path('app/public/team.CHE');
         $binaryData = file_get_contents($filePath);
-        $file = new UploadedFile($filePath, "sample.CHE", null, null, true);
+        $file = new UploadedFile($filePath, 'sample.CHE', null, null, true);
 
         $request = new UploadRequest();
         $request->merge([
@@ -97,7 +97,7 @@ class FileServiceTest extends TestCase
             'teamSearchTags' => 'tag1,tag2,tag3,tag4',
         ]);
 
-        $request->files->add(["teamFile" => $file]);
+        $request->files->add(['teamFile' => $file]);
 
         $this->fileService->registerFileData($request, ['isTeam' => true, 'isNormalUpdate' => true]);
 
@@ -113,9 +113,9 @@ class FileServiceTest extends TestCase
         $user = User::factory()->create();
         Auth::login($user);
 
-        $filePath = storage_path("app/public/match.CHE");
+        $filePath = storage_path('app/public/match.CHE');
         $binaryData = file_get_contents($filePath);
-        $file = new UploadedFile($filePath, "match.CHE", null, null, true);
+        $file = new UploadedFile($filePath, 'match.CHE', null, null, true);
 
         $request = new UploadRequest();
         $request->merge([
@@ -125,7 +125,7 @@ class FileServiceTest extends TestCase
             'matchSearchTags' => 'tag1,tag2,tag3,tag4',
         ]);
 
-        $request->files->add(["matchFile" => $file]);
+        $request->files->add(['matchFile' => $file]);
 
         $this->fileService->registerFileData($request, ['isTeam' => false, 'isNormalUpdate' => true]);
 
