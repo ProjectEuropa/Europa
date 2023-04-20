@@ -1,21 +1,37 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
-use App\Model;
 use App\Event;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Event::class, function (Faker $faker) {
-    $register_user_id = $faker->numberBetween(1, 100);
+class EventFactory extends Factory
+{
 
-    return [
-      'register_user_id'     => $register_user_id,
-      'event_name'           => $faker->word,
-      'event_details'        => $faker->realText(20),
-      'event_reference_url'  => $faker->url,
-      'event_type'           => $faker->numberBetween(1, 2),
-      'event_closing_day'    => $faker->dateTimeBetween($startDate = 'now', $endDate = '+1 month', $timezone = null),
-      'event_displaying_day' => $faker->dateTimeBetween($startDate = 'now', $endDate = '+1 month', $timezone = null),
-    ];
-});
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Event::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        $register_user_id = $this->faker->numberBetween(1, 100);
+
+        return [
+            'register_user_id' => $register_user_id,
+            'event_name' => 'test',
+            'event_details' => 'test',
+            'event_reference_url' => 'test url',
+            'event_type' => $this->faker->numberBetween(1, 2),
+            'event_closing_day' => now(),
+            'event_displaying_day' => now(),
+        ];
+    }
+}

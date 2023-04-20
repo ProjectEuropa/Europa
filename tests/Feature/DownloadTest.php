@@ -3,13 +3,13 @@
 namespace Tests\Feature;
 
 use App\File;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class DownloadTest extends TestCase
 {
 
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     /**
      * .
@@ -19,7 +19,7 @@ class DownloadTest extends TestCase
     public function test_ファイルダウンロードテスト()
     {
 
-        factory(File::class, 50)->create();
+        File::factory(50)->create();
         $file = File::select('id')->inRandomOrder()->first();
 
         $response = $this->get("/auto/download/{$file->id}");
@@ -34,7 +34,7 @@ class DownloadTest extends TestCase
      */
     public function test_一括ダウンロードテスト()
     {
-        factory(File::class, 50)->create();
+        File::factory(50)->create();
         $fileIds = File::select('id')->inRandomOrder()->limit(10)->get()->toArray();
 
         $response = $this->post("/sumDownload",

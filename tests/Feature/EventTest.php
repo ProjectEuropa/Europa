@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Event;
 use App\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class EventTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     /**
      * A basic feature test example.
@@ -19,7 +19,7 @@ class EventTest extends TestCase
      */
     public function test_イベント取得()
     {
-        factory(Event::class, 30)->create();
+        Event::factory()->create();
         // チーム
         $response = $this->json('GET', '/api/event');
         $json = (json_decode($response->getContent()));
@@ -39,15 +39,17 @@ class EventTest extends TestCase
     {
         $token = Str::random(80);
 
-        $user = factory(User::class)->create([
+        $user = User::factory()->create([
             'api_token' => hash('sha256', $token),
         ]);
 
-        factory(Event::class, 30)->create(
+        Event::factory()->create(
             [
                 'register_user_id' => $user->id,
             ]
         );
+
+
 
         // チーム
         $response = $this->actingAs($user)->json('GET', "/api/mypage/events?api_token={$token}");

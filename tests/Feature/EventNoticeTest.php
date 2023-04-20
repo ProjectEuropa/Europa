@@ -3,12 +3,12 @@
 namespace Tests\Feature;
 
 use App\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class EventNoticeTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
     /**
      * A basic feature test example.
      *
@@ -16,7 +16,7 @@ class EventNoticeTest extends TestCase
      */
     public function testExample()
     {
-        $user = factory(User::class, 'default')->create();
+        $user = User::factory()->create();
         $now = now()->format('Y-m-d');
         $response = $this
             ->actingAs($user)
