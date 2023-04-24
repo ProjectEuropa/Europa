@@ -4,12 +4,11 @@
     "author": "masato",
     "private": true,
     "scripts": {
-        "dev": "npm run development",
         "development": "mix --dev",
-        "watch": "npm run development -- --watch",
+        "watch": "npm run dev -- --watch",
         "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "prod": "npm run production",
-        "production": "mix --production"
+        "dev": "vite",
+        "build": "vite build"
     },
     "dependencies": {
         "moment": "^2.29.4"

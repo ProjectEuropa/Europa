@@ -14,7 +14,7 @@ docker compose -f docker-compose.server.yml run php-fpm php artisan config:cache
 docker compose -f docker-compose.server.yml run php-fpm php artisan view:cache
 
 docker compose -f docker-compose.server.yml run php-fpm npm i
-docker compose -f docker-compose.server.yml run php-fpm npm run prod
+docker compose -f docker-compose.server.yml run php-fpm npm run build
 
 chmod 777 -R public
 chmod 777 -R storage
