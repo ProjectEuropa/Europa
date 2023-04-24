@@ -26,6 +26,6 @@
       <div id="app" >
         <app :auth="{{ Auth::user() ?? 'null' }}" flash="{{ session('message') ?? null }}" :errors="{{ $errors }}" />
       </div>
-      <script src="{{ mix('/js/app.js') }}"></script>
+      @vite('resources/js/app.js')
     </body>
 </html>
