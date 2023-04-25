@@ -2,7 +2,7 @@
 
 Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::get('/', function () {
-        return view('index');
+        return view('welcome');
     });
     Route::get('/upload', function () {
         return view('index');
