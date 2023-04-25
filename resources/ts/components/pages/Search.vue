@@ -1,8 +1,8 @@
 <template>
   <v-content>
     <v-container fluid>
-      <h1 class="display-1 mb-4 text--darken-1">Search {{capitalizeFirstLetter(searchType)}} Data</h1>
-      <h4 class="subheading">{{ searchTypeJa }}データの検索が可能です</h4>
+      <h1 class="display-1 mb-4 text--darken-1 text-white">Search {{capitalizeFirstLetter(searchType)}} Data</h1>
+      <h4 class="subheading text-white">{{ searchTypeJa }}データの検索が可能です</h4>
       <v-form class="d-flex justify-md-space-center justify-sm-space-between">
         <v-text-field
           v-model="keyword"
