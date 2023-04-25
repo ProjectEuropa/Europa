@@ -1,5 +1,6 @@
 <template>
   <v-app id="inspire">
+    <span class="bg"></span>
     <v-navigation-drawer v-model="drawer" app clipped>
       <v-list dense>
         <v-list-item>
@@ -222,3 +223,18 @@ export default class App extends Vue {
   }
 }
 </script>
+
+<style>
+  .bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-size: cover;
+    background-image: url("/images/Europa.jpg");
+  }
+  .text-white {
+    color: white;
+  }
+</style>

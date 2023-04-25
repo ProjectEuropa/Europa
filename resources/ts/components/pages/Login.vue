@@ -93,3 +93,12 @@ export default class Login extends Vue {
   }
 }
 </script>
+
+
+<style scoped>
+@media (min-width: 1264px) {
+  .container {
+    max-width: 900px;
+  }
+}
+</style>

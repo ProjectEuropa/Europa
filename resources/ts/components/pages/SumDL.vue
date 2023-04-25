@@ -1,8 +1,8 @@
 <template>
   <v-content>
     <v-container fluid>
-      <h1 class="display-1 mb-4 text--darken-1">Sum DL {{ capitalizeFirstLetter(searchType) }} Data</h1>
-      <h4 class="subheading">
+      <h1 class="display-1 mb-4 text-white">Sum DL {{ capitalizeFirstLetter(searchType) }} Data</h1>
+      <h4 class="subheading text-white">
         {{
         searchTypeJa
         }}データの一括ダウンロードが可能です。ダウンロードしたいデータにチェックを入れて一括ダウンロードボタンをクリックしてください。
