@@ -1,4 +1,9 @@
+FROM node:18.16.0 as node
+
 FROM php:8.1-fpm
+
+COPY --from=node /usr/local/bin/ /usr/local/bin/
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 
 ARG NEW_RELIC_AGENT_VERSION
 ARG NEW_RELIC_LICENSE_KEY
@@ -30,7 +35,4 @@ RUN apt update \
 
 WORKDIR /var/www/html
 
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
-apt-get install -y nodejs
-
-RUN npm install -g npm@9.6.4
+RUN npm install -g npm@9.6.5
