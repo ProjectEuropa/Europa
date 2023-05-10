@@ -27,13 +27,20 @@ $ docker compose -f docker-compose.server.yml run php-fpm npm run dev
 #### .envの記述例
 
 ```.env
+PG_USER=postgres
 DB_CONNECTION=pgsql
-DB_HOST=pg-pe-12
+DB_HOST=pg
 DB_PORT=5432
-DB_DATABASE=testdb
+DB_DATABASE=laravel
 DB_USERNAME=root
 DB_PASSWORD=password
 ```
 
+## /etc/hostsの設定例
+
+
+```
+127.0.0.1 local.europa.com #追加
+```
 
 
