@@ -11,10 +11,12 @@ const mix = require('laravel-mix');
  |
  */
 
-// mix.js('resources/js/app.js', 'public/js')
-//    .sass('resources/sass/app.scss', 'public/css');
-
-mix.ts("resources/ts/app.ts", "public/js").vue({ version:2 });
+mix.ts("resources/ts/app.ts", "public/js").vue({ version: 2 });
+mix.webpackConfig({
+  cache: {
+    type: 'filesystem',
+  },
+});
 
 mix.webpackConfig({
   resolve: {
