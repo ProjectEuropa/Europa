@@ -15,5 +15,8 @@
     "sass": "^1.62.1",
     "vite-plugin-vuetify": "^1.0.2",
     "vuetify": "^3.2.3"
+  },
+  "volta": {
+    "node": "18.19.0"
   }
 }
