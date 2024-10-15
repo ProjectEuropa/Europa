@@ -4,7 +4,7 @@
     repo: git@github.com:ProjectEuropa/Europa.git
     dest: /home/project.europa/Europa
     version: master
-    key_file: /home/project.europa/.ssh/github
+    key_file: /root/.ssh/github
     accept_hostkey: true
     force: true
   become: true
