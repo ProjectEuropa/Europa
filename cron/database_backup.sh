@@ -10,5 +10,7 @@ if [ "${ENVIRONMENT:-0}" = "production" ]; then
   export PGPASSWORD="${DB_PASSWORD}"
   pg_dump -h pg -U ${DB_USERNAME} -d ${DB_DATABASE} -f ${BACKUP_DIR}/${FILE_NAME} -F p -w
 
-  scp -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${BACKUP_DIR}/${FILE_NAME} ssh.from.production@${SSH_HOST}:/home/project.europa/Europa/backups
+  scp -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${BACKUP_DIR}/${FILE_NAME} ssh.from.production@${SSH_HOST}:/home/ssh.from.production
+  ssh ssh.from.production@${SSH_HOST}
+  sudo mv /home/ssh.from.production/${FILE_NAME} /home/project.europa/Europa/backups
 fi
