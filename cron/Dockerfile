@@ -1,4 +1,4 @@
-FROM postgres:14.2
+FROM postgres:17
 
 ENV TZ=Asia/Tokyo
 
