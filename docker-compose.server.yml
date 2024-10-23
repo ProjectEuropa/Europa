@@ -38,10 +38,10 @@ services:
       - node_modules_volume:/var/www/html/node_modules
       - laravel-log:/var/www/html/storage/logs
   pg:
-    image: postgres:14.2-alpine
+    image: postgres:17-alpine
     restart: always
     ports:
-      - 127.0.0.1:5432:5432
+      - "127.0.0.1:5432:5432"
     environment:
       - PGUSER=${PG_USER}
       - POSTGRES_DB=${DB_DATABASE}
