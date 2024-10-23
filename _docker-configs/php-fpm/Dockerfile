@@ -21,10 +21,10 @@ RUN apt update \
     zlib1g-dev \
     libzip-dev
 
-RUN curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-11.2.0.15-linux.tar.gz -o /tmp/newrelic-php5-11.2.0.15-linux.tar.gz \
-    && tar -xzf /tmp/newrelic-php5-11.2.0.15-linux.tar.gz -C /tmp
+RUN curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-11.3.0.16-linux.tar.gz -o /tmp/newrelic-php5-11.3.0.16-linux.tar.gz \
+    && tar -xzf /tmp/newrelic-php5-11.3.0.16-linux.tar.gz -C /tmp
 
-WORKDIR /tmp/newrelic-php5-11.2.0.15-linux
+WORKDIR /tmp/newrelic-php5-11.3.0.16-linux
 RUN ./newrelic-install install
 
 RUN sed -i -e "s/REPLACE_WITH_REAL_KEY/${NEW_RELIC_LICENSE_KEY}/" \
