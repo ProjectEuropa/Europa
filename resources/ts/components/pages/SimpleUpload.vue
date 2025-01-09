@@ -96,6 +96,16 @@
                       label="チームデータ"
                     ></v-file-input>
                   </ValidationProvider>
+                  <ValidationProvider v-slot="{ errors }" name="ダウンロード可能日時">
+                    <v-text-field
+                      prepend-icon="mdi-calendar-clock"
+                      v-model="teamDownloadableAt"
+                      type="datetime-local"
+                      label="ダウンロード可能日時"
+                      name="teamDownloadableAt"
+                      :error-messages="errors"
+                    ></v-text-field>
+                  </ValidationProvider>
                 </v-col>
                 <v-card-actions class="justify-center">
                   <v-btn large block class="primary" @click="teamDialogOpen()">チームデータアップロード</v-btn>
@@ -203,6 +213,16 @@
                       label="マッチデータ"
                     ></v-file-input>
                   </ValidationProvider>
+                  <ValidationProvider v-slot="{ errors }" name="ダウンロード可能日時">
+                    <v-text-field
+                      prepend-icon="mdi-calendar-clock"
+                      v-model="matchDownloadableAt"
+                      type="datetime-local"
+                      label="ダウンロード可能日時"
+                      name="matchDownloadableAt"
+                      :error-messages="errors"
+                    ></v-text-field>
+                  </ValidationProvider>
                 </v-col>
                 <v-card-actions class="justify-center">
                   <v-btn
@@ -249,13 +269,16 @@ export default class SimpleUpload extends Vue {
   matchComment: string = "";
   matchSearchTag: Array<string> = [];
   matchDeletePassword: string = "";
+  teamDownloadableAt: string = "";
+  matchDownloadableAt: string = "";
   matchFile: File = new File([], "", {});
   uploadObject: UploadObject = {
     owner_name: "",
     file_name: "",
     file_comment: "",
     searchTag: [],
-    deletePassword: ""
+    deletePassword: "",
+    downloadable_at:  "",
   };
 
   $refs!: {
@@ -294,6 +317,7 @@ export default class SimpleUpload extends Vue {
       this.uploadObject.file_name = this.teamFile.name;
       this.uploadObject.file_comment = this.comment;
       this.uploadObject.searchTag = this.searchTag;
+      this.uploadObject.downloadable_at = this.teamDownloadableAt;
       this.$refs.dialog.open("#team-simple-upload");
     }
   }

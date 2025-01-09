@@ -4,4 +4,5 @@ export interface UploadObject {
   file_comment: string;
   searchTag: Array<string>;
   deletePassword: string;
+  downloadable_at?: string;
 }

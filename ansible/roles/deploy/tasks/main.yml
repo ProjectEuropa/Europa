@@ -29,9 +29,9 @@
     backup: yes
   become: true
 
-- name: deploy
-  ansible.builtin.script:
-    cmd: "{{ playbook_dir + '/deploy.sh' }}"
-    chdir: /home/project.europa/Europa
-  register: results
-  become: true
+#- name: deploy
+#  ansible.builtin.script:
+#    cmd: "{{ playbook_dir + '/deploy.sh' }}"
+#    chdir: /home/project.europa/Europa
+#  register: results
+#  become: true

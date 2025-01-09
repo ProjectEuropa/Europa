@@ -18,3 +18,5 @@ yarn-error.log
 /public/css/*
 /public/mix-manifest.json
 /public/.CHE
+
+/.idea

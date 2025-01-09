@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -23,7 +23,6 @@ class RegisterController extends Controller
     |
      */
 
-    use RegistersUsers;
 
     /**
      * Where to redirect users after registration.
@@ -42,7 +41,41 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
-    /**
+  // GET /register
+  public function showRegisterForm()
+  {
+    return view('auth.register');
+  }
+
+  // POST /register
+  public function register(Request $request)
+  {
+    // バリデーション
+    $request->validate([
+      'name'     => ['required', 'string', 'max:255'],
+      'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
+      'password' => ['required', 'string', 'min:8', 'confirmed'],
+      // ↑ password_confirmation フィールドと一致することを要求
+    ]);
+
+    // ユーザー作成
+    $user = User::create([
+      'name'     => $request->name,
+      'email'    => $request->email,
+      'password' => Hash::make($request->password),
+    ]);
+
+    // 作成したユーザーでログインさせる
+    Auth::login($user);
+
+    // ユーザー登録後の処理
+    $this->registered($request, $user);
+
+    return redirect('/');
+  }
+
+
+  /**
      * The user has been registered.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -89,4 +122,21 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
     }
+
+  public function showLoginForm()
+  {
+    return view('auth.login');
+  }
+
+  public function logout(Request $request)
+  {
+    Auth::logout();
+
+    // CSRFトークン無効化
+    $request->session()->invalidate();
+    // セッションID再生成
+    $request->session()->regenerateToken();
+
+    return redirect('/');
+  }
 }

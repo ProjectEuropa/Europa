@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
 Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::get('/', function () {
         return view('welcome');
@@ -23,8 +27,14 @@ Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::post('/team/upload', 'UploadController@upload')->defaults('isTeam', true)->defaults('isNormalUpdate', true);
     Route::post('/match/upload', 'UploadController@upload')->defaults('isTeam', false)->defaults('isNormalUpdate', true);
 
-    Route::get('/auth/twitter', 'Auth\SocialAuthController@getTwitterAuth');
-    Route::get('/auth/twitter/callback', 'Auth\SocialAuthController@getTwitterAuthCallback');
 
-    Auth::routes(['register' => false, 'login' => false]);
+
+  Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+  Route::post('login', [LoginController::class, 'login']);
+  Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+
+  Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+  Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+  Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+  Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 });

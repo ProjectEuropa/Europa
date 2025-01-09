@@ -1,6 +1,6 @@
 FROM node:20 as node
 
-FROM php:8.1-fpm
+FROM php:8.4-fpm
 
 COPY --from=node /usr/local/bin/ /usr/local/bin/
 COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
@@ -21,17 +21,17 @@ RUN apt update \
     zlib1g-dev \
     libzip-dev
 
-RUN curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-11.3.0.16-linux.tar.gz -o /tmp/newrelic-php5-11.3.0.16-linux.tar.gz \
-    && tar -xzf /tmp/newrelic-php5-11.3.0.16-linux.tar.gz -C /tmp
+RUN curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-11.4.0.17-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz \
+    && tar -xzf /tmp/newrelic-php-agent.tar.gz -C /tmp
 
-WORKDIR /tmp/newrelic-php5-11.3.0.16-linux
+RUN find /tmp/newrelic-php5-11.4.0.17-linux -name "newrelic.ini" 2>/dev/null
+# New Relic PHP Agent をインストール
+WORKDIR /tmp/newrelic-php5-11.4.0.17-linux
 RUN ./newrelic-install install
-
-RUN sed -i -e "s/REPLACE_WITH_REAL_KEY/${NEW_RELIC_LICENSE_KEY}/" \
-    -e "s/newrelic.appname[[:space:]]=[[:space:]].*/newrelic.appname=\"${NEW_RELIC_APPNAME}\"/" \
-    -e '$anewrelic.daemon.address="newrelic-php-daemon:31339"' \
-    $(php -r "echo(PHP_CONFIG_FILE_SCAN_DIR);")/newrelic.ini
-
+RUN echo "extension=newrelic.so" > /usr/local/etc/php/conf.d/newrelic.ini \
+    && echo "newrelic.license=\"${NEW_RELIC_LICENSE_KEY}\"" >> /usr/local/etc/php/conf.d/newrelic.ini \
+    && echo "newrelic.appname=\"${NEW_RELIC_APPNAME}\""   >> /usr/local/etc/php/conf.d/newrelic.ini \
+    && echo "newrelic.daemon.address=\"newrelic-php-daemon:31339\"" >> /usr/local/etc/php/conf.d/newrelic.ini
 RUN rm -rf /tmp/newrelic-php5-linux /tmp/newrelic-php5-linux.tar.gz
 
 RUN cd /usr/bin && curl -s http://getcomposer.org/installer | php -- --install-dir=/usr/bin && ln -s /usr/bin/composer.phar /usr/bin/composer

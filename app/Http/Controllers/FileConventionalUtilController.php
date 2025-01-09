@@ -11,9 +11,15 @@ class FileConventionalUtilController extends Controller
 
     public function download(int $id)
     {
-        $file = File::select('file_name', 'file_data')
+        $file = File::select('file_name', 'file_data', 'downloadable_at')
             ->where('id', '=', $id)
             ->first();
+
+        if ($file->downloadable_at >= now()) {
+            return response()->view('errors.download', [
+              'message' => '現在はダウンロード可能な状態ではありません。',
+            ], 400);
+        }
 
         // タイトル取得
         $title = $file->file_name;
@@ -32,9 +38,12 @@ class FileConventionalUtilController extends Controller
     {
         // リクエストから取得したIDを元にファイルデータ抽出
         $fileIds = $request->input('checkedId');
-        $zipPrefiles = File::whereIn('id', $fileIds)->select('file_name', 'file_data')->get();
+        $zipPrefiles = File::whereIn('id', $fileIds)->select('file_name', 'file_data', 'downloadable_at')->get();
         //zip作成前用のフォルダに個別にCHEファイルを作成
         foreach ($zipPrefiles as $zipPrefile) {
+            if ($zipPrefile->downloadable_at >= now()) {
+                continue;
+            }
             $fileName = $zipPrefile->file_name;
             $fileData = $zipPrefile->file_data;
             $cheData = public_path('prezipfiles/' . $fileName);
