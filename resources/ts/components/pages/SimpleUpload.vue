@@ -268,7 +268,6 @@ export default class SimpleUpload extends Vue {
   matchOwnerName: string = "";
   matchComment: string = "";
   matchSearchTag: Array<string> = [];
-  matchDeletePassword: string = "";
   teamDownloadableAt: string = "";
   matchDownloadableAt: string = "";
   matchFile: File = new File([], "", {});
