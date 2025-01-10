@@ -35,7 +35,8 @@ class UploadRequest extends FormRequest
                     'teamComment' => 'required|max:200',
                     'teamDeletePassWord' => 'required|max:100',
                     'teamFile' => 'required|che_file|max:24',
-                    'teamSearchTags.*' => 'max:100'
+                    'teamSearchTags.*' => 'max:100',
+                    'teamDownloadableAt' => 'date_format:Y-m-d\TH:i'
                 ];
             } else {
                 //'url'のなかに'simpleupload'が含まれてない場合（通常アップロード）
@@ -43,7 +44,9 @@ class UploadRequest extends FormRequest
                     'teamOwnerName' => 'required|max:100',
                     'teamComment' => 'required|max:200',
                     'teamFile' => 'required|che_file|max:24',
-                    'teamSearchTags.*' => 'max:100'
+                    'teamSearchTags.*' => 'max:100',
+                    'teamDownloadableAt' => 'date_format:Y-m-d\TH:i'
+
                 ];
             }
         } else {

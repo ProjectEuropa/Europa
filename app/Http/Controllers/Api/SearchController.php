@@ -16,7 +16,7 @@ class SearchController extends Controller
      */
     public function search(Request $request, string $searchType)
     {
-        $files = File::select('id', 'upload_owner_name', 'file_name', 'file_comment', 'created_at', 'upload_user_id', 'upload_type', 'search_tag1', 'search_tag2', 'search_tag3', 'search_tag4')
+        $files = File::select('id', 'upload_owner_name', 'file_name', 'file_comment', 'created_at', 'upload_user_id', 'upload_type', 'search_tag1', 'search_tag2', 'search_tag3', 'search_tag4', 'downloadable_at')
             ->where('data_type', '=', $searchType === "team" ? '1' : '2')
             ->orderby('id', $request->orderType === '1' || $request->orderType === null ? 'desc' : 'asc');
 
@@ -51,7 +51,7 @@ class SearchController extends Controller
      */
     public function sumDLsearch(Request $request, string $searchType)
     {
-        $files = File::select('id', 'upload_owner_name', 'file_name', 'file_comment', 'created_at', 'upload_user_id', 'search_tag1', 'search_tag2', 'search_tag3', 'search_tag4')
+        $files = File::select('id', 'upload_owner_name', 'file_name', 'file_comment', 'created_at', 'upload_user_id', 'search_tag1', 'search_tag2', 'search_tag3', 'search_tag4', 'downloadable_at')
             ->where('data_type', '=', $searchType === "team" ? '1' : '2')
             ->orderby('id', $request->orderType === '1' || $request->orderType === null ? 'desc' : 'asc');
 

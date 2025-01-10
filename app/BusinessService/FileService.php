@@ -29,12 +29,13 @@ class FileService
             'upload_owner_name' => $request->input("{$dataType}OwnerName"),
             'file_comment' => $request->input("{$dataType}Comment"),
             'delete_password' => $request->input("{$dataType}DeletePassWord"),
+            'downloadable_at' => $request->input("{$dataType}DownloadableAt"),
             'search_tags' => array_pad(explode(',', $request->input("{$dataType}SearchTags")), 4, null),
         ];
 
         $db = DB::connection('pgsql')->getPdo();
-        $stmt = $db->prepare("INSERT INTO files (file_data, upload_type, file_name, upload_owner_name, file_comment, delete_password, data_type, created_at, updated_at, upload_user_id, search_tag1, search_tag2, search_tag3, search_tag4) "
-            . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO files (file_data, upload_type, file_name, upload_owner_name, file_comment, delete_password, data_type, created_at, updated_at, upload_user_id, search_tag1, search_tag2, search_tag3, search_tag4, downloadable_at) "
+            . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         $stmt->bindParam(1, $fileData, $db::PARAM_LOB);
         $stmt->bindParam(2, $uploadTypeId, $db::PARAM_STR);
@@ -50,6 +51,7 @@ class FileService
         $stmt->bindParam(12, $params['search_tags'][1], $db::PARAM_STR);
         $stmt->bindParam(13, $params['search_tags'][2], $db::PARAM_STR);
         $stmt->bindParam(14, $params['search_tags'][3], $db::PARAM_STR);
+        $stmt->bindParam(15, $params['downloadable_at'], $db::PARAM_STR);
 
         $stmt->execute();
         unset($db);

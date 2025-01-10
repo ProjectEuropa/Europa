@@ -31,6 +31,7 @@
                 <th class="text-left">コメント</th>
                 <th class="text-left">ファイル名</th>
                 <th class="text-left">アップロード日時</th>
+                <th class="text-left">ダウンロード可能日時</th>
               </tr>
             </thead>
             <tbody>
@@ -60,6 +61,7 @@
                 </td>
                 <td>{{ item.file_name }}</td>
                 <td>{{ item.created_at }}</td>
+                <td>{{ item.downloadable_at }}</td>
               </tr>
             </tbody>
           </template>

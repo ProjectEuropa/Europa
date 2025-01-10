@@ -21,6 +21,10 @@
             <v-icon left>mdi-paperclip</v-icon>
             アップロードファイル: {{ uploadObject.file_name }}
           </v-chip>
+          <v-chip class="ma-2" color="blue" label text-color="white" cols="12" md="12">
+            <v-icon left>mdi-av-timer</v-icon>
+            ダウンロード可能日時: {{ uploadObject.downloadable_at }}
+          </v-chip>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>

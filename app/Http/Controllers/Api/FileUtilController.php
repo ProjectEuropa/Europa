@@ -35,7 +35,7 @@ class FileUtilController extends Controller
         return [
             'data' => File::where('upload_user_id', '=', $request->user()->id)
                 ->where('data_type', '=', '1')
-                ->select('id', 'upload_owner_name', 'file_name', 'file_comment', 'created_at', 'search_tag1', 'search_tag2', 'search_tag3', 'search_tag4')
+                ->select('id', 'upload_owner_name', 'file_name', 'file_comment', 'created_at', 'search_tag1', 'search_tag2', 'search_tag3', 'search_tag4', 'downloadable_at')
                 ->get()
         ];
 

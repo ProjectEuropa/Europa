@@ -23,6 +23,7 @@
               <th class="text-left">コメント</th>
               <th class="text-left">ファイル名</th>
               <th class="text-left">アップロード日時</th>
+              <th class="text-left">ダウンロード可能日時</th>
               <th class="text-left">削除</th>
             </tr>
           </thead>
@@ -53,6 +54,7 @@
               </td>
               <td>{{ item.file_name }}</td>
               <td>{{ item.created_at }}</td>
+              <td>{{ item.downloadable_at }}</td>
               <td>
                 <v-icon v-if="item.upload_type === '2'" @click="dialogOpen(item.file_name, item.id)">mdi-delete-forever</v-icon>
               </td>

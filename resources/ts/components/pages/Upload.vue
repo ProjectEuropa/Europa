@@ -84,6 +84,16 @@
                       label="チームデータ"
                     ></v-file-input>
                   </ValidationProvider>
+                  <ValidationProvider v-slot="{ errors }" name="ダウンロード可能日時">
+                    <v-text-field
+                      prepend-icon="mdi-calendar-clock"
+                      v-model="teamDownloadableAt"
+                      type="datetime-local"
+                      label="ダウンロード可能日時"
+                      name="teamDownloadableAt"
+                      :error-messages="errors"
+                    ></v-text-field>
+                  </ValidationProvider>
                 </v-col>
                 <v-card-actions class="justify-center">
                   <v-btn large block class="primary" @click="teamDialogOpen()">チームデータアップロード</v-btn>
@@ -224,6 +234,7 @@ export default class SimpleUpload extends Vue {
   matchComment: string = "";
   matchSearchTag: Array<string> = [];
   matchFile: File = new File([], "", {});
+  teamDownloadableAt: string = "";
   uploadObject: UploadObject = {
     owner_name: "",
     file_name: "",
@@ -283,6 +294,7 @@ export default class SimpleUpload extends Vue {
       this.uploadObject.file_name = this.teamFile.name;
       this.uploadObject.file_comment = this.comment;
       this.uploadObject.searchTag = this.searchTag;
+      this.uploadObject.downloadable_at = this.teamDownloadableAt;
       this.$refs.dialog.open("#team-upload");
     }
   }
