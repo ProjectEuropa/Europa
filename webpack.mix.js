@@ -11,26 +11,21 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.ts("resources/ts/app.ts", "public/js").vue({ version: 2 });
-mix.webpackConfig({
-  cache: {
-    type: 'filesystem',
-  },
-});
+mix.ts("resources/ts/app.ts", "public/js").vue({ version: 3 });
 
 mix.webpackConfig({
+  cache: {
+    type: 'filesystem', // ファイルシステムキャッシュを有効化（ビルド速度向上）
+  },
   resolve: {
     extensions: [".js", ".jsx", ".vue", ".ts", ".tsx"],
-    alias: {
-      vue$: "vue/dist/vue.esm.js"
-    }
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         loader: "ts-loader",
-        options: { appendTsSuffixTo: [/\.vue$/] },
+        options: { appendTsSuffixTo: [/\.vue$/] }, // TypeScriptで.vueファイルをサポート
         exclude: /node_modules/
       },
       {

@@ -67,7 +67,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
-              <router-link class="black--text" to="/sumdownload/team">Sum Dowunload Team Data</router-link>
+              <router-link class="black--text" to="/sumdownload/team">Sum Download Team Data</router-link>
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -78,7 +78,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
-              <router-link class="black--text" to="/sumdownload/match">Sum Dowunload Match Data</router-link>
+              <router-link class="black--text" to="/sumdownload/match">Sum Download Match Data</router-link>
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -141,100 +141,95 @@
     </v-navigation-drawer>
 
     <v-app-bar app clipped-left color="blue darken-3 white--text">
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="toggleDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Europa - Carnage Heart EXA Uploader -</v-toolbar-title>
       <v-spacer></v-spacer>
-
-      <v-toolbar-title v-if="auth">Login As: {{auth.name}}</v-toolbar-title>
+      <v-toolbar-title v-if="auth">{{ `Login As: ${auth.name}` }}</v-toolbar-title>
     </v-app-bar>
 
     <router-view :flash="flash"></router-view>
 
     <v-footer app clipped-center color="blue darken-3 white--text">
-      <span>&copy; Team Project Europa 2016-{{new Date().getFullYear()}}</span>
+      <span>&copy; Team Project Europa 2016-{{ new Date().getFullYear() }}</span>
     </v-footer>
 
-    <v-snackbar v-model="snackMessage" color="error" :top="true" vertical>
+    <v-snackbar v-model:visible="snackMessage" color="error" top vertical>
       サーバー内部でエラーが発生しました。
-      <div v-for="(error, key, index) in errors" :key="index">{{ error.toString() }}</div>
-      <v-btn dark text @click="snackbar = false">x</v-btn>
+      <div v-for="(error, key) in errors" :key="key">{{ error.toString() }}</div>
+      <v-btn dark text @click="snackMessage = false">x</v-btn>
     </v-snackbar>
 
-    <v-snackbar
-      v-model="flashMessage"
-      :vertical="true"
-      color="success"
-      :timeout="2000"
-      :default="false"
-    >{{ flash }}</v-snackbar>
+    <v-snackbar v-model:visible="flashMessage" vertical color="success" timeout="2000">
+      {{ flash }}
+    </v-snackbar>
   </v-app>
 </template>
 
-<script lang="ts">
-import {
-  ScheduleObject,
-  ScheduleObjectSynchronizedLaravelEvents,
-  LaravelApiReturnEventsJson
-} from "../vue-data-entity/ScheduleDataObject";
-import { AuthUserObject } from "../vue-data-entity/AuthUserObject";
-import { Vue, Component, Prop } from "vue-property-decorator";
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-
-@Component
-export default class App extends Vue {
-  drawer: boolean = false;
-  snackMessage: boolean = false;
-  flashMessage: boolean = false;
-  events: Array<ScheduleObjectSynchronizedLaravelEvents> = [];
-  content: number = 0;
-
-  @Prop()
-  auth!: AuthUserObject | null;
-
-  @Prop()
-  errors!: any;
-
-  @Prop({ default: null })
-  flash!: string | null;
-
-  /**
-   * created
-   */
-  public created() {
-    if (this.errors.length !== 0) {
-      this.snackMessage = true;
-    }
-    if (this.flash) {
-      this.flashMessage = true;
-    }
-    this.getEvents();
-  }
-
-  public getEvents() {
-    Vue.prototype.$http
-      .get(`/api/event`)
-      .then((res: AxiosResponse<LaravelApiReturnEventsJson>): void => {
-        this.events = res.data.data;
-        this.content = this.events.length;
-      })
-      .catch((error: AxiosError): void => {
-        alert("検索実行時にエラーが発生しました");
-      });
-  }
+<script lang="ts" setup>
+import { inject, ref, onMounted } from 'vue';
+import type { AxiosInstance } from 'axios';
+import type { ScheduleObjectSynchronizedLaravelEvents, LaravelApiReturnEventsJson } from '@/vue-data-entity/ScheduleDataObject';
+import type { AuthUserObject } from '@/vue-data-entity/AuthUserObject';
+const http = inject<AxiosInstance>('http'); // プラグインから注入された Axios インスタンス
+if (!http) {
+  throw new Error('HTTP Client is not provided!'); // 注入されていない場合のエラーハンドリング
 }
+
+const props = defineProps<{
+  auth: AuthUserObject | null;
+  errors: string[];
+  flash: string | null;
+}>();
+
+// プロパティを分割（デストラクチャリング）
+const { errors, flash } = props;
+
+
+// Reactive States
+const drawer = ref(false);
+const snackMessage = ref(false);
+const flashMessage = ref(false);
+const events = ref<ScheduleObjectSynchronizedLaravelEvents[]>([]);
+const content = ref(0);
+
+// Methods
+const toggleDrawer = () => {
+  drawer.value = !drawer.value;
+};
+
+const getEvents = async () => {
+  try {
+    const response = await http.get<LaravelApiReturnEventsJson>('/api/event');
+    events.value = response.data.data;
+    content.value = events.value.length;
+  } catch (error) {
+    alert('検索実行時にエラーが発生しました');
+  }
+};
+
+onMounted(() => {
+  if (errors.length !== 0) {
+    snackMessage.value = true;
+  }
+  if (flash) {
+    flashMessage.value = true;
+  }
+  getEvents();
+});
 </script>
 
 <style>
-  .bg {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-size: cover;
-    background-image: url("/images/Europa.jpg");
-  }
-  .text-white {
-    color: white;
-  }
+.bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  background-image: url("/images/Europa.jpg");
+}
+
+.text-white {
+  color: white;
+}
 </style>
