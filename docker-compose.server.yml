@@ -31,13 +31,14 @@ services:
         - NEW_RELIC_APPNAME="project-europa - ${APP_ENV}"
     depends_on:
       - pg
-#      - newrelic-php-daemon
+      - newrelic-php-daemon
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
       - node_modules_volume:/var/www/html/node_modules
+      - laravel-log:/var/www/html/storage/logs
   pg:
-    image: postgres:14-alpine
+    image: postgres:17-alpine
     restart: always
     ports:
       - "127.0.0.1:5432:5432"
@@ -59,6 +60,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/mackerel-agent/:/var/lib/mackerel-agent/
       - ./mackerel_conf:/etc/mackerel-agent/conf.d
+      - laravel-log:/laravel_log
     depends_on:
       - web
   new-relic-agent:
@@ -74,10 +76,11 @@ services:
       - /:/host:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ./newrelic_conf/logging.d:/etc/newrelic-infra/logging.d
+      - laravel-log:/laravel_log
     environment:
       - NRIA_LICENSE_KEY=${NRIA_LICENSE_KEY}
-#  newrelic-php-daemon:
-#    image: newrelic/php-daemon:11.2.0
+  newrelic-php-daemon:
+    image: newrelic/php-daemon:11.2.0
   cron:
     build:
       context: ./cron
@@ -101,4 +104,4 @@ volumes:
   db-store:
   https-portal-data:
   node_modules_volume:
-
+  laravel-log:
