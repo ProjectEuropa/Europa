@@ -3,7 +3,7 @@ import axios from 'axios';
 // import Router from 'vue-router'
 import Top from './components/pages/Top.vue'
 // import Upload from './components/pages/Upload.vue'
-// import SimpleUpload from './components/pages/SimpleUpload.vue'
+import SimpleUpload from './components/pages/SimpleUpload.vue'
 // import Search from './components/pages/Search.vue'
 // import SumDL from './components/pages/SumDL.vue'
 // import Login from './components/pages/Login.vue'
@@ -24,7 +24,7 @@ const router = createRouter({
     //   component: Upload,
     //   meta: { requiresAuth: true },
     // },
-    // { path: '/simpleupload', name: 'SimpleUpload', component: SimpleUpload },
+    { path: '/simpleupload', name: 'SimpleUpload', component: SimpleUpload },
     // { path: '/search/:searchType', name: 'Search', component: Search },
     // { path: '/sumdownload/:searchType', name: 'SumDL', component: SumDL },
     // { path: '/login', name: 'Login', component: Login },

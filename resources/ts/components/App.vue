@@ -1,219 +1,116 @@
 <template>
-  <v-app id="inspire">
+  <VApp color="primary">
     <span class="bg"></span>
-    <v-navigation-drawer v-model="drawer" app clipped>
-      <v-list dense>
-        <v-list-item>
-          <v-list-item-action>
-            <v-icon>mdi-folder-information-outline</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <v-badge color="blue" :content="content" v-if="content !== 0">
-                <router-link class="black--text" to="/information">Information</router-link>
-              </v-badge>
-              <router-link class="black--text" to="/information" v-else>Information</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
 
-        <v-list-item>
-          <v-list-item-action>
-            <v-icon>mdi-file-import</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/search/team">Search Team Data</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
 
-        <v-list-item>
-          <v-list-item-action>
-            <v-icon>mdi-file-import</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/search/match">Search Match Data</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+    <VNavigationDrawer v-model="drawer" :clipped="false" :permanent="false" >
+      <VList density="compact">
+        <VListItem>
+          <VListItemTitle>
+            <router-link to="/information" class="black--text">
+              <VBadge v-if="content !== 0" color="blue" :content="content">
+                Information
+              </VBadge>
+              <span v-else>Information</span>
+            </router-link>
+          </VListItemTitle>
+        </VListItem>
 
-        <v-list-item v-if="!auth">
-          <v-list-item-action>
-            <v-icon>mdi-upload</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/simpleupload">Simple Upload</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <!-- その他のリンク -->
+        <VListItem v-for="link in links" :key="link.title">
+          <VListItemContent>
+            <router-link :to="link.to" class="black--text">
+              <!-- v-icon -> VIcon -->
+              <VIcon>{{ link.icon }}</VIcon> {{ link.title }}
+            </router-link>
+          </VListItemContent>
+        </VListItem>
+      </VList>
+    </VNavigationDrawer>
 
-        <v-list-item v-if="auth">
-          <v-list-item-action>
-            <v-icon>mdi-upload</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/upload">Upload</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+    <!-- アプリケーションバー -->
+    <!-- v-app-bar -> VAppBar -->
+    <VAppBar bg-color="#0077ff" color="primary">
+      <!-- v-app-bar-nav-icon -> VAppBarNavIcon -->
+      <VAppBarNavIcon @click="toggleDrawer" />
+      <!-- v-toolbar-title -> VToolbarTitle -->
+      <VToolbarTitle>Europa - Carnage Heart EXA Uploader</VToolbarTitle>
+      <!-- v-spacer -> VSpacer -->
+      <VSpacer />
+      <VToolbarTitle v-if="auth">{{ `Login As: ${auth.name}` }}</VToolbarTitle>
+    </VAppBar>
 
-        <v-list-item>
-          <v-list-item-action>
-            <v-icon>mdi-database-import</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/sumdownload/team">Sum Download Team Data</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+    <!-- ルータービュー -->
+    <router-view :flash="flash" />
 
-        <v-list-item>
-          <v-list-item-action>
-            <v-icon>mdi-database-import</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/sumdownload/match">Sum Download Match Data</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item v-if="auth">
-          <v-list-item-action>
-            <v-icon>mdi-bell-ring</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/eventnotice">Eventnotice</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item v-if="auth">
-          <v-list-item-action>
-            <v-icon>mdi-account</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/mypage">Mypage</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item v-if="!auth">
-          <v-list-item-action>
-            <v-icon>mdi-login</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/login">Login</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item v-if="!auth">
-          <v-list-item-action>
-            <v-icon>mdi-account-plus</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <router-link class="black--text" to="/register">Register</router-link>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-list-item v-if="auth">
-          <v-list-item-action>
-            <v-icon>mdi-logout</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
-              <a class="black--text" href="/auth/logout">Logout</a>
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
-    <v-app-bar app clipped-left color="blue darken-3 white--text">
-      <v-app-bar-nav-icon @click.stop="toggleDrawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Europa - Carnage Heart EXA Uploader -</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-toolbar-title v-if="auth">{{ `Login As: ${auth.name}` }}</v-toolbar-title>
-    </v-app-bar>
-
-    <router-view :flash="flash"></router-view>
-
-    <v-footer app clipped-center color="blue darken-3 white--text">
+    <!-- フッター -->
+    <!-- v-footer -> VFooter -->
+    <VFooter bg-color="#0077ff" color="primary">
       <span>&copy; Team Project Europa 2016-{{ new Date().getFullYear() }}</span>
-    </v-footer>
+    </VFooter>
 
-    <v-snackbar v-model:visible="snackMessage" color="error" top vertical>
+    <!-- スナックバー -->
+    <!-- v-snackbar -> VSnackbar -->
+    <VSnackbar v-model="snackMessage" location="top center" color="error">
       サーバー内部でエラーが発生しました。
       <div v-for="(error, key) in errors" :key="key">{{ error.toString() }}</div>
-      <v-btn dark text @click="snackMessage = false">x</v-btn>
-    </v-snackbar>
+      <template #actions>
+        <VBtn @click="snackMessage = false">x</VBtn>
+      </template>
+    </VSnackbar>
 
-    <v-snackbar v-model:visible="flashMessage" vertical color="success" timeout="2000">
+    <VSnackbar v-model="flashMessage" location="top center" color="success" timeout="2000">
       {{ flash }}
-    </v-snackbar>
-  </v-app>
+    </VSnackbar>
+  </VApp>
 </template>
 
 <script lang="ts" setup>
-import { inject, ref, onMounted } from 'vue';
-import type { AxiosInstance } from 'axios';
-import type { ScheduleObjectSynchronizedLaravelEvents, LaravelApiReturnEventsJson } from '@/vue-data-entity/ScheduleDataObject';
-import type { AuthUserObject } from '@/vue-data-entity/AuthUserObject';
-const http = inject<AxiosInstance>('http'); // プラグインから注入された Axios インスタンス
-if (!http) {
-  throw new Error('HTTP Client is not provided!'); // 注入されていない場合のエラーハンドリング
-}
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
+// Propsの定義
 const props = defineProps<{
-  auth: AuthUserObject | null;
-  errors: string[];
+  auth: { name: string } | null;
+  errors?: string[];
   flash: string | null;
 }>();
 
-// プロパティを分割（デストラクチャリング）
+// State
 const { errors, flash } = props;
-
-
-// Reactive States
 const drawer = ref(false);
 const snackMessage = ref(false);
 const flashMessage = ref(false);
-const events = ref<ScheduleObjectSynchronizedLaravelEvents[]>([]);
 const content = ref(0);
 
-// Methods
+// 動的リンク
+const links = [
+  { title: 'Search Team Data', to: '/search/team', icon: 'mdi-file-import' },
+  { title: 'Search Match Data', to: '/search/match', icon: 'mdi-file-import' },
+  { title: 'Simple Upload', to: '/simpleupload', icon: 'mdi-upload' },
+  { title: 'Upload', to: '/upload', icon: 'mdi-upload' },
+  { title: 'My Page', to: '/mypage', icon: 'mdi-account' },
+];
+
+// トグルメソッド
 const toggleDrawer = () => {
   drawer.value = !drawer.value;
 };
 
+// イベント取得
 const getEvents = async () => {
   try {
-    const response = await http.get<LaravelApiReturnEventsJson>('/api/event');
-    events.value = response.data.data;
-    content.value = events.value.length;
-  } catch (error) {
-    alert('検索実行時にエラーが発生しました');
+    const response = await axios.get('/api/event');
+    content.value = response.data.data.length || 0;
+  } catch (err) {
+    console.error(err);
   }
 };
 
+// Mounted
 onMounted(() => {
-  if (errors.length !== 0) {
-    snackMessage.value = true;
-  }
-  if (flash) {
-    flashMessage.value = true;
-  }
+  if (errors?.length) snackMessage.value = true;
+  if (flash) flashMessage.value = true;
   getEvents();
 });
 </script>
@@ -226,10 +123,6 @@ onMounted(() => {
   top: 0;
   left: 0;
   background-size: cover;
-  background-image: url("/images/Europa.jpg");
-}
-
-.text-white {
-  color: white;
+  background-image: url('/images/Europa.jpg');
 }
 </style>
