@@ -19,12 +19,13 @@
     "lib": ["esnext", "dom"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["resources/ts/*"]
+      "@/*": ["./resources/ts/*"]
     }
   },
   "include": [
     "./resources/ts/**/*.ts",
     "./resources/ts/**/*.tsx",
+    "./resources/ts/**/*.d.ts",
     "./resources/js/**/*.vue"
   ],
   "exclude": [

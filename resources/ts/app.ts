@@ -1,20 +1,12 @@
-// Vue 3用に構築したエントリーファイル
-import { createApp } from 'vue'; // Vue 3のエントリーポイント
-import { createVuetify } from 'vuetify'; // Vuetify 3の設定用
-import 'vuetify/styles'; // Vuetifyのスタイルシート
-import '@mdi/font/css/materialdesignicons.css'; // MDIアイコン用スタイル
-import App from './components/App.vue'; // ルートコンポーネント
+import { createApp } from 'vue';
+import vuetify from './plugins/vuetify'
+import App from './components/App.vue';
 import router from './router'; // Vue Router 4の設定
 import { defineRule, configure } from 'vee-validate'; // vee-validateのルール関連設定
 import { required, email, max, min, confirmed } from '@vee-validate/rules'; // 各種ルール
-import http from './plugins/http'; // カスタムプラグイン
+import axiosPlugin from "./plugins/axios"; // 提示されているプラグインファイル
 
-// Vuetifyの設定（アイコンのセットをカスタマイズ可能）
-const vuetify = createVuetify({
-  icons: {
-    defaultSet: 'mdi', // MDIアイコンを使用
-  },
-});
+
 
 // vee-validateのルール設定（Vue 3用）
 defineRule('required', required); // 必須項目
@@ -34,16 +26,13 @@ configure({
       confirmed: '再確認パスワードと入力が一致していません',
     };
 
-    return messages[context.rule?.name || ''] || `${context.field} の入力が無効です`;
+    return messages[context.rule?.name ?? ''] || `${context.field} の入力が無効です`;
     },
 });
 
 
-const app = createApp(App);
-app.mount('#app');
-app.use(router);  // Vue Router 4を登録
-app.use(vuetify); // Vuetify 3を登録
-app.use(http);    // カスタムHTTPプラグインを登録
-
-// アプリケーションをマウント
-app.mount('#app'); // VueインスタンスをDOMにマウント
+createApp(App)
+  .use(vuetify)
+  .use(router)
+  .use(axiosPlugin)
+  .mount('#app')
