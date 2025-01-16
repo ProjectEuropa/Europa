@@ -1,48 +1,38 @@
-import Vue from "vue";
-import Vuetify from "vuetify";
-import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
-import "vuetify/dist/vuetify.min.css";
-import App from "./components/Main.vue";
-import router from './router'
-import { required, email, max, min, confirmed } from 'vee-validate/dist/rules'
-import { extend, ValidationProvider, ValidationObserver } from 'vee-validate'
-import http from './plugins/http';
-Vue.use(http);
+import { createApp } from 'vue';
+import vuetify from './plugins/vuetify'
+import App from './components/App.vue';
+import router from './router'; // Vue Router 4の設定
+import { defineRule, configure } from 'vee-validate'; // vee-validateのルール関連設定
+import { required, email, max, min, confirmed } from '@vee-validate/rules'; // 各種ルール
+import axiosPlugin from "./plugins/axios"; // 提示されているプラグインファイル
 
-Vue.use(Vuetify);
-Vue.component('ValidationProvider', ValidationProvider);
-Vue.component('ValidationObserver', ValidationObserver);
 
-extend('required', {
-  ...required,
-  message: '{_field_} は必須です',
-})
-extend('max', {
-  ...max,
-  message: '{_field_} が {length} 文字数を超えています',
-})
-extend('min', {
-  ...min,
-  message: '{_field_} は最低 {length} 文字以上必要です',
-})
-extend('email', {
-  ...email,
-  message: 'メールアドレスの形式が不正です',
-})
-extend("confirmed", {
-  ...confirmed,
-  message: "再確認パスワードと入力が一致していません"
+
+// vee-validateのルール設定（Vue 3用）
+defineRule('required', required); // 必須項目
+defineRule('email', email);       // メール形式
+defineRule('max', max);           // 最大文字長
+defineRule('min', min);           // 最小文字長
+defineRule('confirmed', confirmed); // 確認フィールド
+
+// vee-validateのグローバルな設定（エラーメッセージのカスタマイズ）
+configure({
+  generateMessage: (context) => {
+    const messages: Record<string, string> = {
+      required: `${context.field} は必須です`,
+      email: 'メールアドレスの形式が不正です',
+      max: `${context.field} は最大 ${context.rule?.params?.length} 文字までです`,
+      min: `${context.field} は最低 ${context.rule?.params?.length} 文字必要です`,
+      confirmed: '再確認パスワードと入力が一致していません',
+    };
+
+    return messages[context.rule?.name ?? ''] || `${context.field} の入力が無効です`;
+    },
 });
 
-new Vuetify({
-  icons: {
-    iconfont: 'mdi',
-  }
-});
-new Vue({
-  router: router,
-  components: {
-    app: App
-  },
-  vuetify: new Vuetify()
-}).$mount('#app')
+
+createApp(App)
+  .use(vuetify)
+  .use(router)
+  .use(axiosPlugin)
+  .mount('#app')
