@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "npm run development",
-    "development": "mix",
-    "watch": "npm run development -- --watch",
+    "development": "mix --watch",
+    "watch": "mix watch",
     "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "prod": "npm run production",
     "production": "mix --production",
