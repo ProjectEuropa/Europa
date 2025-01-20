@@ -12,10 +12,14 @@ defineRule("required", required);
 defineRule("max", max);
 
 // フォームフィールド
-const ownerName = useField<string>("ownerName", "required|max:100");
-const comment = useField<string>("comment", "required|max:200");
-const deletePassword = useField<string>("deletePassword", "required|max:100");
-const teamDownloadableAt = useField<string>("teamDownloadableAt");
+const { value: ownerName, errorMessage: ownerNameError, validate: validateOwnerName }
+  = useField<string>("ownerName", "required|max:100");
+const { value: comment, errorMessage: commentError, validate: validateComment }
+  = useField<string>("comment", "required|max:200");
+const { value: deletePassword, errorMessage: deletePasswordError, validate: validateDeletePassword }
+  = useField<string>("deletePassword", "required|max:100");
+const { value: teamDownloadableAt, errorMessage: teamDownloadableAtError, validate: validateTeamDownloadableAt }
+  = useField<string>("teamDownloadableAt");
 const teamFile = ref<File | null>(null);
 const searchTag = ref<string[]>([]);
 
@@ -45,10 +49,10 @@ watch(searchTag, (newVal) => {
 // フォーム送信処理（ダイアログオープン）
 const teamDialogOpen = async () => {
   // 各フィールドの検証を実行
-  const { valid: isOwnerNameValid } = await ownerName.validate(); // validate() を呼び出す正しい方法
-  const { valid: isCommentValid } = await comment.validate();
-  const { valid: isDeletePasswordValid } = await deletePassword.validate();
-  const { valid: isTeamDownloadableAtValid } = await teamDownloadableAt.validate();
+  const { valid: isOwnerNameValid } = await validateOwnerName();
+  const { valid: isCommentValid } = await validateComment();
+  const { valid: isDeletePasswordValid } = await validateDeletePassword();
+  const { valid: isTeamDownloadableAtValid } = await validateTeamDownloadableAt();
 
   const isValid =
     isOwnerNameValid &&
@@ -58,12 +62,12 @@ const teamDialogOpen = async () => {
 
   if (isValid) {
     uploadObject.value = {
-      owner_name: ownerName.value,
+      owner_name: ownerName.value ?? "",
       file_name: teamFile.value?.name || "",
-      file_comment: comment.value,
+      file_comment: comment.value ?? "",
       searchTag: searchTag.value,
-      deletePassword: deletePassword.value,
-      downloadable_at: teamDownloadableAt.value,
+      deletePassword: deletePassword.value ?? "",
+      downloadable_at: teamDownloadableAt.value ?? "",
     };
 
   } else {
@@ -75,18 +79,17 @@ const teamDialogOpen = async () => {
 const handleFileSelected = (file: File | null) => {
   teamFile.value = file;
 };
+
 </script>
 
 <template>
   <v-container fluid class="d-flex">
     <v-col cols="12" md="12">
       <v-form>
-        <!-- CSRFトークン -->
         <input type="hidden" name="_token" :value="csrf" />
 
         <v-row align="center" justify="center">
           <v-card class="mx-auto">
-            <!-- ヘッダー -->
             <v-card-title class="blue">
               <v-list-item>
                 <v-list-item-action>
@@ -99,25 +102,21 @@ const handleFileSelected = (file: File | null) => {
               </v-list-item>
             </v-card-title>
 
-            <!-- 入力エリア -->
             <v-col cols="12" md="12">
-              <!-- オーナー名 -->
               <v-text-field
-                v-model="ownerName.value"
-                :error-messages="ownerName.errorMessage"
+                v-model="ownerName"
+                :error-messages="ownerNameError"
                 label="オーナー名"
                 prepend-icon="mdi-account-circle"
               ></v-text-field>
 
-              <!-- コメント -->
               <v-textarea
-                v-model="comment.value"
-                :error-messages="comment.errorMessage"
+                v-model="comment"
+                :error-messages="commentError"
                 label="コメント"
                 prepend-icon="mdi-comment-multiple-outline"
               ></v-textarea>
 
-              <!-- 検索タグ -->
               <v-combobox
                 v-model="searchTag"
                 :items="itemTeam"
@@ -127,16 +126,14 @@ const handleFileSelected = (file: File | null) => {
                 prepend-icon="mdi-tag-plus"
               ></v-combobox>
 
-              <!-- 削除パスワード -->
               <v-text-field
-                v-model="deletePassword.value"
-                :error-messages="deletePassword.errorMessage"
+                v-model="deletePassword"
+                :error-messages="deletePasswordError"
                 label="削除パスワード"
                 type="password"
                 prepend-icon="mdi-lock"
               ></v-text-field>
 
-              <!-- チームデータアップロード -->
               <v-file-input
                 label="チームデータ"
                 v-model="teamFile"
@@ -145,16 +142,14 @@ const handleFileSelected = (file: File | null) => {
                 @change="handleFileSelected"
               ></v-file-input>
 
-              <!-- ダウンロード可能日時 -->
               <v-text-field
-                v-model="teamDownloadableAt.value"
+                v-model="teamDownloadableAt"
                 label="ダウンロード可能日時"
                 type="datetime-local"
                 prepend-icon="mdi-calendar-clock"
               ></v-text-field>
             </v-col>
 
-            <!-- ボタン -->
             <v-card-actions class="justify-center">
               <v-btn large block class="primary" @click="teamDialogOpen">チームデータアップロード</v-btn>
             </v-card-actions>
@@ -165,3 +160,18 @@ const handleFileSelected = (file: File | null) => {
   </v-container>
 </template>
 
+<style>
+.v-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.v-btn {
+  background-color: #0077ff;
+  color: white;
+}
+
+.v-btn:hover {
+  background-color: #0056b3;
+}
+</style>
