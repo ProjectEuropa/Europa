@@ -2,7 +2,7 @@
   <VApp color="primary">
     <span class="bg"></span>
 
-    <VNavigationDrawer v-model="drawer" :clipped="false" :permanent="false">
+    <VNavigationDrawer v-model="drawer" :clipped="false" :permanent="false" class="custom-drawer">
       <VList density="compact">
         <VListItem>
           <VListItemTitle>
@@ -16,10 +16,9 @@
         </VListItem>
 
         <!-- その他のリンク -->
-        <VListItem v-for="link in links" :key="link.title">
+        <VListItem v-for="link in links" :key="link.title" class="list-item">
           <VListItemContent>
             <router-link :to="link.to" class="black--text">
-              <!-- v-icon -> VIcon -->
               <VIcon>{{ link.icon }}</VIcon> {{ link.title }}
             </router-link>
           </VListItemContent>
@@ -132,5 +131,14 @@ onMounted(() => {
   left: 0;
   background-size: cover;
   background-image: url("/images/Europa.jpg");
+}
+
+.custom-drawer {
+  background-color: #f5f5f5;
+  border-right: 1px solid #ddd;
+}
+
+.list-item:hover {
+  background-color: #e0e0e0;
 }
 </style>
