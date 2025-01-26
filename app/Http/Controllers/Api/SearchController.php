@@ -88,7 +88,7 @@ class SearchController extends Controller
     }
 
     // ページネーションする
-    $files = $files->paginate(10);
+    $files = $files->paginate(50);
 
     // マスク処理
     $files->getCollection()->transform(function ($file) {
