@@ -12,10 +12,14 @@ defineRule("required", required);
 defineRule("max", max);
 
 // フォームフィールド
-const ownerName = useField<string>("ownerName", "required|max:100");
-const comment = useField<string>("comment", "required|max:200");
-const deletePassword = useField<string>("deletePassword", "required|max:100");
-const teamDownloadableAt = useField<string>("teamDownloadableAt");
+const { value: ownerName, errorMessage: ownerNameError, validate: validateOwnerName }
+  = useField<string>("ownerName", "required|max:100");
+const { value: comment, errorMessage: commentError, validate: validateComment }
+  = useField<string>("comment", "required|max:200");
+const { value: deletePassword, errorMessage: deletePasswordError, validate: validateDeletePassword }
+  = useField<string>("deletePassword", "required|max:100");
+const { value: teamDownloadableAt, errorMessage: teamDownloadableAtError, validate: validateTeamDownloadableAt }
+  = useField<string>("teamDownloadableAt");
 const teamFile = ref<File | null>(null);
 const searchTag = ref<string[]>([]);
 
@@ -45,10 +49,10 @@ watch(searchTag, (newVal) => {
 // フォーム送信処理（ダイアログオープン）
 const teamDialogOpen = async () => {
   // 各フィールドの検証を実行
-  const { valid: isOwnerNameValid } = await ownerName.validate(); // validate() を呼び出す正しい方法
-  const { valid: isCommentValid } = await comment.validate();
-  const { valid: isDeletePasswordValid } = await deletePassword.validate();
-  const { valid: isTeamDownloadableAtValid } = await teamDownloadableAt.validate();
+  const { valid: isOwnerNameValid } = await validateOwnerName();
+  const { valid: isCommentValid } = await validateComment();
+  const { valid: isDeletePasswordValid } = await validateDeletePassword();
+  const { valid: isTeamDownloadableAtValid } = await validateTeamDownloadableAt();
 
   const isValid =
     isOwnerNameValid &&
@@ -58,12 +62,12 @@ const teamDialogOpen = async () => {
 
   if (isValid) {
     uploadObject.value = {
-      owner_name: ownerName.value,
+      owner_name: ownerName.value ?? "",
       file_name: teamFile.value?.name || "",
-      file_comment: comment.value,
+      file_comment: comment.value ?? "",
       searchTag: searchTag.value,
-      deletePassword: deletePassword.value,
-      downloadable_at: teamDownloadableAt.value,
+      deletePassword: deletePassword.value ?? "",
+      downloadable_at: teamDownloadableAt.value ?? "",
     };
 
   } else {
@@ -75,93 +79,87 @@ const teamDialogOpen = async () => {
 const handleFileSelected = (file: File | null) => {
   teamFile.value = file;
 };
+
 </script>
 
+
+
 <template>
-  <v-container fluid class="d-flex">
-    <v-col cols="12" md="12">
-      <v-form>
-        <!-- CSRFトークン -->
+  <VContainer fluid class="d-flex">
+    <VCol cols="12" md="12">
+      <VForm @submit.prevent="teamDialogOpen">
         <input type="hidden" name="_token" :value="csrf" />
 
-        <v-row align="center" justify="center">
-          <v-card class="mx-auto">
-            <!-- ヘッダー -->
-            <v-card-title class="blue">
-              <v-list-item>
-                <v-list-item-action>
-                  <v-icon>mdi-upload</v-icon>
-                </v-list-item-action>
-                <v-list-item-content>
-                  <v-list-item-title class="headline white--text">簡易アップロード(チームデータ)</v-list-item-title>
-                  <v-list-item-subtitle class="white--text">ユーザー登録無しでチームデータのアップロード可能</v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-card-title>
+        <VRow align="center" justify="center">
+          <VCard class="mx-auto">
+            <VCardTitle class="blue">
+              <VListGroup>
+                <VListGroupItem>
+                  <VListGroupItemAction start>
+                    <VIcon>mdi-upload</VIcon>
+                  </VListGroupItemAction>
+                  <VListGroupItemContent>
+                    <VListGroupItemTitle class="headline white--text">簡易アップロード(チームデータ)</VListGroupItemTitle>
+                    <VListGroupItemSubtitle class="white--text">ユーザー登録無しでチームデータのアップロード可能</VListGroupItemSubtitle>
+                  </VListGroupItemContent>
+                </VListGroupItem>
+              </VListGroup>
+            </VCardTitle>
 
-            <!-- 入力エリア -->
-            <v-col cols="12" md="12">
-              <!-- オーナー名 -->
-              <v-text-field
-                v-model="ownerName.value"
-                :error-messages="ownerName.errorMessage"
+            <VCol cols="12" md="12">
+              <VTextField
+                v-model="ownerName"
+                :error-messages="ownerNameError"
                 label="オーナー名"
                 prepend-icon="mdi-account-circle"
-              ></v-text-field>
+              ></VTextField>
 
-              <!-- コメント -->
-              <v-textarea
-                v-model="comment.value"
-                :error-messages="comment.errorMessage"
+              <VTextarea
+                v-model="comment"
+                :error-messages="commentError"
                 label="コメント"
                 prepend-icon="mdi-comment-multiple-outline"
-              ></v-textarea>
+              ></VTextarea>
 
-              <!-- 検索タグ -->
-              <v-combobox
+              <VCombobox
                 v-model="searchTag"
                 :items="itemTeam"
                 label="検索タグ"
                 multiple
                 chips
                 prepend-icon="mdi-tag-plus"
-              ></v-combobox>
+              ></VCombobox>
 
-              <!-- 削除パスワード -->
-              <v-text-field
-                v-model="deletePassword.value"
-                :error-messages="deletePassword.errorMessage"
+              <VTextField
+                v-model="deletePassword"
+                :error-messages="deletePasswordError"
                 label="削除パスワード"
                 type="password"
                 prepend-icon="mdi-lock"
-              ></v-text-field>
+              ></VTextField>
 
-              <!-- チームデータアップロード -->
-              <v-file-input
+              <VFileInput
                 label="チームデータ"
                 v-model="teamFile"
                 prepend-icon="mdi-file-upload"
                 :show-size="true"
-                @change="handleFileSelected"
-              ></v-file-input>
+                @change="handleFileSelected($event.target.files?.item(0))"
+              ></VFileInput>
 
-              <!-- ダウンロード可能日時 -->
-              <v-text-field
-                v-model="teamDownloadableAt.value"
+              <VTextField
+                v-model="teamDownloadableAt"
                 label="ダウンロード可能日時"
                 type="datetime-local"
                 prepend-icon="mdi-calendar-clock"
-              ></v-text-field>
-            </v-col>
+              ></VTextField>
+            </VCol>
 
-            <!-- ボタン -->
-            <v-card-actions class="justify-center">
-              <v-btn large block class="primary" @click="teamDialogOpen">チームデータアップロード</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-row>
-      </v-form>
-    </v-col>
-  </v-container>
+            <VCardActions class="justify-center">
+              <VBtn large block class="primary" type="submit">チームデータアップロード</VBtn>
+            </VCardActions>
+          </VCard>
+        </VRow>
+      </VForm>
+    </VCol>
+  </VContainer>
 </template>
-

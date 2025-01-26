@@ -2,8 +2,7 @@
   <VApp color="primary">
     <span class="bg"></span>
 
-
-    <VNavigationDrawer v-model="drawer" :clipped="false" :permanent="false" >
+    <VNavigationDrawer v-model="drawer" :clipped="false" :permanent="false" class="custom-drawer">
       <VList density="compact">
         <VListItem>
           <VListItemTitle>
@@ -17,10 +16,9 @@
         </VListItem>
 
         <!-- その他のリンク -->
-        <VListItem v-for="link in links" :key="link.title">
+        <VListItem v-for="link in links" :key="link.title" class="list-item">
           <VListItemContent>
             <router-link :to="link.to" class="black--text">
-              <!-- v-icon -> VIcon -->
               <VIcon>{{ link.icon }}</VIcon> {{ link.title }}
             </router-link>
           </VListItemContent>
@@ -46,28 +44,37 @@
     <!-- フッター -->
     <!-- v-footer -> VFooter -->
     <VFooter bg-color="#0077ff" color="primary">
-      <span>&copy; Team Project Europa 2016-{{ new Date().getFullYear() }}</span>
+      <span
+        >&copy; Team Project Europa 2016-{{ new Date().getFullYear() }}</span
+      >
     </VFooter>
 
     <!-- スナックバー -->
     <!-- v-snackbar -> VSnackbar -->
     <VSnackbar v-model="snackMessage" location="top center" color="error">
       サーバー内部でエラーが発生しました。
-      <div v-for="(error, key) in errors" :key="key">{{ error.toString() }}</div>
+      <div v-for="(error, key) in errors" :key="key">
+        {{ error.toString() }}
+      </div>
       <template #actions>
         <VBtn @click="snackMessage = false">x</VBtn>
       </template>
     </VSnackbar>
 
-    <VSnackbar v-model="flashMessage" location="top center" color="success" timeout="2000">
+    <VSnackbar
+      v-model="flashMessage"
+      location="top center"
+      color="success"
+      timeout="2000"
+    >
       {{ flash }}
     </VSnackbar>
   </VApp>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
 // Propsの定義
 const props = defineProps<{
@@ -85,11 +92,11 @@ const content = ref(0);
 
 // 動的リンク
 const links = [
-  { title: 'Search Team Data', to: '/search/team', icon: 'mdi-file-import' },
-  { title: 'Search Match Data', to: '/search/match', icon: 'mdi-file-import' },
-  { title: 'Simple Upload', to: '/simpleupload', icon: 'mdi-upload' },
-  { title: 'Upload', to: '/upload', icon: 'mdi-upload' },
-  { title: 'My Page', to: '/mypage', icon: 'mdi-account' },
+  { title: "Search Team Data", to: "/search/team", icon: "mdi-file-import" },
+  { title: "Search Match Data", to: "/search/match", icon: "mdi-file-import" },
+  { title: "Simple Upload", to: "/simpleupload", icon: "mdi-upload" },
+  { title: "Upload", to: "/upload", icon: "mdi-upload" },
+  { title: "My Page", to: "/mypage", icon: "mdi-account" },
 ];
 
 // トグルメソッド
@@ -100,7 +107,7 @@ const toggleDrawer = () => {
 // イベント取得
 const getEvents = async () => {
   try {
-    const response = await axios.get('/api/event');
+    const response = await axios.get("/api/event");
     content.value = response.data.data.length || 0;
   } catch (err) {
     console.error(err);
@@ -123,6 +130,15 @@ onMounted(() => {
   top: 0;
   left: 0;
   background-size: cover;
-  background-image: url('/images/Europa.jpg');
+  background-image: url("/images/Europa.jpg");
+}
+
+.custom-drawer {
+  background-color: #f5f5f5;
+  border-right: 1px solid #ddd;
+}
+
+.list-item:hover {
+  background-color: #e0e0e0;
 }
 </style>

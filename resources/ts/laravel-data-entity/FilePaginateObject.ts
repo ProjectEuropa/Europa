@@ -1,4 +1,4 @@
-import { FileDataObject } from "../vue-data-entity/FileDataObject"
+import { FileDataObject } from "../vue-data-entity/FileDataObject";
 
 export interface FilePaginateObject {
   current_page: number;
