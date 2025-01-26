@@ -82,96 +82,84 @@ const handleFileSelected = (file: File | null) => {
 
 </script>
 
+
+
 <template>
-  <v-container fluid class="d-flex">
-    <v-col cols="12" md="12">
-      <v-form>
+  <VContainer fluid class="d-flex">
+    <VCol cols="12" md="12">
+      <VForm @submit.prevent="teamDialogOpen">
         <input type="hidden" name="_token" :value="csrf" />
 
-        <v-row align="center" justify="center">
-          <v-card class="mx-auto">
-            <v-card-title class="blue">
-              <v-list-item>
-                <v-list-item-action>
-                  <v-icon>mdi-upload</v-icon>
-                </v-list-item-action>
-                <v-list-item-content>
-                  <v-list-item-title class="headline white--text">簡易アップロード(チームデータ)</v-list-item-title>
-                  <v-list-item-subtitle class="white--text">ユーザー登録無しでチームデータのアップロード可能</v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-card-title>
+        <VRow align="center" justify="center">
+          <VCard class="mx-auto">
+            <VCardTitle class="blue">
+              <VListGroup>
+                <VListGroupItem>
+                  <VListGroupItemAction start>
+                    <VIcon>mdi-upload</VIcon>
+                  </VListGroupItemAction>
+                  <VListGroupItemContent>
+                    <VListGroupItemTitle class="headline white--text">簡易アップロード(チームデータ)</VListGroupItemTitle>
+                    <VListGroupItemSubtitle class="white--text">ユーザー登録無しでチームデータのアップロード可能</VListGroupItemSubtitle>
+                  </VListGroupItemContent>
+                </VListGroupItem>
+              </VListGroup>
+            </VCardTitle>
 
-            <v-col cols="12" md="12">
-              <v-text-field
+            <VCol cols="12" md="12">
+              <VTextField
                 v-model="ownerName"
                 :error-messages="ownerNameError"
                 label="オーナー名"
                 prepend-icon="mdi-account-circle"
-              ></v-text-field>
+              ></VTextField>
 
-              <v-textarea
+              <VTextarea
                 v-model="comment"
                 :error-messages="commentError"
                 label="コメント"
                 prepend-icon="mdi-comment-multiple-outline"
-              ></v-textarea>
+              ></VTextarea>
 
-              <v-combobox
+              <VCombobox
                 v-model="searchTag"
                 :items="itemTeam"
                 label="検索タグ"
                 multiple
                 chips
                 prepend-icon="mdi-tag-plus"
-              ></v-combobox>
+              ></VCombobox>
 
-              <v-text-field
+              <VTextField
                 v-model="deletePassword"
                 :error-messages="deletePasswordError"
                 label="削除パスワード"
                 type="password"
                 prepend-icon="mdi-lock"
-              ></v-text-field>
+              ></VTextField>
 
-              <v-file-input
+              <VFileInput
                 label="チームデータ"
                 v-model="teamFile"
                 prepend-icon="mdi-file-upload"
                 :show-size="true"
-                @change="handleFileSelected"
-              ></v-file-input>
+                @change="handleFileSelected($event.target.files?.item(0))"
+              ></VFileInput>
 
-              <v-text-field
+              <VTextField
                 v-model="teamDownloadableAt"
                 label="ダウンロード可能日時"
                 type="datetime-local"
                 prepend-icon="mdi-calendar-clock"
-              ></v-text-field>
-            </v-col>
+              ></VTextField>
+            </VCol>
 
-            <v-card-actions class="justify-center">
-              <v-btn large block class="primary" @click="teamDialogOpen">チームデータアップロード</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-row>
-      </v-form>
-    </v-col>
-  </v-container>
+            <VCardActions class="justify-center">
+              <VBtn large block class="primary" type="submit">チームデータアップロード</VBtn>
+            </VCardActions>
+          </VCard>
+        </VRow>
+      </VForm>
+    </VCol>
+  </VContainer>
 </template>
-
-<style>
-.v-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.v-btn {
-  background-color: #0077ff;
-  color: white;
-}
-
-.v-btn:hover {
-  background-color: #0056b3;
-}
-</style>
