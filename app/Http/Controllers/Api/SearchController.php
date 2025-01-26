@@ -53,14 +53,27 @@ class SearchController extends Controller
   private function setSearchKeyword(Builder $files, string $keyword): Builder
   {
     return $files->where(function ($query) use ($keyword) {
-      // 例: file_commentも検索する場合
-      $query->orWhere('upload_owner_name', 'LIKE', '%' . $keyword . '%')
-        ->orWhere('file_name', 'like', '%' . $keyword . '%')
-        ->orWhere('file_comment', 'like', '%' . $keyword . '%')
-        ->orWhere('search_tag1', 'like', '%' . $keyword . '%')
-        ->orWhere('search_tag2', 'like', '%' . $keyword . '%')
-        ->orWhere('search_tag3', 'like', '%' . $keyword . '%')
-        ->orWhere('search_tag4', 'like', '%' . $keyword . '%');
+      // キーワードが含まれる場合、file_comment は download解禁のものだけ対象にしています
+      $query
+        // 未マスク項目の検索（upload_owner_name, file_name, search_tag1~4など）
+        ->where(function ($subQuery) use ($keyword) {
+          $subQuery
+            ->orWhere('upload_owner_name', 'LIKE', '%' . $keyword . '%')
+            ->orWhere('file_name', 'like', '%' . $keyword . '%')
+            ->orWhere('search_tag1', 'like', '%' . $keyword . '%')
+            ->orWhere('search_tag2', 'like', '%' . $keyword . '%')
+            ->orWhere('search_tag3', 'like', '%' . $keyword . '%')
+            ->orWhere('search_tag4', 'like', '%' . $keyword . '%');
+        })
+        // file_commentはdownloadable_atが過去か未設定のものだけ検索
+        ->orWhere(function ($subQuery) use ($keyword) {
+          $subQuery
+            ->where(function ($condition) {
+              $condition->whereNull('downloadable_at')
+                ->orWhere('downloadable_at', '<=', now());
+            })
+            ->where('file_comment', 'like', '%' . $keyword . '%');
+        });
     });
   }
 
