@@ -2,8 +2,9 @@
 
 ### PHPビルトインサーバーで一旦
 
-- PHP 8.1
-- Node.js 18.x
+- PHP 8.4
+- Node.js >=20.0.0
+- Laravel 10.x
 
 ```console
 $ composer install
