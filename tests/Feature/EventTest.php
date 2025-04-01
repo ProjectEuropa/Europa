@@ -24,10 +24,10 @@ class EventTest extends TestCase
         $response = $this->json('GET', '/api/event');
         $json = (json_decode($response->getContent()));
 
-        $this->assertObjectHasAttribute('event_name', $json->data[0]);
-        $this->assertObjectHasAttribute('event_details', $json->data[0]);
-        $this->assertObjectHasAttribute('event_closing_day', $json->data[0]);
-        $this->assertObjectHasAttribute('event_reference_url', $json->data[0]);
+        $this->assertObjectHasProperty('event_name', $json->data[0]);
+        $this->assertObjectHasProperty('event_details', $json->data[0]);
+        $this->assertObjectHasProperty('event_closing_day', $json->data[0]);
+        $this->assertObjectHasProperty('event_reference_url', $json->data[0]);
     }
 
     /**
@@ -55,10 +55,10 @@ class EventTest extends TestCase
         $response = $this->actingAs($user)->json('GET', "/api/mypage/events?api_token={$token}");
         $json = (json_decode($response->getContent()));
 
-        $this->assertObjectHasAttribute('event_name', $json->data[0]);
-        $this->assertObjectHasAttribute('event_details', $json->data[0]);
-        $this->assertObjectHasAttribute('event_closing_day', $json->data[0]);
-        $this->assertObjectHasAttribute('event_reference_url', $json->data[0]);
+        $this->assertObjectHasProperty('event_name', $json->data[0]);
+        $this->assertObjectHasProperty('event_details', $json->data[0]);
+        $this->assertObjectHasProperty('event_closing_day', $json->data[0]);
+        $this->assertObjectHasProperty('event_reference_url', $json->data[0]);
     }
 
 }
