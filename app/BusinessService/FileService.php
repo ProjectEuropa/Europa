@@ -33,7 +33,7 @@ class FileService
             'search_tags' => array_pad(explode(',', $request->input("{$dataType}SearchTags")), 4, null),
         ];
 
-        $db = DB::connection('pgsql')->getPdo();
+        $db = DB::connection()->getPdo();
         $stmt = $db->prepare("INSERT INTO files (file_data, upload_type, file_name, upload_owner_name, file_comment, delete_password, data_type, created_at, updated_at, upload_user_id, search_tag1, search_tag2, search_tag3, search_tag4, downloadable_at) "
             . "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 

@@ -61,15 +61,15 @@ class FileUtilTest extends TestCase
         $response = $this->actingAs($user)->json('GET', "/api/mypage/team?api_token={$token}");
         $json = (json_decode($response->getContent()));
 
-        $this->assertObjectHasAttribute('id', $json->data[0]);
-        $this->assertObjectHasAttribute('upload_owner_name', $json->data[0]);
-        $this->assertObjectHasAttribute('file_name', $json->data[0]);
-        $this->assertObjectHasAttribute('file_comment', $json->data[0]);
-        $this->assertObjectHasAttribute('created_at', $json->data[0]);
-        $this->assertObjectHasAttribute('search_tag1', $json->data[0]);
-        $this->assertObjectHasAttribute('search_tag2', $json->data[0]);
-        $this->assertObjectHasAttribute('search_tag3', $json->data[0]);
-        $this->assertObjectHasAttribute('search_tag4', $json->data[0]);
+        $this->assertObjectHasProperty('id', $json->data[0]);
+        $this->assertObjectHasProperty('upload_owner_name', $json->data[0]);
+        $this->assertObjectHasProperty('file_name', $json->data[0]);
+        $this->assertObjectHasProperty('file_comment', $json->data[0]);
+        $this->assertObjectHasProperty('created_at', $json->data[0]);
+        $this->assertObjectHasProperty('search_tag1', $json->data[0]);
+        $this->assertObjectHasProperty('search_tag2', $json->data[0]);
+        $this->assertObjectHasProperty('search_tag3', $json->data[0]);
+        $this->assertObjectHasProperty('search_tag4', $json->data[0]);
     }
 
     /**
@@ -94,14 +94,14 @@ class FileUtilTest extends TestCase
         $response = $this->actingAs($user)->json('GET', "/api/mypage/match?api_token={$token}");
         $json = (json_decode($response->getContent()));
 
-        $this->assertObjectHasAttribute('id', $json->data[0]);
-        $this->assertObjectHasAttribute('upload_owner_name', $json->data[0]);
-        $this->assertObjectHasAttribute('file_name', $json->data[0]);
-        $this->assertObjectHasAttribute('file_comment', $json->data[0]);
-        $this->assertObjectHasAttribute('created_at', $json->data[0]);
-        $this->assertObjectHasAttribute('search_tag1', $json->data[0]);
-        $this->assertObjectHasAttribute('search_tag2', $json->data[0]);
-        $this->assertObjectHasAttribute('search_tag3', $json->data[0]);
-        $this->assertObjectHasAttribute('search_tag4', $json->data[0]);
+        $this->assertObjectHasProperty('id', $json->data[0]);
+        $this->assertObjectHasProperty('upload_owner_name', $json->data[0]);
+        $this->assertObjectHasProperty('file_name', $json->data[0]);
+        $this->assertObjectHasProperty('file_comment', $json->data[0]);
+        $this->assertObjectHasProperty('created_at', $json->data[0]);
+        $this->assertObjectHasProperty('search_tag1', $json->data[0]);
+        $this->assertObjectHasProperty('search_tag2', $json->data[0]);
+        $this->assertObjectHasProperty('search_tag3', $json->data[0]);
+        $this->assertObjectHasProperty('search_tag4', $json->data[0]);
     }
 }
