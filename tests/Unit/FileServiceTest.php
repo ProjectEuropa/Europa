@@ -103,6 +103,10 @@ class FileServiceTest extends TestCase
 
         $storedFile = File::latest('id')->first();
         $storedData = $storedFile->file_data;
+        // Handle potential stream resource from PostgreSQL BYTEA
+        if (is_resource($storedData)) {
+            $storedData = stream_get_contents($storedData);
+        }
 
         $this->assertEquals($binaryData, $storedData);
     }
@@ -129,7 +133,12 @@ class FileServiceTest extends TestCase
         $this->fileService->registerFileData($request, ['isTeam' => false, 'isNormalUpdate' => true]);
 
         $storedFile = File::latest('id')->first();
+        $storedData = $storedFile->file_data;
+        // Handle potential stream resource from PostgreSQL BYTEA
+        if (is_resource($storedData)) {
+            $storedData = stream_get_contents($storedData);
+        }
 
-        $this->assertEquals($binaryData, $storedFile->file_data);
+        $this->assertEquals($binaryData, $storedData);
     }
 }
