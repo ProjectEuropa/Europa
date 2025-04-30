@@ -8,6 +8,7 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 ARG NEW_RELIC_AGENT_VERSION
 ARG NEW_RELIC_LICENSE_KEY
 ARG NEW_RELIC_APPNAME
+ARG NEWRELIC_VERSION="11.8.0.22"
 
 RUN apt update \
     && apt install -y \
@@ -21,12 +22,12 @@ RUN apt update \
     zlib1g-dev \
     libzip-dev
 
-RUN curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-11.4.0.17-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz \
+RUN curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-${NEWRELIC_VERSION}-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz \
     && tar -xzf /tmp/newrelic-php-agent.tar.gz -C /tmp
 
-RUN find /tmp/newrelic-php5-11.4.0.17-linux -name "newrelic.ini" 2>/dev/null
+RUN find /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux -name "newrelic.ini" 2>/dev/null
 # New Relic PHP Agent をインストール
-WORKDIR /tmp/newrelic-php5-11.4.0.17-linux
+WORKDIR /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux
 RUN ./newrelic-install install
 RUN echo "extension=newrelic.so" > /usr/local/etc/php/conf.d/newrelic.ini \
     && echo "newrelic.license=\"${NEW_RELIC_LICENSE_KEY}\"" >> /usr/local/etc/php/conf.d/newrelic.ini \
