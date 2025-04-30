@@ -26,7 +26,7 @@ class Bootstrap implements BeforeFirstTestHook, AfterLastTestHook
         $console = $this->createApplication()->make(Kernel::class);
 
         $commands = [
-            'config:cache',
+            // 'config:cache', // Caching config during tests can override phpunit.xml settings
             'event:cache',
         ];
 
