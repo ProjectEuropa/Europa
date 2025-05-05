@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 1, 2, 32;
+  --cyber-blue: 3, 198, 249;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* サイバーブルーのグロー効果 */
+.cyber-glow {
+  text-shadow: 0 0 5px rgba(var(--cyber-blue), 0.5), 0 0 10px rgba(var(--cyber-blue), 0.3);
+}
+
+.cyber-border {
+  border: 1px solid rgb(var(--cyber-blue));
+  box-shadow: 0 0 5px rgba(var(--cyber-blue), 0.5), inset 0 0 5px rgba(var(--cyber-blue), 0.3);
+}
+
+/* アニメーションのためのユーティリティクラス */
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow:hover {
+  text-shadow: 0 0 8px rgba(var(--cyber-blue), 0.8), 0 0 15px rgba(var(--cyber-blue), 0.5);
+}
