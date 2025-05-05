@@ -21,6 +21,11 @@ class File extends Model
         'downloadable_at' => 'datetime',
     ];
 
+    /**
+     * Disable mass-assignment protection
+     */
+    protected $guarded = [];
+
     public function createdAt(): Attribute
     {
         return new Attribute(
