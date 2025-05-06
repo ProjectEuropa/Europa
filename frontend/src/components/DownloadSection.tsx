@@ -96,7 +96,7 @@ const DownloadSection: React.FC = () => {
             }}>
               詳細なチーム統計とパフォーマンス指標をダウンロード
             </p>
-            <a href="/team-data" style={{
+            <a href="/sumdownload/team" style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
@@ -159,14 +159,14 @@ const DownloadSection: React.FC = () => {
             <p style={{
               color: "#b0c4d8",
               fontSize: "15px",
-              lineHeight: 1.5,
+              lineHeight: "1.5",
               marginBottom: "24px",
               minHeight: "70px",
               textAlign: "center"
             }}>
               戦略向上のためのバトルレポートとマッチ分析へアクセス
             </p>
-            <a href="/match-data" style={{
+            <a href="/sumdownload/match" style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",

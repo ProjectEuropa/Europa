@@ -85,7 +85,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ searchQuery, setSearchQue
           flexWrap: "wrap",
           marginTop: "24px"
         }}>
-          <a href="/team-search" style={{
+          <a href="/search/team" style={{
             display: "flex",
             alignItems: "center",
             gap: "8px",
@@ -107,7 +107,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ searchQuery, setSearchQue
             </svg>
             チームデータ検索
           </a>
-          <a href="/match-search" style={{
+          <a href="/search/match" style={{
             display: "flex",
             alignItems: "center",
             gap: "8px",

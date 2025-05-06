@@ -20,7 +20,7 @@ const JoinNetworkSection: React.FC = () => {
           fontSize: "2.5rem",
           marginBottom: "24px"
         }}>
-          ネットワークに参加しませんか？
+          Discordに参加しませんか？
         </h2>
         <p style={{
           color: "#b0c4d8",
@@ -30,7 +30,7 @@ const JoinNetworkSection: React.FC = () => {
           maxWidth: "600px",
           margin: "0 auto 40px"
         }}>
-          今日アカウントを作成して、グローバルなカルネージハートEXAコミュニティであなたのOKEの共有を始めましょう。
+          Discordに参加して、グローバルなカルネージハートEXAコミュニティで盛り上げましょう！
         </p>
         
         <div style={{
@@ -39,7 +39,7 @@ const JoinNetworkSection: React.FC = () => {
           gap: "16px",
           flexWrap: "wrap"
         }}>
-          <a href="/register" style={{
+          <a href="https://discord.gg/MXX5946u" target="_blank" rel="noopener noreferrer" style={{
             display: "flex",
             alignItems: "center",
             gap: "8px",
@@ -58,29 +58,9 @@ const JoinNetworkSection: React.FC = () => {
               <line x1="20" y1="8" x2="20" y2="14"></line>
               <line x1="23" y1="11" x2="17" y2="11"></line>
             </svg>
-            今すぐ登録
+            Discordに参加
           </a>
-          <a href="/login" style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "14px 32px",
-            background: "transparent",
-            border: "1px solid #00c8ff",
-            borderRadius: "4px",
-            color: "#00c8ff",
-            textDecoration: "none",
-            fontSize: "16px",
-            fontWeight: 500,
-            transition: "all 0.2s ease"
-          }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-              <polyline points="10 17 15 12 10 7"></polyline>
-              <line x1="15" y1="12" x2="3" y2="12"></line>
-            </svg>
-            ログイン
-          </a>
+          
         </div>
       </div>
     </section>
