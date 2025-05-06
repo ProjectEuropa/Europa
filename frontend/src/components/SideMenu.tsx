@@ -265,6 +265,24 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
             </svg>
             Information
           </Link>
+
+          <Link href="/event" style={getLinkStyle('/event')}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke={pathname === '/event' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5"/>
+              <line x1="16" y1="2" x2="16" y2="6" stroke={pathname === '/event' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round"/>
+              <line x1="8" y1="2" x2="8" y2="6" stroke={pathname === '/event' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round"/>
+              <line x1="3" y1="10" x2="21" y2="10" stroke={pathname === '/event' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            イベント登録
+          </Link>
+
+          <Link href="/mypage" style={getLinkStyle('/mypage')}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
+              <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke={pathname === '/mypage' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke={pathname === '/mypage' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            マイページ
+          </Link>
         </div>
       </div>
     </div>
