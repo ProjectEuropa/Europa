@@ -3,6 +3,7 @@
 import React, { useState, useRef, KeyboardEvent } from 'react';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
+import Calendar from '../../../components/Calendar';
 
 const MatchUploadPage: React.FC = () => {
   const [ownerName, setOwnerName] = useState('');
@@ -13,6 +14,7 @@ const MatchUploadPage: React.FC = () => {
   const [downloadDate, setDownloadDate] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
 
@@ -47,6 +49,21 @@ const MatchUploadPage: React.FC = () => {
 
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  // 日付選択処理
+  const handleDateSelect = (date: Date) => {
+    // 日付と時間を設定（時間は現在時刻を使用）
+    const now = new Date();
+    date.setHours(now.getHours());
+    date.setMinutes(now.getMinutes());
+    
+    // ISO文字列に変換して、datetime-local入力用にフォーマット
+    const isoString = date.toISOString();
+    const formattedDate = isoString.substring(0, isoString.length - 8); // 秒とミリ秒を削除
+    
+    setDownloadDate(formattedDate);
+    setShowCalendar(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,21 +148,13 @@ const MatchUploadPage: React.FC = () => {
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
             </div>
-            <div>
-              <h1 style={{
-                fontSize: '1.5rem',
-                fontWeight: 'bold',
-                margin: 0
-              }}>
-                簡易アップロード(マッチデータ)
-              </h1>
-              <p style={{
-                fontSize: '0.9rem',
-                margin: '4px 0 0 0'
-              }}>
-                ユーザー登録処理をせずにマッチデータアップロードが可能です。
-              </p>
-            </div>
+            <h1 style={{
+              margin: '0',
+              fontSize: '1.5rem',
+              fontWeight: 'bold'
+            }}>
+              マッチデータアップロード
+            </h1>
           </div>
           
           {/* フォーム部分 */}
@@ -154,7 +163,7 @@ const MatchUploadPage: React.FC = () => {
           }}>
             {/* オーナー名 */}
             <div style={{
-              marginBottom: '20px'
+              marginBottom: '30px'
             }}>
               <label style={{
                 display: 'flex',
@@ -173,6 +182,8 @@ const MatchUploadPage: React.FC = () => {
                 type="text"
                 value={ownerName}
                 onChange={(e) => setOwnerName(e.target.value)}
+                placeholder="例: Masato"
+                required
                 style={{
                   width: '100%',
                   padding: '12px',
@@ -182,22 +193,12 @@ const MatchUploadPage: React.FC = () => {
                   color: 'white',
                   fontSize: '1rem'
                 }}
-                maxLength={100}
               />
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                color: '#8CB4FF',
-                fontSize: '0.8rem',
-                marginTop: '4px'
-              }}>
-                {ownerName.length} / 100
-              </div>
             </div>
             
             {/* コメント */}
             <div style={{
-              marginBottom: '20px'
+              marginBottom: '30px'
             }}>
               <label style={{
                 display: 'flex',
@@ -214,6 +215,8 @@ const MatchUploadPage: React.FC = () => {
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
+                placeholder="例: 中小CPUハンデ戦用のチームです"
+                rows={4}
                 style={{
                   width: '100%',
                   padding: '12px',
@@ -222,15 +225,14 @@ const MatchUploadPage: React.FC = () => {
                   borderRadius: '6px',
                   color: 'white',
                   fontSize: '1rem',
-                  minHeight: '100px',
                   resize: 'vertical'
                 }}
-              />
+              ></textarea>
             </div>
             
-            {/* 検索タグ */}
+            {/* タグ */}
             <div style={{
-              marginBottom: '20px'
+              marginBottom: '30px'
             }}>
               <label style={{
                 display: 'flex',
@@ -243,102 +245,79 @@ const MatchUploadPage: React.FC = () => {
                   <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                   <line x1="7" y1="7" x2="7.01" y2="7"></line>
                 </svg>
-                検索タグ
+                タグ (カンマ区切りで複数入力可能)
               </label>
-              <div>
-                <div style={{
-                  display: 'flex',
-                  gap: '8px',
-                  alignItems: 'center'
-                }}>
-                  <input
-                    ref={tagInputRef}
-                    type="text"
-                    value={tagInput}
-                    onChange={handleTagInputChange}
-                    onKeyDown={handleTagKeyDown}
-                    placeholder="カンマ、エンターキー、または半角スペースで区切ってタグを入力"
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '8px',
+                marginBottom: '8px'
+              }}>
+                {tags.map((tag, index) => (
+                  <div
+                    key={index}
                     style={{
-                      flex: '1',
-                      padding: '12px',
-                      background: '#111A2E',
-                      border: '1px solid #1E3A5F',
-                      borderRadius: '6px',
-                      color: 'white',
-                      fontSize: '1rem'
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => tagInput.trim() && addTag(tagInput.trim())}
-                    style={{
-                      background: '#111A2E',
-                      border: '1px solid #1E3A5F',
-                      color: '#00c8ff',
-                      padding: '12px 16px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: '#1E3A5F',
+                      borderRadius: '4px',
+                      padding: '4px 8px',
+                      color: '#b0c4d8',
                       fontSize: '0.9rem'
                     }}
                   >
-                    追加
-                  </button>
-                </div>
-                
-                {tags.length > 0 && (
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '8px',
-                    marginTop: '12px'
-                  }}>
-                    {tags.map((tag, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          background: 'rgba(0, 200, 255, 0.1)',
-                          border: '1px solid #1E3A5F',
-                          borderRadius: '4px',
-                          padding: '4px 8px',
-                          color: '#00c8ff',
-                          fontSize: '0.9rem'
-                        }}
-                      >
-                        {tag}
-                        <button
-                          type="button"
-                          onClick={() => removeTag(tag)}
-                          style={{
-                            background: 'transparent',
-                            border: 'none',
-                            color: '#8CB4FF',
-                            cursor: 'pointer',
-                            padding: '0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: '16px',
-                            height: '16px'
-                          }}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#b0c4d8',
+                        cursor: 'pointer',
+                        marginLeft: '4px',
+                        padding: '0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '16px',
+                        height: '16px'
+                      }}
+                    >
+                      ×
+                    </button>
                   </div>
-                )}
+                ))}
+              </div>
+              <input
+                type="text"
+                ref={tagInputRef}
+                value={tagInput}
+                onChange={handleTagInputChange}
+                onKeyDown={handleTagKeyDown}
+                placeholder="例: 中小CPU, ハンデ戦, アラクネー"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: '#111A2E',
+                  border: '1px solid #1E3A5F',
+                  borderRadius: '6px',
+                  color: 'white',
+                  fontSize: '1rem'
+                }}
+              />
+              <div style={{
+                fontSize: '0.8rem',
+                color: '#8CB4FF',
+                marginTop: '4px'
+              }}>
+                Enterキーまたはスペースキーで追加できます
               </div>
             </div>
             
             {/* 削除パスワード */}
             <div style={{
-              marginBottom: '20px'
+              marginBottom: '30px'
             }}>
               <label style={{
                 display: 'flex',
@@ -351,12 +330,13 @@ const MatchUploadPage: React.FC = () => {
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-                削除パスワード
+                削除パスワード (任意)
               </label>
               <input
                 type="password"
                 value={deletePassword}
                 onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="データを削除する際に必要なパスワード"
                 style={{
                   width: '100%',
                   padding: '12px',
@@ -366,22 +346,19 @@ const MatchUploadPage: React.FC = () => {
                   color: 'white',
                   fontSize: '1rem'
                 }}
-                maxLength={100}
               />
               <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                color: '#8CB4FF',
                 fontSize: '0.8rem',
+                color: '#8CB4FF',
                 marginTop: '4px'
               }}>
-                {deletePassword.length} / 100
+                後でデータを削除する際に必要です
               </div>
             </div>
             
-            {/* マッチデータ */}
+            {/* ファイル選択 */}
             <div style={{
-              marginBottom: '20px'
+              marginBottom: '30px'
             }}>
               <label style={{
                 display: 'flex',
@@ -394,20 +371,20 @@ const MatchUploadPage: React.FC = () => {
                   <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
                   <polyline points="13 2 13 9 20 9"></polyline>
                 </svg>
-                マッチデータ
+                マッチデータファイル
               </label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                required
+              />
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '10px'
               }}>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                  accept=".zip,.rar,.7z,.dat"
-                />
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -438,7 +415,8 @@ const MatchUploadPage: React.FC = () => {
             
             {/* ダウンロード可能日時 */}
             <div style={{
-              marginBottom: '30px'
+              marginBottom: '30px',
+              position: 'relative'
             }}>
               <label style={{
                 display: 'flex',
@@ -475,20 +453,77 @@ const MatchUploadPage: React.FC = () => {
                 />
                 <button
                   type="button"
-                  onClick={() => setDownloadDate('')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowCalendar(!showCalendar);
+                  }}
                   style={{
                     background: 'transparent',
                     border: 'none',
-                    color: '#b0c4d8',
+                    color: '#00c8ff',
                     cursor: 'pointer',
                     padding: '0 8px'
                   }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="4" width="18" height="18" rx="2" stroke="#00c8ff" strokeWidth="2"/>
+                    <path d="M3 10H21" stroke="#00c8ff" strokeWidth="2"/>
+                    <path d="M8 2L8 6" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M16 2L16 6" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round"/>
                   </svg>
                 </button>
               </div>
+              
+              {showCalendar && (
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    position: 'fixed',
+                    zIndex: 1000,
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    background: '#0A1022',
+                    border: '2px solid #00c8ff',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    width: '100%',
+                    maxWidth: '450px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+                    pointerEvents: 'auto'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowCalendar(false);
+                      }}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#00c8ff',
+                        cursor: 'pointer',
+                        fontSize: '1.5rem',
+                        lineHeight: '1',
+                        padding: '0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '30px',
+                        height: '30px'
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <Calendar 
+                    initialDate={downloadDate ? new Date(downloadDate) : new Date()}
+                    onSelect={handleDateSelect}
+                    size="small"
+                  />
+                </div>
+              )}
             </div>
             
             {/* 送信ボタン */}

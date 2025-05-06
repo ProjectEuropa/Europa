@@ -4,11 +4,37 @@ import React, { useState } from 'react';
 
 interface CalendarProps {
   initialDate?: Date;
+  onSelect?: (date: Date) => void;
+  size?: 'small' | 'large';
 }
 
-const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date() }) => {
+const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect, size = 'large' }) => {
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // スケールファクターを設定
+  const scale = size === 'small' ? 0.85 : 1;
+  
+  // フォントサイズを計算
+  const fontSize = {
+    yearMonth: size === 'small' ? '1.5rem' : '2rem',
+    weekday: size === 'small' ? '1.2rem' : '1.5rem',
+    day: size === 'small' ? '1.2rem' : '1.5rem',
+    button: size === 'small' ? '1rem' : '1.3rem'
+  };
+  
+  // パディングを計算
+  const padding = {
+    container: size === 'small' ? '20px' : '30px',
+    cell: size === 'small' ? '10px' : '15px',
+    button: size === 'small' ? '10px 15px' : '12px 25px'
+  };
+  
+  // 間隔を計算
+  const gap = size === 'small' ? '10px' : '15px';
+  
+  // セルの高さを計算
+  const cellHeight = size === 'small' ? '60px' : '80px';
 
   // 年月の表示用フォーマット
   const formatYearMonth = (date: Date): string => {
@@ -16,20 +42,48 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date() }) => {
   };
 
   // 前月へ移動
-  const goToPreviousMonth = () => {
+  const goToPreviousMonth = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   };
 
   // 次月へ移動
-  const goToNextMonth = () => {
+  const goToNextMonth = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
   // 今日へ移動
-  const goToToday = () => {
+  const goToToday = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     const today = new Date();
     setCurrentDate(today);
     setSelectedDate(today);
+    if (onSelect) {
+      onSelect(today);
+    }
+  };
+
+  // 日付選択処理
+  const handleDateClick = (date: Date, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedDate(date);
+    if (onSelect) {
+      onSelect(date);
+    }
+  };
+
+  // 日付が同じかどうかを判定
+  const isSameDay = (date1: Date, date2: Date): boolean => {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
   };
 
   // カレンダーの日付を生成
@@ -72,9 +126,9 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date() }) => {
       });
     }
     
-    // 来月の日を追加（6週間分になるように）
-    const daysNeeded = 42 - days.length;
-    for (let i = 1; i <= daysNeeded; i++) {
+    // 来月の日を追加（6行 x 7列 = 42日分になるまで）
+    const remainingDays = 42 - days.length;
+    for (let i = 1; i <= remainingDays; i++) {
       const day = new Date(year, month + 1, i);
       days.push({
         date: day,
@@ -86,134 +140,123 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date() }) => {
     
     return days;
   };
-
-  // 同じ日かどうかを判定
-  const isSameDay = (date1: Date, date2: Date): boolean => {
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  };
-
-  // 日付クリック時の処理
-  const handleDateClick = (date: Date) => {
-    setSelectedDate(date);
-    // ここに日付クリック時の処理を追加（例: イベント表示など）
-    console.log('Selected date:', date);
-  };
-
-  // 曜日の配列
+  
+  const days = generateCalendarDays();
+  
+  // 曜日の表示
   const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-
-  // カレンダーの日付配列
-  const calendarDays = generateCalendarDays();
-
+  
+  // カレンダー全体のクリックイベントを停止
+  const handleCalendarClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+  
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: '1000px',
-      background: '#0A1022',
-      borderRadius: '12px',
-      padding: '24px',
-      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-      border: '1px solid #1E3A5F'
-    }}>
-      {/* カレンダーヘッダー */}
+    <div 
+      style={{
+        background: '#050A14',
+        border: '1px solid #1E3A5F',
+        borderRadius: '12px',
+        padding: padding.container,
+        color: 'white',
+        width: '100%',
+        margin: '0 auto'
+      }}
+      onClick={handleCalendarClick}
+    >
+      {/* ヘッダー部分 */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '20px'
+        marginBottom: padding.container
       }}>
+        <button 
+          onClick={goToPreviousMonth}
+          style={{
+            background: '#111A2E',
+            border: '1px solid #1E3A5F',
+            color: '#00c8ff',
+            cursor: 'pointer',
+            padding: size === 'small' ? '10px 15px' : '15px 20px',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <svg width={size === 'small' ? "24" : "30"} height={size === 'small' ? "24" : "30"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18L9 12L15 6" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+        
         <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px'
+          fontSize: fontSize.yearMonth,
+          fontWeight: 'bold',
+          color: '#00c8ff'
         }}>
-          <button
-            onClick={goToToday}
-            style={{
-              background: '#111A2E',
-              border: '1px solid #1E3A5F',
-              color: '#00c8ff',
-              padding: '8px 16px',
-              borderRadius: '6px',
-              fontSize: '0.9rem',
-              cursor: 'pointer'
-            }}
-          >
-            TODAY
-          </button>
-          <button
-            onClick={goToPreviousMonth}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#00c8ff',
-              fontSize: '1.2rem',
-              cursor: 'pointer',
-              padding: '4px 8px'
-            }}
-          >
-            &lt;
-          </button>
-          <button
-            onClick={goToNextMonth}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#00c8ff',
-              fontSize: '1.2rem',
-              cursor: 'pointer',
-              padding: '4px 8px'
-            }}
-          >
-            &gt;
-          </button>
-          <h2 style={{
-            color: '#fff',
-            fontSize: '1.5rem',
-            fontWeight: 'bold'
-          }}>
-            {formatYearMonth(currentDate)}
-          </h2>
+          {formatYearMonth(currentDate)}
         </div>
-        <div>
-          <select
-            style={{
-              background: '#111A2E',
-              border: '1px solid #1E3A5F',
-              color: '#00c8ff',
-              padding: '8px 16px',
-              borderRadius: '6px',
-              fontSize: '0.9rem',
-              cursor: 'pointer'
-            }}
-          >
-            <option>MONTH</option>
-            <option>WEEK</option>
-            <option>DAY</option>
-          </select>
-        </div>
+        
+        <button 
+          onClick={goToNextMonth}
+          style={{
+            background: '#111A2E',
+            border: '1px solid #1E3A5F',
+            color: '#00c8ff',
+            cursor: 'pointer',
+            padding: size === 'small' ? '10px 15px' : '15px 20px',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <svg width={size === 'small' ? "24" : "30"} height={size === 'small' ? "24" : "30"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 6L15 12L9 18" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
       
-      {/* 曜日ヘッダー */}
+      {/* 今日ボタン */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        marginBottom: padding.container
+      }}>
+        <button 
+          onClick={goToToday}
+          style={{
+            background: '#111A2E',
+            border: '1px solid #1E3A5F',
+            borderRadius: '8px',
+            color: '#00c8ff',
+            padding: padding.button,
+            cursor: 'pointer',
+            fontSize: fontSize.button,
+            fontWeight: 'bold'
+          }}
+        >
+          今日
+        </button>
+      </div>
+      
+      {/* 曜日表示 */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(7, 1fr)',
-        textAlign: 'center',
-        borderBottom: '1px solid #1E3A5F',
-        paddingBottom: '8px',
-        marginBottom: '8px'
+        gap: gap,
+        marginBottom: gap,
+        textAlign: 'center'
       }}>
         {weekdays.map((day, index) => (
           <div 
-            key={index}
+            key={index} 
             style={{
-              color: index === 0 ? '#ff6b6b' : index === 6 ? '#00c8ff' : '#b0c4d8',
+              padding: size === 'small' ? '10px' : '15px',
               fontWeight: 'bold',
-              fontSize: '0.9rem'
+              fontSize: fontSize.weekday,
+              color: index === 0 ? '#ff6b6b' : index === 6 ? '#00c8ff' : '#b0c4d8'
             }}
           >
             {day}
@@ -221,31 +264,35 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date() }) => {
         ))}
       </div>
       
-      {/* カレンダー本体 */}
+      {/* 日付表示 */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(7, 1fr)',
-        gap: '1px',
-        background: '#0A1022'
+        gap: gap
       }}>
-        {calendarDays.map((day, index) => (
-          <div
-            key={index}
-            onClick={() => handleDateClick(day.date)}
+        {days.map((day, index) => (
+          <div 
+            key={index} 
+            onClick={(e) => handleDateClick(day.date, e)}
             style={{
-              height: '80px',
-              padding: '8px',
-              background: day.isSelected ? 'rgba(0, 200, 255, 0.1)' : day.isToday ? 'rgba(0, 200, 255, 0.05)' : 'transparent',
-              border: '1px solid #1E3A5F',
+              padding: padding.cell,
+              textAlign: 'center',
               cursor: 'pointer',
               position: 'relative',
+              background: day.isSelected ? 'rgba(0, 200, 255, 0.15)' : 'transparent',
+              borderRadius: '8px',
               color: !day.isCurrentMonth ? '#4A6FA5' : 
                      day.date.getDay() === 0 ? '#ff6b6b' : 
-                     day.date.getDay() === 6 ? '#00c8ff' : '#fff'
+                     day.date.getDay() === 6 ? '#00c8ff' : '#fff',
+              height: cellHeight,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center'
             }}
           >
             <div style={{
-              fontSize: '0.9rem',
+              fontSize: fontSize.day,
               fontWeight: day.isToday ? 'bold' : 'normal'
             }}>
               {day.date.getDate()}
@@ -255,10 +302,10 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date() }) => {
             {day.isToday && (
               <div style={{
                 position: 'absolute',
-                top: '8px',
-                right: '8px',
-                width: '6px',
-                height: '6px',
+                top: size === 'small' ? '8px' : '10px',
+                right: size === 'small' ? '8px' : '10px',
+                width: size === 'small' ? '8px' : '12px',
+                height: size === 'small' ? '8px' : '12px',
                 borderRadius: '50%',
                 background: '#00c8ff'
               }}></div>
@@ -272,26 +319,10 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date() }) => {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                border: '2px solid #00c8ff',
+                border: size === 'small' ? '2px solid #00c8ff' : '3px solid #00c8ff',
+                borderRadius: '8px',
                 pointerEvents: 'none'
               }}></div>
-            )}
-            
-            {/* ここにイベントを表示する場合は追加 */}
-            {day.isCurrentMonth && day.date.getDate() === 6 && (
-              <div style={{
-                background: '#2563EB',
-                color: 'white',
-                fontSize: '0.8rem',
-                padding: '2px 4px',
-                borderRadius: '4px',
-                marginTop: '4px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}>
-                今日の予定
-              </div>
             )}
           </div>
         ))}

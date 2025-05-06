@@ -46,14 +46,36 @@ const InformationPage: React.FC = () => {
           
           {/* メインコンテンツ */}
           <div style={{
-            width: '100%'
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '32px'
           }}>
             {/* カレンダー */}
-            <Calendar initialDate={new Date(2025, 4, 6)} />
+            <div style={{
+              background: '#0A1022',
+              borderRadius: '12px',
+              padding: '24px',
+              border: '1px solid #1E3A5F'
+            }}>
+              <h2 style={{
+                color: '#00c8ff',
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                marginBottom: '24px',
+                textAlign: 'center'
+              }}>
+                カレンダー
+              </h2>
+              <div style={{
+                width: '100%'
+              }}>
+                <Calendar initialDate={new Date(2025, 4, 6)} />
+              </div>
+            </div>
             
             {/* 予定リスト */}
             <div style={{
-              marginTop: '32px',
               background: '#0A1022',
               borderRadius: '12px',
               padding: '24px',

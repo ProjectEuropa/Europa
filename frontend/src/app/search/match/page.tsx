@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import TeamCards, { TeamData } from '../../../components/search/TeamCards';
+import MatchCards, { MatchData } from '../../../components/search/MatchCards';
 
 // モックデータ
-const MOCK_TEAMS = [
+const MOCK_MATCHES = [
   {
     id: 1,
     name: "Cパッド",
@@ -39,37 +39,67 @@ const MOCK_TEAMS = [
   }
 ];
 
-const TeamSearchPage: React.FC = () => {
+const MatchSearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredTeams, setFilteredTeams] = useState<TeamData[]>(MOCK_TEAMS);
+  const [filteredMatches, setFilteredMatches] = useState<MatchData[]>(MOCK_MATCHES);
   const [isCardView, setIsCardView] = useState(false);
+  const [showUploadForm, setShowUploadForm] = useState(false);
+  const [uploadFormData, setUploadFormData] = useState({
+    name: '',
+    owner: '',
+    comment: '',
+    filename: '',
+    downloadDate: new Date().toISOString().split('T')[0]
+  });
 
   // 検索クエリが変更されたときにフィルタリング
   useEffect(() => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const filtered = MOCK_TEAMS.filter(team =>
-        team.name.toLowerCase().includes(query) ||
-        team.owner.toLowerCase().includes(query) ||
-        team.comment.toLowerCase().includes(query) ||
-        team.filename.toLowerCase().includes(query)
+      const filtered = MOCK_MATCHES.filter(match =>
+        match.name.toLowerCase().includes(query) ||
+        match.owner.toLowerCase().includes(query) ||
+        match.comment.toLowerCase().includes(query) ||
+        match.filename.toLowerCase().includes(query)
       );
-      setFilteredTeams(filtered);
+      setFilteredMatches(filtered);
     } else {
-      setFilteredTeams(MOCK_TEAMS);
+      setFilteredMatches(MOCK_MATCHES);
     }
   }, [searchQuery]);
 
   // ダウンロード処理
-  const handleDownload = (team: TeamData) => {
-    console.log(`Downloading team: ${team.name}`);
+  const handleDownload = (match: MatchData) => {
+    console.log(`Downloading match: ${match.name}`);
     // 実際のダウンロード処理をここに実装
   };
 
   // 削除処理
-  const handleDelete = (team: TeamData) => {
-    console.log(`Deleting team: ${team.name}`);
+  const handleDelete = (match: MatchData) => {
+    console.log(`Deleting match: ${match.name}`);
     // 実際の削除処理をここに実装
+  };
+
+  // アップロードフォームの表示切替
+  const toggleUploadForm = () => {
+    setShowUploadForm(!showUploadForm);
+  };
+
+  // アップロードフォームの入力処理
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setUploadFormData({
+      ...uploadFormData,
+      [name]: value
+    });
+  };
+
+  // アップロード処理
+  const handleUpload = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Uploading:', uploadFormData);
+    // 実際のアップロード処理をここに実装
+    setShowUploadForm(false);
   };
 
   return (
@@ -163,7 +193,193 @@ const TeamSearchPage: React.FC = () => {
           </div>
         </div>
 
-        {/* チームファイル一覧セクション */}
+        {/* アップロードボタン */}
+        <div style={{
+          width: "100%",
+          maxWidth: "1000px",
+          display: "flex",
+          justifyContent: "flex-end",
+          marginTop: "20px"
+        }}>
+          <button
+            onClick={toggleUploadForm}
+            style={{
+              background: "#00c8ff",
+              color: "#111A2E",
+              border: "none",
+              borderRadius: "8px",
+              padding: "10px 20px",
+              fontWeight: "bold",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px"
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 8L12 16M12 8L8 12M12 8L16 12" stroke="#111A2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#111A2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            アップロード
+          </button>
+        </div>
+
+        {/* アップロードフォーム */}
+        {showUploadForm && (
+          <div style={{
+            width: "100%",
+            maxWidth: "1000px",
+            marginTop: "20px",
+            background: "#0A1022",
+            borderRadius: "8px",
+            padding: "20px",
+            border: "1px solid #1E3A5F"
+          }}>
+            <h2 style={{
+              color: "#00c8ff",
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+              marginBottom: "20px"
+            }}>
+              マッチデータをアップロード
+            </h2>
+            <form onSubmit={handleUpload}>
+              <div style={{ marginBottom: "15px" }}>
+                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
+                  マッチ名
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={uploadFormData.name}
+                  onChange={handleFormChange}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    background: "#111A2E",
+                    border: "1px solid #1E3A5F",
+                    borderRadius: "4px",
+                    color: "white"
+                  }}
+                  required
+                />
+              </div>
+              <div style={{ marginBottom: "15px" }}>
+                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
+                  オーナー名
+                </label>
+                <input
+                  type="text"
+                  name="owner"
+                  value={uploadFormData.owner}
+                  onChange={handleFormChange}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    background: "#111A2E",
+                    border: "1px solid #1E3A5F",
+                    borderRadius: "4px",
+                    color: "white"
+                  }}
+                  required
+                />
+              </div>
+              <div style={{ marginBottom: "15px" }}>
+                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
+                  コメント
+                </label>
+                <textarea
+                  name="comment"
+                  value={uploadFormData.comment}
+                  onChange={handleFormChange}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    background: "#111A2E",
+                    border: "1px solid #1E3A5F",
+                    borderRadius: "4px",
+                    color: "white",
+                    minHeight: "100px",
+                    resize: "vertical"
+                  }}
+                />
+              </div>
+              <div style={{ marginBottom: "15px" }}>
+                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
+                  ファイル名
+                </label>
+                <input
+                  type="text"
+                  name="filename"
+                  value={uploadFormData.filename}
+                  onChange={handleFormChange}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    background: "#111A2E",
+                    border: "1px solid #1E3A5F",
+                    borderRadius: "4px",
+                    color: "white"
+                  }}
+                  required
+                />
+              </div>
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ color: "#b0c4d8", marginBottom: "6px", display: "block" }}>
+                  公開日時
+                </label>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input
+                    type="date"
+                    name="downloadDate"
+                    value={uploadFormData.downloadDate}
+                    onChange={handleFormChange}
+                    style={{
+                      flex: "1",
+                      padding: "10px",
+                      background: "#111A2E",
+                      border: "1px solid #1E3A5F",
+                      borderRadius: "4px",
+                      color: "white"
+                    }}
+                  />
+                </div>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                <button
+                  type="button"
+                  onClick={toggleUploadForm}
+                  style={{
+                    background: "transparent",
+                    border: "1px solid #1E3A5F",
+                    borderRadius: "4px",
+                    padding: "10px 20px",
+                    color: "#b0c4d8",
+                    cursor: "pointer"
+                  }}
+                >
+                  キャンセル
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    background: "#00c8ff",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "10px 20px",
+                    color: "#111A2E",
+                    fontWeight: "bold",
+                    cursor: "pointer"
+                  }}
+                >
+                  アップロード
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* マッチファイル一覧セクション */}
         <div style={{
           width: "100%",
           maxWidth: "1000px",
@@ -186,11 +402,7 @@ const TeamSearchPage: React.FC = () => {
             }}>
               Match Files
             </h2>
-            <div style={{
-              color: "#00c8ff",
-              fontSize: "0.9rem",
-              cursor: "pointer"
-            }}>
+            <div style={{ color: "#00c8ff", fontSize: "0.9rem", cursor: "pointer" }}>
               Sort by: 新着順 ▼
             </div>
           </div>
@@ -217,74 +429,76 @@ const TeamSearchPage: React.FC = () => {
                 <div style={{ textAlign: "center" }}>削除</div>
               </div>
 
-              {/* チームデータ行 */}
-              {filteredTeams.map(team => (
-                <div key={team.id} style={{
-                  display: "grid",
-                  gridTemplateColumns: "60px 100px 1fr 180px 150px 150px 60px",
-                  padding: "16px 20px",
-                  borderBottom: "1px solid #1E3A5F",
-                  background: "#050A14"
-                }}>
-                  {/* ダウンロードボタン */}
-                  <div style={{ textAlign: "center" }}>
-                    <button
-                      onClick={() => handleDownload(team)}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer"
-                      }}
-                    >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 16L12 8M12 16L8 12M12 16L16 12" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
+              {/* マッチデータ行 */}
+              {filteredMatches.map(match => (
+                <React.Fragment key={match.id}>
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "60px 100px 1fr 180px 150px 150px 60px",
+                    padding: "16px 20px",
+                    borderBottom: "1px solid #1E3A5F",
+                    background: "#050A14"
+                  }}>
+                    {/* ダウンロードボタン */}
+                    <div style={{ textAlign: "center" }}>
+                      <button
+                        onClick={() => handleDownload(match)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer"
+                        }}
+                      >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 16L12 8M12 16L8 12M12 16L16 12" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* オーナー名 */}
+                    <div style={{ color: "white" }}>{match.owner}</div>
+
+                    {/* コメント */}
+                    <div style={{ color: "#b0c4d8" }}>
+                      <div style={{ fontWeight: "bold", color: "#8CB4FF" }}>■中小CPUハンデ戦</div>
+                      <div>オーナー名：{match.owner}</div>
+                      <div>チーム名：{match.name}</div>
+                      <div>コメント：{match.name === "GrayGhost" ? "中チップアラクネー\n音の機体を小修整" : match.name === "Cパッド" ? "パッドくんです" : "チキンです"}</div>
+                    </div>
+
+                    {/* ファイル名 */}
+                    <div style={{ color: "#00c8ff" }}>{match.filename}</div>
+
+                    {/* アップロード日時 */}
+                    <div style={{ color: "white" }}>
+                      {match.uploadDate}<br />
+                      {match.uploadTime}
+                    </div>
+
+                    {/* ダウンロード可能日時 */}
+                    <div style={{ color: "white" }}>
+                      {match.downloadDate}<br />
+                      10:00〜
+                    </div>
+
+                    {/* 削除ボタン */}
+                    <div style={{ textAlign: "center" }}>
+                      <button
+                        onClick={() => handleDelete(match)}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer"
+                        }}
+                      >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M6 7V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V7M6 7H5M6 7H8M18 7H19M18 7H16M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7M8 7H16M10 11V16M14 11V16" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-
-                  {/* オーナー名 */}
-                  <div style={{ color: "white" }}>{team.owner}</div>
-
-                  {/* コメント */}
-                  <div style={{ color: "#b0c4d8" }}>
-                    <div style={{ fontWeight: "bold", color: "#8CB4FF" }}>■中小CPUハンデ戦</div>
-                    <div>オーナー名：{team.owner}</div>
-                    <div>チーム名：{team.name}</div>
-                    <div>コメント：{team.name === "GrayGhost" ? "中チップアラクネー\n音の機体を小修整" : team.name === "Cパッド" ? "パッドくんです" : "チキンです"}</div>
-                  </div>
-
-                  {/* ファイル名 */}
-                  <div style={{ color: "#00c8ff" }}>{team.filename}</div>
-
-                  {/* アップロード日時 */}
-                  <div style={{ color: "white" }}>
-                    {team.uploadDate}<br />
-                    {team.uploadTime}
-                  </div>
-
-                  {/* ダウンロード可能日時 */}
-                  <div style={{ color: "white" }}>
-                    {team.downloadDate}<br />
-                    10:00〜
-                  </div>
-
-                  {/* 削除ボタン */}
-                  <div style={{ textAlign: "center" }}>
-                    <button
-                      onClick={() => handleDelete(team)}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer"
-                      }}
-                    >
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 7V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V7M6 7H5M6 7H8M18 7H19M18 7H16M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7M8 7H16M10 11V16M14 11V16" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
+                </React.Fragment>
               ))}
             </>
           )}
@@ -295,8 +509,8 @@ const TeamSearchPage: React.FC = () => {
               background: "#050A14",
               borderBottom: "1px solid #1E3A5F"
             }}>
-              <TeamCards
-                teams={filteredTeams}
+              <MatchCards
+                matches={filteredMatches}
                 onDownload={handleDownload}
                 onDelete={handleDelete}
               />
@@ -443,4 +657,4 @@ const TeamSearchPage: React.FC = () => {
   );
 };
 
-export default TeamSearchPage;
+export default MatchSearchPage;
