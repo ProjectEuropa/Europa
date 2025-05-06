@@ -117,12 +117,40 @@ const HeroSection: React.FC = () => {
             alignItems: "center"
           }}>
             <svg width="100%" height="100%" viewBox="0 0 320 320" fill="none">
-              <rect x="30" y="30" width="260" height="260" rx="16" stroke="#00c8ff" strokeWidth="2.5"/>
-              <circle cx="160" cy="160" r="85" stroke="#00c8ff" strokeWidth="2"/>
-              <circle cx="160" cy="160" r="42" stroke="#00c8ff" strokeWidth="1.5"/>
-              <circle cx="160" cy="160" r="130" stroke="#00c8ff" strokeWidth="1" strokeDasharray="6 6"/>
-              <path d="M160 30V290M30 160H290" stroke="#00c8ff" strokeWidth="1.5"/>
-              <circle cx="160" cy="160" r="8" fill="#00c8ff" fillOpacity="0.18"/>
+              {/* 背景の暗い円形 */}
+              <circle cx="160" cy="160" r="140" fill="#050B1F" />
+              
+              {/* 木星の本体 */}
+              <circle cx="160" cy="160" r="120" fill="#0A1535" />
+              <circle cx="160" cy="160" r="120" fill="url(#jupiterGradient)" />
+              
+              {/* 木星の縞模様 */}
+              <path d="M40 160C40 160 80 145 160 145C240 145 280 160 280 160C280 160 240 175 160 175C80 175 40 160 40 160Z" fill="#00A3D3" fillOpacity="0.3" />
+              <path d="M50 120C50 120 90 110 160 110C230 110 270 120 270 120C270 120 230 130 160 130C90 130 50 120 50 120Z" fill="#00A3D3" fillOpacity="0.2" />
+              <path d="M60 200C60 200 100 190 160 190C220 190 260 200 260 200C260 200 220 210 160 210C100 210 60 200 60 200Z" fill="#00A3D3" fillOpacity="0.2" />
+              
+              {/* 大赤斑風の楕円 */}
+              <ellipse cx="200" cy="145" rx="25" ry="15" fill="#00C8FF" fillOpacity="0.3" />
+              
+              {/* 光沢効果 */}
+              <circle cx="120" cy="120" r="60" fill="url(#jupiterHighlight)" />
+              
+              {/* 外側のリング */}
+              <circle cx="160" cy="160" r="135" stroke="#00c8ff" strokeWidth="1" strokeDasharray="3 3" />
+              <circle cx="160" cy="160" r="140" stroke="#00c8ff" strokeWidth="0.5" />
+              
+              {/* グラデーション定義 */}
+              <defs>
+                <radialGradient id="jupiterGradient" cx="0.5" cy="0.5" r="0.5" gradientUnits="objectBoundingBox">
+                  <stop offset="0%" stopColor="#0D1E45" />
+                  <stop offset="70%" stopColor="#071224" />
+                  <stop offset="100%" stopColor="#050B1F" />
+                </radialGradient>
+                <radialGradient id="jupiterHighlight" cx="0.5" cy="0.5" r="0.5" gradientUnits="objectBoundingBox">
+                  <stop offset="0%" stopColor="#00C8FF" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="#00C8FF" stopOpacity="0" />
+                </radialGradient>
+              </defs>
             </svg>
             <div style={{
               position: "absolute",

@@ -204,211 +204,7 @@ const MatchSearchPage: React.FC = () => {
           </div>
         </div>
 
-        {/* アップロードボタン */}
-        <div style={{
-          width: "100%",
-          maxWidth: "1000px",
-          display: "flex",
-          justifyContent: "flex-end",
-          marginTop: "20px"
-        }}>
-          <button
-            onClick={toggleUploadForm}
-            style={{
-              background: "#00c8ff",
-              color: "#111A2E",
-              border: "none",
-              borderRadius: "8px",
-              padding: "10px 20px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 8L12 16M12 8L8 12M12 8L16 12" stroke="#111A2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#111A2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            アップロード
-          </button>
-        </div>
 
-        {/* アップロードフォーム */}
-        {showUploadForm && (
-          <div style={{
-            width: "100%",
-            maxWidth: "1000px",
-            marginTop: "20px",
-            background: "#0A1022",
-            borderRadius: "8px",
-            padding: "20px",
-            border: "1px solid #1E3A5F"
-          }}>
-            <h2 style={{
-              color: "#00c8ff",
-              fontSize: "1.2rem",
-              fontWeight: "bold",
-              marginBottom: "20px"
-            }}>
-              マッチデータをアップロード
-            </h2>
-            <form onSubmit={handleUpload}>
-              <div style={{ marginBottom: "15px" }}>
-                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
-                  タイトル
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={uploadFormData.title}
-                  onChange={handleFormChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    background: "#111A2E",
-                    border: "1px solid #1E3A5F",
-                    borderRadius: "4px",
-                    color: "white"
-                  }}
-                  required
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
-                  チーム
-                </label>
-                <input
-                  type="text"
-                  name="teams"
-                  value={uploadFormData.teams}
-                  onChange={handleFormChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    background: "#111A2E",
-                    border: "1px solid #1E3A5F",
-                    borderRadius: "4px",
-                    color: "white"
-                  }}
-                  required
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
-                  結果
-                </label>
-                <input
-                  type="text"
-                  name="result"
-                  value={uploadFormData.result}
-                  onChange={handleFormChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    background: "#111A2E",
-                    border: "1px solid #1E3A5F",
-                    borderRadius: "4px",
-                    color: "white"
-                  }}
-                  required
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
-                  コメント
-                </label>
-                <textarea
-                  name="comment"
-                  value={uploadFormData.comment}
-                  onChange={handleFormChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    background: "#111A2E",
-                    border: "1px solid #1E3A5F",
-                    borderRadius: "4px",
-                    color: "white",
-                    minHeight: "100px",
-                    resize: "vertical"
-                  }}
-                />
-              </div>
-              <div style={{ marginBottom: "15px" }}>
-                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
-                  ファイル名
-                </label>
-                <input
-                  type="text"
-                  name="filename"
-                  value={uploadFormData.filename}
-                  onChange={handleFormChange}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    background: "#111A2E",
-                    border: "1px solid #1E3A5F",
-                    borderRadius: "4px",
-                    color: "white"
-                  }}
-                  required
-                />
-              </div>
-              <div style={{ marginBottom: "20px" }}>
-                <label style={{ color: "#b0c4d8", marginBottom: "6px", display: "block" }}>
-                  公開日時
-                </label>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <input
-                    type="date"
-                    name="downloadDate"
-                    value={uploadFormData.downloadDate}
-                    onChange={handleFormChange}
-                    style={{
-                      flex: "1",
-                      padding: "10px",
-                      background: "#111A2E",
-                      border: "1px solid #1E3A5F",
-                      borderRadius: "4px",
-                      color: "white"
-                    }}
-                  />
-                </div>
-              </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-                <button
-                  type="button"
-                  onClick={toggleUploadForm}
-                  style={{
-                    background: "transparent",
-                    border: "1px solid #1E3A5F",
-                    borderRadius: "4px",
-                    padding: "10px 20px",
-                    color: "#b0c4d8",
-                    cursor: "pointer"
-                  }}
-                >
-                  キャンセル
-                </button>
-                <button
-                  type="submit"
-                  style={{
-                    background: "#00c8ff",
-                    border: "none",
-                    borderRadius: "4px",
-                    padding: "10px 20px",
-                    color: "#111A2E",
-                    fontWeight: "bold",
-                    cursor: "pointer"
-                  }}
-                >
-                  アップロード
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
 
         {/* マッチファイル一覧セクション */}
         <div style={{
@@ -444,14 +240,14 @@ const MatchSearchPage: React.FC = () => {
               {/* テーブルヘッダー */}
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "60px 100px 1fr 180px 150px 150px 60px",
+                gridTemplateColumns: "100px 100px 1fr 180px 150px 150px 60px",
                 background: "#0A1022",
                 padding: "12px 20px",
                 borderBottom: "1px solid #1E3A5F",
                 color: "#b0c4d8",
                 fontSize: "0.9rem"
               }}>
-                <div style={{ textAlign: "center" }}>ダウンロード</div>
+                <div>ダウンロード</div>
                 <div>タイトル</div>
                 <div>コメント</div>
                 <div>ファイル名</div>
@@ -465,13 +261,13 @@ const MatchSearchPage: React.FC = () => {
                 <React.Fragment key={match.id}>
                   <div style={{
                     display: "grid",
-                    gridTemplateColumns: "60px 100px 1fr 180px 150px 150px 60px",
+                    gridTemplateColumns: "100px 100px 1fr 180px 150px 150px 60px",
                     padding: "16px 20px",
                     borderBottom: "1px solid #1E3A5F",
                     background: "#050A14"
                   }}>
                     {/* ダウンロードボタン */}
-                    <div style={{ textAlign: "center" }}>
+                    <div>
                       <button
                         onClick={() => handleDownload(match)}
                         style={{

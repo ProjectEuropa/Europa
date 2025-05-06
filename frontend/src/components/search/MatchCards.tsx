@@ -47,18 +47,24 @@ const MatchCards: React.FC<MatchCardsProps> = ({ matches, onDownload, onDelete }
               <div style={{ 
                 fontWeight: 'bold', 
                 color: '#8CB4FF',
-                fontSize: '1.1rem'
+                fontSize: '1.1rem',
+                whiteSpace: 'nowrap',
+                wordBreak: 'keep-all'
               }}>
                 <div style={{ 
                   fontWeight: 'bold', 
                   color: '#8CB4FF',
-                  marginBottom: '4px'
+                  marginBottom: '4px',
+                  whiteSpace: 'nowrap',
+                  wordBreak: 'keep-all'
                 }}>■{match.date}</div>
-                {match.title}
+                <span style={{whiteSpace: 'nowrap', wordBreak: 'keep-all'}}>{match.title}</span>
               </div>
               <div style={{ 
                 fontSize: '0.9rem', 
-                color: '#00c8ff' 
+                color: '#00c8ff',
+                whiteSpace: 'nowrap',
+                wordBreak: 'keep-all'
               }}>{match.filename}</div>
             </div>
             

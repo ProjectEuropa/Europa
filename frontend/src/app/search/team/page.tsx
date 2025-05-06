@@ -48,8 +48,8 @@ const TeamSearchPage: React.FC = () => {
   useEffect(() => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const filtered = MOCK_TEAMS.filter(team => 
-        team.name.toLowerCase().includes(query) || 
+      const filtered = MOCK_TEAMS.filter(team =>
+        team.name.toLowerCase().includes(query) ||
         team.owner.toLowerCase().includes(query) ||
         team.comment.toLowerCase().includes(query) ||
         team.filename.toLowerCase().includes(query)
@@ -80,7 +80,7 @@ const TeamSearchPage: React.FC = () => {
       background: "rgb(var(--background-rgb))"
     }}>
       <Header />
-      
+
       <div style={{
         flex: "1",
         display: "flex",
@@ -109,7 +109,7 @@ const TeamSearchPage: React.FC = () => {
             チームデータの検索が可能です
           </p>
         </div>
-        
+
         <div style={{
           width: "100%",
           maxWidth: "800px",
@@ -162,7 +162,7 @@ const TeamSearchPage: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* チームファイル一覧セクション */}
         <div style={{
           width: "100%",
@@ -194,21 +194,21 @@ const TeamSearchPage: React.FC = () => {
               Sort by: 新着順 ▼
             </div>
           </div>
-          
+
           {/* テーブル表示 */}
           {!isCardView && (
             <>
               {/* テーブルヘッダー */}
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "60px 100px 1fr 180px 150px 150px 60px",
+                gridTemplateColumns: "100px 100px 1fr 180px 150px 150px 60px",
                 background: "#0A1022",
                 padding: "12px 20px",
                 borderBottom: "1px solid #1E3A5F",
                 color: "#b0c4d8",
                 fontSize: "0.9rem"
               }}>
-                <div style={{ textAlign: "center" }}>ダウンロード</div>
+                <div>ダウンロード</div>
                 <div>オーナー名</div>
                 <div>コメント</div>
                 <div>ファイル名</div>
@@ -216,19 +216,19 @@ const TeamSearchPage: React.FC = () => {
                 <div>ダウンロード可能日時</div>
                 <div style={{ textAlign: "center" }}>削除</div>
               </div>
-              
+
               {/* チームデータ行 */}
               {filteredTeams.map(team => (
                 <div key={team.id} style={{
                   display: "grid",
-                  gridTemplateColumns: "60px 100px 1fr 180px 150px 150px 60px",
+                  gridTemplateColumns: "100px 100px 1fr 180px 150px 150px 60px",
                   padding: "16px 20px",
                   borderBottom: "1px solid #1E3A5F",
                   background: "#050A14"
                 }}>
                   {/* ダウンロードボタン */}
-                  <div style={{ textAlign: "center" }}>
-                    <button 
+                  <div>
+                    <button
                       onClick={() => handleDownload(team)}
                       style={{
                         background: "transparent",
@@ -242,10 +242,10 @@ const TeamSearchPage: React.FC = () => {
                       </svg>
                     </button>
                   </div>
-                  
+
                   {/* オーナー名 */}
                   <div style={{ color: "white" }}>{team.owner}</div>
-                  
+
                   {/* コメント */}
                   <div style={{ color: "#b0c4d8" }}>
                     <div style={{ fontWeight: "bold", color: "#8CB4FF" }}>■中小CPUハンデ戦</div>
@@ -253,25 +253,25 @@ const TeamSearchPage: React.FC = () => {
                     <div>チーム名：{team.name}</div>
                     <div>コメント：{team.name === "GrayGhost" ? "中チップアラクネー\n音の機体を小修整" : team.name === "Cパッド" ? "パッドくんです" : "チキンです"}</div>
                   </div>
-                  
+
                   {/* ファイル名 */}
                   <div style={{ color: "#00c8ff" }}>{team.filename}</div>
-                  
+
                   {/* アップロード日時 */}
                   <div style={{ color: "white" }}>
                     {team.uploadDate}<br />
                     {team.uploadTime}
                   </div>
-                  
+
                   {/* ダウンロード可能日時 */}
                   <div style={{ color: "white" }}>
                     {team.downloadDate}<br />
                     10:00〜
                   </div>
-                  
+
                   {/* 削除ボタン */}
                   <div style={{ textAlign: "center" }}>
-                    <button 
+                    <button
                       onClick={() => handleDelete(team)}
                       style={{
                         background: "transparent",
@@ -288,21 +288,21 @@ const TeamSearchPage: React.FC = () => {
               ))}
             </>
           )}
-          
+
           {/* カード表示 */}
           {isCardView && (
             <div style={{
               background: "#050A14",
               borderBottom: "1px solid #1E3A5F"
             }}>
-              <TeamCards 
-                teams={filteredTeams} 
-                onDownload={handleDownload} 
-                onDelete={handleDelete} 
+              <TeamCards
+                teams={filteredTeams}
+                onDownload={handleDownload}
+                onDelete={handleDelete}
               />
             </div>
           )}
-          
+
           {/* ページネーション */}
           <div style={{
             display: "flex",
@@ -327,7 +327,7 @@ const TeamSearchPage: React.FC = () => {
                 <option>50</option>
               </select>
             </div>
-            
+
             <div style={{ display: "flex", alignItems: "center" }}>
               <span style={{ color: "#b0c4d8", marginRight: "10px" }}>ページ:</span>
               <div style={{ display: "flex" }}>
@@ -378,7 +378,7 @@ const TeamSearchPage: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* 表示形式切り替え */}
         <div style={{
           width: "100%",
@@ -410,7 +410,7 @@ const TeamSearchPage: React.FC = () => {
             marginTop: "16px"
           }}>
             <span style={{ color: "#b0c4d8", marginRight: "10px" }}>テーブル表示</span>
-            <div 
+            <div
               style={{
                 width: "40px",
                 height: "20px",
@@ -437,7 +437,7 @@ const TeamSearchPage: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );

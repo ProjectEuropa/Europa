@@ -22,16 +22,16 @@ const TeamTable: React.FC<TeamTableProps> = ({ teams, onDownload, onDelete }) =>
       <table className="min-w-full">
         <thead className="bg-blue-900/20">
           <tr>
-            <th className="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider w-16">
+            <th className="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider w-16 whitespace-nowrap break-keep">
               ダウンロード
             </th>
             <th className="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider w-24">
               オーナー名
             </th>
-            <th className="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">
+            <th className="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider whitespace-nowrap break-keep">
               コメント
             </th>
-            <th className="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider w-32">
+            <th className="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider w-32 whitespace-nowrap break-keep">
               ファイル名
             </th>
             <th className="px-6 py-4 text-left text-xs font-medium text-blue-300 uppercase tracking-wider w-40">
@@ -45,7 +45,7 @@ const TeamTable: React.FC<TeamTableProps> = ({ teams, onDownload, onDelete }) =>
         <tbody>
           {teams.map((team, index) => (
             <tr key={team.id} className={`${index % 2 === 0 ? 'bg-black/70' : 'bg-black/80'} border-b border-blue-900/20 hover:bg-blue-900/10 transition-colors duration-150`}>
-              <td className="px-6 py-5 whitespace-nowrap">
+              <td className="px-6 py-5 whitespace-nowrap break-keep">
                 <button 
                   onClick={() => onDownload(team)}
                   className="text-blue-400 hover:text-blue-300 transition-colors duration-200 transform hover:scale-110"
@@ -65,8 +65,8 @@ const TeamTable: React.FC<TeamTableProps> = ({ teams, onDownload, onDelete }) =>
                   </div>
                 ))}
               </td>
-              <td className="px-6 py-5 whitespace-nowrap">
-                <div className="text-base text-blue-400 hover:text-blue-300 transition-colors duration-200">{team.filename}</div>
+              <td className="px-6 py-5 whitespace-nowrap break-keep">
+                <div className="text-base text-blue-400 hover:text-blue-300 transition-colors duration-200 break-keep whitespace-nowrap">{team.filename}</div>
               </td>
               <td className="px-6 py-5 whitespace-nowrap">
                 <div className="text-sm text-white">{team.uploadDate}</div>

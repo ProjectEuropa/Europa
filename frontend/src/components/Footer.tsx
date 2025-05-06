@@ -31,16 +31,15 @@ const Footer = () => {
           <div style={{ marginBottom: "16px", lineHeight: 1.7 }}>
             OKE共有とチームコラボレーションのための非公式カルネージハートEXAプラットフォーム。
           </div>
-          <div style={{ fontSize: "12px", opacity: 0.7 }}>© Team Project Europa 2016-{new Date().getFullYear()}</div>
+          <div style={{ fontSize: "12px", opacity: 0.7 }}> Team Project Europa 2016-{new Date().getFullYear()}</div>
         </div>
 
         {/* 機能 */}
         <div>
           <div style={{ color: "#00c8ff", fontWeight: 600, marginBottom: "10px" }}>機能</div>
           <ul style={{ listStyle: "none", padding: 0, margin: 0, lineHeight: 2 }}>
-            <li><a href="/sumdownload/team" style={{ color: "#b0c4d8", textDecoration: "none" }}>チームデータ一括DL</a></li>
-            <li><a href="/sumdownload/match" style={{ color: "#b0c4d8", textDecoration: "none" }}>マッチデータ一括DL</a></li>
-            <li><a href="#upload" style={{ color: "#b0c4d8", textDecoration: "none" }}>シンプルアップロード</a></li>
+            <li><a href="/search/team" style={{ color: "#b0c4d8", textDecoration: "none" }}>チームデータ検索</a></li>
+            <li><a href="/search/match" style={{ color: "#b0c4d8", textDecoration: "none" }}>マッチデータ検索</a></li>
             <li><a href="/sumdownload/team" style={{ color: "#b0c4d8", textDecoration: "none" }}>チームデータ一括DL</a></li>
             <li><a href="/sumdownload/match" style={{ color: "#b0c4d8", textDecoration: "none" }}>マッチデータ一括DL</a></li>
             <li><a href="/info" style={{ color: "#b0c4d8", textDecoration: "none" }}>Information</a></li>
@@ -53,8 +52,6 @@ const Footer = () => {
           <ul style={{ listStyle: "none", padding: 0, margin: 0, lineHeight: 2 }}>
             <li><a href="/login" style={{ color: "#b0c4d8", textDecoration: "none" }}>ログイン</a></li>
             <li><a href="/register" style={{ color: "#b0c4d8", textDecoration: "none" }}>新規登録</a></li>
-            <li><a href="/search/team" style={{ color: "#b0c4d8", textDecoration: "none" }}>チームデータ検索</a></li>
-            <li><a href="/search/match" style={{ color: "#b0c4d8", textDecoration: "none" }}>マッチデータ検索</a></li>
             
           </ul>
         </div>
