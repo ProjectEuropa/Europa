@@ -76,7 +76,7 @@ services:
       - /:/host:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ./newrelic_conf/logging.d:/etc/newrelic-infra/logging.d
-#      - laravel-log:/laravel_log
+      - laravel-log:/laravel_log
     environment:
       - NRIA_LICENSE_KEY=${NRIA_LICENSE_KEY}
   newrelic-php-daemon:
