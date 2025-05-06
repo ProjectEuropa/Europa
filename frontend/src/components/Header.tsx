@@ -7,10 +7,19 @@ import SideMenu from "./SideMenu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const navLinkStyle = (path: string) => ({
+    color: hoveredLink === path ? "#00c8ff" : "#b0c4d8", 
+    textDecoration: "none", 
+    fontSize: "15px", 
+    fontWeight: 500,
+    transition: "color 0.2s"
+  });
 
   return (
     <>
@@ -64,6 +73,7 @@ const Header = () => {
             alignItems: "center", 
             marginLeft: "32px" 
           }}>
+            {/* 認証リンク */}
             <Link href="/login" style={{ 
               color: "#b0c4d8", 
               textDecoration: "none", 

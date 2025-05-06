@@ -138,18 +138,14 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
               display: 'flex',
               alignItems: 'center',
               padding: '12px 16px',
-              borderRadius: '8px',
-              backgroundColor: '#2563EB',
-              color: 'white',
+              color: '#b0c4d8',
               textDecoration: 'none',
               marginBottom: '12px',
               fontSize: '1rem',
-              fontWeight: 'bold',
             }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
-              <circle cx="11" cy="11" r="7" stroke="white" strokeWidth="2"/>
-              <path d="M16 16L20 20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#b0c4d8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             チームデータ検索
           </Link>
@@ -167,9 +163,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
             }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
-              <path d="M4 5C4 4.44772 4.44772 4 5 4H19C19.5523 4 20 4.44772 20 5V7C20 7.55228 19.5523 8 19 8H5C4.44772 8 4 7.55228 4 7V5Z" stroke="#b0c4d8" strokeWidth="1.5"/>
-              <path d="M4 11C4 10.4477 4.44772 10 5 10H19C19.5523 10 20 10.4477 20 11V13C20 13.5523 19.5523 14 19 14H5C4.44772 14 4 13.5523 4 13V11Z" stroke="#b0c4d8" strokeWidth="1.5"/>
-              <path d="M4 17C4 16.4477 4.44772 16 5 16H19C19.5523 16 20 16.4477 20 17V19C20 19.5523 19.5523 20 19 20H5C4.44772 20 4 19.5523 4 19V17Z" stroke="#b0c4d8" strokeWidth="1.5"/>
+              <path d="M15.7955 15.8111L21 21M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="#b0c4d8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             マッチデータ検索
           </Link>
@@ -229,6 +223,25 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
               <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#b0c4d8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             マッチデータ取得
+          </Link>
+
+          <Link 
+            href="/sumdownload/team" 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '12px 16px',
+              color: '#b0c4d8',
+              textDecoration: 'none',
+              marginBottom: '12px',
+              fontSize: '1rem',
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
+              <path d="M12 8L12 16M12 16L16 12M12 16L8 12" stroke="#b0c4d8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#b0c4d8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            チームデータ一括DL
           </Link>
 
           <Link 
