@@ -22,6 +22,8 @@ interface RegisteredEventsSectionProps {
 }
 
 const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({ initialEvents }) => {
+  // setEventsは現在使用されていないが、将来的に使用する可能性があるため、
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [events, setEvents] = useState<EventData[]>(initialEvents);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');

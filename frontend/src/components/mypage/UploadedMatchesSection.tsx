@@ -16,6 +16,8 @@ interface UploadedMatchesSectionProps {
 }
 
 const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initialMatches }) => {
+  // setMatchesは現在使用されていないが、将来的に使用する可能性があるため、
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [matches, setMatches] = useState<MatchData[]>(initialMatches);
   const [searchQuery, setSearchQuery] = useState('');
 

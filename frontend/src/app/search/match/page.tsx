@@ -6,11 +6,14 @@ import Footer from '../../../components/Footer';
 import MatchCards, { MatchData } from '../../../components/search/MatchCards';
 
 // モックデータ
-const MOCK_MATCHES = [
+const MOCK_MATCHES: MatchData[] = [
   {
     id: 1,
-    name: "Cパッド",
-    owner: "M2",
+    title: "Cパッド",
+    date: "2025-04-21",
+    time: "23:45",
+    teams: ["Cパッド", "対戦相手"],
+    result: "勝利",
     comment: "■中小CPUハンデ戦\nオーナー名：M2\nチーム名：Cパッド\nコメント：パッドくんです",
     filename: "CB.CHE",
     uploadDate: "2025-04-21",
@@ -19,8 +22,11 @@ const MOCK_MATCHES = [
   },
   {
     id: 2,
-    name: "Cチキン",
-    owner: "M2",
+    title: "Cチキン",
+    date: "2025-04-21",
+    time: "23:44",
+    teams: ["Cチキン", "対戦相手"],
+    result: "敗北",
     comment: "■中小CPUハンデ戦\nオーナー名：M2\nチーム名：Cチキン\nコメント：チキンです",
     filename: "CC.CHE",
     uploadDate: "2025-04-21",
@@ -29,8 +35,11 @@ const MOCK_MATCHES = [
   },
   {
     id: 3,
-    name: "GrayGhost",
-    owner: "UNANA",
+    title: "GrayGhost",
+    date: "2025-04-21",
+    time: "23:17",
+    teams: ["GrayGhost", "対戦相手"],
+    result: "引き分け",
     comment: "■中小CPUハンデ戦\nオーナー名：UNANA\nチーム名：GrayGhost\nコメント：中チップアラクネー\n音の機体を小修整",
     filename: "GRGTM112.CHE",
     uploadDate: "2025-04-21",
@@ -45,8 +54,9 @@ const MatchSearchPage: React.FC = () => {
   const [isCardView, setIsCardView] = useState(false);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [uploadFormData, setUploadFormData] = useState({
-    name: '',
-    owner: '',
+    title: '',
+    teams: '',
+    result: '',
     comment: '',
     filename: '',
     downloadDate: new Date().toISOString().split('T')[0]
@@ -57,8 +67,9 @@ const MatchSearchPage: React.FC = () => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const filtered = MOCK_MATCHES.filter(match =>
-        match.name.toLowerCase().includes(query) ||
-        match.owner.toLowerCase().includes(query) ||
+        match.title.toLowerCase().includes(query) ||
+        match.teams.join(',').toLowerCase().includes(query) ||
+        match.result.toLowerCase().includes(query) ||
         match.comment.toLowerCase().includes(query) ||
         match.filename.toLowerCase().includes(query)
       );
@@ -70,13 +81,13 @@ const MatchSearchPage: React.FC = () => {
 
   // ダウンロード処理
   const handleDownload = (match: MatchData) => {
-    console.log(`Downloading match: ${match.name}`);
+    console.log(`Downloading match: ${match.title}`);
     // 実際のダウンロード処理をここに実装
   };
 
   // 削除処理
   const handleDelete = (match: MatchData) => {
-    console.log(`Deleting match: ${match.name}`);
+    console.log(`Deleting match: ${match.title}`);
     // 実際の削除処理をここに実装
   };
 
@@ -246,12 +257,12 @@ const MatchSearchPage: React.FC = () => {
             <form onSubmit={handleUpload}>
               <div style={{ marginBottom: "15px" }}>
                 <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
-                  マッチ名
+                  タイトル
                 </label>
                 <input
                   type="text"
-                  name="name"
-                  value={uploadFormData.name}
+                  name="title"
+                  value={uploadFormData.title}
                   onChange={handleFormChange}
                   style={{
                     width: "100%",
@@ -266,12 +277,32 @@ const MatchSearchPage: React.FC = () => {
               </div>
               <div style={{ marginBottom: "15px" }}>
                 <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
-                  オーナー名
+                  チーム
                 </label>
                 <input
                   type="text"
-                  name="owner"
-                  value={uploadFormData.owner}
+                  name="teams"
+                  value={uploadFormData.teams}
+                  onChange={handleFormChange}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    background: "#111A2E",
+                    border: "1px solid #1E3A5F",
+                    borderRadius: "4px",
+                    color: "white"
+                  }}
+                  required
+                />
+              </div>
+              <div style={{ marginBottom: "15px" }}>
+                <label style={{ color: "#b0c4d8", display: "block", marginBottom: "5px" }}>
+                  結果
+                </label>
+                <input
+                  type="text"
+                  name="result"
+                  value={uploadFormData.result}
                   onChange={handleFormChange}
                   style={{
                     width: "100%",
@@ -421,7 +452,7 @@ const MatchSearchPage: React.FC = () => {
                 fontSize: "0.9rem"
               }}>
                 <div style={{ textAlign: "center" }}>ダウンロード</div>
-                <div>オーナー名</div>
+                <div>タイトル</div>
                 <div>コメント</div>
                 <div>ファイル名</div>
                 <div>アップロード日時</div>
@@ -456,15 +487,12 @@ const MatchSearchPage: React.FC = () => {
                       </button>
                     </div>
 
-                    {/* オーナー名 */}
-                    <div style={{ color: "white" }}>{match.owner}</div>
+                    {/* タイトル */}
+                    <div style={{ color: "white" }}>{match.title}</div>
 
                     {/* コメント */}
                     <div style={{ color: "#b0c4d8" }}>
-                      <div style={{ fontWeight: "bold", color: "#8CB4FF" }}>■中小CPUハンデ戦</div>
-                      <div>オーナー名：{match.owner}</div>
-                      <div>チーム名：{match.name}</div>
-                      <div>コメント：{match.name === "GrayGhost" ? "中チップアラクネー\n音の機体を小修整" : match.name === "Cパッド" ? "パッドくんです" : "チキンです"}</div>
+                      {match.comment}
                     </div>
 
                     {/* ファイル名 */}

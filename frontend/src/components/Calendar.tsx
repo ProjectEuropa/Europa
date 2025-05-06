@@ -12,9 +12,6 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  // スケールファクターを設定
-  const scale = size === 'small' ? 0.85 : 1;
-  
   // フォントサイズを計算
   const fontSize = {
     yearMonth: size === 'small' ? '1.5rem' : '2rem',
