@@ -47,8 +47,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/match/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', true);
 
     Route::middleware('auth:sanctum')->get('/user/profile', function (Request $request) {
-        return $request->user();
-    });
+      return response()->json($request->user());
+  });
 
     Route::group(['middleware' => ['api']], function () {
         Route::get('search/{searchType}', 'Api\SearchController@search');

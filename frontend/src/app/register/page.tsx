@@ -26,14 +26,14 @@ const RegisterPage: React.FC = () => {
     setError('');
 
     try {
-      // ここに実際の登録ロジックを実装
-      console.log('新規登録試行:', { name, email, password });
-      
-      // 仮の遅延（実際の登録処理に置き換え）
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 成功時の処理
-      window.location.href = '/';
+      // utils/api.tsのregister関数を利用
+      const res = await import('@/utils/api').then(mod => mod.register(name, email, password, confirmPassword));
+      if (res.token) {
+        // 成功時の処理
+        window.location.href = '/';
+      } else {
+        setError(res.message || '登録に失敗しました。入力内容を確認してください。');
+      }
     } catch (err) {
       setError('登録に失敗しました。入力内容を確認してください。');
     } finally {

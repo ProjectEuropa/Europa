@@ -1,72 +1,43 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { searchTeams } from '@/utils/api';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import TeamCards, { TeamData } from '../../../components/search/TeamCards';
 
-// モックデータ
-const MOCK_TEAMS = [
-  {
-    id: 1,
-    name: "Cパッド",
-    owner: "M2",
-    comment: "■中小CPUハンデ戦\nオーナー名：M2\nチーム名：Cパッド\nコメント：パッドくんです",
-    filename: "CB.CHE",
-    uploadDate: "2025-04-21",
-    uploadTime: "23:45",
-    downloadDate: "2025-05-06"
-  },
-  {
-    id: 2,
-    name: "Cチキン",
-    owner: "M2",
-    comment: "■中小CPUハンデ戦\nオーナー名：M2\nチーム名：Cチキン\nコメント：チキンです",
-    filename: "CC.CHE",
-    uploadDate: "2025-04-21",
-    uploadTime: "23:44",
-    downloadDate: "2025-05-06"
-  },
-  {
-    id: 3,
-    name: "GrayGhost",
-    owner: "UNANA",
-    comment: "■中小CPUハンデ戦\nオーナー名：UNANA\nチーム名：GrayGhost\nコメント：中チップアラクネー\n音の機体を小修整",
-    filename: "GRGTM112.CHE",
-    uploadDate: "2025-04-21",
-    uploadTime: "23:17",
-    downloadDate: "2025-05-06"
-  }
-];
-
-const TeamSearchPage: React.FC = () => {
+export default function TeamSearchPage() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredTeams, setFilteredTeams] = useState<TeamData[]>(MOCK_TEAMS);
+  const [teams, setTeams] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const [isCardView, setIsCardView] = useState(false);
 
-  // 検索クエリが変更されたときにフィルタリング
   useEffect(() => {
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      const filtered = MOCK_TEAMS.filter(team =>
-        team.name.toLowerCase().includes(query) ||
-        team.owner.toLowerCase().includes(query) ||
-        team.comment.toLowerCase().includes(query) ||
-        team.filename.toLowerCase().includes(query)
-      );
-      setFilteredTeams(filtered);
-    } else {
-      setFilteredTeams(MOCK_TEAMS);
-    }
+    const kw = searchParams.get('keyword') || '';
+    setSearchQuery(kw);
+  }, [searchParams]);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    searchTeams(searchQuery)
+      .then(result => setTeams(result.data ?? []))
+      .catch(() => {
+        setTeams([]);
+        setError('検索失敗');
+      })
+      .finally(() => setLoading(false));
   }, [searchQuery]);
 
-  // ダウンロード処理
   const handleDownload = (team: TeamData) => {
     console.log(`Downloading team: ${team.name}`);
     // 実際のダウンロード処理をここに実装
   };
 
-  // 削除処理
   const handleDelete = (team: TeamData) => {
     console.log(`Deleting team: ${team.name}`);
     // 実際の削除処理をここに実装
@@ -126,9 +97,9 @@ const TeamSearchPage: React.FC = () => {
           }}>
             <input
               type="text"
-              placeholder="Solo"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="チーム名"
               style={{
                 width: "100%",
                 padding: "14px 24px",
@@ -218,7 +189,7 @@ const TeamSearchPage: React.FC = () => {
               </div>
 
               {/* チームデータ行 */}
-              {filteredTeams.map(team => (
+              {teams.map(team => (
                 <div key={team.id} style={{
                   display: "grid",
                   gridTemplateColumns: "100px 100px 1fr 180px 150px 150px 60px",
@@ -243,30 +214,25 @@ const TeamSearchPage: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* オーナー名 */}
-                  <div style={{ color: "white" }}>{team.owner}</div>
+                  {/* アップロード者名 */}
+                  <div style={{ color: "white" }}>{team.upload_owner_name}</div>
 
-                  {/* コメント */}
+                  {/* ファイルコメント */}
                   <div style={{ color: "#b0c4d8" }}>
-                    <div style={{ fontWeight: "bold", color: "#8CB4FF" }}>■中小CPUハンデ戦</div>
-                    <div>オーナー名：{team.owner}</div>
-                    <div>チーム名：{team.name}</div>
-                    <div>コメント：{team.name === "GrayGhost" ? "中チップアラクネー\n音の機体を小修整" : team.name === "Cパッド" ? "パッドくんです" : "チキンです"}</div>
+                    {team.file_comment}
                   </div>
 
                   {/* ファイル名 */}
-                  <div style={{ color: "#00c8ff" }}>{team.filename}</div>
+                  <div style={{ color: "#00c8ff" }}>{team.file_name}</div>
 
                   {/* アップロード日時 */}
                   <div style={{ color: "white" }}>
-                    {team.uploadDate}<br />
-                    {team.uploadTime}
+                    {team.created_at}
                   </div>
 
                   {/* ダウンロード可能日時 */}
                   <div style={{ color: "white" }}>
-                    {team.downloadDate}<br />
-                    10:00〜
+                    {team.downloadable_at}
                   </div>
 
                   {/* 削除ボタン */}
@@ -296,7 +262,7 @@ const TeamSearchPage: React.FC = () => {
               borderBottom: "1px solid #1E3A5F"
             }}>
               <TeamCards
-                teams={filteredTeams}
+                teams={teams}
                 onDownload={handleDownload}
                 onDelete={handleDelete}
               />
@@ -441,6 +407,4 @@ const TeamSearchPage: React.FC = () => {
       <Footer />
     </div>
   );
-};
-
-export default TeamSearchPage;
+}

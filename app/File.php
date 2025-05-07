@@ -14,12 +14,12 @@ class File extends Model
 
     protected $table = "files";
 
-    /**
-     * The attributes that should be cast to native types.
-     */
-    protected $casts = [
-        'downloadable_at' => 'datetime',
-    ];
+    // /**
+    //  * The attributes that should be cast to native types.
+    //  */
+    // protected $casts = [
+    //     'downloadable_at' => 'datetime',
+    // ];
 
     /**
      * Disable mass-assignment protection
@@ -27,6 +27,13 @@ class File extends Model
     protected $guarded = [];
 
     public function createdAt(): Attribute
+    {
+        return new Attribute(
+            get:fn($value) => Carbon::parse($value)->timezone('Asia/Tokyo')->format('Y-m-d H:i')
+        );
+    }
+
+    public function downloadableAt(): Attribute
     {
         return new Attribute(
             get:fn($value) => Carbon::parse($value)->timezone('Asia/Tokyo')->format('Y-m-d H:i')

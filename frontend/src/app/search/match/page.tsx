@@ -167,7 +167,6 @@ const MatchSearchPage: React.FC = () => {
           }}>
             <input
               type="text"
-              placeholder="Solo"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{

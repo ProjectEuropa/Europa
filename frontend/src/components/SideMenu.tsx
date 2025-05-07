@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { logout } from '@/lib/logout';
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -10,6 +12,7 @@ interface SideMenuProps {
 }
 
 const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
+  const { user, loading } = useAuth();
   const menuRef = useRef<HTMLDivElement>(null);
   const [animationClass, setAnimationClass] = useState('');
   const pathname = usePathname();
@@ -36,7 +39,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -53,7 +56,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
     if (isOpen) {
       document.addEventListener('keydown', handleEscKey);
     }
-    
+
     return () => {
       document.removeEventListener('keydown', handleEscKey);
     };
@@ -113,7 +116,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
       transition: 'opacity 0.3s ease',
       visibility: animationClass ? 'visible' : 'hidden',
     }}>
-      <div 
+      <div
         ref={menuRef}
         style={{
           width: '300px',
@@ -137,14 +140,14 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
           padding: '0 20px 20px',
           borderBottom: '1px solid #1E3A5F',
         }}>
-          <h2 style={{ 
-            color: '#00c8ff', 
+          <h2 style={{
+            color: '#00c8ff',
             fontSize: '1.2rem',
             margin: 0,
           }}>
             メニュー
           </h2>
-          <button 
+          <button
             onClick={onClose}
             style={{
               background: 'transparent',
@@ -171,9 +174,19 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
             ホーム
           </Link>
 
+          {!loading && user && (
+          <Link href="#" style={getLinkStyle('/logout')} onClick={() => { logout(); }} >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
+              <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke={pathname === '/mypage' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke={pathname === '/mypage' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            ログアウト
+          </Link>
+          )}
+
           {/* 検索カテゴリ */}
           <div style={categoryStyle}>検索</div>
-          
+
           <Link href="/search/team" style={getLinkStyle('/search/team')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
               <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke={pathname === '/search/team' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -190,7 +203,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
 
           {/* アップロードカテゴリ */}
           <div style={categoryStyle}>アップロード</div>
-          
+
           <Link href="/upload" style={getLinkStyle('/upload')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
               <path d="M12 16L12 8M12 8L8 12M12 8L16 12" stroke={pathname === '/upload' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -209,7 +222,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
 
           {/* ダウンロードカテゴリ */}
           <div style={categoryStyle}>ダウンロード</div>
-          
+
           <Link href="/sumdownload/team" style={getLinkStyle('/sumdownload/team')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
               <path d="M12 8L12 16M12 16L16 12M12 16L8 12" stroke={pathname === '/sumdownload/team' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -228,7 +241,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
 
           {/* アカウントカテゴリ */}
           <div style={categoryStyle}>アカウント</div>
-          
+
           <Link href="/login" style={getLinkStyle('/login')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
               <path d="M11 16L7 12M7 12L11 8M7 12H21M16 16V17C16 18.6569 14.6569 20 13 20H6C4.34315 20 3 18.6569 3 17V7C3 5.34315 4.34315 4 6 4H13C14.6569 4 16 5.34315 16 7V8" stroke={pathname === '/login' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -255,7 +268,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
 
           {/* 情報カテゴリ */}
           <div style={categoryStyle}>情報</div>
-          
+
           <Link href="/info" style={getLinkStyle('/info')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
               <circle cx="12" cy="12" r="9" stroke={pathname === '/info' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5"/>
@@ -286,6 +299,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
-};
+}
 
 export default SideMenu;

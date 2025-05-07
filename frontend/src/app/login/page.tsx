@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { login } from '@/utils/api';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -15,22 +16,20 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-
     try {
-      // ここに実際の認証ロジックを実装
-      console.log('ログイン試行:', { email, password });
-      
-      // 仮の遅延（実際の認証処理に置き換え）
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 成功時の処理
-      window.location.href = '/';
+      const data = await login(email, password);
+      if (data.token) {
+        window.location.href = '/'; // 成功時のみリダイレクト
+      } else {
+        setError(data.message || 'ログインに失敗しました。メールアドレスとパスワードを確認してください。');
+      }
     } catch (err) {
-      setError('ログインに失敗しました。メールアドレスとパスワードを確認してください。');
+      setError('通信エラーが発生しました。');
     } finally {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div style={{
@@ -40,7 +39,7 @@ const LoginPage: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         display: 'flex',
@@ -66,7 +65,7 @@ const LoginPage: React.FC = () => {
           }}>
             ログイン
           </h1>
-          
+
           {error && (
             <div style={{
               background: 'rgba(255, 0, 0, 0.1)',
@@ -79,11 +78,11 @@ const LoginPage: React.FC = () => {
               {error}
             </div>
           )}
-          
+
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '20px' }}>
-              <label 
-                htmlFor="email" 
+              <label
+                htmlFor="email"
                 style={{
                   display: 'block',
                   marginBottom: '8px',
@@ -113,7 +112,7 @@ const LoginPage: React.FC = () => {
                 placeholder="example@europa.com"
               />
             </div>
-            
+
             <div style={{ marginBottom: '16px' }}>
               <div style={{
                 display: 'flex',
@@ -121,8 +120,8 @@ const LoginPage: React.FC = () => {
                 alignItems: 'center',
                 marginBottom: '8px'
               }}>
-                <label 
-                  htmlFor="password" 
+                <label
+                  htmlFor="password"
                   style={{
                     color: '#b0c4d8',
                     fontSize: '0.9rem'
@@ -130,8 +129,8 @@ const LoginPage: React.FC = () => {
                 >
                   パスワード
                 </label>
-                <Link 
-                  href="/forgot-password" 
+                <Link
+                  href="/forgot-password"
                   style={{
                     color: '#00c8ff',
                     fontSize: '0.8rem',
@@ -161,7 +160,7 @@ const LoginPage: React.FC = () => {
                 placeholder="••••••••"
               />
             </div>
-            
+
             <button
               type="submit"
               disabled={isLoading}
@@ -183,7 +182,7 @@ const LoginPage: React.FC = () => {
               {isLoading ? 'ログイン中...' : 'ログイン'}
             </button>
           </form>
-          
+
           <div style={{
             marginTop: '24px',
             textAlign: 'center',
@@ -191,8 +190,8 @@ const LoginPage: React.FC = () => {
             fontSize: '0.9rem'
           }}>
             アカウントをお持ちでないですか？{' '}
-            <Link 
-              href="/register" 
+            <Link
+              href="/register"
               style={{
                 color: '#00c8ff',
                 textDecoration: 'none',
@@ -204,7 +203,7 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

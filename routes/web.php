@@ -12,8 +12,8 @@ Route::group(['middleware' => 'auth.very_basic'], function () {
         return view('index');
     });
     Route::get('/{any}', function () {
-        return view('index');
-    })->where('any', '[^aut].*$');
+      return view('index');
+    })->where('any', '^(?!api)(?!aut).*$');
 
     Route::post('/login', 'Auth\LoginController@login');
     Route::post('/register', 'Auth\RegisterController@register');
