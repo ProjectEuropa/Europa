@@ -9,13 +9,6 @@ use App\User;
 
 class UserController extends Controller
 {
-    /**
-     * Return authenticated user profile
-     */
-    public function profile(Request $request)
-    {
-        return response()->json($request->user());
-    }
 
     /**
      * Delete users registered column
@@ -31,14 +24,14 @@ class UserController extends Controller
      */
     public function userUpdate(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
         try {
-            $result = DB::transaction(function () use ($request) {
+            $result = DB::transaction(function () use ($request, $validated) {
                 $affected = User::where('id', $request->user()->id)
-                    ->update(['name' => $request->name]);
+                    ->update(['name' => $validated['name']]);
 
                 if ($affected !== 1) {
                     throw new \Exception("ユーザー名の更新に失敗しました。更新された数は{$affected}です。");

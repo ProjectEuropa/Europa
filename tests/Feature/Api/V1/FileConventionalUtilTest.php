@@ -79,7 +79,7 @@ class FileConventionalUtilTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/zip');
-        $response->assertHeader('Content-Disposition', 'attachment; filename=download_' . date('YmdHis') . '.zip');
+        $response->assertHeader('Content-Disposition', 'attachment; filename=sum.zip');
     }
 
     /**

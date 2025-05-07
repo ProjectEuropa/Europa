@@ -28,7 +28,7 @@ class FileConventionalUtilController extends Controller
         $cheData = public_path('.CHE');
         file_put_contents($cheData, $fileData);
         $headers = [
-            'Content-Type: application/CHE',
+            'Content-Type' => 'application/CHE',
         ];
         return response()->download($cheData, $title, $headers)->deleteFileAfterSend(true);
     }
@@ -61,14 +61,12 @@ class FileConventionalUtilController extends Controller
         }
 
         $allZipfiles = glob(public_path('prezipfiles/*'));
-        Madzipper::make(public_path('download_' . date('YmdHis') . '.zip'))->add($allZipfiles)->close();
-
+        Madzipper::make(public_path('zipdldir/sum.zip'))->add($allZipfiles)->close();
+        // ZIPファイル作成用ディレクトリに格納中のファイルを全て削除
         $files = glob(public_path('prezipfiles/*'));
-
         foreach ($files as $file) {
-            unlink($file);
+          unlink($file);
         }
-
         return response()->download(public_path('zipdldir/sum.zip'))->deleteFileAfterSend(true);
     }
 }
