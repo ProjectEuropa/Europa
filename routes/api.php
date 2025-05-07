@@ -1,6 +1,5 @@
 <?php
 
-use App\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
@@ -20,22 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('api')->get('/file', function () {
-    return File::select(
-        'id',
-        'upload_owner_name',
-        'file_name',
-        'file_comment',
-        'created_at',
-        'upload_user_id',
-        'upload_type',
-        'search_tag1',
-        'search_tag2',
-        'search_tag3',
-        'search_tag4'
-    )->get();
-});
-
 Route::group(['middleware' => ['api']], function () {
     Route::get('search/{searchType}', 'Api\SearchController@search');
     Route::get('sumDLSearch/{searchType}', 'Api\SearchController@sumDLSearch');
@@ -52,24 +35,19 @@ Route::group(['middleware' => ['api', 'auth:api']], function () {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::middleware('auth:api')->get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::post('/login', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'login']);
+    Route::post('/register', [\App\Http\Controllers\Api\V1\Auth\RegisterController::class, 'register']);
+    Route::get('/auth/logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout']);
+    Route::get('/download/{id}', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'download']);
+    Route::post('/sumDownload', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'sumDownload']);
+    Route::post('/eventNotice', [\App\Http\Controllers\Api\V1\EventNoticeController::class, 'store']);
+    Route::post('/team/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', false);
+    Route::post('/match/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', false);
+    Route::post('/team/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', true);
+    Route::post('/match/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', true);
 
-    Route::middleware('api')->get('/file', function () {
-        return File::select(
-            'id',
-            'upload_owner_name',
-            'file_name',
-            'file_comment',
-            'created_at',
-            'upload_user_id',
-            'upload_type',
-            'search_tag1',
-            'search_tag2',
-            'search_tag3',
-            'search_tag4'
-        )->get();
+    Route::middleware('auth:sanctum')->get('/user/profile', function (Request $request) {
+        return $request->user();
     });
 
     Route::group(['middleware' => ['api']], function () {
@@ -79,11 +57,11 @@ Route::prefix('v1')->group(function () {
         Route::post('delete/searchFile', 'Api\FileUtilController@deleteSearchFile');
     });
 
-    Route::group(['middleware' => ['auth:api']], function () {
+    Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('mypage/team', 'Api\FileUtilController@myTeam');
         Route::get('mypage/match', 'Api\FileUtilController@myMatch');
         Route::get('mypage/events', 'Api\EventController@getMyEventData');
         Route::post('delete/usersRegisteredCloumn', 'Api\UserController@deleteUsersRegisteredCloumn');
-        Route::post('userUpdate', 'Api\UserController@userUpdate');
+        Route::post('user/update', 'Api\UserController@userUpdate');
     });
 });

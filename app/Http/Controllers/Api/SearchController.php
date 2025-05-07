@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\File;
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -30,7 +29,7 @@ class SearchController extends Controller
 
     $keyword = $request->keyword;
     if ($keyword) {
-      $files = $this->setSearchKeyword($files, $keyword);
+      $files = $files->withKeyword($keyword);
     }
 
     // ページネーションする
@@ -40,41 +39,12 @@ class SearchController extends Controller
 
     // ページネータ内に含まれるコレクションを取り出してマスク処理
     $files->getCollection()->transform(function ($file) {
-      if ($file->downloadable_at && now()->lt($file->downloadable_at)) {
-        $file->file_comment = 'ダウンロード可能日時が過ぎていないためコメントは非表示です';
-      }
+      $file->file_comment = $file->masked_comment;
       return $file;
     });
 
     // ページネータを返すと、テストで 'current_page' や 'data' が確認できる
     return $files;
-  }
-
-  private function setSearchKeyword(Builder $files, string $keyword): Builder
-  {
-    return $files->where(function ($query) use ($keyword) {
-      // キーワードが含まれる場合、file_comment は download解禁のものだけ対象にしています
-      $query
-        // 未マスク項目の検索（upload_owner_name, file_name, search_tag1~4など）
-        ->where(function ($subQuery) use ($keyword) {
-          $subQuery
-            ->orWhere('upload_owner_name', 'LIKE', '%' . $keyword . '%')
-            ->orWhere('file_name', 'like', '%' . $keyword . '%')
-            ->orWhere('search_tag1', 'like', '%' . $keyword . '%')
-            ->orWhere('search_tag2', 'like', '%' . $keyword . '%')
-            ->orWhere('search_tag3', 'like', '%' . $keyword . '%')
-            ->orWhere('search_tag4', 'like', '%' . $keyword . '%');
-        })
-        // file_commentはdownloadable_atが過去か未設定のものだけ検索
-        ->orWhere(function ($subQuery) use ($keyword) {
-          $subQuery
-            ->where(function ($condition) {
-              $condition->whereNull('downloadable_at')
-                ->orWhere('downloadable_at', '<=', now());
-            })
-            ->where('file_comment', 'like', '%' . $keyword . '%');
-        });
-    });
   }
 
   public function sumDLsearch(Request $request, string $searchType)
@@ -97,7 +67,7 @@ class SearchController extends Controller
 
     $keyword = $request->keyword;
     if ($keyword) {
-      $files = $this->setSearchKeyword($files, $keyword);
+      $files = $files->withKeyword($keyword);
     }
 
     // ページネーションする
@@ -105,9 +75,7 @@ class SearchController extends Controller
 
     // マスク処理
     $files->getCollection()->transform(function ($file) {
-      if ($file->downloadable_at && now()->lt($file->downloadable_at)) {
-        $file->file_comment = 'ダウンロード可能日時が過ぎていないためコメントは非表示です';
-      }
+      $file->file_comment = $file->masked_comment;
       return $file;
     });
 
