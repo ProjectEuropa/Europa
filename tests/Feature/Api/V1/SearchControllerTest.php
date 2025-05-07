@@ -3,9 +3,9 @@
 namespace Tests\Feature\Api\V1;
 
 use App\File;
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Tests\TestCase;
 
 class SearchControllerTest extends TestCase
 {
@@ -117,7 +117,7 @@ class SearchControllerTest extends TestCase
         ]);
 
         // APIリクエスト実行
-        $response = $this->getJson('/api/v1/sumDLSearch/match');
+        $response = $this->getJson('/api/v1/sumDLsearch/match');
 
         // 結果を検証
         $response->assertOk();
@@ -125,6 +125,78 @@ class SearchControllerTest extends TestCase
         $response->assertJsonStructure([
             'current_page',
             'data',
+            'first_page_url',
+            'from',
+            'last_page',
+            'last_page_url',
+            'links',
+            'next_page_url',
+            'path',
+            'per_page',
+            'prev_page_url',
+            'to',
+            'total'
+        ]);
+    }
+
+    /**
+     * @test
+     * 検索でのソート順が正しく動作するかテスト
+     */
+    public function order_type_works_correctly()
+    {
+        // ファイルを準備
+        File::factory()->count(10)->create([
+            'data_type' => '1', // team
+        ]);
+
+        // 昇順テスト
+        $response = $this->getJson('/api/v1/search/team?orderType=2');
+        $json = json_decode($response->getContent());
+        $file = File::where('data_type', '=', '1')->orderBy('id', 'asc')->first();
+        $this->assertEquals($file->id, $json->data[0]->id);
+
+        // 降順テスト
+        $response = $this->getJson('/api/v1/search/team?orderType=1');
+        $json = json_decode($response->getContent());
+        $file = File::where('data_type', '=', '1')->orderBy('id', 'desc')->first();
+        $this->assertEquals($file->id, $json->data[0]->id);
+    }
+
+    /**
+     * @test
+     * レスポンスの構造が期待通りかテスト
+     */
+    public function response_structure_is_correct()
+    {
+        // ファイルを準備
+        File::factory()->create([
+            'data_type' => '1', // team
+        ]);
+
+        // APIリクエスト実行
+        $response = $this->getJson('/api/v1/search/team');
+
+        // 結果を検証
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'current_page',
+            'data' => [
+                '*' => [
+                    'id',
+                    'upload_owner_name',
+                    'file_name',
+                    'file_comment',
+                    'created_at',
+                    'upload_user_id',
+                    'upload_type',
+                    'search_tag1',
+                    'search_tag2',
+                    'search_tag3',
+                    'search_tag4',
+                    'downloadable_at'
+                ]
+            ],
             'first_page_url',
             'from',
             'last_page',
