@@ -17,14 +17,10 @@ class FileConventionalUtilTest extends TestCase
      */
     public function can_download_file()
     {
-        // テスト用のディレクトリとファイルを作成
-        Storage::fake('public');
-        $testContent = 'dummydata';
-        Storage::disk('public')->put('test.CHE', $testContent);
-
-        // ファイルレコードをDB作成
+        // ファイルレコードをDB作成（file_dataに直接データを格納）
         $file = File::factory()->create([
             'file_name' => 'test.CHE',
+            'file_data' => 'dummydata',
             'file_comment' => 'Test file for download'
         ]);
 
@@ -53,9 +49,6 @@ class FileConventionalUtilTest extends TestCase
      */
     public function can_download_multiple_files_as_zip()
     {
-        // テスト用のディレクトリとファイルを作成
-        Storage::fake('public');
-
         // テスト用のファイルを作成
         $testContent1 = 'content1';
         $testContent2 = 'content2';

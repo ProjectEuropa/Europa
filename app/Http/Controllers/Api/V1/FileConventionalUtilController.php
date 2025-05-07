@@ -49,6 +49,10 @@ class FileConventionalUtilController extends Controller
 
         $zipPrefiles = File::whereIn('id', $fileIds)->select('file_name', 'file_data', 'downloadable_at')->get();
 
+        if ($zipPrefiles->isEmpty()) {
+            return response()->json(['error' => 'ファイルが見つかりません'], 404);
+        }
+
         foreach ($zipPrefiles as $zipPrefile) {
             if ($zipPrefile->downloadable_at >= now()) {
                 continue;

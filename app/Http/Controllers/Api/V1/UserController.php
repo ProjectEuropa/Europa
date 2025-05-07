@@ -32,7 +32,6 @@ class UserController extends Controller
             $result = DB::transaction(function () use ($request, $validated) {
                 $affected = User::where('id', $request->user()->id)
                     ->update(['name' => $validated['name']]);
-
                 if ($affected !== 1) {
                     throw new \Exception("ユーザー名の更新に失敗しました。更新された数は{$affected}です。");
                 }
