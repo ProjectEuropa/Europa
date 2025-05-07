@@ -107,7 +107,7 @@ class SearchControllerTest extends TestCase
 
     /**
      * @test
-     * sumDLsearchメソッドが正しく動作するかテスト
+     * sumDLSearchメソッドが正しく動作するかテスト
      */
     public function sum_dl_search_returns_paginated_results()
     {
@@ -117,7 +117,7 @@ class SearchControllerTest extends TestCase
         ]);
 
         // APIリクエスト実行
-        $response = $this->getJson('/api/v1/sumDLsearch/match');
+        $response = $this->getJson('/api/v1/sumDLSearch/match');
 
         // 結果を検証
         $response->assertOk();
