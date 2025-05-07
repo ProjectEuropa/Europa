@@ -7,10 +7,15 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import TeamCards, { TeamData } from '../../../components/search/TeamCards';
 
+import { Suspense } from 'react';
 import ClientTeamSearch from './ClientTeamSearch';
 
 export default function TeamSearchPage() {
-  return <ClientTeamSearch />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ClientTeamSearch />
+    </Suspense>
+  );
 }
 //
 //   useEffect(() => {

@@ -5,7 +5,7 @@ export interface TeamData {
   name: string;
   owner: string;
   comment: string;
-  filename: string;
+  file_name: string;
   uploadDate: string;
   uploadTime: string;
   downloadDate?: string;
@@ -56,7 +56,7 @@ const TeamCards: React.FC<TeamCardsProps> = ({ teams, onDownload, onDelete }) =>
               <div style={{ 
                 fontSize: '0.9rem', 
                 color: '#00c8ff' 
-              }}>{team.filename}</div>
+              }}>{team.file_name}</div>
             </div>
             
             {/* オーナー情報 */}

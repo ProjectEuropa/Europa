@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { searchTeams } from '@/utils/api';
 import Header from '../../../components/Header';
@@ -8,6 +8,7 @@ import Footer from '../../../components/Footer';
 import TeamCards, { TeamData } from '../../../components/search/TeamCards';
 
 export default function ClientTeamSearch() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -91,11 +92,15 @@ export default function ClientTeamSearch() {
           </p>
         </div>
 
-        <div style={{
-          width: "100%",
-          maxWidth: "800px",
-          position: "relative"
-        }}>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('keyword', searchQuery);
+            router.push(`?${params.toString()}`);
+          }}
+          style={{ width: "100%", maxWidth: "800px", position: "relative" }}
+        >
           <div style={{
             display: "flex",
             alignItems: "center",
@@ -120,8 +125,39 @@ export default function ClientTeamSearch() {
                 fontSize: "1.1rem"
               }}
             />
+            <button
+              type="submit"
+              aria-label="検索"
+              disabled={!searchQuery.trim()}
+              style={{
+                background: 'linear-gradient(90deg, #3B82F6, #00c8ff)',
+                border: 'none',
+                borderRadius: '50%',
+                width: 44,
+                height: 44,
+                marginLeft: 8,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: !searchQuery.trim() ? 'not-allowed' : 'pointer',
+                opacity: searchQuery.trim() ? 1 : 0.6,
+                transition: 'box-shadow .2s, opacity .2s',
+                boxShadow: searchQuery.trim() ? '0 0 0 2px #00c8ff33' : 'none'
+              }}
+              onMouseOver={e => {
+                if (searchQuery.trim()) e.currentTarget.style.boxShadow = '0 0 8px 2px #00c8ff88';
+              }}
+              onMouseOut={e => {
+                if (searchQuery.trim()) e.currentTarget.style.boxShadow = '0 0 0 2px #00c8ff33';
+              }}
+            >
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="7" stroke="#fff" strokeWidth="2" />
+                <line x1="16" y1="16" x2="20" y2="20" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
-        </div>
+        </form>
 
         {loading && <div style={{ color: '#00c8ff', marginTop: 8 }}>検索中...</div>}
         {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
@@ -138,7 +174,7 @@ export default function ClientTeamSearch() {
             {/* テーブルヘッダー */}
             <div style={{
               display: "grid",
-              gridTemplateColumns: "100px 120px 1fr 180px 150px 180px 60px",
+              gridTemplateColumns: "80px 120px 8fr 70px 180px 180px 60px",
               minWidth: 900,
               background: "#0A1022",
               padding: "12px 20px",
@@ -150,8 +186,8 @@ export default function ClientTeamSearch() {
               <div>オーナー名</div>
               <div>コメント・タグ</div>
               <div>ファイル名</div>
-              <div>アップロード日時</div>
-              <div>ダウンロード可能日時</div>
+              <div style={{whiteSpace:'nowrap'}}>アップロード日時</div>
+              <div style={{whiteSpace:'nowrap'}}>ダウンロード可能日時</div>
               <div style={{ textAlign: "center" }}>削除</div>
             </div>
 
@@ -159,7 +195,7 @@ export default function ClientTeamSearch() {
             {teams.map(team => (
               <div key={team.id} style={{
                 display: "grid",
-                gridTemplateColumns: "100px 120px 1fr 180px 150px 180px 60px",
+                gridTemplateColumns: "80px 120px 8fr 70px 180px 180px 60px",
                 minWidth: 900,
                 padding: "16px 20px",
                 borderBottom: "1px solid #1E3A5F",
@@ -187,8 +223,15 @@ export default function ClientTeamSearch() {
                 <div style={{ color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{team.upload_owner_name}</div>
 
                 {/* コメント・タグ */}
-                <div style={{ color: "#b0c4d8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {team.file_comment}
+                <div style={{ color: "#b0c4d8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+                  {team.file_comment && team.file_comment.split(/\r?\n/).map(
+  (line: string, idx: number, arr: string[]) => (
+    <span key={idx}>
+      {line}
+      {idx < arr.length - 1 && <br />}
+    </span>
+  )
+)}
                   <div style={{ marginTop: 4 }}>
                     {[team.search_tag1, team.search_tag2, team.search_tag3, team.search_tag4].filter(Boolean).map((tag, i) => (
                       <span key={i} style={{ background: '#1E3A5F', color: '#8CB4FF', borderRadius: '4px', padding: '2px 6px', marginRight: 4, fontSize: '0.8em', whiteSpace: 'nowrap' }}>{tag}</span>
@@ -197,15 +240,15 @@ export default function ClientTeamSearch() {
                 </div>
 
                 {/* ファイル名 */}
-                <div style={{ color: "#00c8ff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{team.file_name}</div>
+                <div style={{ color: "#00c8ff", whiteSpace: "normal", wordBreak: "break-all", overflow: "visible", textOverflow: "clip" }}>{team.file_name}</div>
 
                 {/* アップロード日時 */}
-                <div style={{ color: "white", whiteSpace: "nowrap" }}>
+                <div style={{ color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {team.created_at}
                 </div>
 
                 {/* ダウンロード可能日時 */}
-                <div style={{ color: "white", whiteSpace: "nowrap" }}>
+                <div style={{ color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {team.downloadable_at}
                 </div>
 
@@ -251,23 +294,53 @@ export default function ClientTeamSearch() {
               }}>
               前へ
             </button>
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
-                style={{
-                  background: currentPage === i + 1 ? '#00c8ff' : '#111A2E',
-                  color: currentPage === i + 1 ? '#111A2E' : '#8CB4FF',
-                  border: 'none',
-                  borderRadius: 0,
-                  padding: '8px 16px',
-                  marginRight: 2,
-                  fontWeight: currentPage === i + 1 ? 'bold' : 'normal',
-                  cursor: 'pointer'
-                }}>
-                {i + 1}
-              </button>
-            ))}
+            {/* カスタムページネーションロジック */}
+            {(() => {
+              const pages: (number | string)[] = [];
+              const pageWindow = 5;
+              const startPages = Array.from({length: Math.min(5, totalPages)}, (_, i) => i + 1);
+              const endPages = Array.from({length: Math.min(5, totalPages)}, (_, i) => totalPages - 5 + i + 1).filter(p => p > 5);
+              const midStart = Math.max(currentPage - pageWindow, 6);
+              const midEnd = Math.min(currentPage + pageWindow, totalPages - 5);
+              // 最初の5ページ
+              startPages.forEach(p => {
+                pages.push(p);
+              });
+              // ...
+              if (midStart > 6) pages.push('start-ellipsis');
+              // 中央ウィンドウ
+              for(let p = midStart; p <= midEnd; ++p) {
+                if (p > 5 && p <= totalPages - 5) pages.push(p);
+              }
+              // ...
+              if (midEnd < totalPages - 5) pages.push('end-ellipsis');
+              // 最後の5ページ
+              endPages.forEach(p => {
+                if (!pages.includes(p)) pages.push(p);
+              });
+              return pages.map((p, idx) =>
+                typeof p === 'number' ? (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    style={{
+                      background: currentPage === p ? '#00c8ff' : '#111A2E',
+                      color: currentPage === p ? '#111A2E' : '#8CB4FF',
+                      border: 'none',
+                      borderRadius: 0,
+                      padding: '8px 16px',
+                      marginRight: 2,
+                      fontWeight: currentPage === p ? 'bold' : 'normal',
+                      cursor: 'pointer'
+                    }}>
+                    {p}
+                  </button>
+                ) : (
+                  <span key={p + '-' + idx} style={{ color: '#8CB4FF', padding: '0 8px', userSelect: 'none' }}>...</span>
+                )
+              );
+            })()}
+
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage >= totalPages}
@@ -283,19 +356,6 @@ export default function ClientTeamSearch() {
               }}>
               次へ
             </button>
-          </div>
-        )}
-        {/* カード表示 */}
-        {isCardView && (
-          <div style={{
-            background: "#050A14",
-            borderBottom: "1px solid #1E3A5F"
-          }}>
-            <TeamCards
-              teams={teams}
-              onDownload={handleDownload}
-              onDelete={handleDelete}
-            />
           </div>
         )}
       </div>

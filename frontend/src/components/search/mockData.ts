@@ -7,7 +7,7 @@ export const MOCK_TEAMS: TeamData[] = [
     name: "Cパッド",
     owner: "M2",
     comment: "■中小CPUハンデ戦\nオーナー名：M2\nチーム名：Cパッド\nコメント：パッドくんです",
-    filename: "CB.CHE",
+    file_name: "CB.CHE",
     uploadDate: "2025-04-21",
     uploadTime: "23:45"
   },
@@ -16,7 +16,7 @@ export const MOCK_TEAMS: TeamData[] = [
     name: "Cチキン",
     owner: "M2",
     comment: "■中小CPUハンデ戦\nオーナー名：M2\nチーム名：Cチキン\nコメント：チキンです",
-    filename: "CC.CHE",
+    file_name: "CC.CHE",
     uploadDate: "2025-04-21",
     uploadTime: "23:44"
   },
@@ -25,7 +25,7 @@ export const MOCK_TEAMS: TeamData[] = [
     name: "GrayGhost",
     owner: "UNANA",
     comment: "■中小CPUハンデ戦\nオーナー名：UNANA\nチーム名：GrayGhost\nコメント：中チップアラクネー\n音の機体を小修整",
-    filename: "GRGTM112.CHE",
+    file_name: "GRGTM112.CHE",
     uploadDate: "2025-04-21",
     uploadTime: "23:17"
   },
@@ -34,7 +34,7 @@ export const MOCK_TEAMS: TeamData[] = [
     name: "サイバーファルコン",
     owner: "Masato",
     comment: "■高速攻撃型\nオーナー名：Masato\nチーム名：サイバーファルコン\nコメント：素早い展開と強力な火力が特徴",
-    filename: "FALCON.CHE",
+    file_name: "FALCON.CHE",
     uploadDate: "2025-04-20",
     uploadTime: "18:30"
   },
@@ -43,7 +43,7 @@ export const MOCK_TEAMS: TeamData[] = [
     name: "ディフェンダーX",
     owner: "Yuki",
     comment: "■防御型\nオーナー名：Yuki\nチーム名：ディフェンダーX\nコメント：堅固な防御を誇るOKE。耐久力と反撃能力に優れている",
-    filename: "DEFX.CHE",
+    file_name: "DEFX.CHE",
     uploadDate: "2025-04-19",
     uploadTime: "14:22"
   }

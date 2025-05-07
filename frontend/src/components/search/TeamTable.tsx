@@ -5,7 +5,7 @@ export interface TeamData {
   name: string;
   owner: string;
   comment: string;
-  filename: string;
+  file_name: string;
   uploadDate: string;
   uploadTime: string;
 }
@@ -66,7 +66,7 @@ const TeamTable: React.FC<TeamTableProps> = ({ teams, onDownload, onDelete }) =>
                 ))}
               </td>
               <td className="px-6 py-5 whitespace-nowrap break-keep">
-                <div className="text-base text-blue-400 hover:text-blue-300 transition-colors duration-200 break-keep whitespace-nowrap">{team.filename}</div>
+                <div className="text-base text-blue-400 hover:text-blue-300 transition-colors duration-200 break-keep whitespace-nowrap">{team.file_name}</div>
               </td>
               <td className="px-6 py-5 whitespace-nowrap">
                 <div className="text-sm text-white">{team.uploadDate}</div>

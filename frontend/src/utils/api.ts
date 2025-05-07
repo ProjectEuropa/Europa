@@ -1,14 +1,38 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://local.europa.com";
+const BASIC_AUTH_USER = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
+const BASIC_AUTH_PASSWORD = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 
 export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  let baseHeaders: Record<string, string> = {};
+  if (options.headers) {
+    if (options.headers instanceof Headers) {
+      options.headers.forEach((value, key) => {
+        baseHeaders[key] = value;
+      });
+    } else if (Array.isArray(options.headers)) {
+      options.headers.forEach(([key, value]) => {
+        baseHeaders[key] = value;
+      });
+    } else {
+      baseHeaders = { ...options.headers } as Record<string, string>;
+    }
+  }
+  const headers: Record<string, string> = {
+    ...baseHeaders,
+    "Content-Type": "application/json",
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  // STG環境のみBasic認証を付与
+  if (
+    API_BASE_URL.includes("stg.project-europa.work") &&
+    BASIC_AUTH_USER && BASIC_AUTH_PASSWORD
+  ) {
+    headers["Authorization"] = "Basic " + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+  }
   return fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
-    headers: {
-      ...(options.headers || {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      "Content-Type": "application/json",
-    },
+    headers,
     credentials: "include",
   });
 };
