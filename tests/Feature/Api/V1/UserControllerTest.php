@@ -31,7 +31,7 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create(['name' => 'OldName']);
         $this->actingAs($user, 'sanctum');
 
-        $response = $this->putJson('/api/v1/user/update', [
+        $response = $this->postJson('/api/v1/user/update', [
             'name' => 'NewName'
         ]);
 
@@ -55,7 +55,7 @@ class UserControllerTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user, 'sanctum');
 
-        $response = $this->putJson('/api/v1/user/update', []);
+        $response = $this->postJson('/api/v1/user/update', []);
 
         $response->assertStatus(422); // validation error
     }
