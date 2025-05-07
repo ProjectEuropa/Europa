@@ -35,7 +35,7 @@ class SearchControllerTest extends TestCase
         ]);
 
         // APIリクエスト実行
-        $response = $this->getJson('/api/search/team?keyword=キーワード');
+        $response = $this->getJson('/api/v1/search/team?keyword=キーワード');
 
         // 結果を検証
         $response->assertOk();
@@ -70,7 +70,7 @@ class SearchControllerTest extends TestCase
         ]);
 
         // APIリクエスト実行
-        $response = $this->getJson('/api/search/team');
+        $response = $this->getJson('/api/v1/search/team');
 
         // 結果を検証
         $response->assertOk();
@@ -98,7 +98,7 @@ class SearchControllerTest extends TestCase
         ]);
 
         // APIリクエスト実行
-        $response = $this->getJson('/api/search/team');
+        $response = $this->getJson('/api/v1/search/team');
 
         // 結果を検証
         $response->assertOk();
@@ -117,7 +117,7 @@ class SearchControllerTest extends TestCase
         ]);
 
         // APIリクエスト実行
-        $response = $this->getJson('/api/sumDLsearch/match');
+        $response = $this->getJson('/api/v1/sumDLsearch/match');
 
         // 結果を検証
         $response->assertOk();
