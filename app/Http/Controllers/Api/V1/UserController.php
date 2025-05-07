@@ -3,19 +3,35 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\User;
 
 class UserController extends Controller
 {
-
     /**
-     * Delete users registered column
+     * ユーザー登録カラムの削除
      */
     public function deleteUsersRegisteredCloumn(Request $request)
     {
-        // TODO: implement deletion logic
+        // ユーザー認証のチェック
+        if (!$request->user()) {
+            return response()->json(['error' => '認証されていません'], 401);
+        }
+
+        try {
+            $result = DB::transaction(function () use ($request) {
+                $affected = User::where('id', $request->user()->id)
+                    ->update(['registered_column' => null]);
+                if ($affected !== 1) {
+                    throw new \Exception("登録カラムの削除に失敗しました。更新された数は{$affected}です。");
+                }
+                return $affected;
+            });
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
         return response()->json(['deleted' => true]);
     }
 
@@ -37,17 +53,16 @@ class UserController extends Controller
                 }
                 return $affected;
             });
-
-            $user = User::find($request->user()->id);
-
-            return response()->json([
-                'message' => 'ユーザー名を更新しました。',
-                'user' => $user,
-            ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage(),
-            ], 400);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+
+        // ユーザー情報を再取得
+        $user = User::find($request->user()->id);
+
+        return response()->json([
+            'message' => 'ユーザー名を更新しました。',
+            'user' => $user
+        ]);
     }
 }

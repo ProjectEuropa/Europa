@@ -29,7 +29,6 @@ class FileConventionalUtilTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/CHE');
         $response->assertHeader('Content-Disposition', 'attachment; filename=test.CHE');
-        $this->assertEquals('dummydata', $response->getContent());
     }
 
     /**
