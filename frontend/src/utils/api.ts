@@ -28,8 +28,8 @@ export const login = async (email: string, password: string) => {
 };
 
 // チーム検索API
-export const searchTeams = async (keyword: string) => {
-  const res = await apiRequest(`/api/v1/search/team?keyword=${encodeURIComponent(keyword)}`);
+export const searchTeams = async (keyword: string, page: number = 1) => {
+  const res = await apiRequest(`/api/v1/search/team?keyword=${encodeURIComponent(keyword)}&page=${page}`);
   if (!res.ok) throw new Error('検索失敗');
   return res.json();
 };

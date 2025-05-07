@@ -14,13 +14,6 @@ class File extends Model
 
     protected $table = "files";
 
-    // /**
-    //  * The attributes that should be cast to native types.
-    //  */
-    // protected $casts = [
-    //     'downloadable_at' => 'datetime',
-    // ];
-
     /**
      * Disable mass-assignment protection
      */
