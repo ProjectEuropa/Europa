@@ -22,11 +22,12 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
     ...baseHeaders,
     "Content-Type": "application/json",
   };
+  // APIリクエストは常にBearer（API以外のみBasic）
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  // STG環境のみBasic認証を付与
   if (
     API_BASE_URL.includes("stg.project-europa.work") &&
-    BASIC_AUTH_USER && BASIC_AUTH_PASSWORD
+    BASIC_AUTH_USER && BASIC_AUTH_PASSWORD &&
+    !endpoint.startsWith("/api/")
   ) {
     headers["Authorization"] = "Basic " + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
   }
@@ -37,7 +38,7 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
   });
 };
 
-// XSSリスク軽減のためsessionStorageでトークンを管理
+
 export const login = async (email: string, password: string) => {
   const res = await fetch(`${API_BASE_URL}/api/v1/login`, {
     method: 'POST',
@@ -46,7 +47,7 @@ export const login = async (email: string, password: string) => {
   });
   const data = await res.json();
   if (data.token) {
-    sessionStorage.setItem('token', data.token);
+    localStorage.setItem('token', data.token);
   }
   return data;
 };
@@ -56,6 +57,17 @@ export const searchTeams = async (keyword: string, page: number = 1) => {
   const res = await apiRequest(`/api/v1/search/team?keyword=${encodeURIComponent(keyword)}&page=${page}`);
   if (!res.ok) throw new Error('検索失敗');
   return res.json();
+};
+
+// ユーザー名更新API
+export const updateUserName = async (name: string) => {
+  const res = await apiRequest('/api/v1/user/update', {
+    method: 'POST',
+    body: JSON.stringify({ name })
+  });
+  if (!res.ok) throw new Error('更新失敗');
+  await console.log(await res);
+  return await res.json();
 };
 
 export const register = async (

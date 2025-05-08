@@ -176,9 +176,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
 
           {!loading && user && (
           <Link href="#" style={getLinkStyle('/logout')} onClick={() => { logout(); }} >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '12px' }}>
-              <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke={pathname === '/mypage' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke={pathname === '/mypage' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            {/* 一般的なログアウトアイコン */}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ marginRight: '12px' }}>
+              <path d="M16 17L21 12L16 7" stroke={pathname === '/logout' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M21 12H9" stroke={pathname === '/logout' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5 19V5C5 3.89543 5.89543 3 7 3H12" stroke={pathname === '/logout' ? '#00c8ff' : '#b0c4d8'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             ログアウト
           </Link>

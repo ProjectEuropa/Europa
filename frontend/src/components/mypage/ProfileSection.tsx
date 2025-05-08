@@ -30,23 +30,24 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
     setTempName(e.target.value);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!tempName.trim()) {
       alert('名前を入力してください');
       return;
     }
-
     setIsSaving(true);
-
-    // 実際のアプリケーションではここでAPIを呼び出してデータを更新
-    console.log('更新データ:', { ...profile, name: tempName });
-
-    // 更新の模擬（実際のアプリケーションではAPIコールに置き換え）
-    setTimeout(() => {
+    try {
+      // API連携
+      const { updateUserName } = await import('@/utils/api');
+      await updateUserName(tempName);
       setProfile(prev => ({ ...prev, name: tempName }));
       setIsEditing(false);
+    } catch (e) {
+      console.error(e);
+      alert('名前の更新に失敗しました');
+    } finally {
       setIsSaving(false);
-    }, 1000);
+    }
   };
 
   return (

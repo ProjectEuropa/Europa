@@ -4,12 +4,11 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  // 必要に応じて他のプロパティも追加
+  created_at?: string;
 }
 
 // XSS対策のためdangerouslySetInnerHTML禁止、CSP導入も推奨
-// トークンはsessionStorageで管理し、画面リロードで消える設計
-// ログイン・新規登録成功時は: sessionStorage.setItem('token', data.token);
+// ログイン・新規登録成功時は: localStorage.setItem('token', data.token);
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,8 +16,7 @@ export function useAuth() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        // Bearerトークン認証: sessionStorageから取得
-        const token = sessionStorage.getItem('token');
+        const token = localStorage.getItem('token');
         if (!token) {
           setUser(null);
           setLoading(false);
@@ -40,11 +38,12 @@ export function useAuth() {
           }
         } else {
           setUser(null);
+          let errorText = await res.text();
           try {
-            const errorData = await res.json();
+            const errorData = JSON.parse(errorText);
             console.error('ユーザー情報取得失敗', errorData);
-          } catch (jsonErr) {
-            console.error('エラーレスポンスのJSONパースエラー', jsonErr);
+          } catch {
+            console.error('ユーザー情報取得失敗: レスポンス内容:', errorText);
           }
         }
       } catch (e) {

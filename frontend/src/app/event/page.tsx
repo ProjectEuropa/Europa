@@ -26,8 +26,14 @@ const formatDateToJST = (date: Date): string => {
   return `${year}/${month}/${day}`;
 };
 
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 const EventPage: React.FC = () => {
-  // フォームデータの状態
+  // すべてのHooksを最上部で宣言
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [formData, setFormData] = useState<EventData>({
     name: '',
     details: '',
@@ -36,13 +42,19 @@ const EventPage: React.FC = () => {
     endDisplayDate: '',
     type: '大会'
   });
-
-  // カレンダー表示状態
   const [showDeadlineCalendar, setShowDeadlineCalendar] = useState(false);
   const [showEndDateCalendar, setShowEndDateCalendar] = useState(false);
-
-  // 送信中状態
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [user, loading, router]);
+
+  if (loading) return <div>Loading...</div>;
+  if (!user) return null; // 未認証時は描画しない
+
   
   // 入力フィールド変更ハンドラー
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

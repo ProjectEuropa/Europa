@@ -101,6 +101,14 @@ const Icons = {
       <circle cx="11" cy="11" r="7" stroke={color} strokeWidth="2"/>
       <path d="M16 16L20 20" stroke={color} strokeWidth="2" strokeLinecap="round"/>
     </svg>
+  ),
+  // ログアウトアイコン
+  Logout: ({ size = 20, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 17L21 12L16 7" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M21 12H9" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M5 19V5C5 3.89543 5.89543 3 7 3H12" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
   )
 };
 

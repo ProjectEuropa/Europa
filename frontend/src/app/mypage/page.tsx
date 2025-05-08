@@ -1,6 +1,22 @@
 'use client';
 
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import React, { useState } from 'react';
+
+const MyPageAuthGuard: React.FC<{children: React.ReactNode}> = ({ children }) => {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [user, loading, router]);
+  if (loading) return <div>Loading...</div>;
+  if (!user) return null; // 未認証時は描画しない
+  return <>{children}</>;
+};
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import ProfileSection from '../../components/mypage/ProfileSection';
@@ -12,14 +28,26 @@ import RegisteredEventsSection from '../../components/mypage/RegisteredEventsSec
 type TabType = 'profile' | 'teams' | 'matches' | 'events';
 
 const MyPage: React.FC = () => {
+  // 認証ガードで囲む
+  return (
+    <MyPageAuthGuard>
+      {/* 以下、元のマイページ内容 */}
+      <MyPageContent />
+    </MyPageAuthGuard>
+  );
+};
+
+// 元の内容をMyPageContentとして分離
+const MyPageContent: React.FC = () => {
   // 現在選択されているタブ
   const [activeTab, setActiveTab] = useState<TabType>('profile');
 
-  // ダミーデータ
+  const { user } = useAuth();
+  if (!user) return <div>Loading...</div>;
   const profileData = {
-    name: '山田太郎',
-    email: 'yamada@example.com',
-    joinDate: '2025/01/15'
+    name: user.name,
+    email: user.email,
+    joinDate: user.created_at ? user.created_at.slice(0, 10).replace(/-/g, "/") : ""
   };
 
   const teamData = [
