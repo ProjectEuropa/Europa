@@ -40,13 +40,15 @@ class UserController extends Controller
      */
     public function userUpdate(Request $request)
     {
+        $user = User::find($request->user()->id);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
         try {
-            $result = DB::transaction(function () use ($request, $validated) {
-                $affected = User::where('id', $request->user()->id)
+            $result = DB::transaction(function () use ($user, $validated) {
+                $affected = User::where('id', $user->id)
                     ->update(['name' => $validated['name']]);
                 if ($affected !== 1) {
                     throw new \Exception("ユーザー名の更新に失敗しました。更新された数は{$affected}です。");
@@ -56,9 +58,6 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        // ユーザー情報を再取得
-        $user = User::find($request->user()->id);
 
         return response()->json([
             'message' => 'ユーザー名を更新しました。',
