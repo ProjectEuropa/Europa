@@ -5,6 +5,8 @@ const BASIC_AUTH_PASSWORD = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   let baseHeaders: Record<string, string> = {};
+
+  // 既存のヘッダーを処理
   if (options.headers) {
     if (options.headers instanceof Headers) {
       options.headers.forEach((value, key) => {
@@ -18,12 +20,20 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
       baseHeaders = { ...options.headers } as Record<string, string>;
     }
   }
+
+  // デフォルトのヘッダー（Content-Typeがすでに設定されていなければ設定）
   const headers: Record<string, string> = {
     ...baseHeaders,
-    "Content-Type": "application/json",
   };
-  // APIリクエストは常にBearer（API以外のみBasic）
+
+  if (!headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  // トークンベースの認証
   if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  // Basic認証（特定の環境のみ）
   if (
     API_BASE_URL.includes("stg.project-europa.work") &&
     BASIC_AUTH_USER && BASIC_AUTH_PASSWORD &&
@@ -31,11 +41,17 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
   ) {
     headers["Authorization"] = "Basic " + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
   }
-  return fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-    credentials: "include",
-  });
+
+  try {
+    return fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+      credentials: "include",
+    });
+  } catch (error) {
+    console.error(`API Request to ${endpoint} failed:`, error);
+    throw error;
+  }
 };
 
 
@@ -61,15 +77,20 @@ export const searchTeams = async (keyword: string, page: number = 1) => {
 
 // ユーザー名更新API
 export const updateUserName = async (name: string) => {
-  const res = await apiRequest('/api/v1/user/update', {
-    method: 'POST',
-    body: JSON.stringify({ name })
-  });
-  if (!res.ok) throw new Error('更新失敗');
-  await console.log(await res);
-  return await res.json();
-};
+  try {
+    const res = await apiRequest('/api/v1/user/update', {
+      method: 'POST',
+      body: JSON.stringify({ name })
+    });
 
+    if (!res.ok) {
+      throw new Error(`更新失敗 (${res.status}): ${res.statusText}...`);
+    }
+  } catch (error) {
+    console.error('API呼び出しエラー:', error);
+    throw error;
+  }
+};
 export const register = async (
   name: string,
   email: string,
@@ -78,7 +99,10 @@ export const register = async (
 ) => {
   const res = await fetch(`${API_BASE_URL}/api/v1/register`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
     body: JSON.stringify({
       name,
       email,

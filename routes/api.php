@@ -62,6 +62,6 @@ Route::prefix('v1')->group(function () {
         Route::get('mypage/match', 'Api\FileUtilController@myMatch');
         Route::get('mypage/events', 'Api\EventController@getMyEventData');
         Route::post('delete/usersRegisteredCloumn', 'Api\UserController@deleteUsersRegisteredCloumn');
-        Route::post('user/update', 'Api\UserController@userUpdate');
+        Route::post('user/update', [\App\Http\Controllers\Api\V1\UserController::class, 'userUpdate']);
     });
 });
