@@ -29,7 +29,12 @@ class File extends Model
     public function downloadableAt(): Attribute
     {
         return new Attribute(
-            get:fn($value) => Carbon::parse($value)->timezone('Asia/Tokyo')->format('Y-m-d H:i')
+            get: function ($value) {
+                if ($value === null) {
+                    return null;
+                }
+                return Carbon::parse($value)->timezone('Asia/Tokyo')->format('Y-m-d H:i');
+            }
         );
     }
 
