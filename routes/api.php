@@ -54,7 +54,7 @@ Route::prefix('v1')->group(function () {
         Route::get('search/{searchType}', 'Api\SearchController@search');
         Route::get('sumDLSearch/{searchType}', 'Api\SearchController@sumDLSearch');
         Route::get('event', 'Api\EventController@getEventData');
-        Route::post('delete/searchFile', 'Api\FileUtilController@deleteSearchFile');
+        Route::post('delete/searchFile', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'deleteSearchFile']);
     });
 
     Route::group(['middleware' => ['auth:sanctum']], function () {

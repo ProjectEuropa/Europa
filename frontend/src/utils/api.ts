@@ -106,6 +106,34 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<{ success: bo
   }
 };
 
+/**
+ * ファイル削除API
+ * @param id 削除対象のファイルID
+ * @param deletePassword 削除パスワード（設定されている場合）
+ * @returns レスポンスデータ
+ */
+export const deleteSearchFile = async (id: number, deletePassword: string = ''): Promise<{ message: string }> => {
+  try {
+    const res = await apiRequest('/api/v1/delete/searchFile', {
+      method: 'POST',
+      body: JSON.stringify({
+        id,
+        deletePassword
+      })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || `削除失敗 (${res.status})`);
+    }
+
+    return res.json();
+  } catch (error: any) {
+    console.error('ファイル削除APIエラー:', error);
+    throw error;
+  }
+};
+
 // ユーザー名更新API
 export const updateUserName = async (name: string) => {
   try {
@@ -147,3 +175,5 @@ export const register = async (
   }
   return data;
 };
+
+

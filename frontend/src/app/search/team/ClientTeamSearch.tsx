@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import Footer from '../../../components/Footer';
 import TeamCards, { TeamData } from '../../../components/search/TeamCards';
 import { DeleteModal } from '@/components/DeleteModal';
+import { deleteSearchFile } from '@/utils/api';
 
 export default function ClientTeamSearch() {
   const router = useRouter();
@@ -63,17 +64,13 @@ export default function ClientTeamSearch() {
 
   const handleDelete = async (password: string) => {
     if (!deleteTarget) return;
-    // ここで削除API呼び出し例
-    // const result = await deleteTeam(deleteTarget.id, password);
-    // if (result.success) {
-    //   setTeams(teams => teams.filter(t => t.id !== deleteTarget.id));
-    //   toast.success('削除しました');
-    // } else {
-    //   toast.error(result.error || '削除失敗');
-    // }
-    // デモ用
-    setTeams(teams => teams.filter(t => t.id !== deleteTarget.id));
-    toast.success('削除しました');
+    try {
+      const result = await deleteSearchFile(deleteTarget.id, password);
+      setTeams(teams => teams.filter(t => t.id !== deleteTarget.id));
+      toast.success(result.message || '削除しました');
+    } catch (e: any) {
+      toast.error(e.message || '削除に失敗しました');
+    }
   };
 
 
@@ -281,21 +278,23 @@ export default function ClientTeamSearch() {
                   {team.downloadable_at}
                 </div>
 
-                {/* 削除ボタン */}
-                <div style={{ textAlign: "center" }}>
-                  <button
-                    onClick={() => handleDeleteClick(team)}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      cursor: "pointer"
-                    }}
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 7V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V7M6 7H5M6 7H8M18 7H19M18 7H16M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7M8 7H16M10 11V16M14 11V16" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
+                {/* 削除ボタン：upload_typeが'2'のときだけ表示 */}
+                {team.upload_type === '2' && (
+                  <div style={{ textAlign: "center" }}>
+                    <button
+                      onClick={() => handleDeleteClick(team)}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer"
+                      }}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 7V18C6 19.1046 6.89543 20 8 20H16C17.1046 20 18 19.1046 18 18V7M6 7H5M6 7H8M18 7H19M18 7H16M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7M8 7H16M10 11V16M14 11V16" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\File;
+use Illuminate\Support\Facades\Log;
 use Madzipper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class FileConventionalUtilController extends Controller
@@ -72,5 +74,32 @@ class FileConventionalUtilController extends Controller
           unlink($file);
         }
         return response()->download(public_path('zipdldir/sum.zip'))->deleteFileAfterSend(true);
+    }
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteSearchFile(Request $request)
+    {
+        try {
+            $result = DB::transaction(function () use ($request) {
+                $numDeleteCount = File::where('id', '=', $request->input('id'))
+                    ->where('delete_password', '=', $request->input('deletePassword') ?? '')
+                    ->delete();
+                if ($numDeleteCount !== 1) {
+                    throw new \Exception('ファイルの削除に失敗しました');
+                } else {
+                    return $numDeleteCount;
+                }
+            });
+
+            if ($result === 1) {
+                return response()->json(['message' => 'ファイルを削除しました']);
+            }
+            return response()->json(['message' => 'ファイルの削除に失敗しました'], 400);
+        } catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(['message' => 'ファイルの削除に失敗しました'], 400);
+        }
     }
 }
