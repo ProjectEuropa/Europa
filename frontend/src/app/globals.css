@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: 10, 16, 34;
+  --color-primary: 59, 130, 246;
+  --color-secondary: 140, 180, 255;
+  --color-accent: 0, 200, 255;
+  --color-surface: 30, 58, 95;
+}
+
+/* --- CYBER MODAL / NEON UTILITY STYLES --- */
+.cyber-dialog::backdrop {
+  background: rgba(0, 8, 32, 0.85);
+  backdrop-filter: blur(2px);
+}
+.cyber-title {
+  text-shadow: 0 0 8px #00c8ff, 0 0 16px #3B82F6;
+  letter-spacing: 0.1em;
+}
+.shadow-cyber {
+  box-shadow: 0 0 8px 2px #00c8ff66, 0 0 0 2px #00c8ff33;
+}
+@keyframes cyber-border {
+  0% { border-color: #00c8ff; }
+  50% { border-color: #3B82F6; }
+  100% { border-color: #00c8ff; }
+}
+.animate-cyber-border {
+  animation: cyber-border 2s infinite linear;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background: rgb(var(--color-bg));
+  color: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* サイバーブルーのグロー効果 */
+.cyber-glow {
+  text-shadow: 0 0 5px rgba(var(--cyber-blue), 0.5), 0 0 10px rgba(var(--cyber-blue), 0.3);
+}
+
+.cyber-border {
+  border: 1px solid rgb(var(--cyber-blue));
+  box-shadow: 0 0 5px rgba(var(--cyber-blue), 0.5), inset 0 0 5px rgba(var(--cyber-blue), 0.3);
+}
+
+/* アニメーションのためのユーティリティクラス */
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow:hover {
+  text-shadow: 0 0 8px rgba(var(--cyber-blue), 0.8), 0 0 15px rgba(var(--cyber-blue), 0.5);
+}
