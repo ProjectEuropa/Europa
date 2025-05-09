@@ -11,7 +11,8 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-dialog": "^1.1.13",
+    "@radix-ui/react-slot": "^1.2.2",
     "@shadcn/ui": "^0.0.4",
     "autoprefixer": "^10.4.21",
     "class-variance-authority": "^0.7.1",
@@ -24,6 +25,7 @@
     "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",
     "tailwindcss": "^4.1.5",
     "use-sound": "^5.0.0"

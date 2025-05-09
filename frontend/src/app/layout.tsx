@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://europa.example.com"),
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: {
@@ -43,6 +45,7 @@ export default function RootLayout({
         }
       >
         {children}
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

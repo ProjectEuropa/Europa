@@ -75,6 +75,37 @@ export const searchTeams = async (keyword: string, page: number = 1) => {
   return res.json();
 };
 
+// チームファイルのダウンロード可否チェック＆実行
+export const tryDownloadTeamFile = async (teamId: number): Promise<{ success: boolean; error?: string }> => {
+  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download/${teamId}`;
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Accept': 'application/json' }
+    });
+    const contentType = res.headers.get('Content-Type') || "";
+    if (!res.ok) {
+      // 400, 404, 500 など
+      if (contentType.includes('application/json')) {
+        const data = await res.json();
+        return { success: false, error: data.error || `ダウンロードできません (${res.status})` };
+      } else {
+        return { success: false, error: `ダウンロード失敗 (${res.status})` };
+      }
+    }
+    if (contentType.includes('application/json')) {
+      // サーバーが200でもエラーJSON返す場合
+      const data = await res.json();
+      return { success: false, error: data.error || 'ダウンロードできません' };
+    }
+    window.open(url, '_blank');
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: 'ダウンロード通信エラー' };
+  }
+};
+
 // ユーザー名更新API
 export const updateUserName = async (name: string) => {
   try {

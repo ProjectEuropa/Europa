@@ -3,9 +3,32 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-rgb: 1, 2, 32;
-  --cyber-blue: 3, 198, 249;
+  --color-bg: 10, 16, 34;
+  --color-primary: 59, 130, 246;
+  --color-secondary: 140, 180, 255;
+  --color-accent: 0, 200, 255;
+  --color-surface: 30, 58, 95;
+}
+
+/* --- CYBER MODAL / NEON UTILITY STYLES --- */
+.cyber-dialog::backdrop {
+  background: rgba(0, 8, 32, 0.85);
+  backdrop-filter: blur(2px);
+}
+.cyber-title {
+  text-shadow: 0 0 8px #00c8ff, 0 0 16px #3B82F6;
+  letter-spacing: 0.1em;
+}
+.shadow-cyber {
+  box-shadow: 0 0 8px 2px #00c8ff66, 0 0 0 2px #00c8ff33;
+}
+@keyframes cyber-border {
+  0% { border-color: #00c8ff; }
+  50% { border-color: #3B82F6; }
+  100% { border-color: #00c8ff; }
+}
+.animate-cyber-border {
+  animation: cyber-border 2s infinite linear;
 }
 
 html,
@@ -15,10 +38,8 @@ body {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: rgb(var(--color-bg));
+  color: #fff;
 }
 
 * {

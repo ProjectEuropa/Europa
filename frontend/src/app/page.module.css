@@ -166,3 +166,16 @@ a.secondary {
     filter: invert();
   }
 }
+
+:root {
+  --color-bg: 10, 16, 34; /* 例: #0A1022 */
+  --color-primary: 59, 130, 246;
+  --color-secondary: 140, 180, 255;
+  --color-accent: 0, 200, 255;
+  --color-surface: 30, 58, 95;
+}
+
+body {
+  background: rgb(var(--color-bg));
+}
+

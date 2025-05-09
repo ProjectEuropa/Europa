@@ -3,9 +3,12 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { searchTeams } from '@/utils/api';
-import Header from '../../../components/Header';
+import Header from "@/components/Header";
+import { tryDownloadTeamFile } from "@/utils/api";
+import { toast } from "sonner";
 import Footer from '../../../components/Footer';
 import TeamCards, { TeamData } from '../../../components/search/TeamCards';
+import { DeleteModal } from '@/components/DeleteModal';
 
 export default function ClientTeamSearch() {
   const router = useRouter();
@@ -22,6 +25,8 @@ export default function ClientTeamSearch() {
   const [isCardView, setIsCardView] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: number, file_name: string } | null>(null);
 
   useEffect(() => {
     const kw = searchParams.get('keyword') || '';
@@ -44,15 +49,33 @@ export default function ClientTeamSearch() {
       .finally(() => setLoading(false));
   }, [searchQuery, currentPage]);
 
-  const handleDownload = (team: TeamData) => {
-    console.log(`Downloading team: ${team.file_name}`);
-    // 実際のダウンロード処理をここに実装
+  const handleDownload = async (team: TeamData) => {
+    const result = await tryDownloadTeamFile(team.id);
+    if (!result.success) {
+      toast.error(result.error, { duration: 4000 });
+    }
+  };
+  const handleDeleteClick = (team: TeamData) => {
+    setDeleteTarget({ id: team.id, file_name: team.file_name });
+    setDeleteModalOpen(true);
   };
 
-  const handleDelete = (team: TeamData) => {
-    console.log(`Deleting team: ${team.file_name}`);
-    // 実際の削除処理をここに実装
+
+  const handleDelete = async (password: string) => {
+    if (!deleteTarget) return;
+    // ここで削除API呼び出し例
+    // const result = await deleteTeam(deleteTarget.id, password);
+    // if (result.success) {
+    //   setTeams(teams => teams.filter(t => t.id !== deleteTarget.id));
+    //   toast.success('削除しました');
+    // } else {
+    //   toast.error(result.error || '削除失敗');
+    // }
+    // デモ用
+    setTeams(teams => teams.filter(t => t.id !== deleteTarget.id));
+    toast.success('削除しました');
   };
+
 
   return (
     <div style={{
@@ -62,6 +85,12 @@ export default function ClientTeamSearch() {
       background: "rgb(var(--background-rgb))"
     }}>
       <Header />
+      <DeleteModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        onDelete={handleDelete}
+        fileName={deleteTarget?.file_name || ''}
+      />
 
       <div style={{
         flex: "1",
@@ -225,13 +254,13 @@ export default function ClientTeamSearch() {
                 {/* コメント・タグ */}
                 <div style={{ color: "#b0c4d8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
                   {team.file_comment && team.file_comment.split(/\r?\n/).map(
-  (line: string, idx: number, arr: string[]) => (
-    <span key={idx}>
-      {line}
-      {idx < arr.length - 1 && <br />}
-    </span>
-  )
-)}
+                    (line: string, idx: number, arr: string[]) => (
+                      <span key={idx}>
+                        {line}
+                        {idx < arr.length - 1 && <br />}
+                      </span>
+                    )
+                  )}
                   <div style={{ marginTop: 4 }}>
                     {[team.search_tag1, team.search_tag2, team.search_tag3, team.search_tag4].filter(Boolean).map((tag, i) => (
                       <span key={i} style={{ background: '#1E3A5F', color: '#8CB4FF', borderRadius: '4px', padding: '2px 6px', marginRight: 4, fontSize: '0.8em', whiteSpace: 'nowrap' }}>{tag}</span>
@@ -255,7 +284,7 @@ export default function ClientTeamSearch() {
                 {/* 削除ボタン */}
                 <div style={{ textAlign: "center" }}>
                   <button
-                    onClick={() => handleDelete(team)}
+                    onClick={() => handleDeleteClick(team)}
                     style={{
                       background: "transparent",
                       border: "none",
