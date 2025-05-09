@@ -59,6 +59,8 @@ class UserController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
+        $user = User::find($request->user()->id);
+
         return response()->json([
             'message' => 'ユーザー名を更新しました。',
             'user' => $user
