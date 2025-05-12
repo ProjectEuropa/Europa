@@ -18,6 +18,7 @@ const UploadPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
 
@@ -82,8 +83,11 @@ const UploadPage: React.FC = () => {
     e.preventDefault();
 
     if (!selectedFile) {
+      setFieldErrors(prev => ({ ...prev, file: ['ファイルを選択してください'] }));
       toast.error('ファイルを選択してください');
       return;
+    } else {
+      setFieldErrors(prev => ({ ...prev, file: undefined }));
     }
 
     // ファイルサイズチェック（25KB制限）
@@ -126,9 +130,20 @@ const UploadPage: React.FC = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    } catch (error) {
-      console.error('アップロード中にエラーが発生しました:', error);
+    } catch (error: any) {
       setIsUploading(false);
+      // サーバーバリデーションエラー時のフィールドごとのエラーセット
+      if (error && error.errors) {
+        try {
+          const errJson = error.errors;
+          if (errJson) {
+            setFieldErrors(errJson);
+            toast.error('入力内容に不備があります。赤枠の項目を確認してください。');
+            return;
+          }
+        } catch {}
+      }
+      setFieldErrors({});
       toast.error('アップロード中にエラーが発生しました。もう一度お試しください。');
     }
   };
@@ -215,12 +230,17 @@ const UploadPage: React.FC = () => {
                   width: '100%',
                   padding: '12px',
                   background: '#111A2E',
-                  border: '1px solid #1E3A5F',
+                  border: fieldErrors.ownerName ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
                   borderRadius: '6px',
                   color: 'white',
                   fontSize: '1rem'
                 }}
               />
+              {fieldErrors.ownerName && (
+                <div style={{ color: '#ff5c5c', marginTop: 4, fontSize: 13 }}>
+                  {fieldErrors.ownerName[0]}
+                </div>
+              )}
             </div>
 
             {/* コメント */}
@@ -243,18 +263,23 @@ const UploadPage: React.FC = () => {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="チームについての説明や特徴を入力"
-                rows={4}
+                rows={9}
                 style={{
                   width: '100%',
-                  padding: '12px',
+                  padding: '16px',
                   background: '#111A2E',
-                  border: '1px solid #1E3A5F',
+                  border: fieldErrors.teamComment ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
                   borderRadius: '6px',
                   color: 'white',
                   fontSize: '1rem',
                   resize: 'vertical'
                 }}
               />
+              {fieldErrors.teamComment && (
+                <div style={{ color: '#ff5c5c', marginTop: 4, fontSize: 13 }}>
+                  {fieldErrors.teamComment[0]}
+                </div>
+              )}
             </div>
 
             {/* タグ */}
@@ -363,45 +388,52 @@ const UploadPage: React.FC = () => {
             </div>
 
             {/* 削除パスワード */}
-            <div style={{
-              marginBottom: '30px'
-            }}>
-              <label style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#b0c4d8',
-                marginBottom: '8px'
-              }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                削除パスワード
-              </label>
-              <input
-                type="password"
-                value={deletePassword}
-                onChange={(e) => setDeletePassword(e.target.value)}
-                placeholder="削除時に必要なパスワードを設定"
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  background: '#111A2E',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '6px',
-                  color: 'white',
-                  fontSize: '1rem'
-                }}
-              />
+            {!isAuthenticated && (
               <div style={{
-                fontSize: '0.8rem',
-                color: '#8CB4FF',
-                marginTop: '4px'
+                marginBottom: '30px'
               }}>
-                このパスワードはチームデータを削除する際に必要です。忘れないようにしてください。
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#b0c4d8',
+                  marginBottom: '8px'
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  削除パスワード
+                </label>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="削除時に必要なパスワードを設定"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    background: '#111A2E',
+                    border: fieldErrors.teamDeletePassWord ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
+                    borderRadius: '6px',
+                    color: 'white',
+                    fontSize: '1rem'
+                  }}
+                />
+                {fieldErrors.teamDeletePassWord && (
+                  <div style={{ color: '#ff5c5c', marginTop: 4, fontSize: 13 }}>
+                    {fieldErrors.teamDeletePassWord[0]}
+                  </div>
+                )}
+                <div style={{
+                  fontSize: '0.8rem',
+                  color: '#8CB4FF',
+                  marginTop: '4px'
+                }}>
+                  このパスワードはチームデータを削除する際に必要です。忘れないようにしてください。
+                </div>
               </div>
-            </div>
+            )}
 
             {/* OKEファイルアップロード */}
             <div style={{
@@ -426,11 +458,10 @@ const UploadPage: React.FC = () => {
                 onChange={handleFileChange}
                 accept=".CHE"
                 style={{ display: 'none' }}
-                required
               />
               <div
                 style={{
-                  border: '2px dashed #1E3A5F',
+                  border: fieldErrors.file ? '2px solid #ff5c5c' : '2px dashed #1E3A5F',
                   borderRadius: '12px',
                   padding: '40px 20px',
                   display: 'flex',

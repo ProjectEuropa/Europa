@@ -201,9 +201,7 @@ export const uploadTeamFile = async (
   if (options?.deletePassword) formData.append('teamDeletePassWord', options.deletePassword);
   if (options?.downloadDate) formData.append('teamDownloadableAt', options.downloadDate);
   if (options?.tags && Array.isArray(options.tags)) {
-    options.tags.forEach(tag => {
-      formData.append('teamSearchTags[]', tag);
-    });
+    formData.append('teamSearchTags', options.tags.join(','));
   }
 
   // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
@@ -211,6 +209,8 @@ export const uploadTeamFile = async (
   let headers: Record<string, string> = {};
   // トークン認証
   if (token) headers["Authorization"] = `Bearer ${token}`;
+  // APIリクエストとして認識させる
+  headers["Accept"] = "application/json";
   // Basic認証（特定環境のみ）
   if (
     API_BASE_URL.includes("stg.project-europa.work") &&
@@ -229,7 +229,7 @@ export const uploadTeamFile = async (
     });
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || `アップロード失敗 (${res.status})`);
+      throw errorData;
     }
     return res.json();
   } catch (error: any) {
