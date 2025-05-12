@@ -87,7 +87,10 @@ const UploadPage: React.FC = () => {
       toast.error('ファイルを選択してください');
       return;
     } else {
-      setFieldErrors(prev => ({ ...prev, file: undefined }));
+      setFieldErrors(prev => {
+        const { file, ...rest } = prev;
+        return rest;
+      });
     }
 
     // ファイルサイズチェック（25KB制限）
