@@ -28,13 +28,13 @@ class UploadControllerTest extends TestCase
             'message' => 'The given data was invalid.',
             'errors' => [
                 'teamOwnerName' => [
-                    'The team owner name field is required.'
+                    'team owner nameは必ず指定してください。'
                 ],
                 'teamComment' => [
-                    'The team comment field is required.'
+                    'team commentは必ず指定してください。'
                 ],
                 'teamFile' => [
-                    'The team file field is required.'
+                    'team fileは必ず指定してください。'
                 ]
             ]
         ]);
@@ -58,13 +58,13 @@ class UploadControllerTest extends TestCase
             'message' => 'The given data was invalid.',
             'errors' => [
                 'matchOwnerName' => [
-                    'The match owner name field is required.'
+                    'match owner nameは必ず指定してください。'
                 ],
                 'matchComment' => [
-                    'The match comment field is required.'
+                    'match commentは必ず指定してください。'
                 ],
                 'matchFile' => [
-                    'The match file field is required.'
+                    'match fileは必ず指定してください。'
                 ]
             ]
         ]);
@@ -88,16 +88,16 @@ class UploadControllerTest extends TestCase
             'message' => 'The given data was invalid.',
             'errors' => [
                 'teamOwnerName' => [
-                    'The team owner name field is required.'
+                    'team owner nameは必ず指定してください。'
                 ],
                 'teamComment' => [
-                    'The team comment field is required.'
+                    'team commentは必ず指定してください。'
                 ],
                 'teamDeletePassWord' => [
-                    'The team delete pass word field is required.'
+                    'team delete pass wordは必ず指定してください。'
                 ],
                 'teamFile' => [
-                    'The team file field is required.'
+                    'team fileは必ず指定してください。'
                 ]
             ]
         ]);
@@ -121,16 +121,16 @@ class UploadControllerTest extends TestCase
             'message' => 'The given data was invalid.',
             'errors' => [
                 'matchOwnerName' => [
-                    'The match owner name field is required.'
+                    'match owner nameは必ず指定してください。'
                 ],
                 'matchComment' => [
-                    'The match comment field is required.'
+                    'match commentは必ず指定してください。'
                 ],
                 'matchDeletePassWord' => [
-                    'The match delete pass word field is required.'
+                    'match delete pass wordは必ず指定してください。'
                 ],
                 'matchFile' => [
-                    'The match file field is required.'
+                    'match fileは必ず指定してください。'
                 ]
             ]
         ]);
