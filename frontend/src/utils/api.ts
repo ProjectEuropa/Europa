@@ -245,4 +245,62 @@ export const uploadTeamFile = async (
   }
 };
 
+/**
+ * マッチファイルアップロードAPI
+ * @param file アップロードするファイル
+ * @param isAuthenticated 認証状態
+ * @returns レスポンスデータ
+ */
+export const uploadMatchFile = async (
+  file: File,
+  isAuthenticated: boolean,
+  options?: {
+    ownerName?: string;
+    comment?: string;
+    tags?: string[];
+    deletePassword?: string;
+    downloadDate?: string;
+  }
+) => {
+  const endpoint = isAuthenticated ? '/api/v1/match/upload' : '/api/v1/match/simpleupload';
+  const formData = new FormData();
+  formData.append('matchFile', file);
+  if (options?.ownerName) formData.append('matchOwnerName', options.ownerName);
+  if (options?.comment) formData.append('matchComment', options.comment);
+  if (options?.deletePassword) formData.append('matchDeletePassWord', options.deletePassword);
+  if (options?.downloadDate) formData.append('matchDownloadableAt', options.downloadDate);
+  if (options?.tags && Array.isArray(options.tags)) {
+    formData.append('matchSearchTags', options.tags.join(','));
+  }
+
+  // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  let headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  headers["Accept"] = "application/json";
+  if (
+    API_BASE_URL.includes("stg.project-europa.work") &&
+    BASIC_AUTH_USER && BASIC_AUTH_PASSWORD &&
+    !endpoint.startsWith("/api/")
+  ) {
+    headers["Authorization"] = "Basic " + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: formData,
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw errorData;
+    }
+    return res.json();
+  } catch (error: any) {
+    console.error('マッチファイルアップロードAPIエラー:', error);
+    throw error;
+  }
+};
 

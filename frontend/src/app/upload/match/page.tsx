@@ -4,7 +4,7 @@ import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Calendar from '@/components/Calendar';
-import { uploadTeamFile } from '@/utils/api';
+import { uploadMatchFile } from '@/utils/api';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
@@ -109,7 +109,7 @@ const MatchUploadPage: React.FC = () => {
     setIsUploading(true);
     try {
       // ファイルアップロードAPI呼び出し
-      await uploadTeamFile(
+      await uploadMatchFile(
         selectedFile,
         isAuthenticated,
         {
@@ -265,13 +265,13 @@ const MatchUploadPage: React.FC = () => {
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="チームについての説明や特徴を入力"
+                placeholder="マッチの説明や特徴を入力"
                 rows={9}
                 style={{
                   width: '100%',
                   padding: '16px',
                   background: '#111A2E',
-                  border: fieldErrors.teamComment ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
+                    border: fieldErrors.matchComment ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
                   borderRadius: '6px',
                   color: 'white',
                   fontSize: '1rem',
