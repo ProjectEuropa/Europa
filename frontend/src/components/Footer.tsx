@@ -60,11 +60,11 @@ const Footer = () => {
         <div>
           <div style={{ color: "#00c8ff", fontWeight: 600, marginBottom: "10px" }}>お問い合わせ・法的情報</div>
           <ul style={{ listStyle: "none", padding: 0, margin: 0, lineHeight: 2 }}>
-            <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>私たちについて</a></li>
+            <li><a href="/about" style={{ color: "#b0c4d8", textDecoration: "none" }}>私たちについて</a></li>
             <li><a href="https://hp.project-europa.work/contact" target="_blank" style={{ color: "#b0c4d8", textDecoration: "none" }}>お問い合わせ</a></li>
-            <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>プライバシーポリシー</a></li>
-            <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>利用規約</a></li>
-            <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>よくある質問</a></li>
+            <li><a href="/privacy-policy" style={{ color: "#b0c4d8", textDecoration: "none" }}>プライバシーポリシー</a></li>
+            <li><a href="/terms-of-service" style={{ color: "#b0c4d8", textDecoration: "none" }}>利用規約</a></li>
+            <li><a href="/faq" style={{ color: "#b0c4d8", textDecoration: "none" }}>よくある質問</a></li>
           </ul>
         </div>
       </div>
