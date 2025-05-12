@@ -4,32 +4,46 @@ import React, { useState } from 'react';
 
 interface CalendarProps {
   initialDate?: Date;
-  onSelect?: (date: Date) => void;
+  onSelect?: (date: Date, b: boolean) => void;
   size?: 'small' | 'large';
+  showTimeSelect?: boolean;
 }
 
-const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect, size = 'large' }) => {
+const Calendar: React.FC<CalendarProps> = ({
+  initialDate = new Date(),
+  onSelect,
+  size = 'large',
+  showTimeSelect = false
+}) => {
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedHour, setSelectedHour] = useState<number>(
+    initialDate ? initialDate.getHours() : new Date().getHours()
+  );
+  const [selectedMinute, setSelectedMinute] = useState<number>(
+    initialDate ? initialDate.getMinutes() : 0
+  );
 
   // フォントサイズを計算
   const fontSize = {
     yearMonth: size === 'small' ? '1.5rem' : '2rem',
     weekday: size === 'small' ? '1.2rem' : '1.5rem',
     day: size === 'small' ? '1.2rem' : '1.5rem',
-    button: size === 'small' ? '1rem' : '1.3rem'
+    button: size === 'small' ? '1rem' : '1.3rem',
+    timeSelect: size === 'small' ? '0.9rem' : '1.1rem'
   };
-  
+
   // パディングを計算
   const padding = {
     container: size === 'small' ? '20px' : '30px',
     cell: size === 'small' ? '10px' : '15px',
-    button: size === 'small' ? '10px 15px' : '12px 25px'
+    button: size === 'small' ? '10px 15px' : '12px 25px',
+    timeSelect: size === 'small' ? '8px' : '10px'
   };
-  
+
   // 間隔を計算
   const gap = size === 'small' ? '10px' : '15px';
-  
+
   // セルの高さを計算
   const cellHeight = size === 'small' ? '60px' : '80px';
 
@@ -60,7 +74,15 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
     setCurrentDate(today);
     setSelectedDate(today);
     if (onSelect) {
-      onSelect(today);
+      if (showTimeSelect) {
+        // 時間が選択されている場合は、今日の日付に時間を設定
+        const newDate = new Date(today);
+        newDate.setHours(selectedHour);
+        newDate.setMinutes(selectedMinute);
+        onSelect(newDate, false); // 今日ボタン押下時はカレンダーを閉じない
+      } else {
+        onSelect(today, false); // 今日ボタン押下時はカレンダーを閉じない
+      }
     }
   };
 
@@ -70,7 +92,52 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
     e.stopPropagation();
     setSelectedDate(date);
     if (onSelect) {
-      onSelect(date);
+      if (showTimeSelect) {
+        // 時間が選択されている場合は、選択された日付に時間を設定
+        const newDate = new Date(date);
+        newDate.setHours(selectedHour);
+        newDate.setMinutes(selectedMinute);
+        onSelect(newDate, true); // 日付セルクリック時はカレンダーを閉じる
+      } else {
+        onSelect(date, true); // 日付セルクリック時はカレンダーを閉じる
+      }
+    }
+  };
+
+  // 時間選択ハンドラー
+  const handleHourChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const hour = parseInt(e.target.value, 10);
+    setSelectedHour(hour);
+    const baseDate = selectedDate || currentDate;
+    const newDate = new Date(baseDate);
+    newDate.setHours(hour);
+    newDate.setMinutes(selectedMinute);
+    if (onSelect) onSelect(newDate, false); // 時間変更時はカレンダーを閉じない
+  };
+
+  const handleMinuteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const minute = parseInt(e.target.value, 10);
+    setSelectedMinute(minute);
+    const baseDate = selectedDate || currentDate;
+    const newDate = new Date(baseDate);
+    newDate.setHours(selectedHour);
+    newDate.setMinutes(minute);
+    if (onSelect) onSelect(newDate, false); // 時間変更時はカレンダーを閉じない
+  };
+
+  // 時・分どちらかが変わったら常にonSelectを呼ぶ（最新値で）
+  // 時間設定ボタンハンドラー
+  const handleTimeSet = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const baseDate = selectedDate || currentDate;
+    const newDate = new Date(baseDate);
+    newDate.setHours(selectedHour);
+    newDate.setMinutes(selectedMinute);
+
+    if (onSelect) {
+      onSelect(newDate, true); // カレンダーを閉じる
     }
   };
 
@@ -87,20 +154,20 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
   const generateCalendarDays = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    
+
     // 月の最初の日
     const firstDayOfMonth = new Date(year, month, 1);
     // 月の最後の日
     const lastDayOfMonth = new Date(year, month + 1, 0);
-    
+
     // 先月の最後の日
     const lastDayOfLastMonth = new Date(year, month, 0);
-    
+
     // 月の最初の日の曜日（0: 日曜日, 1: 月曜日, ..., 6: 土曜日）
     const firstDayOfWeek = firstDayOfMonth.getDay();
-    
+
     const days = [];
-    
+
     // 先月の日を追加
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
       const day = new Date(year, month - 1, lastDayOfLastMonth.getDate() - i);
@@ -111,7 +178,7 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
         isSelected: selectedDate ? isSameDay(day, selectedDate) : false
       });
     }
-    
+
     // 今月の日を追加
     for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
       const day = new Date(year, month, i);
@@ -122,7 +189,7 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
         isSelected: selectedDate ? isSameDay(day, selectedDate) : false
       });
     }
-    
+
     // 来月の日を追加（6行 x 7列 = 42日分になるまで）
     const remainingDays = 42 - days.length;
     for (let i = 1; i <= remainingDays; i++) {
@@ -134,22 +201,22 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
         isSelected: selectedDate ? isSameDay(day, selectedDate) : false
       });
     }
-    
+
     return days;
   };
-  
+
   const days = generateCalendarDays();
-  
+
   // 曜日の表示
   const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-  
+
   // カレンダー全体のクリックイベントを停止
   const handleCalendarClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
-  
+
   return (
-    <div 
+    <div
       style={{
         background: '#050A14',
         border: '1px solid #1E3A5F',
@@ -168,7 +235,7 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
         alignItems: 'center',
         marginBottom: padding.container
       }}>
-        <button 
+        <button
           onClick={goToPreviousMonth}
           style={{
             background: '#111A2E',
@@ -186,7 +253,7 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
             <path d="M15 18L9 12L15 6" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
-        
+
         <div style={{
           fontSize: fontSize.yearMonth,
           fontWeight: 'bold',
@@ -194,8 +261,8 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
         }}>
           {formatYearMonth(currentDate)}
         </div>
-        
-        <button 
+
+        <button
           onClick={goToNextMonth}
           style={{
             background: '#111A2E',
@@ -214,14 +281,14 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
           </svg>
         </button>
       </div>
-      
+
       {/* 今日ボタン */}
       <div style={{
         display: 'flex',
         justifyContent: 'center',
         marginBottom: padding.container
       }}>
-        <button 
+        <button
           onClick={goToToday}
           style={{
             background: '#111A2E',
@@ -237,7 +304,92 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
           今日
         </button>
       </div>
-      
+
+      {/* 時間選択 */}
+      {showTimeSelect && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '10px',
+          marginBottom: padding.container,
+          padding: padding.timeSelect,
+          background: 'rgba(0, 200, 255, 0.05)',
+          borderRadius: '8px',
+          border: '1px solid #1E3A5F'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            width: '100%',
+            justifyContent: 'center'
+          }}>
+            <div style={{ fontSize: fontSize.timeSelect, color: '#00c8ff' }}>時間:</div>
+            <select
+              value={selectedHour}
+              onChange={handleHourChange}
+              style={{
+                background: '#0F172A',
+                color: '#fff',
+                border: '1px solid #1E3A5F',
+                borderRadius: '4px',
+                padding: '4px 8px',
+                fontSize: fontSize.timeSelect,
+                cursor: 'pointer'
+              }}
+            >
+              {Array.from({ length: 24 }, (_, i) => (
+                <option key={`hour-${i}`} value={i}>
+                  {i.toString().padStart(2, '0')}
+                </option>
+              ))}
+            </select>
+            <div style={{ color: '#00c8ff' }}>:</div>
+            <select
+              value={selectedMinute}
+              onChange={handleMinuteChange}
+              style={{
+                background: '#0F172A',
+                color: '#fff',
+                border: '1px solid #1E3A5F',
+                borderRadius: '4px',
+                padding: '4px 8px',
+                fontSize: fontSize.timeSelect,
+                cursor: 'pointer'
+              }}
+            >
+              {Array.from({ length: 60 }, (_, i) => (
+                <option key={`minute-${i}`} value={i}>
+                  {i.toString().padStart(2, '0')}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 設定ボタン */}
+          <button
+            onClick={handleTimeSet}
+            style={{
+              background: '#00c8ff',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#020824',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              fontSize: fontSize.timeSelect,
+              fontWeight: 'bold',
+              marginTop: '10px',
+              width: '100%',
+              maxWidth: '200px',
+              transition: 'all 0.2s'
+            }}
+          >
+            時間を設定して閉じる
+          </button>
+        </div>
+      )}
+
       {/* 曜日表示 */}
       <div style={{
         display: 'grid',
@@ -247,8 +399,8 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
         textAlign: 'center'
       }}>
         {weekdays.map((day, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             style={{
               padding: size === 'small' ? '10px' : '15px',
               fontWeight: 'bold',
@@ -260,7 +412,7 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
           </div>
         ))}
       </div>
-      
+
       {/* 日付表示 */}
       <div style={{
         display: 'grid',
@@ -268,8 +420,8 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
         gap: gap
       }}>
         {days.map((day, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             onClick={(e) => handleDateClick(day.date, e)}
             style={{
               padding: padding.cell,
@@ -278,8 +430,8 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
               position: 'relative',
               background: day.isSelected ? 'rgba(0, 200, 255, 0.15)' : 'transparent',
               borderRadius: '8px',
-              color: !day.isCurrentMonth ? '#4A6FA5' : 
-                     day.date.getDay() === 0 ? '#ff6b6b' : 
+              color: !day.isCurrentMonth ? '#4A6FA5' :
+                     day.date.getDay() === 0 ? '#ff6b6b' :
                      day.date.getDay() === 6 ? '#00c8ff' : '#fff',
               height: cellHeight,
               display: 'flex',
@@ -294,7 +446,7 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
             }}>
               {day.date.getDate()}
             </div>
-            
+
             {/* 今日の日付に青い丸を表示 */}
             {day.isToday && (
               <div style={{
@@ -307,7 +459,7 @@ const Calendar: React.FC<CalendarProps> = ({ initialDate = new Date(), onSelect,
                 background: '#00c8ff'
               }}></div>
             )}
-            
+
             {/* 選択された日付に青い枠線を表示 */}
             {day.isSelected && (
               <div style={{
