@@ -52,7 +52,7 @@ const Footer = () => {
           <ul style={{ listStyle: "none", padding: 0, margin: 0, lineHeight: 2 }}>
             <li><a href="/login" style={{ color: "#b0c4d8", textDecoration: "none" }}>ログイン</a></li>
             <li><a href="/register" style={{ color: "#b0c4d8", textDecoration: "none" }}>新規登録</a></li>
-            
+
           </ul>
         </div>
 
@@ -61,7 +61,7 @@ const Footer = () => {
           <div style={{ color: "#00c8ff", fontWeight: 600, marginBottom: "10px" }}>お問い合わせ・法的情報</div>
           <ul style={{ listStyle: "none", padding: 0, margin: 0, lineHeight: 2 }}>
             <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>私たちについて</a></li>
-            <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>お問い合わせ</a></li>
+            <li><a href="https://hp.project-europa.work/contact" target="_blank" style={{ color: "#b0c4d8", textDecoration: "none" }}>お問い合わせ</a></li>
             <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>プライバシーポリシー</a></li>
             <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>利用規約</a></li>
             <li><a href="#" style={{ color: "#b0c4d8", textDecoration: "none" }}>よくある質問</a></li>
