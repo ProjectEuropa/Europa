@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState, useRef, KeyboardEvent } from 'react';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import Calendar from '../../components/Calendar';
+import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Calendar from '@/components/Calendar';
+import { uploadTeamFile } from '@/utils/api';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 const UploadPage: React.FC = () => {
   const [ownerName, setOwnerName] = useState('');
@@ -17,6 +20,10 @@ const UploadPage: React.FC = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+
+  // 認証状態はuseAuthフックで判定
+  const { user, loading } = useAuth();
+  const isAuthenticated = !!user;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -59,12 +66,12 @@ const UploadPage: React.FC = () => {
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    
+
     // YYYY-MM-DDThh:mm 形式（datetime-local入力用）
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
-    
+
     setDownloadDate(formattedDate);
-    
+
     // 日付セルクリック時のみカレンダーを閉じる（時間変更時は閉じない）
     if (closeCalendar) {
       setShowCalendar(false);
@@ -73,30 +80,41 @@ const UploadPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedFile) {
-      alert('ファイルを選択してください');
+      toast.error('ファイルを選択してください');
       return;
     }
-    
+
+    // ファイルサイズチェック（25KB制限）
+    if (selectedFile.size > 25 * 1024) {
+      toast.error('ファイルサイズが制限（25KB）を超えています');
+      return;
+    }
+
+    // ファイル拡張子チェック
+    const fileExt = selectedFile.name.split('.').pop()?.toLowerCase();
+    if (fileExt !== 'che') {
+      toast.error('対応形式（.CHE）のファイルをアップロードしてください');
+      return;
+    }
+
     setIsUploading(true);
-    
-    // 実際のアプリケーションでは、ここでAPIを呼び出してファイルをアップロード
-    console.log({
-      ownerName,
-      comment,
-      tags,
-      deletePassword,
-      downloadDate,
-      fileName: selectedFile.name,
-      fileSize: selectedFile.size
-    });
-    
-    // アップロードの模擬（実際のアプリケーションではAPIコールに置き換え）
-    setTimeout(() => {
+    try {
+      // ファイルアップロードAPI呼び出し
+      await uploadTeamFile(
+        selectedFile,
+        isAuthenticated,
+        {
+          ownerName,
+          comment,
+          tags,
+          deletePassword,
+          downloadDate,
+        }
+      );
       setIsUploading(false);
-      alert('チームデータがアップロードされました');
-      
+      toast.success(`チームデータが${isAuthenticated ? '認証済み' : '非認証'}モードでアップロードされました`);
       // フォームをリセット
       setOwnerName('');
       setComment('');
@@ -108,7 +126,11 @@ const UploadPage: React.FC = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    }, 1500);
+    } catch (error) {
+      console.error('アップロード中にエラーが発生しました:', error);
+      setIsUploading(false);
+      toast.error('アップロード中にエラーが発生しました。もう一度お試しください。');
+    }
   };
 
   return (
@@ -119,7 +141,7 @@ const UploadPage: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         padding: '20px'
@@ -161,7 +183,7 @@ const UploadPage: React.FC = () => {
               チームデータアップロード
             </h1>
           </div>
-          
+
           {/* フォーム部分 */}
           <form onSubmit={handleSubmit} style={{
             padding: '30px'
@@ -200,7 +222,7 @@ const UploadPage: React.FC = () => {
                 }}
               />
             </div>
-            
+
             {/* コメント */}
             <div style={{
               marginBottom: '30px'
@@ -234,7 +256,7 @@ const UploadPage: React.FC = () => {
                 }}
               />
             </div>
-            
+
             {/* タグ */}
             <div style={{
               marginBottom: '30px'
@@ -339,7 +361,7 @@ const UploadPage: React.FC = () => {
                 タグは複数入力できます。カンマで区切るか、Enterキーで追加します。
               </div>
             </div>
-            
+
             {/* 削除パスワード */}
             <div style={{
               marginBottom: '30px'
@@ -380,7 +402,7 @@ const UploadPage: React.FC = () => {
                 このパスワードはチームデータを削除する際に必要です。忘れないようにしてください。
               </div>
             </div>
-            
+
             {/* OKEファイルアップロード */}
             <div style={{
               marginBottom: '30px'
@@ -406,7 +428,7 @@ const UploadPage: React.FC = () => {
                 style={{ display: 'none' }}
                 required
               />
-              <div 
+              <div
                 style={{
                   border: '2px dashed #1E3A5F',
                   borderRadius: '12px',
@@ -440,11 +462,11 @@ const UploadPage: React.FC = () => {
                   e.stopPropagation();
                   e.currentTarget.style.borderColor = '#1E3A5F';
                   e.currentTarget.style.background = '#020824';
-                  
+
                   if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                     const file = e.dataTransfer.files[0];
                     const fileExt = file.name.split('.').pop()?.toLowerCase();
-                    
+
                     if (fileExt === 'che') {
                       setSelectedFile(file);
                       if (fileInputRef.current) {
@@ -518,7 +540,7 @@ const UploadPage: React.FC = () => {
                 <span>最大サイズ: 25KB</span>
               </div>
             </div>
-            
+
             {/* ダウンロード可能日時 */}
             <div style={{
               marginBottom: '30px',
@@ -576,9 +598,9 @@ const UploadPage: React.FC = () => {
                   </svg>
                 </button>
               </div>
-              
+
               {showCalendar && (
-                <div 
+                <div
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'fixed',
@@ -620,7 +642,7 @@ const UploadPage: React.FC = () => {
                       ×
                     </button>
                   </div>
-                  <Calendar 
+                  <Calendar
                     initialDate={downloadDate ? new Date(downloadDate) : new Date()}
                     onSelect={handleDateSelect}
                     size="small"
@@ -629,7 +651,7 @@ const UploadPage: React.FC = () => {
                 </div>
               )}
             </div>
-            
+
             {/* 送信ボタン */}
             <button
               type="submit"
@@ -653,7 +675,7 @@ const UploadPage: React.FC = () => {
           </form>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

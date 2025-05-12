@@ -176,4 +176,66 @@ export const register = async (
   return data;
 };
 
+/**
+ * チームファイルアップロードAPI
+ * @param file アップロードするファイル
+ * @param isAuthenticated 認証状態
+ * @returns レスポンスデータ
+ */
+export const uploadTeamFile = async (
+  file: File,
+  isAuthenticated: boolean,
+  options?: {
+    ownerName?: string;
+    comment?: string;
+    tags?: string[];
+    deletePassword?: string;
+    downloadDate?: string;
+  }
+) => {
+  const endpoint = isAuthenticated ? '/api/v1/team/upload' : '/api/v1/team/simpleupload';
+  const formData = new FormData();
+  formData.append('teamFile', file);
+  if (options?.ownerName) formData.append('teamOwnerName', options.ownerName);
+  if (options?.comment) formData.append('teamComment', options.comment);
+  if (options?.deletePassword) formData.append('teamDeletePassWord', options.deletePassword);
+  if (options?.downloadDate) formData.append('teamDownloadableAt', options.downloadDate);
+  if (options?.tags && Array.isArray(options.tags)) {
+    options.tags.forEach(tag => {
+      formData.append('teamSearchTags[]', tag);
+    });
+  }
+
+  // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  let headers: Record<string, string> = {};
+  // トークン認証
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  // Basic認証（特定環境のみ）
+  if (
+    API_BASE_URL.includes("stg.project-europa.work") &&
+    BASIC_AUTH_USER && BASIC_AUTH_PASSWORD &&
+    !endpoint.startsWith("/api/")
+  ) {
+    headers["Authorization"] = "Basic " + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers, // Content-TypeはFormData時は自動
+      body: formData,
+      credentials: 'include',
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `アップロード失敗 (${res.status})`);
+    }
+    return res.json();
+  } catch (error: any) {
+    console.error('ファイルアップロードAPIエラー:', error);
+    throw error;
+  }
+};
+
 

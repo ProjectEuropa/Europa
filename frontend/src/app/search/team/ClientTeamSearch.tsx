@@ -6,8 +6,8 @@ import { searchTeams } from '@/utils/api';
 import Header from "@/components/Header";
 import { tryDownloadTeamFile } from "@/utils/api";
 import { toast } from "sonner";
-import Footer from '../../../components/Footer';
-import TeamCards, { TeamData } from '../../../components/search/TeamCards';
+import Footer from '@/components/Footer';
+import TeamCards, { TeamData } from '@/components/search/TeamCards';
 import { DeleteModal } from '@/components/DeleteModal';
 import { deleteSearchFile } from '@/utils/api';
 
