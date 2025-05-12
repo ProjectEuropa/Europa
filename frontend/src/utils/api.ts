@@ -75,6 +75,13 @@ export const searchTeams = async (keyword: string, page: number = 1) => {
   return res.json();
 };
 
+// マッチ検索API
+export const searchMatch = async (keyword: string, page: number = 1) => {
+  const res = await apiRequest(`/api/v1/search/match?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+  if (!res.ok) throw new Error('検索失敗');
+  return res.json();
+};
+
 // チームファイルのダウンロード可否チェック＆実行
 export const tryDownloadTeamFile = async (teamId: number): Promise<{ success: boolean; error?: string }> => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download/${teamId}`;
