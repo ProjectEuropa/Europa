@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState, useRef, KeyboardEvent } from 'react';
-import Header from '../../../components/Header';
-import Footer from '../../../components/Footer';
-import Calendar from '../../../components/Calendar';
+import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Calendar from '@/components/Calendar';
+import { uploadTeamFile } from '@/utils/api';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 const MatchUploadPage: React.FC = () => {
   const [ownerName, setOwnerName] = useState('');
@@ -15,8 +18,13 @@ const MatchUploadPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+
+  // 認証状態はuseAuthフックで判定
+  const { user, loading } = useAuth();
+  const isAuthenticated = !!user;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -51,47 +59,69 @@ const MatchUploadPage: React.FC = () => {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  // 日付選択処理
-  const handleDateSelect = (date: Date) => {
-    // 日付と時間を設定（時間は現在時刻を使用）
-    const now = new Date();
-    date.setHours(now.getHours());
-    date.setMinutes(now.getMinutes());
-    
-    // ISO文字列に変換して、datetime-local入力用にフォーマット
-    const isoString = date.toISOString();
-    const formattedDate = isoString.substring(0, isoString.length - 8); // 秒とミリ秒を削除
-    
+  const handleDateSelect = (date: Date, closeCalendar = false) => {
+    // カレンダーから選択された日付と時間をそのまま使用
+    // タイムゾーンを考慮したフォーマット（ローカル時間のまま）
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    // YYYY-MM-DDThh:mm 形式（datetime-local入力用）
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
     setDownloadDate(formattedDate);
-    setShowCalendar(false);
+
+    // 日付セルクリック時のみカレンダーを閉じる（時間変更時は閉じない）
+    if (closeCalendar) {
+      setShowCalendar(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedFile) {
-      alert('ファイルを選択してください');
+      setFieldErrors(prev => ({ ...prev, file: ['ファイルを選択してください'] }));
+      toast.error('ファイルを選択してください');
+      return;
+    } else {
+      setFieldErrors(prev => {
+        const { file, ...rest } = prev;
+        return rest;
+      });
+    }
+
+    // ファイルサイズチェック（260KB制限）
+    if (selectedFile.size > 260 * 1024) {
+      toast.error('ファイルサイズが制限（260KB）を超えています');
       return;
     }
-    
+
+    // ファイル拡張子チェック
+    const fileExt = selectedFile.name.split('.').pop()?.toLowerCase();
+    if (fileExt !== 'che') {
+      toast.error('対応形式（.CHE）のファイルをアップロードしてください');
+      return;
+    }
+
     setIsUploading(true);
-    
-    // 実際のアプリケーションでは、ここでAPIを呼び出してファイルをアップロード
-    console.log({
-      ownerName,
-      comment,
-      tags,
-      deletePassword,
-      downloadDate,
-      fileName: selectedFile.name,
-      fileSize: selectedFile.size
-    });
-    
-    // アップロードの模擬（実際のアプリケーションではAPIコールに置き換え）
-    setTimeout(() => {
+    try {
+      // ファイルアップロードAPI呼び出し
+      await uploadTeamFile(
+        selectedFile,
+        isAuthenticated,
+        {
+          ownerName,
+          comment,
+          tags,
+          deletePassword,
+          downloadDate,
+        }
+      );
       setIsUploading(false);
-      alert('マッチデータがアップロードされました');
-      
+      toast.success(`マッチデータが${isAuthenticated ? '認証済み' : '非認証'}モードでアップロードされました`);
       // フォームをリセット
       setOwnerName('');
       setComment('');
@@ -103,7 +133,22 @@ const MatchUploadPage: React.FC = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-    }, 1500);
+    } catch (error: any) {
+      setIsUploading(false);
+      // サーバーバリデーションエラー時のフィールドごとのエラーセット
+      if (error && error.errors) {
+        try {
+          const errJson = error.errors;
+          if (errJson) {
+            setFieldErrors(errJson);
+            toast.error('入力内容に不備があります。赤枠の項目を確認してください。');
+            return;
+          }
+        } catch {}
+      }
+      setFieldErrors({});
+      toast.error('アップロード中にエラーが発生しました。もう一度お試しください。');
+    }
   };
 
   return (
@@ -114,7 +159,7 @@ const MatchUploadPage: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         padding: '20px'
@@ -149,17 +194,17 @@ const MatchUploadPage: React.FC = () => {
               </svg>
             </div>
             <h1 style={{
-              margin: '0',
+              margin: 0,
               fontSize: '1.5rem',
               fontWeight: 'bold'
             }}>
               マッチデータアップロード
             </h1>
           </div>
-          
+
           {/* フォーム部分 */}
           <form onSubmit={handleSubmit} style={{
-            padding: '20px'
+            padding: '30px'
           }}>
             {/* オーナー名 */}
             <div style={{
@@ -182,20 +227,25 @@ const MatchUploadPage: React.FC = () => {
                 type="text"
                 value={ownerName}
                 onChange={(e) => setOwnerName(e.target.value)}
-                placeholder="例: Masato"
+                placeholder="あなたの名前を入力"
                 required
                 style={{
                   width: '100%',
                   padding: '12px',
                   background: '#111A2E',
-                  border: '1px solid #1E3A5F',
+                  border: fieldErrors.ownerName ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
                   borderRadius: '6px',
                   color: 'white',
                   fontSize: '1rem'
                 }}
               />
+              {fieldErrors.ownerName && (
+                <div style={{ color: '#ff5c5c', marginTop: 4, fontSize: 13 }}>
+                  {fieldErrors.ownerName[0]}
+                </div>
+              )}
             </div>
-            
+
             {/* コメント */}
             <div style={{
               marginBottom: '30px'
@@ -215,21 +265,26 @@ const MatchUploadPage: React.FC = () => {
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="例: 中小CPUハンデ戦用のチームです"
-                rows={4}
+                placeholder="チームについての説明や特徴を入力"
+                rows={9}
                 style={{
                   width: '100%',
-                  padding: '12px',
+                  padding: '16px',
                   background: '#111A2E',
-                  border: '1px solid #1E3A5F',
+                  border: fieldErrors.teamComment ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
                   borderRadius: '6px',
                   color: 'white',
                   fontSize: '1rem',
                   resize: 'vertical'
                 }}
-              ></textarea>
+              />
+              {fieldErrors.matchComment && (
+                <div style={{ color: '#ff5c5c', marginTop: 4, fontSize: 13 }}>
+                  {fieldErrors.matchComment[0]}
+                </div>
+              )}
             </div>
-            
+
             {/* タグ */}
             <div style={{
               marginBottom: '30px'
@@ -245,7 +300,7 @@ const MatchUploadPage: React.FC = () => {
                   <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                   <line x1="7" y1="7" x2="7.01" y2="7"></line>
                 </svg>
-                タグ (カンマ区切りで複数入力可能)
+                タグ
               </label>
               <div style={{
                 display: 'flex',
@@ -259,14 +314,14 @@ const MatchUploadPage: React.FC = () => {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
+                      gap: '6px',
+                      padding: '4px 10px',
                       background: '#1E3A5F',
-                      borderRadius: '4px',
-                      padding: '4px 8px',
-                      color: '#b0c4d8',
-                      fontSize: '0.9rem'
+                      borderRadius: '16px',
+                      color: '#00c8ff'
                     }}
                   >
-                    {tag}
+                    <span>{tag}</span>
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
@@ -275,88 +330,115 @@ const MatchUploadPage: React.FC = () => {
                         border: 'none',
                         color: '#b0c4d8',
                         cursor: 'pointer',
-                        marginLeft: '4px',
                         padding: '0',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '16px',
-                        height: '16px'
+                        justifyContent: 'center'
                       }}
                     >
-                      ×
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
                     </button>
                   </div>
                 ))}
               </div>
-              <input
-                type="text"
-                ref={tagInputRef}
-                value={tagInput}
-                onChange={handleTagInputChange}
-                onKeyDown={handleTagKeyDown}
-                placeholder="例: 中小CPU, ハンデ戦, アラクネー"
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  background: '#111A2E',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '6px',
-                  color: 'white',
-                  fontSize: '1rem'
-                }}
-              />
               <div style={{
-                fontSize: '0.8rem',
-                color: '#8CB4FF',
-                marginTop: '4px'
-              }}>
-                Enterキーまたはスペースキーで追加できます
-              </div>
-            </div>
-            
-            {/* 削除パスワード */}
-            <div style={{
-              marginBottom: '30px'
-            }}>
-              <label style={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                color: '#b0c4d8',
-                marginBottom: '8px'
+                alignItems: 'center'
               }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                削除パスワード (任意)
-              </label>
-              <input
-                type="password"
-                value={deletePassword}
-                onChange={(e) => setDeletePassword(e.target.value)}
-                placeholder="データを削除する際に必要なパスワード"
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  background: '#111A2E',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '6px',
-                  color: 'white',
-                  fontSize: '1rem'
-                }}
-              />
+                <input
+                  type="text"
+                  ref={tagInputRef}
+                  value={tagInput}
+                  onChange={handleTagInputChange}
+                  onKeyDown={handleTagKeyDown}
+                  placeholder="タグを入力（Enterキーで追加）"
+                  style={{
+                    flex: '1',
+                    padding: '12px',
+                    background: '#111A2E',
+                    border: '1px solid #1E3A5F',
+                    borderRadius: '6px',
+                    color: 'white',
+                    fontSize: '1rem'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => tagInput.trim() && addTag(tagInput.trim())}
+                  style={{
+                    marginLeft: '8px',
+                    padding: '12px',
+                    background: '#1E3A5F',
+                    border: 'none',
+                    borderRadius: '6px',
+                    color: '#00c8ff',
+                    cursor: 'pointer'
+                  }}
+                >
+                  追加
+                </button>
+              </div>
               <div style={{
                 fontSize: '0.8rem',
                 color: '#8CB4FF',
                 marginTop: '4px'
               }}>
-                後でデータを削除する際に必要です
+                タグは複数入力できます。カンマで区切るか、Enterキーで追加します。
               </div>
             </div>
-            
-            {/* ファイル選択 */}
+
+            {/* 削除パスワード */}
+            {!isAuthenticated && (
+              <div style={{
+                marginBottom: '30px'
+              }}>
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#b0c4d8',
+                  marginBottom: '8px'
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  削除パスワード
+                </label>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="削除時に必要なパスワードを設定"
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    background: '#111A2E',
+                    border: fieldErrors.matchDeletePassWord ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
+                    borderRadius: '6px',
+                    color: 'white',
+                    fontSize: '1rem'
+                  }}
+                />
+                {fieldErrors.matchDeletePassWord && (
+                  <div style={{ color: '#ff5c5c', marginTop: 4, fontSize: 13 }}>
+                    {fieldErrors.matchDeletePassWord[0]}
+                  </div>
+                )}
+                <div style={{
+                  fontSize: '0.8rem',
+                  color: '#8CB4FF',
+                  marginTop: '4px'
+                }}>
+                  このパスワードはマッチデータを削除する際に必要です。忘れないようにしてください。
+                </div>
+              </div>
+            )}
+
+            {/* OKEファイルアップロード */}
             <div style={{
               marginBottom: '30px'
             }}>
@@ -371,48 +453,128 @@ const MatchUploadPage: React.FC = () => {
                   <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
                   <polyline points="13 2 13 9 20 9"></polyline>
                 </svg>
-                マッチデータファイル
+                OKEアップロード
               </label>
               <input
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
+                accept=".CHE"
                 style={{ display: 'none' }}
-                required
               />
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{
-                    background: '#111A2E',
-                    border: '1px solid #1E3A5F',
-                    color: '#00c8ff',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  ファイルを選択
-                </button>
-                <span style={{ color: '#b0c4d8' }}>
-                  {selectedFile ? `${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)` : '(0 B)'}
-                </span>
+              <div
+                style={{
+                  border: fieldErrors.file ? '2px solid #ff5c5c' : '2px dashed #1E3A5F',
+                  borderRadius: '12px',
+                  padding: '40px 20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '20px',
+                  background: '#020824',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                  minHeight: '200px'
+                }}
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.style.borderColor = '#00c8ff';
+                  e.currentTarget.style.background = 'rgba(0, 200, 255, 0.05)';
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.style.borderColor = '#1E3A5F';
+                  e.currentTarget.style.background = '#020824';
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.style.borderColor = '#1E3A5F';
+                  e.currentTarget.style.background = '#020824';
+
+                  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    const fileExt = file.name.split('.').pop()?.toLowerCase();
+
+                    if (fileExt === 'che') {
+                      setSelectedFile(file);
+                      if (fileInputRef.current) {
+                        // This is a hack to make the file input reflect the dropped file
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        fileInputRef.current.files = dataTransfer.files;
+                      }
+                    } else {
+                      alert('対応形式: .CHE のファイルをアップロードしてください');
+                    }
+                  }
+                }}
+              >
+                {selectedFile ? (
+                  // ファイル選択済み表示
+                  <>
+                    <div style={{ color: '#00c8ff', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                      {selectedFile.name}
+                    </div>
+                    <div style={{ color: '#8CB4FF' }}>
+                      {(selectedFile.size / 1024).toFixed(2)} KB
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFile(null);
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = '';
+                        }
+                      }}
+                      style={{
+                        background: '#111A2E',
+                        border: '1px solid #1E3A5F',
+                        color: '#00c8ff',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem'
+                      }}
+                    >
+                      ファイルを削除
+                    </button>
+                  </>
+                ) : (
+                  // ファイル未選択表示
+                  <>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <div style={{ color: '#00c8ff', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                      CHEファイルをドラッグ＆ドロップ
+                    </div>
+                    <div style={{ color: '#b0c4d8' }}>
+                      またはクリックしてファイルを選択
+                    </div>
+                  </>
+                )}
               </div>
               <div style={{
                 fontSize: '0.8rem',
                 color: '#8CB4FF',
-                marginTop: '4px'
+                marginTop: '8px',
+                display: 'flex',
+                justifyContent: 'space-between'
               }}>
-                {selectedFile ? `1 files (${(selectedFile.size / 1024).toFixed(1)} KB in total)` : '0 files (0 B in total)'}
+                <span>対応形式: .CHE</span>
+                <span>最大サイズ: 260KB</span>
               </div>
             </div>
-            
+
             {/* ダウンロード可能日時 */}
             <div style={{
               marginBottom: '30px',
@@ -453,10 +615,7 @@ const MatchUploadPage: React.FC = () => {
                 />
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowCalendar(!showCalendar);
-                  }}
+                  onClick={() => setShowCalendar(!showCalendar)}
                   style={{
                     background: 'transparent',
                     border: 'none',
@@ -473,9 +632,9 @@ const MatchUploadPage: React.FC = () => {
                   </svg>
                 </button>
               </div>
-              
+
               {showCalendar && (
-                <div 
+                <div
                   onClick={(e) => e.stopPropagation()}
                   style={{
                     position: 'fixed',
@@ -517,15 +676,16 @@ const MatchUploadPage: React.FC = () => {
                       ×
                     </button>
                   </div>
-                  <Calendar 
+                  <Calendar
                     initialDate={downloadDate ? new Date(downloadDate) : new Date()}
                     onSelect={handleDateSelect}
                     size="small"
+                    showTimeSelect={true}
                   />
                 </div>
               )}
             </div>
-            
+
             {/* 送信ボタン */}
             <button
               type="submit"
@@ -544,12 +704,12 @@ const MatchUploadPage: React.FC = () => {
                 transition: 'all 0.2s'
               }}
             >
-              {isUploading ? 'アップロード中...' : 'マッチデータアップロード'}
+              {isUploading ? 'アップロード中...' : 'チームデータアップロード'}
             </button>
           </form>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
