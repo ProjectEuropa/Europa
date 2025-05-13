@@ -10,7 +10,7 @@ class FileResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            'owner_name'        => $this->upload_owner_name,
+            'upload_owner_name' => $this->upload_owner_name,
             'file_name'         => $this->file_name,
             'file_comment'      => $this->masked_comment,
             'created_at'        => $this->created_at,
