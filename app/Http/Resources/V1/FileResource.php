@@ -16,10 +16,10 @@ class FileResource extends JsonResource
             'created_at'        => $this->created_at,
             'upload_user_id'    => $this->upload_user_id,
             'upload_type'       => $this->upload_type,
-            'search_tags1'      => $this->search_tag1,
-            'search_tags2'      => $this->search_tag2,
-            'search_tags3'      => $this->search_tag3,
-            'search_tags4'      => $this->search_tag4,
+            'search_tag1'       => $this->search_tag1,
+            'search_tag2'       => $this->search_tag2,
+            'search_tag3'       => $this->search_tag3,
+            'search_tag4'       => $this->search_tag4,
             'downloadable_at'   => $this->downloadable_at,
         ];
     }
