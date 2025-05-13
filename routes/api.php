@@ -51,8 +51,8 @@ Route::prefix('v1')->group(function () {
   });
 
     Route::group(['middleware' => ['api']], function () {
-        Route::get('search/{searchType}', 'Api\SearchController@search');
-        Route::get('sumDLSearch/{searchType}', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'sumDownload']);
+        Route::get('search/{searchType}', [\App\Http\Controllers\Api\V1\SearchController::class, 'search']);
+        Route::get('sumDLSearch/{searchType}', [\App\Http\Controllers\Api\V1\SearchController::class, 'sumDLSearch']);
         Route::get('event', 'Api\EventController@getEventData');
         Route::post('delete/searchFile', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'deleteSearchFile']);
     });
