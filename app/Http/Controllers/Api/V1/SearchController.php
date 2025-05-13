@@ -19,7 +19,7 @@ class SearchController extends Controller
             ->orderBy('id', $request->orderType === '1' || is_null($request->orderType) ? 'desc' : 'asc');
 
         $paginator = $query->paginate(10);
-        return FileResource::collection($paginator);
+        return FileResource::collection($paginator)->response();
     }
 
     /**
@@ -32,6 +32,6 @@ class SearchController extends Controller
             ->orderBy('id', $request->orderType === '1' || is_null($request->orderType) ? 'desc' : 'asc');
 
         $paginator = $query->paginate(50);
-        return FileResource::collection($paginator);
+        return FileResource::collection($paginator)->response();
     }
 }
