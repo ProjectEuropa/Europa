@@ -192,7 +192,7 @@ export default function ClientMatchSearch() {
         {!isCardView && (
           <div style={{
             width: "100%",
-            maxWidth: "1000px",
+            maxWidth: "1200px",
             minWidth: 900,
             overflowX: "auto",
             marginTop: "50px"
@@ -200,7 +200,7 @@ export default function ClientMatchSearch() {
             {/* テーブルヘッダー */}
             <div style={{
               display: "grid",
-              gridTemplateColumns: "80px 120px 8fr 70px 180px 180px 60px",
+              gridTemplateColumns: "100px 120px 12fr 180px 180px 180px 60px",
               minWidth: 900,
               background: "#0A1022",
               padding: "12px 20px",
@@ -208,10 +208,10 @@ export default function ClientMatchSearch() {
               color: "#b0c4d8",
               fontSize: "0.9rem"
             }}>
-              <div>ダウンロード</div>
+              <div style={{ minWidth: '100px' }}>ダウンロード</div>
               <div>オーナー名</div>
-              <div>コメント・タグ</div>
-              <div>ファイル名</div>
+              <div style={{ minWidth: '350px' }}>コメント・タグ</div>
+              <div style={{ minWidth: '180px' }}>ファイル名</div>
               <div style={{whiteSpace:'nowrap'}}>アップロード日時</div>
               <div style={{whiteSpace:'nowrap'}}>ダウンロード可能日時</div>
               <div style={{ textAlign: "center" }}>削除</div>
@@ -221,7 +221,7 @@ export default function ClientMatchSearch() {
             {teams.map(team => (
               <div key={team.id} style={{
                 display: "grid",
-                gridTemplateColumns: "80px 120px 8fr 70px 180px 180px 60px",
+                gridTemplateColumns: "100px 120px 12fr 180px 180px 180px 60px",
                 minWidth: 900,
                 padding: "16px 20px",
                 borderBottom: "1px solid #1E3A5F",
