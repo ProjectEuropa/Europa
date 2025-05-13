@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
+import { deleteMyFile } from '@/utils/api';
+import { toast } from 'sonner';
 
 interface MatchData {
   id: string;
   name: string;
-  teams: string;
   uploadDate: string;
-  downloadCount: number;
-  fileSize: string;
+  downloadableAt?: string;
+  comment?: string;
 }
 
 interface UploadedMatchesSectionProps {
@@ -16,9 +17,18 @@ interface UploadedMatchesSectionProps {
 }
 
 const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initialMatches }) => {
-  // setMatchesは現在使用されていないが、将来的に使用する可能性があるため、
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [matches, setMatches] = useState<MatchData[]>(initialMatches);
+  // APIから渡されたデータをフロント用に自動マッピング
+  const [matches, setMatches] = useState<MatchData[]>(
+    (initialMatches as any[]).map(match => ({
+      id: match.id,
+      name: match.name ?? match.file_name ?? '',
+      uploadDate: match.uploadDate ?? match.created_at ?? '',
+      downloadableAt: match.downloadableAt ?? match.downloadable_at ?? '',
+      comment: match.comment ?? match.file_comment ?? '',
+    }))
+  );
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalComment, setModalComment] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,8 +36,7 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
   };
 
   const filteredMatches = matches.filter(match => 
-    match.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    match.teams.toLowerCase().includes(searchQuery.toLowerCase())
+    (match.name ?? '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -116,14 +125,6 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
                 color: '#b0c4d8',
                 fontWeight: 'normal'
               }}>
-                対戦チーム
-              </th>
-              <th style={{
-                padding: '16px',
-                textAlign: 'left',
-                color: '#b0c4d8',
-                fontWeight: 'normal'
-              }}>
                 アップロード日
               </th>
               <th style={{
@@ -132,20 +133,12 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
                 color: '#b0c4d8',
                 fontWeight: 'normal'
               }}>
-                DL数
+                ダウンロード可能日
               </th>
               <th style={{
                 padding: '16px',
                 textAlign: 'center',
-                color: '#b0c4d8',
-                fontWeight: 'normal'
-              }}>
-                サイズ
-              </th>
-              <th style={{
-                padding: '16px',
-                textAlign: 'center',
-                color: '#b0c4d8',
+                color: '#b0c8ff',
                 fontWeight: 'normal'
               }}>
                 操作
@@ -173,28 +166,14 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
                     textAlign: 'left',
                     color: '#b0c4d8'
                   }}>
-                    {match.teams}
-                  </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'left',
-                    color: '#b0c4d8'
-                  }}>
                     {match.uploadDate}
                   </td>
                   <td style={{
                     padding: '16px',
                     textAlign: 'center',
-                    color: '#8CB4FF'
+                    color: '#b0c4d8'
                   }}>
-                    {match.downloadCount}
-                  </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'center',
-                    color: '#8CB4FF'
-                  }}>
-                    {match.fileSize}
+                    {match.downloadableAt ? match.downloadableAt : '-'}
                   </td>
                   <td style={{
                     padding: '16px',
@@ -215,6 +194,7 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
                           fontSize: '0.8rem',
                           cursor: 'pointer'
                         }}
+                        onClick={() => { setModalComment(match.comment || '詳細情報がありません'); setModalOpen(true); }}
                       >
                         詳細
                       </button>
@@ -228,6 +208,16 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
                           fontSize: '0.8rem',
                           cursor: 'pointer'
                         }}
+                        onClick={async () => {
+                          if (!window.confirm('本当に削除しますか？')) return;
+                          try {
+                            await deleteMyFile(match.id);
+                            setMatches(prev => prev.filter(m => m.id !== match.id));
+                            toast.success('ファイルを削除しました');
+                          } catch (e: any) {
+                            toast.error(e.message || '削除に失敗しました');
+                          }
+                        }}
                       >
                         削除
                       </button>
@@ -238,7 +228,7 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
             ) : (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={4}
                   style={{
                     padding: '32px',
                     textAlign: 'center',
@@ -252,6 +242,46 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
           </tbody>
         </table>
       </div>
+    {/* モーダル */}
+    {modalOpen && (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000
+      }}>
+        <div style={{
+          background: '#1E293B',
+          color: 'white',
+          borderRadius: '10px',
+          padding: '32px',
+          minWidth: '320px',
+          maxWidth: '90vw',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
+        }}>
+          <h3 style={{marginBottom: '16px'}}>マッチ詳細</h3>
+          <div style={{marginBottom: '24px', whiteSpace: 'pre-line'}}>{modalComment}</div>
+          <button
+            onClick={() => setModalOpen(false)}
+            style={{
+              background: '#00c8ff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px 24px',
+              fontSize: '1rem',
+              cursor: 'pointer'
+            }}
+          >閉じる</button>
+        </div>
+      </div>
+    )}
     </div>
   );
 };

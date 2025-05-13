@@ -1,11 +1,23 @@
 'use client';
 
 import React from 'react';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import Calendar from '../../components/Calendar';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Calendar from '@/components/Calendar';
+import { useEffect, useState } from 'react';
+import { fetchEvents } from '@/utils/api';
 
 const InformationPage: React.FC = () => {
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents()
+      .then(res => setEvents(res.data))
+      .catch(() => alert('イベント情報の取得に失敗しました'))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div style={{
       display: 'flex',
@@ -14,7 +26,7 @@ const InformationPage: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         padding: '40px 20px'
@@ -43,7 +55,7 @@ const InformationPage: React.FC = () => {
               - Carnage Heart EXA Uploader -
             </div>
           </div>
-          
+
           {/* メインコンテンツ */}
           <div style={{
             width: '100%',
@@ -70,11 +82,19 @@ const InformationPage: React.FC = () => {
               <div style={{
                 width: '100%'
               }}>
-                <Calendar initialDate={new Date(2025, 4, 6)} />
+                <Calendar
+  initialDate={new Date(2025, 4, 6)}
+  events={events.map(ev => ({
+    date: ev.event_closing_day,
+    title: ev.event_name,
+    details: ev.event_details,
+    url: ev.event_reference_url,
+  }))}
+/>
               </div>
             </div>
-            
-            {/* 予定リスト */}
+
+            {/* 予定リスト（API連携） */}
             <div style={{
               background: '#0A1022',
               borderRadius: '12px',
@@ -89,133 +109,63 @@ const InformationPage: React.FC = () => {
               }}>
                 今後の予定
               </h2>
-              
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px'
-              }}>
+              {loading ? (
+                <div style={{ color: '#b0c4d8', textAlign: 'center', padding: '16px' }}>Loading...</div>
+              ) : events.length === 0 ? (
+                <div style={{ color: '#b0c4d8', textAlign: 'center', padding: '16px' }}>予定はありません</div>
+              ) : (
                 <div style={{
                   display: 'flex',
-                  padding: '12px',
-                  background: 'rgba(0, 200, 255, 0.05)',
-                  borderRadius: '8px',
-                  border: '1px solid #1E3A5F'
+                  flexDirection: 'column',
+                  gap: '12px'
                 }}>
-                  <div style={{
-                    width: '80px',
-                    color: '#00c8ff',
-                    fontWeight: 'bold'
-                  }}>
-                    5/6
-                  </div>
-                  <div style={{
-                    flex: '1',
-                    color: '#fff'
-                  }}>
-                    中小CPUハンデ戦 エントリー締切
-                  </div>
-                  <div style={{
-                    width: '100px',
-                    color: '#b0c4d8',
-                    textAlign: 'right'
-                  }}>
-                    23:59まで
-                  </div>
+                  {events.map(ev => (
+                    <div key={ev.id} style={{
+                      display: 'flex',
+                      padding: '12px',
+                      background: 'rgba(0, 200, 255, 0.05)',
+                      borderRadius: '8px',
+                      border: '1px solid #1E3A5F'
+                    }}>
+                      <div style={{
+                        width: '120px',
+                        color: '#00c8ff',
+                        fontWeight: 'bold',
+                        flexShrink: 0
+                      }}>
+                        {ev.event_closing_day ? new Date(ev.event_closing_day).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' , year: 'numeric'}) : ''}
+                      </div>
+                      <div style={{
+                        flex: '1',
+                        color: '#fff'
+                      }}>
+                        <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>{ev.event_name}</div>
+                        <div style={{ fontSize: '0.95em', color: '#b0c4d8' }}>{ev.event_details}</div>
+                        {ev.event_reference_url && (
+                          <div style={{ marginTop: '2px' }}>
+                            <a href={ev.event_reference_url} target="_blank" rel="noopener noreferrer" style={{ color: '#8CB4FF', textDecoration: 'underline', fontSize: '0.95em' }}>
+                              参考リンク
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{
+                        width: '100px',
+                        color: '#b0c4d8',
+                        textAlign: 'right',
+                        flexShrink: 0
+                      }}>
+                        {ev.event_closing_day ? new Date(ev.event_closing_day).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }) : ''}まで
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                
-                <div style={{
-                  display: 'flex',
-                  padding: '12px',
-                  background: 'rgba(0, 0, 0, 0.2)',
-                  borderRadius: '8px',
-                  border: '1px solid #1E3A5F'
-                }}>
-                  <div style={{
-                    width: '80px',
-                    color: '#00c8ff',
-                    fontWeight: 'bold'
-                  }}>
-                    5/10
-                  </div>
-                  <div style={{
-                    flex: '1',
-                    color: '#fff'
-                  }}>
-                    中小CPUハンデ戦 トーナメント開始
-                  </div>
-                  <div style={{
-                    width: '100px',
-                    color: '#b0c4d8',
-                    textAlign: 'right'
-                  }}>
-                    10:00〜
-                  </div>
-                </div>
-                
-                <div style={{
-                  display: 'flex',
-                  padding: '12px',
-                  background: 'rgba(0, 0, 0, 0.2)',
-                  borderRadius: '8px',
-                  border: '1px solid #1E3A5F'
-                }}>
-                  <div style={{
-                    width: '80px',
-                    color: '#00c8ff',
-                    fontWeight: 'bold'
-                  }}>
-                    5/15
-                  </div>
-                  <div style={{
-                    flex: '1',
-                    color: '#fff'
-                  }}>
-                    システムメンテナンス
-                  </div>
-                  <div style={{
-                    width: '100px',
-                    color: '#b0c4d8',
-                    textAlign: 'right'
-                  }}>
-                    2:00〜5:00
-                  </div>
-                </div>
-                
-                <div style={{
-                  display: 'flex',
-                  padding: '12px',
-                  background: 'rgba(0, 0, 0, 0.2)',
-                  borderRadius: '8px',
-                  border: '1px solid #1E3A5F'
-                }}>
-                  <div style={{
-                    width: '80px',
-                    color: '#00c8ff',
-                    fontWeight: 'bold'
-                  }}>
-                    5/20
-                  </div>
-                  <div style={{
-                    flex: '1',
-                    color: '#fff'
-                  }}>
-                    大会結果発表
-                  </div>
-                  <div style={{
-                    width: '100px',
-                    color: '#b0c4d8',
-                    textAlign: 'right'
-                  }}>
-                    12:00〜
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

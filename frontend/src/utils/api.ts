@@ -288,6 +288,97 @@ export const sumDownload = async (checkedId: number[]) => {
   }, 100);
 };
 
+export const registerEvent = async (formData: {
+  name: string;
+  details: string;
+  url?: string;
+  deadline: string;
+  endDisplayDate: string;
+  type: string;
+}) => {
+  const res = await apiRequest('/api/v1/eventNotice', {
+    method: 'POST',
+    body: JSON.stringify({
+      eventName: formData.name,
+      eventDetails: formData.details,
+      eventReferenceUrl: formData.url,
+      eventClosingDay: formData.deadline,
+      eventDisplayingDay: formData.endDisplayDate,
+      eventType: formData.type,
+    }),
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error('登録に失敗しました');
+  return await res.json();
+};
+
+// イベント一覧取得API
+export const fetchEvents = async () => {
+  const res = await apiRequest('/api/v1/event', { method: 'GET' });
+  if (!res.ok) throw new Error('取得に失敗しました');
+  return res.json(); // { data: [...] }
+};
+
+// マイページ：チームファイル取得API
+export const fetchMyTeamFiles = async () => {
+  const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
+  if (!res.ok) throw new Error('チームデータ取得失敗');
+  const data = await res.json();
+  // 返却形式: { files: [...] }
+  return data.files;
+};
+
+// マイページ：マッチファイル取得API
+export const fetchMyMatchFiles = async () => {
+  const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
+  if (!res.ok) throw new Error('マッチデータ取得失敗');
+  const data = await res.json();
+  // 返却形式: { files: [...] }
+  return data.files;
+};
+
+// マイページ：イベント削除API
+export const deleteMyEvent = async (id: string | number) => {
+  const res = await apiRequest('/api/v1/delete/usersRegisteredCloumn', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
+  const data = await res.json();
+  if (!res.ok || !data.deleted) throw new Error(data.error || '削除に失敗しました');
+  return data;
+};
+
+// マイページ：ファイル削除API
+export const deleteMyFile = async (id: string | number) => {
+  const res = await apiRequest('/api/v1/delete/myFile', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'ファイル削除に失敗しました');
+  return data;
+};
+
+// マイページ：イベント取得API
+export const fetchMyEvents = async () => {
+  const res = await apiRequest('/api/v1/mypage/events', { method: 'GET' });
+  if (!res.ok) throw new Error('イベント取得失敗');
+  const data = await res.json();
+  // スネークケース→キャメルケース変換
+  return (data.events ?? []).map((event: any) => ({
+    id: String(event.id),
+    name: event.event_name ?? '',
+    details: event.event_details ?? '',
+    url: event.event_reference_url ?? '',
+    deadline: event.event_closing_day ?? '',
+    endDisplayDate: event.event_displaying_day ?? '',
+    type: event.event_type ?? '',
+    registeredDate: event.created_at ? event.created_at.slice(0, 10) : ''
+  }));
+};
+
 export const uploadMatchFile = async (
   file: File,
   isAuthenticated: boolean,

@@ -20,7 +20,9 @@ class EventController extends Controller
             'event_details',
             'event_closing_day',
             'event_reference_url'
-        )->get();
+        )
+        ->where('event_displaying_day', '>=', now())
+        ->get();
         return response()->json(['data' => $data]);
     }
 

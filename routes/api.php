@@ -43,8 +43,6 @@ Route::prefix('v1')->group(function () {
     Route::post('/eventNotice', [\App\Http\Controllers\Api\V1\EventNoticeController::class, 'store']);
     Route::post('/team/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', false);
     Route::post('/match/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', false);
-    Route::post('/team/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', true);
-    Route::post('/match/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', true);
 
     Route::middleware('auth:sanctum')->get('/user/profile', function (Request $request) {
       return response()->json($request->user());
@@ -53,15 +51,19 @@ Route::prefix('v1')->group(function () {
     Route::group(['middleware' => ['api']], function () {
         Route::get('search/{searchType}', [\App\Http\Controllers\Api\V1\SearchController::class, 'search']);
         Route::get('sumDLSearch/{searchType}', [\App\Http\Controllers\Api\V1\SearchController::class, 'sumDLSearch']);
-        Route::get('event', 'Api\EventController@getEventData');
+        Route::get('event', [\App\Http\Controllers\Api\V1\EventController::class, 'getEventData']);
         Route::post('delete/searchFile', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'deleteSearchFile']);
     });
 
     Route::group(['middleware' => ['auth:sanctum']], function () {
-        Route::get('mypage/team', 'Api\FileUtilController@myTeam');
-        Route::get('mypage/match', 'Api\FileUtilController@myMatch');
-        Route::get('mypage/events', 'Api\EventController@getMyEventData');
-        Route::post('delete/usersRegisteredCloumn', 'Api\UserController@deleteUsersRegisteredCloumn');
+        Route::get('mypage/team', [\App\Http\Controllers\Api\V1\UserController::class, 'getMyTeamData']);
+        Route::get('mypage/match', [\App\Http\Controllers\Api\V1\UserController::class, 'getMyMatchData']);
+        Route::get('mypage/events', [\App\Http\Controllers\Api\V1\UserController::class, 'getMyEventData']);
+        Route::post('eventNotice', [\App\Http\Controllers\Api\V1\EventNoticeController::class, 'store']);
+        Route::post('delete/usersRegisteredCloumn', [\App\Http\Controllers\Api\V1\UserController::class, 'deleteUsersRegisteredCloumn']);
+        Route::post('delete/myFile', [\App\Http\Controllers\Api\V1\UserController::class, 'deleteMyFile']);
         Route::post('user/update', [\App\Http\Controllers\Api\V1\UserController::class, 'userUpdate']);
+        Route::post('/team/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', true);
+        Route::post('/match/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', true);
     });
 });

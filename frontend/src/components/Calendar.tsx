@@ -2,19 +2,30 @@
 
 import React, { useState } from 'react';
 
+interface CalendarEvent {
+  date: string; // ISO形式
+  title?: string;
+  details?: string;
+  url?: string;
+}
+
 interface CalendarProps {
   initialDate?: Date;
   onSelect?: (date: Date, b: boolean) => void;
   size?: 'small' | 'large';
   showTimeSelect?: boolean;
+  events?: CalendarEvent[];
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   initialDate = new Date(),
   onSelect,
   size = 'large',
-  showTimeSelect = false
+  showTimeSelect = false,
+  events = []
 }) => {
+  const [modalEvent, setModalEvent] = useState<CalendarEvent | null>(null);
+
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedHour, setSelectedHour] = useState<number>(
@@ -91,18 +102,30 @@ const Calendar: React.FC<CalendarProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setSelectedDate(date);
+    // その日に該当するイベントがあればモーダル表示
+    const dayEvents = events.filter(ev => {
+      const evDate = new Date(ev.date);
+      return (
+        evDate.getFullYear() === date.getFullYear() &&
+        evDate.getMonth() === date.getMonth() &&
+        evDate.getDate() === date.getDate()
+      );
+    });
+    if (dayEvents.length > 0) {
+      setModalEvent(dayEvents[0]); // 1日1件想定、複数対応ならリスト化
+    }
     if (onSelect) {
       if (showTimeSelect) {
-        // 時間が選択されている場合は、選択された日付に時間を設定
         const newDate = new Date(date);
         newDate.setHours(selectedHour);
         newDate.setMinutes(selectedMinute);
-        onSelect(newDate, true); // 日付セルクリック時はカレンダーを閉じる
+        onSelect(newDate, true);
       } else {
-        onSelect(date, true); // 日付セルクリック時はカレンダーを閉じる
+        onSelect(date, true);
       }
     }
   };
+
 
   // 時間選択ハンドラー
   const handleHourChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -419,64 +442,153 @@ const Calendar: React.FC<CalendarProps> = ({
         gridTemplateColumns: 'repeat(7, 1fr)',
         gap: gap
       }}>
-        {days.map((day, index) => (
-          <div
-            key={index}
-            onClick={(e) => handleDateClick(day.date, e)}
-            style={{
-              padding: padding.cell,
-              textAlign: 'center',
-              cursor: 'pointer',
-              position: 'relative',
-              background: day.isSelected ? 'rgba(0, 200, 255, 0.15)' : 'transparent',
-              borderRadius: '8px',
-              color: !day.isCurrentMonth ? '#4A6FA5' :
-                     day.date.getDay() === 0 ? '#ff6b6b' :
-                     day.date.getDay() === 6 ? '#00c8ff' : '#fff',
-              height: cellHeight,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <div style={{
-              fontSize: fontSize.day,
-              fontWeight: day.isToday ? 'bold' : 'normal'
-            }}>
-              {day.date.getDate()}
-            </div>
-
-            {/* 今日の日付に青い丸を表示 */}
-            {day.isToday && (
-              <div style={{
-                position: 'absolute',
-                top: size === 'small' ? '8px' : '10px',
-                right: size === 'small' ? '8px' : '10px',
-                width: size === 'small' ? '8px' : '12px',
-                height: size === 'small' ? '8px' : '12px',
-                borderRadius: '50%',
-                background: '#00c8ff'
-              }}></div>
-            )}
-
-            {/* 選択された日付に青い枠線を表示 */}
-            {day.isSelected && (
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                border: size === 'small' ? '2px solid #00c8ff' : '3px solid #00c8ff',
-                borderRadius: '8px',
-                pointerEvents: 'none'
-              }}></div>
-            )}
-          </div>
-        ))}
+        {days.map((day, index) => {
+  // イベント該当日かどうか判定
+  const hasEvent = events.some(ev => {
+    const evDate = new Date(ev.date);
+    return (
+      evDate.getFullYear() === day.date.getFullYear() &&
+      evDate.getMonth() === day.date.getMonth() &&
+      evDate.getDate() === day.date.getDate()
+    );
+  });
+  return (
+    <div
+      key={index}
+      onClick={(e) => handleDateClick(day.date, e)}
+      style={{
+        padding: padding.cell,
+        textAlign: 'center',
+        cursor: 'pointer',
+        position: 'relative',
+        background: day.isSelected ? 'rgba(0, 200, 255, 0.15)' : 'transparent',
+        borderRadius: '8px',
+        color: !day.isCurrentMonth ? '#4A6FA5' :
+               day.date.getDay() === 0 ? '#ff6b6b' :
+               day.date.getDay() === 6 ? '#00c8ff' : '#fff',
+        height: cellHeight,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <div style={{
+        fontSize: fontSize.day,
+        fontWeight: day.isToday ? 'bold' : 'normal'
+      }}>
+        {day.date.getDate()}
       </div>
+      {/* イベントがある日に印を表示 */}
+      {hasEvent && (
+        <div style={{
+          marginTop: '4px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '2px'
+        }}>
+          {/* カレンダーアイコン */}
+          <span style={{ fontSize: size === 'small' ? '1.1em' : '1.35em', color: '#3B82F6', lineHeight: 1 }}>
+            📅
+          </span>
+          {/* EVENTラベル */}
+          <span style={{
+            background: 'linear-gradient(90deg, #3B82F6 60%, #8CB4FF 100%)',
+            color: '#fff',
+            fontSize: size === 'small' ? '0.65em' : '0.8em',
+            padding: '1px 6px',
+            borderRadius: '6px',
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            boxShadow: '0 1px 4px #0003',
+            marginTop: '2px',
+            whiteSpace: 'nowrap'
+          }}>
+            EVENT
+          </span>
+        </div>
+      )}
+      {/* 今日の日付に青い丸を表示 */}
+      {day.isToday && (
+        <div style={{
+          position: 'absolute',
+          top: size === 'small' ? '8px' : '10px',
+          right: size === 'small' ? '8px' : '10px',
+          width: size === 'small' ? '8px' : '12px',
+          height: size === 'small' ? '8px' : '12px',
+          borderRadius: '50%',
+          background: '#00c8ff'
+        }}></div>
+      )}
+      {/* 選択された日付に青い枠線を表示 */}
+      {day.isSelected && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          border: size === 'small' ? '2px solid #00c8ff' : '3px solid #00c8ff',
+          borderRadius: '8px',
+          pointerEvents: 'none'
+        }}></div>
+      )}
     </div>
+  );
+})}
+
+      </div>
+    {/* イベント詳細モーダル */}
+    {modalEvent && (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.5)',
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }} onClick={() => setModalEvent(null)}>
+        <div style={{
+          background: '#0A1022',
+          borderRadius: '16px',
+          padding: '32px',
+          minWidth: '320px',
+          maxWidth: '90vw',
+          border: '2px solid #1E3A5F',
+          color: '#fff',
+          boxShadow: '0 4px 24px 0 #000a',
+          position: 'relative',
+        }} onClick={e => e.stopPropagation()}>
+          <button style={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            background: 'none',
+            border: 'none',
+            color: '#8CB4FF',
+            fontSize: '1.5rem',
+            cursor: 'pointer',
+          }} onClick={() => setModalEvent(null)}>
+            ×
+          </button>
+          <h3 style={{ color: '#8CB4FF', fontSize: '1.3rem', marginBottom: '12px' }}>{modalEvent.title || 'イベント詳細'}</h3>
+          <div style={{ marginBottom: '8px' }}>{modalEvent.details}</div>
+          {modalEvent.url && (
+            <div style={{ marginTop: '8px' }}>
+              <a href={modalEvent.url} target="_blank" rel="noopener noreferrer" style={{ color: '#3B82F6', textDecoration: 'underline' }}>
+                参考リンクを開く
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
   );
 };
 

@@ -1,9 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import Calendar from '../../components/Calendar';
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Calendar from '@/components/Calendar';
+import { registerEvent } from '@/utils/api';
 
 // イベント種別の定義
 type EventType = '大会' | '告知' | 'その他';
@@ -25,10 +29,6 @@ const formatDateToJST = (date: Date): string => {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}/${month}/${day}`;
 };
-
-import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 const EventPage: React.FC = () => {
   // すべてのHooksを最上部で宣言
@@ -55,7 +55,7 @@ const EventPage: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (!user) return null; // 未認証時は描画しない
 
-  
+
   // 入力フィールド変更ハンドラー
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -83,27 +83,17 @@ const EventPage: React.FC = () => {
     setShowEndDateCalendar(false);
   };
 
-  // フォーム送信ハンドラー
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     // バリデーション
     if (!formData.name || !formData.details || !formData.deadline || !formData.endDisplayDate) {
       alert('必須項目を入力してください');
       return;
     }
-
     setIsSubmitting(true);
-
-    // 実際のアプリケーションではここでAPIを呼び出してデータを送信
-    console.log('送信データ:', formData);
-
-    // 送信の模擬（実際のアプリケーションではAPIコールに置き換え）
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await registerEvent(formData);
       alert('イベント情報が登録されました');
-      
-      // フォームをリセット
       setFormData({
         name: '',
         details: '',
@@ -112,8 +102,13 @@ const EventPage: React.FC = () => {
         endDisplayDate: '',
         type: '大会'
       });
-    }, 1500);
+    } catch (err) {
+      alert('登録に失敗しました');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
 
   return (
     <div style={{
@@ -123,7 +118,7 @@ const EventPage: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         padding: '20px'
@@ -147,7 +142,7 @@ const EventPage: React.FC = () => {
           }}>
             新しいイベント情報を登録することができます
           </p>
-          
+
           {/* イベント登録フォーム */}
           <form onSubmit={handleSubmit}>
             <div style={{
@@ -185,7 +180,7 @@ const EventPage: React.FC = () => {
                   required
                 />
               </div>
-              
+
               {/* イベント詳細情報 */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{
@@ -215,7 +210,7 @@ const EventPage: React.FC = () => {
                   required
                 />
               </div>
-              
+
               {/* イベント詳細URL */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{
@@ -243,7 +238,7 @@ const EventPage: React.FC = () => {
                   }}
                 />
               </div>
-              
+
               {/* イベント受付締切日 */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{
@@ -303,7 +298,7 @@ const EventPage: React.FC = () => {
                       </svg>
                     </button>
                   </div>
-                  
+
                   {showDeadlineCalendar && (
                     <div style={{
                       position: 'fixed',
@@ -348,7 +343,7 @@ const EventPage: React.FC = () => {
                   )}
                 </div>
               </div>
-              
+
               {/* イベント表示最終日 */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{
@@ -408,7 +403,7 @@ const EventPage: React.FC = () => {
                       </svg>
                     </button>
                   </div>
-                  
+
                   {showEndDateCalendar && (
                     <div style={{
                       position: 'fixed',
@@ -453,7 +448,7 @@ const EventPage: React.FC = () => {
                   )}
                 </div>
               </div>
-              
+
               {/* イベント種別 */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{
@@ -490,7 +485,7 @@ const EventPage: React.FC = () => {
                 </select>
               </div>
             </div>
-            
+
             {/* 送信ボタン */}
             <div style={{
               display: 'flex',
@@ -564,7 +559,7 @@ const EventPage: React.FC = () => {
               </button>
             </div>
           </form>
-          
+
           {/* 注意事項 */}
           <div style={{
             background: '#0A1022',
@@ -613,9 +608,9 @@ const EventPage: React.FC = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
-      
+
       <style jsx global>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }

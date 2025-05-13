@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 // イベント種別の定義
 type EventType = '大会' | '告知' | 'その他';
@@ -13,7 +14,6 @@ interface EventData {
   deadline: string;
   endDisplayDate: string;
   type: EventType;
-  status: '承認済' | '審査中' | '非公開';
   registeredDate: string;
 }
 
@@ -26,35 +26,20 @@ const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({ initi
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [events, setEvents] = useState<EventData[]>(initialEvents);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  // モーダル用state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalDetails, setModalDetails] = useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleStatusFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatusFilter(e.target.value);
-  };
-
   const filteredEvents = events.filter(event => {
-    const matchesSearch = event.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || event.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesSearch = (event?.name ?? '').toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
 
-  // ステータスに応じた色を返す関数
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case '承認済':
-        return '#4CAF50';
-      case '審査中':
-        return '#FFC107';
-      case '非公開':
-        return '#9E9E9E';
-      default:
-        return '#b0c4d8';
-    }
-  };
 
   return (
     <div style={{
@@ -121,34 +106,6 @@ const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({ initi
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </div>
-        
-        <div style={{
-          minWidth: '200px'
-        }}>
-          <select
-            value={statusFilter}
-            onChange={handleStatusFilterChange}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              background: '#0F1A2E',
-              border: '1px solid #1E3A5F',
-              borderRadius: '6px',
-              color: 'white',
-              fontSize: '1rem',
-              appearance: 'none',
-              backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300c8ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 12px center',
-              backgroundSize: '16px'
-            }}
-          >
-            <option value="all">すべてのステータス</option>
-            <option value="承認済">承認済</option>
-            <option value="審査中">審査中</option>
-            <option value="非公開">非公開</option>
-          </select>
-        </div>
       </div>
 
       {/* イベントデータテーブル */}
@@ -202,14 +159,6 @@ const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({ initi
                 color: '#b0c4d8',
                 fontWeight: 'normal'
               }}>
-                ステータス
-              </th>
-              <th style={{
-                padding: '16px',
-                textAlign: 'center',
-                color: '#b0c4d8',
-                fontWeight: 'normal'
-              }}>
                 操作
               </th>
             </tr>
@@ -251,22 +200,7 @@ const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({ initi
                   }}>
                     {event.endDisplayDate}
                   </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'center'
-                  }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '4px 10px',
-                      borderRadius: '12px',
-                      fontSize: '0.8rem',
-                      backgroundColor: `${getStatusColor(event.status)}20`,
-                      color: getStatusColor(event.status),
-                      border: `1px solid ${getStatusColor(event.status)}`
-                    }}>
-                      {event.status}
-                    </span>
-                  </td>
+
                   <td style={{
                     padding: '16px',
                     textAlign: 'center'
@@ -286,6 +220,7 @@ const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({ initi
                           fontSize: '0.8rem',
                           cursor: 'pointer'
                         }}
+                        onClick={() => { setModalDetails(event.details); setModalOpen(true); }}
                       >
                         詳細
                       </button>
@@ -298,6 +233,17 @@ const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({ initi
                           padding: '6px 10px',
                           fontSize: '0.8rem',
                           cursor: 'pointer'
+                        }}
+                        onClick={async () => {
+                          if (!window.confirm('本当にこのイベントを削除しますか？')) return;
+                          try {
+                            const api = await import('@/utils/api');
+                            await api.deleteMyEvent(event.id);
+                            setEvents(prev => prev.filter(e => e.id !== event.id));
+                            toast('イベントを削除しました');
+                          } catch (e: any) {
+                            alert(e?.message || '削除に失敗しました');
+                          }
                         }}
                       >
                         削除
@@ -316,14 +262,55 @@ const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({ initi
                     color: '#b0c4d8'
                   }}
                 >
-                  {searchQuery || statusFilter !== 'all' ? '検索条件に一致するイベントが見つかりませんでした' : '登録したイベントはありません'}
+                  {searchQuery ? '検索条件に一致するイベントが見つかりませんでした' : '登録したイベントはありません'}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-    </div>
+    {/* モーダル */}
+    {modalOpen && (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000
+      }}>
+        <div style={{
+          background: '#1E293B',
+          color: 'white',
+          borderRadius: '10px',
+          padding: '32px',
+          minWidth: '320px',
+          maxWidth: '90vw',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
+        }}>
+          <h3 style={{marginBottom: '16px'}}>イベント詳細</h3>
+          <div style={{marginBottom: '24px', whiteSpace: 'pre-line'}}>{modalDetails || '詳細情報がありません'}</div>
+          <button
+            onClick={() => setModalOpen(false)}
+            style={{
+              background: '#00c8ff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '8px 24px',
+              fontSize: '1rem',
+              cursor: 'pointer'
+            }}
+          >閉じる</button>
+        </div>
+      </div>
+    )}
+
+  </div>
   );
 };
 

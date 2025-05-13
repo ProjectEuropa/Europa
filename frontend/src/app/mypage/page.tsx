@@ -39,103 +39,51 @@ const MyPage: React.FC = () => {
 
 // 元の内容をMyPageContentとして分離
 const MyPageContent: React.FC = () => {
-  // 現在選択されているタブ
+  // Hooksは必ず関数の先頭で宣言
   const [activeTab, setActiveTab] = useState<TabType>('profile');
-
+  const [teamData, setTeamData] = useState<any[]>([]);
+  const [matchData, setMatchData] = useState<any[]>([]);
+  const [eventData, setEventData] = useState<any[]>([]);
+  const [loading, setLoading] = useState({teams: false, matches: false, events: false});
   const { user } = useAuth();
+
+  // 各タブごとにuseEffectを分離し、Hooksの順序を固定
+  useEffect(() => {
+    if (activeTab !== 'teams') return;
+    setLoading(l => ({...l, teams: true}));
+    import('@/utils/api').then(api => api.fetchMyTeamFiles())
+      .then(setTeamData)
+      .catch(() => setTeamData([]))
+      .finally(() => setLoading(l => ({...l, teams: false})));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab !== 'matches') return;
+    setLoading(l => ({...l, matches: true}));
+    import('@/utils/api').then(api => api.fetchMyMatchFiles())
+      .then(setMatchData)
+      .catch(() => setMatchData([]))
+      .finally(() => setLoading(l => ({...l, matches: false})));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab !== 'events') return;
+    setLoading(l => ({...l, events: true}));
+    import('@/utils/api').then(api => api.fetchMyEvents())
+      .then(setEventData)
+      .catch(() => setEventData([]))
+      .finally(() => setLoading(l => ({...l, events: false})));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
   if (!user) return <div>Loading...</div>;
   const profileData = {
     name: user.name,
     email: user.email,
     joinDate: user.created_at ? user.created_at.slice(0, 10).replace(/-/g, "/") : ""
   };
-
-  const teamData = [
-    {
-      id: '1',
-      name: 'Alpha Squad',
-      uploadDate: '2025/05/01',
-      downloadCount: 128,
-      fileSize: '2.4 MB'
-    },
-    {
-      id: '2',
-      name: 'Beta Team',
-      uploadDate: '2025/04/22',
-      downloadCount: 95,
-      fileSize: '1.8 MB'
-    },
-    {
-      id: '3',
-      name: 'Gamma Force',
-      uploadDate: '2025/04/15',
-      downloadCount: 76,
-      fileSize: '3.1 MB'
-    }
-  ];
-
-  const matchData = [
-    {
-      id: '1',
-      name: 'Tournament Finals',
-      teams: 'Alpha Squad vs Beta Team',
-      uploadDate: '2025/05/01',
-      downloadCount: 156,
-      fileSize: '3.2 MB'
-    },
-    {
-      id: '2',
-      name: 'Semifinals Match 1',
-      teams: 'Alpha Squad vs Gamma Force',
-      uploadDate: '2025/04/28',
-      downloadCount: 112,
-      fileSize: '2.8 MB'
-    },
-    {
-      id: '3',
-      name: 'Quarterfinals Match 2',
-      teams: 'Gamma Force vs Zeta Force',
-      uploadDate: '2025/04/25',
-      downloadCount: 54,
-      fileSize: '2.6 MB'
-    }
-  ];
-
-  const eventData = [
-    {
-      id: '1',
-      name: '夏季大会2025',
-      details: '夏季大会の詳細情報です。',
-      url: 'https://example.com/event1',
-      deadline: '2025/06/30',
-      endDisplayDate: '2025/07/15',
-      type: '大会' as const,
-      status: '承認済' as const,
-      registeredDate: '2025/05/01'
-    },
-    {
-      id: '2',
-      name: 'チームメンバー募集',
-      details: 'チームメンバーを募集しています。',
-      url: 'https://example.com/event2',
-      deadline: '2025/06/15',
-      endDisplayDate: '2025/06/30',
-      type: '告知' as const,
-      status: '審査中' as const,
-      registeredDate: '2025/05/03'
-    },
-    {
-      id: '3',
-      name: 'トレーニングセッション',
-      details: 'トレーニングセッションの案内です。',
-      url: 'https://example.com/event3',
-      deadline: '2025/05/25',
-      endDisplayDate: '2025/06/10',
-      type: 'その他' as const,
-      status: '非公開' as const,
-      registeredDate: '2025/05/05'
-    }
-  ];
 
   // タブ切り替え処理
   const handleTabChange = (tab: TabType) => {
@@ -168,7 +116,7 @@ const MyPageContent: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         padding: '20px'
@@ -192,7 +140,7 @@ const MyPageContent: React.FC = () => {
           }}>
             アカウント情報の管理、アップロードデータの確認ができます
           </p>
-          
+
           {/* タブナビゲーション */}
           <div style={{
             display: 'flex',
@@ -224,7 +172,7 @@ const MyPageContent: React.FC = () => {
               イベント
             </button>
           </div>
-          
+
           {/* タブコンテンツ */}
           <div style={{
             marginBottom: '24px'
@@ -232,20 +180,20 @@ const MyPageContent: React.FC = () => {
             {activeTab === 'profile' && (
               <ProfileSection initialProfile={profileData} />
             )}
-            
+
             {activeTab === 'teams' && (
-              <UploadedTeamsSection initialTeams={teamData} />
+              loading.teams ? <div>Loading...</div> : <UploadedTeamsSection initialTeams={teamData} />
             )}
-            
+
             {activeTab === 'matches' && (
-              <UploadedMatchesSection initialMatches={matchData} />
+              loading.matches ? <div>Loading...</div> : <UploadedMatchesSection initialMatches={matchData} />
             )}
-            
+
             {activeTab === 'events' && (
-              <RegisteredEventsSection initialEvents={eventData} />
+              loading.events ? <div>Loading...</div> : <RegisteredEventsSection initialEvents={eventData} />
             )}
           </div>
-          
+
           {/* 注意事項 */}
           <div style={{
             background: '#0A1022',
@@ -288,13 +236,12 @@ const MyPageContent: React.FC = () => {
             }}>
               <li>プロフィール情報は他のユーザーにも表示されます。</li>
               <li>アップロードしたデータは管理者によって削除される場合があります。</li>
-              <li>イベント情報は管理者の承認後に公開されます。</li>
               <li>アカウントに関するお問い合わせは管理者までご連絡ください。</li>
             </ul>
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
