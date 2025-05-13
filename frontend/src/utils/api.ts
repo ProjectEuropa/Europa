@@ -251,6 +251,43 @@ export const uploadTeamFile = async (
  * @param isAuthenticated 認証状態
  * @returns レスポンスデータ
  */
+// チーム一括DL用 検索API（ページネーション対応）
+export const sumDLSearchTeam = async (keyword: string = "", page: number = 1) => {
+  const res = await apiRequest(`/api/v1/sumDLSearch/team?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+  if (!res.ok) throw new Error('検索失敗');
+  return res.json();
+};
+
+// マッチ一括DL用 検索API（ページネーション対応）
+export const sumDLSearchMatch = async (keyword: string = "", page: number = 1) => {
+  const res = await apiRequest(`/api/v1/sumDLSearch/match?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+  if (!res.ok) throw new Error('検索失敗');
+  return res.json();
+};
+
+// チーム一括DL用 ZIPダウンロードAPI
+export const sumDownload = async (checkedId: number[]) => {
+  const res = await apiRequest('/api/v1/sumDownload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ checkedId })
+  });
+  if (!res.ok) throw new Error('ダウンロード失敗');
+  // ZIPファイル取得
+  const blob = await res.blob();
+  // ダウンロード処理
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sum.zip';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }, 100);
+};
+
 export const uploadMatchFile = async (
   file: File,
   isAuthenticated: boolean,

@@ -71,7 +71,7 @@ class FileConventionalUtilController extends Controller
         // ZIPファイル作成用ディレクトリに格納中のファイルを全て削除
         $files = glob(public_path('prezipfiles/*'));
         foreach ($files as $file) {
-          unlink($file);
+            unlink($file);
         }
         return response()->download(public_path('zipdldir/sum.zip'))->deleteFileAfterSend(true);
     }
