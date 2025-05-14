@@ -13,6 +13,7 @@ const UploadPage: React.FC = () => {
   const [comment, setComment] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [showSpecialTags, setShowSpecialTags] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [downloadDate, setDownloadDate] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -50,6 +51,10 @@ const UploadPage: React.FC = () => {
     // カンマで区切られた複数のタグを処理
     const newTags = tag.split(',').map(t => t.trim()).filter(t => t && !tags.includes(t));
     if (newTags.length > 0) {
+      if (tags.length + newTags.length > 4) {
+        toast.error('タグは最大4つまでです');
+        return;
+      }
       setTags([...tags, ...newTags]);
       setTagInput('');
     }
@@ -302,85 +307,133 @@ const UploadPage: React.FC = () => {
                 </svg>
                 タグ
               </label>
+              <div style={{ position: 'relative', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <input
+                    type="text"
+                    ref={tagInputRef}
+                    value={tagInput}
+                    onChange={handleTagInputChange}
+                    onKeyDown={handleTagKeyDown}
+                    onFocus={() => setShowSpecialTags(true)}
+                    onBlur={() => setTimeout(() => setShowSpecialTags(false), 200)}
+                    placeholder="タグを入力（Enterキーで追加）"
+                    style={{
+                      flex: '1',
+                      padding: '12px',
+                      background: '#111A2E',
+                      border: '1px solid #1E3A5F',
+                      borderRadius: '6px',
+                      color: 'white',
+                      fontSize: '1rem',
+                      width: '100%'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => tagInput.trim() && addTag(tagInput.trim())}
+                    style={{
+                      padding: '12px',
+                      background: '#1E3A5F',
+                      border: 'none',
+                      borderRadius: '6px',
+                      color: '#00c8ff',
+                      cursor: tags.length >= 4 ? 'not-allowed' : 'pointer',
+                      fontWeight: 600,
+                      fontSize: '1rem',
+                      opacity: tags.length >= 4 ? 0.6 : 1
+                    }}
+                    disabled={tags.length >= 4}
+                  >
+                    追加
+                  </button>
+                </div>
+                {showSpecialTags && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '110%',
+                      left: 0,
+                      zIndex: 10,
+                      background: '#111A2E',
+                      border: '1px solid #00c8ff',
+                      borderRadius: 8,
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+                      padding: '16px 20px',
+                      minWidth: 260,
+                      marginTop: 4,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '16px',
+                    }}
+                  >
+                    {['大会ゲスト許可', 'フリーOKE'].map(tag => (
+                      <label key={tag} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: '1.08em', color: '#b0c4d8', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={tags.includes(tag)}
+                          onChange={e => {
+                            if (e.target.checked) {
+                              if (tags.length >= 4) {
+                                toast.error('タグは最大4つまでです');
+                                return;
+                              }
+                              if (!tags.includes(tag)) setTags(prev => [...prev, tag]);
+                            } else {
+                              setTags(prev => prev.filter(t => t !== tag));
+                            }
+                          }}
+                          style={{ width: 22, height: 22, accentColor: '#00c8ff' }}
+                        />
+                        {tag}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '8px',
                 marginBottom: '8px'
               }}>
-                {tags.map((tag, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '4px 10px',
-                      background: '#1E3A5F',
-                      borderRadius: '16px',
-                      color: '#00c8ff'
-                    }}
-                  >
-                    <span>{tag}</span>
+                {tags.map(tag => (
+                  <div key={tag} style={{
+                    background: 'rgba(0, 200, 255, 0.1)',
+                    border: '1px solid #1E3A5F',
+                    borderRadius: '6px',
+                    padding: '8px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <span style={{ color: '#00c8ff' }}>{tag}</span>
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
                       style={{
-                        background: 'transparent',
+                        background: 'none',
                         border: 'none',
-                        color: '#b0c4d8',
+                        color: '#8CB4FF',
                         cursor: 'pointer',
                         padding: '0',
+                        fontSize: '1.2rem',
+                        lineHeight: '1',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        width: '16px',
+                        height: '16px'
                       }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                      </svg>
+                      ×
                     </button>
                   </div>
                 ))}
               </div>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center'
-              }}>
-                <input
-                  type="text"
-                  ref={tagInputRef}
-                  value={tagInput}
-                  onChange={handleTagInputChange}
-                  onKeyDown={handleTagKeyDown}
-                  placeholder="タグを入力（Enterキーで追加）"
-                  style={{
-                    flex: '1',
-                    padding: '12px',
-                    background: '#111A2E',
-                    border: '1px solid #1E3A5F',
-                    borderRadius: '6px',
-                    color: 'white',
-                    fontSize: '1rem'
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => tagInput.trim() && addTag(tagInput.trim())}
-                  style={{
-                    marginLeft: '8px',
-                    padding: '12px',
-                    background: '#1E3A5F',
-                    border: 'none',
-                    borderRadius: '6px',
-                    color: '#00c8ff',
-                    cursor: 'pointer'
-                  }}
-                >
-                  追加
-                </button>
-              </div>
+
+
               <div style={{
                 fontSize: '0.8rem',
                 color: '#8CB4FF',
