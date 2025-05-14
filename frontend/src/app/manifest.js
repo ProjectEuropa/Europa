@@ -1,0 +1,18 @@
+export default function manifest() {
+  return {
+    name: 'EUROPA Platform',
+    short_name: 'EUROPA',
+    description: 'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#0a0818',
+    theme_color: '#010220',
+    icons: [
+      {
+        src: '/icon.svg',
+        sizes: 'any',
+        type: 'image/svg+xml',
+      },
+    ],
+  }
+}

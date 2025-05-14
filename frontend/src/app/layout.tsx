@@ -7,20 +7,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "EUROPA Platform",
+  title: "EUROPA",
   description: "カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム",
   openGraph: {
-    title: "EUROPA Platform",
+    title: "EUROPA",
     description: "カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム",
     type: "website",
     locale: "ja_JP",
   },
   twitter: {
     card: "summary_large_image",
-    title: "EUROPA Platform",
+    title: "EUROPA",
     description: "カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム",
   },
-  metadataBase: new URL("https://europa.example.com"),
+  metadataBase: new URL("https://project-europa.work"),
 };
 
 import { Toaster } from "sonner";
@@ -36,7 +36,7 @@ export default function RootLayout({
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#010220" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
       </head>
       <body
         className={
