@@ -1,0 +1,12 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="180" rx="45" fill="url(#appleIconGrad)" />
+  <path d="M45 45H135M45 90H112.5M45 135H135" stroke="white" stroke-width="10" stroke-linecap="round" />
+  <path d="M90 22.5V157.5" stroke="white" stroke-width="6" stroke-linecap="round" stroke-dasharray="5 10" />
+  <circle cx="135" cy="90" r="12" fill="white" />
+  <defs>
+    <linearGradient id="appleIconGrad" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00c8ff" />
+      <stop offset="1" stop-color="#0060a0" />
+    </linearGradient>
+  </defs>
+</svg>

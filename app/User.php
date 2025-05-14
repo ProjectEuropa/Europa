@@ -2,14 +2,15 @@
 
 namespace App;
 
-use App\Notifications\CustomResetPassword;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasFactory;
+    use Notifiable, HasFactory, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -46,6 +47,6 @@ class User extends Authenticatable
      */
     public function sendPasswordResetNotification($token)
     {
-        $this->notify(new CustomResetPassword($token));
+        $this->notify(new ResetPasswordNotification($token, $this->email));
     }
 }

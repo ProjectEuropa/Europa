@@ -26,9 +26,9 @@ class UploadRequest extends FormRequest
     {
         $url = $re->url();
 
-        if (strpos($url, 'team') !== false) {
+        if (str_contains($url, 'team')) {
             //'url'のなかに'team'が含まれている場合
-            if (strpos($url, 'simpleupload') !== false) {
+            if (str_contains($url, 'simpleupload')) {
                 //'url'のなかに'simpleupload'が含まれている場合
                 return [
                     'teamOwnerName' => 'required|max:100',
@@ -50,7 +50,7 @@ class UploadRequest extends FormRequest
             }
         } else {
             //'url'のなかに'team'が含まれてない場合（match）
-            if (strpos($url, 'simpleupload') !== false) {
+            if (str_contains($url, 'simpleupload')) {
                 //'url'のなかに'simpleupload'が含まれている場合
                 return [
                     'matchOwnerName' => 'required|max:100',
