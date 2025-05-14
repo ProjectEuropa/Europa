@@ -37,6 +37,16 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#010220" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+        {/* OGP & Twitter meta tags */}
+        <meta property="og:title" content="EUROPA" />
+        <meta property="og:description" content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/icon.png" />
+        <meta property="og:url" content="https://project-europa.work" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="EUROPA" />
+        <meta name="twitter:description" content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム" />
+        <meta name="twitter:image" content="/icon.png" />
       </head>
       <body
         className={
