@@ -1,3 +1,5 @@
+export const dynamic = "force-static";
+export const revalidate = 0;
 import { ImageResponse } from 'next/og';
  
 // Route segment config

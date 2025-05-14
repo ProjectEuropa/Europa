@@ -1,3 +1,7 @@
+export const dynamic = "force-static";
+export const revalidate = 0;
+export const contentType = "application/manifest+json";
+
 export default function manifest() {
   return {
     name: 'EUROPA Platform',
