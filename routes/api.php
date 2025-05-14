@@ -35,18 +35,18 @@ Route::group(['middleware' => ['api', 'auth:api']], function () {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::post('/login', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'login']);
-    Route::post('/register', [\App\Http\Controllers\Api\V1\Auth\RegisterController::class, 'register']);
-    Route::get('/auth/logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout']);
-    Route::get('/download/{id}', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'download']);
-    Route::post('/sumDownload', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'sumDownload']);
-    Route::post('/eventNotice', [\App\Http\Controllers\Api\V1\EventNoticeController::class, 'store']);
-    Route::post('/team/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', false);
-    Route::post('/match/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', false);
+    Route::post('login', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'login']);
+    Route::post('register', [\App\Http\Controllers\Api\V1\Auth\RegisterController::class, 'register']);
+    Route::get('auth/logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout']);
+    Route::get('download/{id}', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'download']);
+    Route::post('sumDownload', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'sumDownload']);
+    Route::post('eventNotice', [\App\Http\Controllers\Api\V1\EventNoticeController::class, 'store']);
+    Route::post('team/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', false);
+    Route::post('match/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', false);
 
     Route::middleware('auth:sanctum')->get('/user/profile', function (Request $request) {
       return response()->json($request->user());
-  });
+    });
 
     Route::group(['middleware' => ['api']], function () {
         Route::get('search/{searchType}', [\App\Http\Controllers\Api\V1\SearchController::class, 'search']);
@@ -63,7 +63,7 @@ Route::prefix('v1')->group(function () {
         Route::post('delete/usersRegisteredCloumn', [\App\Http\Controllers\Api\V1\UserController::class, 'deleteUsersRegisteredCloumn']);
         Route::post('delete/myFile', [\App\Http\Controllers\Api\V1\UserController::class, 'deleteMyFile']);
         Route::post('user/update', [\App\Http\Controllers\Api\V1\UserController::class, 'userUpdate']);
-        Route::post('/team/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', true);
-        Route::post('/match/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', true);
+        Route::post('team/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', true);
+        Route::post('match/upload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', true);
     });
 });

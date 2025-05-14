@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Calendar from '@/components/Calendar';
 import { registerEvent } from '@/utils/api';
+import { toast } from 'sonner';
 
 // イベント種別の定義
 type EventType = '大会' | '告知' | 'その他';
@@ -87,13 +88,13 @@ const EventPage: React.FC = () => {
     e.preventDefault();
     // バリデーション
     if (!formData.name || !formData.details || !formData.deadline || !formData.endDisplayDate) {
-      alert('必須項目を入力してください');
+      toast.error('必須項目を入力してください');
       return;
     }
     setIsSubmitting(true);
     try {
       await registerEvent(formData);
-      alert('イベント情報が登録されました');
+      toast.success('イベント情報が登録されました');
       setFormData({
         name: '',
         details: '',
@@ -103,11 +104,12 @@ const EventPage: React.FC = () => {
         type: '大会'
       });
     } catch (err) {
-      alert('登録に失敗しました');
+      toast.error('登録に失敗しました');
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
 
   return (

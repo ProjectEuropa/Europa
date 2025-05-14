@@ -83,14 +83,14 @@ const InformationPage: React.FC = () => {
                 width: '100%'
               }}>
                 <Calendar
-  initialDate={new Date(2025, 4, 6)}
-  events={events.map(ev => ({
-    date: ev.event_closing_day,
-    title: ev.event_name,
-    details: ev.event_details,
-    url: ev.event_reference_url,
-  }))}
-/>
+                  initialDate={new Date(2025, 4, 6)}
+                  events={events.map(ev => ({
+                    date: ev.event_closing_day,
+                    title: ev.event_name,
+                    details: ev.event_details,
+                    url: ev.event_reference_url,
+                  }))}
+                />
               </div>
             </div>
 
@@ -144,7 +144,7 @@ const InformationPage: React.FC = () => {
                         {ev.event_reference_url && (
                           <div style={{ marginTop: '2px' }}>
                             <a href={ev.event_reference_url} target="_blank" rel="noopener noreferrer" style={{ color: '#8CB4FF', textDecoration: 'underline', fontSize: '0.95em' }}>
-                              参考リンク
+                              詳細リンク
                             </a>
                           </div>
                         )}
