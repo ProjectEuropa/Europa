@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 interface SearchSectionProps {
   searchQuery: string;
@@ -6,6 +7,16 @@ interface SearchSectionProps {
 }
 
 const SearchSection: React.FC<SearchSectionProps> = ({ searchQuery, setSearchQuery }) => {
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search/team?keyword=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push('/search/team');
+    }
+  };
   return (
     <section id="search" style={{ 
       padding: "80px 0", 
@@ -39,7 +50,7 @@ const SearchSection: React.FC<SearchSectionProps> = ({ searchQuery, setSearchQue
         </p>
         
         {/* 検索ボックス */}
-        <div style={{
+        <form onSubmit={handleSearch} style={{
           display: "flex",
           maxWidth: "600px",
           margin: "0 auto 32px",
@@ -61,21 +72,24 @@ const SearchSection: React.FC<SearchSectionProps> = ({ searchQuery, setSearchQue
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button style={{
-            background: "#00c8ff",
-            color: "#0a0818",
-            fontWeight: 600,
-            padding: "16px 24px",
-            border: "none",
-            borderRadius: "0 4px 4px 0",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}>
+          <button 
+            type="submit"
+            style={{
+              padding: "0 24px",
+              background: "#00c8ff",
+              color: "#020824",
+              border: "none",
+              borderRadius: "0 4px 4px 0",
+              fontWeight: "bold",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
             検索 <span style={{ marginLeft: "8px" }}>⟶</span>
           </button>
-        </div>
+        </form>
         
         {/* 検索オプションボタン */}
         <div style={{

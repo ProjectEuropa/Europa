@@ -17,19 +17,18 @@ const UploadSection: React.FC = () => {
     setIsDragging(false);
     // ファイルのドロップ処理をここに実装
     const files = e.dataTransfer.files;
-    console.log('Dropped files:', files);
   };
 
   return (
-    <section id="upload" style={{ 
-      padding: "80px 0", 
-      position: "relative", 
+    <section id="upload" style={{
+      padding: "80px 0",
+      position: "relative",
       overflow: "hidden",
       background: "#0a0818"
     }}>
-      <div style={{ 
-        maxWidth: "1200px", 
-        margin: "0 auto", 
+      <div style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
         padding: "0 20px",
         display: "flex",
         flexDirection: "row",
@@ -38,10 +37,10 @@ const UploadSection: React.FC = () => {
         gap: "40px"
       }}>
         {/* 左側：テキストとボタン */}
-        <div style={{ 
-          flex: "1 1 400px", 
-          minWidth: "300px", 
-          maxWidth: "500px" 
+        <div style={{
+          flex: "1 1 400px",
+          minWidth: "300px",
+          maxWidth: "500px"
         }}>
           <h2 style={{
             color: "#fff",
@@ -91,7 +90,7 @@ const UploadSection: React.FC = () => {
               </svg>
               アップロードする
             </a>
-            <a href="/guidelines" style={{
+            <a href="/guide" style={{
               display: "flex",
               alignItems: "center",
               gap: "8px",
@@ -116,8 +115,8 @@ const UploadSection: React.FC = () => {
         </div>
 
         {/* 右側：ドラッグ＆ドロップエリア */}
-        <div style={{ 
-          flex: "1 1 400px", 
+        <div style={{
+          flex: "1 1 400px",
           minWidth: "300px"
         }}>
           <div style={{
@@ -135,7 +134,7 @@ const UploadSection: React.FC = () => {
             }}>
               OKEアップロード
             </div>
-            <div 
+            <div
               style={{
                 border: `2px dashed ${isDragging ? '#00c8ff' : 'rgba(0, 200, 255, 0.4)'}`,
                 borderRadius: "8px",
@@ -159,7 +158,7 @@ const UploadSection: React.FC = () => {
                 <line x1="12" y1="13" x2="12" y2="21"></line>
               </svg>
               <div style={{ color: "#00c8ff", fontSize: "16px", fontWeight: 600, marginBottom: "8px" }}>
-                OKEファイルをドラッグ＆ドロップ
+                CHEファイルをドラッグ＆ドロップ
               </div>
               <div style={{ color: "#b0c4d8", fontSize: "14px" }}>
                 またはクリックしてファイルを選択
@@ -172,10 +171,7 @@ const UploadSection: React.FC = () => {
               fontSize: "14px"
             }}>
               <div style={{ color: "#b0c4d8" }}>
-                対応形式: .CHX, .OKE
-              </div>
-              <div style={{ color: "#00c8ff" }}>
-                最大サイズ: 10MB
+                対応形式: .CHE
               </div>
             </div>
           </div>

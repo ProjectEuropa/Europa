@@ -23,6 +23,7 @@ const FeaturesSection: React.FC = () => {
       ),
       title: 'チームデータ検索',
       description: 'ランキングやパフォーマンス指標など、様々な条件でチームを検索、探索できます。',
+      href: '/search/team'
     },
     {
       icon: (
@@ -35,6 +36,7 @@ const FeaturesSection: React.FC = () => {
       ),
       title: 'マッチデータ検索',
       description: '戦略や戦術を向上させるために、試合結果やパフォーマンスデータを分析します。',
+      href: '/search/match'
     },
     {
       icon: (
@@ -44,8 +46,9 @@ const FeaturesSection: React.FC = () => {
           <path d="M20 16V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V16" />
         </svg>
       ),
-      title: 'シンプルアップロード',
+      title: 'アップロード',
       description: '合理化されたアップロードシステムでOKEファイルを簡単にアップロードできます。',
+      href: '/upload'
     },
     {
       icon: (
@@ -57,6 +60,7 @@ const FeaturesSection: React.FC = () => {
       ),
       title: 'チームデータ取得',
       description: 'オフライン分析や戦略開発のために包括的なチームデータをダウンロードします。',
+      href: '/sumdownload/team'
     },
     {
       icon: (
@@ -69,7 +73,8 @@ const FeaturesSection: React.FC = () => {
         </svg>
       ),
       title: 'マッチデータ取得',
-      description: '過去の戦闘から学ぶための詳細な試合統計とリプレイデータを取得します。',
+      description: '過去の戦闘から学ぶための詳細な試合統計を取得します。',
+      href: '/sumdownload/match'
     },
     {
       icon: (
@@ -80,7 +85,8 @@ const FeaturesSection: React.FC = () => {
         </svg>
       ),
       title: '情報',
-      description: 'カルネージハートEXAの詳細なガイド、チュートリアル、コミュニティリソースにアクセス。',
+      description: 'カルネージハートEXAの大会イベントなどの情報にアクセスできます。',
+      href: '/info'
     },
   ];
 
@@ -89,9 +95,9 @@ const FeaturesSection: React.FC = () => {
       padding: "80px 0 60px 0",
       background: "transparent"
     }}>
-      <div style={{ 
-        maxWidth: "1200px", 
-        margin: "0 auto", 
+      <div style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
         padding: "0 20px",
         textAlign: "center"
       }}>
@@ -124,7 +130,7 @@ const FeaturesSection: React.FC = () => {
           カルネージハートEXAのOKE開発をサポートする包括的なツールセット。
           戦略の作成から共有、分析まで、すべてのニーズに対応します。
         </p>
-        
+
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
@@ -133,16 +139,16 @@ const FeaturesSection: React.FC = () => {
         }}>
           {features.map((feature, index) => (
             <div key={index} style={{
-              background: "#0a0e1a", 
-              border: "1.5px solid #00c8ff33", 
-              borderRadius: "16px", 
-              padding: "32px 24px 28px 24px", 
-              boxShadow: "0 0 24px 0 #00c8ff22", 
-              display: "flex", 
-              flexDirection: "column", 
-              alignItems: "center", 
-              transition: "box-shadow 0.2s, border 0.2s", 
-              minHeight: "260px", 
+              background: "#0a0e1a",
+              border: "1.5px solid #00c8ff33",
+              borderRadius: "16px",
+              padding: "32px 24px 28px 24px",
+              boxShadow: "0 0 24px 0 #00c8ff22",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              transition: "box-shadow 0.2s, border 0.2s",
+              minHeight: "260px",
               cursor: "pointer"
             }}>
               <div style={{ marginBottom: "12px" }}>{feature.icon}</div>
@@ -153,7 +159,7 @@ const FeaturesSection: React.FC = () => {
               <div style={{ color: "#b0c4d8", fontSize: "0.98rem", marginBottom: "18px", textAlign: "center" }}>
                 {feature.description}
               </div>
-              <a href="#" style={{ color: "#00c8ff", fontWeight: 600, fontSize: "0.98rem", textDecoration: "none" }}>
+              <a href={feature.href} style={{ color: "#00c8ff", fontWeight: 600, fontSize: "0.98rem", textDecoration: "none" }}>
                 アクセスする →
               </a>
             </div>
