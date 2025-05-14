@@ -41,12 +41,12 @@ export default function RootLayout({
         <meta property="og:title" content="EUROPA" />
         <meta property="og:description" content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="/icon.png" />
+        <meta property="og:image" content="https://project-europa.work/icon.png" />
         <meta property="og:url" content="https://project-europa.work" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="EUROPA" />
         <meta name="twitter:description" content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム" />
-        <meta name="twitter:image" content="/icon.png" />
+        <meta name="twitter:image" content="https://project-europa.work/icon.png" />
       </head>
       <body
         className={
