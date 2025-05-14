@@ -362,6 +362,52 @@ export const deleteMyFile = async (id: string | number) => {
 };
 
 // マイページ：イベント取得API
+export const sendPasswordResetLink = async (email: string): Promise<{ status?: string; error?: string }> => {
+
+  const res = await apiRequest('/api/v1/forgot-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+  if (res.ok && data.status) return { status: data.status };
+  return { error: data.error || '送信に失敗しました' };
+};
+
+// パスワードリセットトークン検証API
+export const checkResetPasswordToken = async (token: string, email: string): Promise<{ valid: boolean; message?: string }> => {
+  const params = new URLSearchParams({ token, email });
+  const res = await apiRequest(`/api/v1/reset-password?${params.toString()}`, { method: 'GET' });
+  if (res.ok) {
+    return { valid: true };
+  } else {
+    const data = await res.json().catch(() => ({}));
+    return { valid: false, message: data.message || '無効なリセットリンクです' };
+  }
+};
+
+// パスワードリセットAPI
+export const resetPassword = async (
+  token: string,
+  email: string,
+  password: string,
+  passwordConfirmation: string
+): Promise<{ message?: string; error?: string }> => {
+  const res = await apiRequest('/api/v1/reset-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      token,
+      email,
+      password,
+      password_confirmation: passwordConfirmation,
+    }),
+  });
+  const data = await res.json();
+  if (res.ok && data.message) return { message: data.message };
+  return { error: data.error || 'リセットに失敗しました' };
+};
+
 export const fetchMyEvents = async () => {
   const res = await apiRequest('/api/v1/mypage/events', { method: 'GET' });
   if (!res.ok) throw new Error('イベント取得失敗');

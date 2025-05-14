@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { sendPasswordResetLink } from '../../utils/api';
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,14 +19,12 @@ const ForgotPasswordPage: React.FC = () => {
     setIsSuccess(false);
 
     try {
-      // ここに実際のパスワードリセットメール送信ロジックを実装
-      console.log('パスワードリセットメール送信:', { email });
-      
-      // 仮の遅延（実際の処理に置き換え）
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 成功時の処理
-      setIsSuccess(true);
+      const result = await sendPasswordResetLink(email);
+      if (result.status) {
+        setIsSuccess(true);
+      } else {
+        setError(result.error || 'メールの送信に失敗しました。メールアドレスを確認してください。');
+      }
     } catch (err) {
       setError('メールの送信に失敗しました。メールアドレスを確認してください。');
     } finally {
@@ -41,7 +40,7 @@ const ForgotPasswordPage: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         display: 'flex',
@@ -67,7 +66,7 @@ const ForgotPasswordPage: React.FC = () => {
           }}>
             パスワードをお忘れですか？
           </h1>
-          
+
           <p style={{
             color: '#b0c4d8',
             fontSize: '0.95rem',
@@ -78,7 +77,7 @@ const ForgotPasswordPage: React.FC = () => {
             登録したメールアドレスを入力してください。<br />
             パスワードリセット用のリンクをお送りします。
           </p>
-          
+
           {error && (
             <div style={{
               background: 'rgba(255, 0, 0, 0.1)',
@@ -91,7 +90,7 @@ const ForgotPasswordPage: React.FC = () => {
               {error}
             </div>
           )}
-          
+
           {isSuccess ? (
             <div style={{
               background: 'rgba(0, 200, 83, 0.1)',
@@ -111,8 +110,8 @@ const ForgotPasswordPage: React.FC = () => {
           ) : (
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: '24px' }}>
-                <label 
-                  htmlFor="email" 
+                <label
+                  htmlFor="email"
                   style={{
                     display: 'block',
                     marginBottom: '8px',
@@ -142,7 +141,7 @@ const ForgotPasswordPage: React.FC = () => {
                   placeholder="example@europa.com"
                 />
               </div>
-              
+
               <button
                 type="submit"
                 disabled={isLoading}
@@ -164,15 +163,15 @@ const ForgotPasswordPage: React.FC = () => {
               </button>
             </form>
           )}
-          
+
           <div style={{
             marginTop: '24px',
             textAlign: 'center',
             color: '#b0c4d8',
             fontSize: '0.9rem'
           }}>
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               style={{
                 color: '#00c8ff',
                 textDecoration: 'none',
@@ -184,7 +183,7 @@ const ForgotPasswordPage: React.FC = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

@@ -43,6 +43,9 @@ Route::prefix('v1')->group(function () {
     Route::post('eventNotice', [\App\Http\Controllers\Api\V1\EventNoticeController::class, 'store']);
     Route::post('team/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', true)->defaults('isNormalUpdate', false);
     Route::post('match/simpleupload', [\App\Http\Controllers\Api\V1\UploadController::class, 'upload'])->defaults('isTeam', false)->defaults('isNormalUpdate', false);
+    Route::post('forgot-password', [\App\Http\Controllers\Api\V1\Auth\ForgotPasswordController::class, 'sendResetLinkEmail']);
+    Route::post('reset-password', [\App\Http\Controllers\Api\V1\Auth\ResetPasswordController::class, 'reset']);
+    Route::get('reset-password', [\App\Http\Controllers\Api\V1\Auth\ResetPasswordController::class, 'showResetForm']);
 
     Route::middleware('auth:sanctum')->get('/user/profile', function (Request $request) {
       return response()->json($request->user());

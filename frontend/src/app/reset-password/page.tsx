@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { checkResetPasswordToken, resetPassword } from '../../utils/api';
 
 // クライアントコンポーネントを分離
 const ResetPasswordForm = () => {
   const searchParams = useSearchParams();
   const [token, setToken] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -18,52 +20,54 @@ const ResetPasswordForm = () => {
   const [isTokenValid, setIsTokenValid] = useState(true);
 
   useEffect(() => {
-    // URLからトークンを取得
+    // URLからトークンとメールを取得
     const tokenParam = searchParams.get('token');
-    if (tokenParam) {
+    const emailParam = searchParams.get('email');
+    if (tokenParam && emailParam) {
       setToken(tokenParam);
-      // 実際のアプリでは、ここでトークンの有効性を確認するAPIを呼び出す
-      validateToken(tokenParam);
+      setEmail(emailParam);
+      // APIでトークン検証
+      checkResetPasswordToken(tokenParam, emailParam).then(res => {
+        setIsTokenValid(res.valid);
+        if (!res.valid) setError(res.message || '無効なリセットリンクです。パスワードリセットを再度リクエストしてください。');
+      });
     } else {
       setIsTokenValid(false);
       setError('無効なリセットリンクです。パスワードリセットを再度リクエストしてください。');
     }
   }, [searchParams]);
 
-  // トークン検証のモック関数
-  const validateToken = async (token: string) => {
-    // 実際のアプリではAPIを呼び出してトークンを検証
-    // ここではモックとして常に有効とする
-    setIsTokenValid(true);
-  };
+  useEffect(() => {
+    if (isTokenValid) {
+      setError('');
+    }
+  }, [isTokenValid]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // パスワード一致チェック
     if (password !== confirmPassword) {
       setError('パスワードが一致しません。');
       return;
     }
-    
+
     // パスワード強度チェック
     if (password.length < 8) {
       setError('パスワードは8文字以上である必要があります。');
       return;
     }
-    
+
     setIsLoading(true);
     setError('');
 
     try {
-      // ここに実際のパスワードリセットロジックを実装
-      console.log('パスワードリセット:', { token, password });
-      
-      // 仮の遅延（実際の処理に置き換え）
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 成功時の処理
-      setIsSuccess(true);
+      const result = await resetPassword(token, email, password, confirmPassword);
+      if (result.message) {
+        setIsSuccess(true);
+      } else {
+        setError(result.error || 'パスワードのリセットに失敗しました。もう一度お試しください。');
+      }
     } catch (err) {
       setError('パスワードのリセットに失敗しました。もう一度お試しください。');
     } finally {
@@ -90,7 +94,7 @@ const ResetPasswordForm = () => {
       }}>
         パスワードリセット
       </h1>
-      
+
       {error && (
         <div style={{
           background: 'rgba(255, 0, 0, 0.1)',
@@ -103,7 +107,7 @@ const ResetPasswordForm = () => {
           {error}
         </div>
       )}
-      
+
       {isSuccess ? (
         <div style={{
           background: 'rgba(0, 200, 83, 0.1)',
@@ -117,9 +121,9 @@ const ResetPasswordForm = () => {
             パスワードが正常に変更されました！
           </p>
           <p>新しいパスワードでログインできます。</p>
-          
-          <Link 
-            href="/login" 
+
+          <Link
+            href="/login"
             style={{
               display: 'inline-block',
               marginTop: '16px',
@@ -139,8 +143,8 @@ const ResetPasswordForm = () => {
         <form onSubmit={handleSubmit}>
           {/* 新しいパスワード */}
           <div style={{ marginBottom: '20px' }}>
-            <label 
-              htmlFor="password" 
+            <label
+              htmlFor="password"
               style={{
                 display: 'block',
                 marginBottom: '8px',
@@ -177,11 +181,11 @@ const ResetPasswordForm = () => {
               ※ 8文字以上の英数字を含むパスワードを設定してください
             </p>
           </div>
-          
+
           {/* パスワード確認 */}
           <div style={{ marginBottom: '24px' }}>
-            <label 
-              htmlFor="confirmPassword" 
+            <label
+              htmlFor="confirmPassword"
               style={{
                 display: 'block',
                 marginBottom: '8px',
@@ -211,7 +215,7 @@ const ResetPasswordForm = () => {
               placeholder="パスワードを再入力"
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={isLoading}
@@ -241,8 +245,8 @@ const ResetPasswordForm = () => {
           <p style={{ marginBottom: '16px' }}>
             リンクが無効または期限切れです。
           </p>
-          <Link 
-            href="/forgot-password" 
+          <Link
+            href="/forgot-password"
             style={{
               display: 'inline-block',
               padding: '10px 16px',
@@ -258,7 +262,7 @@ const ResetPasswordForm = () => {
           </Link>
         </div>
       )}
-      
+
       {!isSuccess && (
         <div style={{
           marginTop: '24px',
@@ -266,8 +270,8 @@ const ResetPasswordForm = () => {
           color: '#b0c4d8',
           fontSize: '0.9rem'
         }}>
-          <Link 
-            href="/login" 
+          <Link
+            href="/login"
             style={{
               color: '#00c8ff',
               textDecoration: 'none',
@@ -292,7 +296,7 @@ const ResetPasswordPage: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         display: 'flex',
@@ -318,7 +322,7 @@ const ResetPasswordPage: React.FC = () => {
           <ResetPasswordForm />
         </Suspense>
       </main>
-      
+
       <Footer />
     </div>
   );
