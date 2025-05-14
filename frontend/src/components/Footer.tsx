@@ -9,7 +9,6 @@ const Footer = () => {
       background: "#0a0e1a",
       borderTop: "1px solid #07324a",
       padding: "48px 0 32px 0",
-      marginTop: "64px"
     }}>
       <div style={{
         maxWidth: "1200px",

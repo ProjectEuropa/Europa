@@ -9,7 +9,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 const UploadPage: React.FC = () => {
+  const { user, loading } = useAuth();
   const [ownerName, setOwnerName] = useState('');
+
+  // 認証済みならデフォルトでオーナー名をセット
+  useEffect(() => {
+    if (user && user.name && !ownerName) {
+      setOwnerName(user.name);
+    }
+  }, [user, ownerName]);
   const [comment, setComment] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -24,7 +32,6 @@ const UploadPage: React.FC = () => {
   const tagInputRef = useRef<HTMLInputElement>(null);
 
   // 認証状態はuseAuthフックで判定
-  const { user, loading } = useAuth();
   const isAuthenticated = !!user;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
