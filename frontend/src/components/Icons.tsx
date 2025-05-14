@@ -17,6 +17,22 @@ const Icons = {
       </defs>
     </svg>
   ),
+  
+  // Favicon (アプリアイコン)
+  Favicon: ({ size = 32, color = "#00c8ff", secondaryColor = "#0060a0" }) => (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="6" fill="url(#faviconGrad)" />
+      <path d="M8 8H24M8 16H20M8 24H24" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <path d="M16 4V28" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeDasharray="1 2" />
+      <circle cx="24" cy="16" r="2.5" fill="white" />
+      <defs>
+        <linearGradient id="faviconGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+          <stop stopColor={color} />
+          <stop offset="1" stopColor={secondaryColor} />
+        </linearGradient>
+      </defs>
+    </svg>
+  ),
   // チームデータ検索アイコン
   TeamSearch: ({ size = 40, color = "#00c8ff" }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -108,6 +124,45 @@ const Icons = {
       <path d="M16 17L21 12L16 7" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M21 12H9" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M5 19V5C5 3.89543 5.89543 3 7 3H12" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  
+  // SNSシェアアイコン
+  Twitter: ({ size = 24, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22 4.01C21.0424 4.67546 19.9821 5.19211 18.86 5.54C18.2577 4.84751 17.4573 4.35418 16.567 4.12063C15.6767 3.88708 14.7395 3.92301 13.8821 4.22426C13.0247 4.5255 12.2884 5.08235 11.773 5.82C11.2575 6.55765 10.9877 7.44296 11 8.34V9.34C9.24257 9.38225 7.50127 8.98258 5.93101 8.18137C4.36074 7.38016 3.01032 6.20006 2 4.75C2 4.75 -2 13 8 17C5.94053 18.398 3.48716 19.0989 1 19C11 24 23 17 23 8.34C22.9991 8.06 22.9723 7.78 22.92 7.51C23.9406 6.35104 24.4892 4.88618 22 4.01Z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  
+  Facebook: ({ size = 24, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  
+  LinkedIn: ({ size = 24, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 8C17.5913 8 19.1174 8.63214 20.2426 9.75736C21.3679 10.8826 22 12.4087 22 14V21H18V14C18 13.4696 17.7893 12.9609 17.4142 12.5858C17.0391 12.2107 16.5304 12 16 12C15.4696 12 14.9609 12.2107 14.5858 12.5858C14.2107 12.9609 14 13.4696 14 14V21H10V14C10 12.4087 10.6321 10.8826 11.7574 9.75736C12.8826 8.63214 14.4087 8 16 8Z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M6 9H2V21H6V9Z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M4 6C5.10457 6 6 5.10457 6 4C6 2.89543 5.10457 2 4 2C2.89543 2 2 2.89543 2 4C2 5.10457 2.89543 6 4 6Z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  
+  Instagram: ({ size = 24, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17 2H7C4.23858 2 2 4.23858 2 7V17C2 19.7614 4.23858 22 7 22H17C19.7614 22 22 19.7614 22 17V7C22 4.23858 19.7614 2 17 2Z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M16 11.37C16.1234 12.2022 15.9813 13.0522 15.5938 13.799C15.2063 14.5458 14.5932 15.1514 13.8416 15.5297C13.0901 15.9079 12.2385 16.0396 11.4078 15.9059C10.5771 15.7723 9.80977 15.3801 9.21485 14.7852C8.61993 14.1902 8.22774 13.4229 8.09408 12.5922C7.96042 11.7615 8.09208 10.9099 8.47034 10.1584C8.8486 9.40685 9.4542 8.79374 10.201 8.40624C10.9478 8.01874 11.7978 7.87658 12.63 8C13.4789 8.12588 14.2649 8.52146 14.8717 9.12831C15.4785 9.73515 15.8741 10.5211 16 11.37Z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M17.5 6.5H17.51" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  
+  Share: ({ size = 24, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="18" cy="5" r="3" stroke={color} strokeWidth="1.5"/>
+      <circle cx="6" cy="12" r="3" stroke={color} strokeWidth="1.5"/>
+      <circle cx="18" cy="19" r="3" stroke={color} strokeWidth="1.5"/>
+      <path d="M9 10.5L15 6.5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M9 13.5L15 17.5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   )
 };
