@@ -4,6 +4,7 @@ on:
     types: [opened, reopened, synchronize]
 jobs:
   review:
+    timeout-minutes: 10
     if: ${{ github.event.sender.type != 'Bot' }}
     runs-on: ubuntu-latest
     permissions:
