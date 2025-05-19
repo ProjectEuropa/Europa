@@ -204,20 +204,7 @@ const Header = () => {
       {/* サイドメニュー */}
       <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
       
-      {/* アニメーション用CSS */}
-      <style jsx global>{`
-        @keyframes pulse {
-          0% {
-            box-shadow: 0 0 0 0 rgba(0, 200, 255, 0.4);
-          }
-          70% {
-            box-shadow: 0 0 0 10px rgba(0, 200, 255, 0);
-          }
-          100% {
-            box-shadow: 0 0 0 0 rgba(0, 200, 255, 0);
-          }
-        }
-      `}</style>
+
     </>
   );
 };
