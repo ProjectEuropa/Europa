@@ -3,9 +3,10 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import { checkResetPasswordToken, resetPassword } from '../../utils/api';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { checkResetPasswordToken, resetPassword } from '@/utils/api';
+import { Eye, EyeOff } from 'lucide-react';
 
 // クライアントコンポーネントを分離
 const ResetPasswordForm = () => {
@@ -18,6 +19,8 @@ const ResetPasswordForm = () => {
   const [error, setError] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isTokenValid, setIsTokenValid] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     // URLからトークンとメールを取得
@@ -154,25 +157,53 @@ const ResetPasswordForm = () => {
             >
               新しいパスワード
             </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                background: '#111A2E',
-                border: '1px solid #1E3A5F',
-                borderRadius: '6px',
-                color: 'white',
-                fontSize: '1rem',
-                outline: 'none',
-                transition: 'border-color 0.2s'
-              }}
-              placeholder="8文字以上"
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#111A2E',
+                  border: '1px solid #1E3A5F',
+                  borderRadius: '6px',
+                  color: 'white',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  paddingRight: '40px' // アイコンのスペースを確保
+                }}
+                placeholder="新しいパスワード"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#b0c4d8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '4px'
+                }}
+                aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+              >
+                {showPassword ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
+              </button>
+            </div>
             <p style={{
               color: '#8CB4FF',
               fontSize: '0.8rem',
@@ -195,25 +226,53 @@ const ResetPasswordForm = () => {
             >
               パスワード再確認
             </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                background: '#111A2E',
-                border: '1px solid #1E3A5F',
-                borderRadius: '6px',
-                color: 'white',
-                fontSize: '1rem',
-                outline: 'none',
-                transition: 'border-color 0.2s'
-              }}
-              placeholder="パスワードを再入力"
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#111A2E',
+                  border: '1px solid #1E3A5F',
+                  borderRadius: '6px',
+                  color: 'white',
+                  fontSize: '1rem',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  paddingRight: '40px' // アイコンのスペースを確保
+                }}
+                placeholder="パスワードを再入力"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#b0c4d8',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '4px'
+                }}
+                aria-label={showConfirmPassword ? "パスワードを隠す" : "パスワードを表示"}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
+              </button>
+            </div>
           </div>
 
           <button
