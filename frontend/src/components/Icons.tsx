@@ -164,6 +164,23 @@ const Icons = {
       <path d="M9 10.5L15 6.5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
       <path d="M9 13.5L15 17.5" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
+  ),
+  
+  // ハンバーガーメニューアイコン
+  Menu: ({ size = 24, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 6H21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 12H21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3 18H21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  
+  // メニューを閉じるアイコン
+  Close: ({ size = 24, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 6L6 18" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M6 6L18 18" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
   )
 };
 

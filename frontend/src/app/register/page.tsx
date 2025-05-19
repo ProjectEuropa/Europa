@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { Eye, EyeOff } from 'lucide-react';
 
 const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -12,16 +13,18 @@ const RegisterPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // パスワード一致チェック
     if (password !== confirmPassword) {
       setError('パスワードが一致しません。');
       return;
     }
-    
+
     setIsLoading(true);
     setError('');
 
@@ -49,7 +52,7 @@ const RegisterPage: React.FC = () => {
       background: 'rgb(var(--background-rgb))'
     }}>
       <Header />
-      
+
       <main style={{
         flex: '1',
         display: 'flex',
@@ -75,7 +78,7 @@ const RegisterPage: React.FC = () => {
           }}>
             新規登録
           </h1>
-          
+
           {error && (
             <div style={{
               background: 'rgba(255, 0, 0, 0.1)',
@@ -88,12 +91,12 @@ const RegisterPage: React.FC = () => {
               {error}
             </div>
           )}
-          
+
           <form onSubmit={handleSubmit}>
             {/* 名前フィールド */}
             <div style={{ marginBottom: '20px' }}>
-              <label 
-                htmlFor="name" 
+              <label
+                htmlFor="name"
                 style={{
                   display: 'block',
                   marginBottom: '8px',
@@ -123,11 +126,11 @@ const RegisterPage: React.FC = () => {
                 placeholder="山田 太郎"
               />
             </div>
-            
+
             {/* メールアドレスフィールド */}
             <div style={{ marginBottom: '20px' }}>
-              <label 
-                htmlFor="email" 
+              <label
+                htmlFor="email"
                 style={{
                   display: 'block',
                   marginBottom: '8px',
@@ -157,11 +160,11 @@ const RegisterPage: React.FC = () => {
                 placeholder="example@europa.com"
               />
             </div>
-            
+
             {/* パスワードフィールド */}
             <div style={{ marginBottom: '20px' }}>
-              <label 
-                htmlFor="password" 
+              <label
+                htmlFor="password"
                 style={{
                   display: 'block',
                   marginBottom: '8px',
@@ -171,26 +174,54 @@ const RegisterPage: React.FC = () => {
               >
                 パスワード
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  background: '#111A2E',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '6px',
-                  color: 'white',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s'
-                }}
-                placeholder="8文字以上"
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: '#111A2E',
+                    border: '1px solid #1E3A5F',
+                    borderRadius: '6px',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
+                    paddingRight: '40px' // アイコンのスペースを確保
+                  }}
+                  placeholder="8文字以上"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#b0c4d8',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '4px'
+                  }}
+                  aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
               <p style={{
                 color: '#8CB4FF',
                 fontSize: '0.8rem',
@@ -199,11 +230,11 @@ const RegisterPage: React.FC = () => {
                 ※ 8文字以上の英数字を含むパスワードを設定してください
               </p>
             </div>
-            
+
             {/* パスワード再確認フィールド */}
             <div style={{ marginBottom: '24px' }}>
-              <label 
-                htmlFor="confirmPassword" 
+              <label
+                htmlFor="confirmPassword"
                 style={{
                   display: 'block',
                   marginBottom: '8px',
@@ -213,27 +244,55 @@ const RegisterPage: React.FC = () => {
               >
                 パスワード再確認
               </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  background: '#111A2E',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '6px',
-                  color: 'white',
-                  fontSize: '1rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s'
-                }}
-                placeholder="パスワードを再入力"
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: '#111A2E',
+                    border: '1px solid #1E3A5F',
+                    borderRadius: '6px',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
+                    paddingRight: '40px' // アイコンのスペースを確保
+                  }}
+                  placeholder="パスワードを再入力"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#b0c4d8',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '4px'
+                  }}
+                  aria-label={showConfirmPassword ? "パスワードを隠す" : "パスワードを表示"}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
+              </div>
             </div>
-            
+
             {/* 登録ボタン */}
             <button
               type="submit"
@@ -256,7 +315,7 @@ const RegisterPage: React.FC = () => {
               {isLoading ? '登録中...' : 'アカウント作成'}
             </button>
           </form>
-          
+
           {/* ログインへのリンク */}
           <div style={{
             marginTop: '24px',
@@ -265,8 +324,8 @@ const RegisterPage: React.FC = () => {
             fontSize: '0.9rem'
           }}>
             すでにアカウントをお持ちですか？{' '}
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               style={{
                 color: '#00c8ff',
                 textDecoration: 'none',
@@ -278,7 +337,7 @@ const RegisterPage: React.FC = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
