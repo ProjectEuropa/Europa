@@ -72,6 +72,18 @@ a {
   transform: scale(1.05);
 }
 
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 200, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 200, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 200, 255, 0);
+  }
+}
+
 .hover-glow:hover {
   text-shadow: 0 0 8px rgba(var(--cyber-blue), 0.8), 0 0 15px rgba(var(--cyber-blue), 0.5);
 }
