@@ -80,9 +80,19 @@ class FileResource extends Resource
               Tables\Columns\TextColumn::make('file_comment')
                 ->searchable(),
               Tables\Columns\TextColumn::make('upload_type')
-                ->searchable(),
+                ->label('アップロード種別')
+                ->formatStateUsing(fn ($state) => [
+                  '1' => '通常アップロード',
+                  '2' => 'ログインなし簡易アップロード',
+                ][$state] ?? '不明'),
+
+              // データ種別（ラベル化）
               Tables\Columns\TextColumn::make('data_type')
-                ->searchable(),
+                ->label('データ種別')
+                ->formatStateUsing(fn ($state) => [
+                  '1' => 'チーム',
+                  '2' => 'マッチ',
+                ][$state] ?? '不明'),
             ])
             ->filters([
                 //
