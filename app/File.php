@@ -32,7 +32,6 @@ class File extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'file_data' => 'binary',
     ];
 
     public function createdAt(): Attribute
