@@ -2,6 +2,40 @@ import React from 'react';
 
 // icons.tsx - Central icon export for Europa
 
+// 外部リンク用のアイコンをエクスポート
+export const ExternalLink = ({ className = "", size = 20, color = "#00c8ff" }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+  >
+    <path 
+      d="M10 6H6C4.89543 6 4 6.89543 4 8V18C4 19.1046 4.89543 20 6 20H16C17.1046 20 18 19.1046 18 18V14" 
+      stroke={color} 
+      strokeWidth="1.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+    <path 
+      d="M14 4H20V10" 
+      stroke={color} 
+      strokeWidth="1.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+    <path 
+      d="M20 4L10 14" 
+      stroke={color} 
+      strokeWidth="1.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const Icons = {
   // ロゴ
   Logo: ({ size = 30, color = "#00c8ff", secondaryColor = "#0060a0" }) => (
