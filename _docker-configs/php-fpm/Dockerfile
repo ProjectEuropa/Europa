@@ -8,7 +8,7 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 ARG NEW_RELIC_AGENT_VERSION
 ARG NEW_RELIC_LICENSE_KEY
 ARG NEW_RELIC_APPNAME
-ARG NEWRELIC_VERSION="11.8.0.22"
+ARG NEWRELIC_VERSION="11.9.0.23"
 
 RUN apt update \
     && apt install -y \
@@ -20,7 +20,9 @@ RUN apt update \
     libjpeg62-turbo-dev \
     libpng-dev \
     zlib1g-dev \
-    libzip-dev
+    libzip-dev \
+    libicu-dev && \
+    docker-php-ext-install intl
 
 RUN curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-${NEWRELIC_VERSION}-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz \
     && tar -xzf /tmp/newrelic-php-agent.tar.gz -C /tmp
