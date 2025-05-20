@@ -2,15 +2,15 @@ import React from 'react';
 
 const JoinNetworkSection: React.FC = () => {
   return (
-    <section id="join" style={{ 
-      padding: "80px 0", 
-      position: "relative", 
+    <section id="join" style={{
+      padding: "80px 0",
+      position: "relative",
       overflow: "hidden",
       background: "linear-gradient(180deg, #0a0818 0%, #050510 100%)"
     }}>
-      <div style={{ 
-        maxWidth: "800px", 
-        margin: "0 auto", 
+      <div style={{
+        maxWidth: "800px",
+        margin: "0 auto",
         padding: "0 20px",
         textAlign: "center"
       }}>
@@ -32,14 +32,14 @@ const JoinNetworkSection: React.FC = () => {
         }}>
           Discordに参加して、グローバルなカルネージハートEXAコミュニティで盛り上げましょう！
         </p>
-        
+
         <div style={{
           display: "flex",
           justifyContent: "center",
           gap: "16px",
           flexWrap: "wrap"
         }}>
-          <a href="https://discord.gg/MXX5946u" target="_blank" rel="noopener noreferrer" style={{
+          <a href="https://discord.gg/aXT3DNU8A4" target="_blank" rel="noopener noreferrer" style={{
             display: "flex",
             alignItems: "center",
             gap: "8px",
@@ -60,7 +60,7 @@ const JoinNetworkSection: React.FC = () => {
             </svg>
             Discordに参加
           </a>
-          
+
         </div>
       </div>
     </section>
