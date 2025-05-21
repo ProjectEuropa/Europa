@@ -53,6 +53,6 @@ class User extends Authenticatable
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_contains($this->email, config('app.panel_email')) && $this->hasVerifiedEmail();
+        return str_contains($this->email, config('app.panel_email'));
     }
 }
