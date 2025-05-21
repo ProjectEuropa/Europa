@@ -17,7 +17,7 @@ return [
 
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:3002'),
 
-    'panel_email' => env('PANEL_EMAIL', 'admin@localhost'),
+    'panel_email' => env('PANEL_EMAIL'),
 
     'admin_user' => env('ADMIN_BASIC_AUTH_USER'),
     'admin_password' => env('ADMIN_BASIC_AUTH_PASSWORD'),
