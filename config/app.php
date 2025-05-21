@@ -17,6 +17,11 @@ return [
 
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:3002'),
 
+    'panel_email' => env('PANEL_EMAIL', 'admin@localhost'),
+
+    'admin_user' => env('ADMIN_BASIC_AUTH_USER'),
+    'admin_password' => env('ADMIN_BASIC_AUTH_PASSWORD'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -175,6 +180,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
+        App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         Madnest\Madzipper\MadzipperServiceProvider::class
 
