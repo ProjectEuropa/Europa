@@ -19,6 +19,21 @@ class File extends Model
      */
     protected $guarded = [];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = ['file_data'];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+    ];
+
     public function createdAt(): Attribute
     {
         return new Attribute(
@@ -67,5 +82,40 @@ class File extends Model
             return 'ダウンロード可能日時が過ぎていないためコメントは非表示です';
         }
         return $this->file_comment;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'upload_user_id');
+    }
+
+    /**
+     * Prepare the model for Livewire serialization.
+     * This method is called when the model is being converted to an array or JSON.
+     *
+     * @return array
+     */
+    public function toLivewire()
+    {
+        // Create a copy of the model's attributes without file_data
+        $attributes = $this->attributesToArray();
+        unset($attributes['file_data']);
+
+        return $attributes;
+    }
+
+    /**
+     * Hydrate the model from Livewire data.
+     * This method is called when the model is being hydrated from Livewire data.
+     *
+     * @param array $value
+     * @return static
+     */
+    public static function fromLivewire($value)
+    {
+        // If we're creating a new instance from Livewire data,
+        // we need to make sure we don't try to set file_data
+        // from the Livewire data
+        return static::find($value['id'] ?? null);
     }
 }
