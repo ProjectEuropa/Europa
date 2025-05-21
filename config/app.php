@@ -19,6 +19,9 @@ return [
 
     'panel_email' => env('PANEL_EMAIL', 'admin@localhost'),
 
+    'admin_user' => env('ADMIN_BASIC_AUTH_USER'),
+    'admin_password' => env('ADMIN_BASIC_AUTH_PASSWORD'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
