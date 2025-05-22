@@ -146,5 +146,21 @@ export const Icons = {
       <circle cx="11" cy="11" r="7" stroke={color} strokeWidth="2"/>
       <path d="M16 16L20 20" stroke={color} strokeWidth="2" strokeLinecap="round"/>
     </svg>
+  ),
+  // パスワード表示アイコン
+  EyeOpen: ({ size = 20, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 5C7.45455 5 4 8.90909 4 12C4 15.0909 7.45455 19 12 19C16.5455 19 20 15.0909 20 12C20 8.90909 16.5455 5 12 5Z" stroke={color} strokeWidth="1.5" strokeLinejoin="round"/>
+      <circle cx="12" cy="12" r="3" stroke={color} strokeWidth="1.5"/>
+    </svg>
+  ),
+  // パスワード非表示アイコン
+  EyeClosed: ({ size = 20, color = "#00c8ff" }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 4L20 20" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M10 6.5C4.89336 7.2191 4 12 4 12C4 12 6 17 12 17C13.4869 17 14.7288 16.6429 15.75 16.1429" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M13.5 13.5C12.7033 14.2967 11.2967 14.2967 10.5 13.5C9.7033 12.7033 9.7033 11.2967 10.5 10.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M17.5 9.5C18.3967 10.3967 19 11.5 19 12C19 12 17 17 11 17" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
   )
 };
