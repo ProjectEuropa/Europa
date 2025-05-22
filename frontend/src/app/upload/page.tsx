@@ -7,6 +7,7 @@ import Calendar from '@/components/Calendar';
 import { uploadTeamFile } from '@/utils/api';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { Icons } from '@/icons';
 
 const UploadPage: React.FC = () => {
   const { user, loading } = useAuth();
@@ -23,6 +24,7 @@ const UploadPage: React.FC = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [showSpecialTags, setShowSpecialTags] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [downloadDate, setDownloadDate] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -468,21 +470,45 @@ const UploadPage: React.FC = () => {
                   </svg>
                   削除パスワード
                 </label>
-                <input
-                  type="password"
-                  value={deletePassword}
-                  onChange={(e) => setDeletePassword(e.target.value)}
-                  placeholder="削除時に必要なパスワードを設定"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: '#111A2E',
-                    border: fieldErrors.teamDeletePassWord ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
-                    borderRadius: '6px',
-                    color: 'white',
-                    fontSize: '1rem'
-                  }}
-                />
+                <div style={{ position: 'relative', width: '100%' }}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder="削除時に必要なパスワードを設定"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      paddingRight: '40px', // アイコンの余白を確保
+                      background: '#111A2E',
+                      border: fieldErrors.teamDeletePassWord ? '2px solid #ff5c5c' : '1px solid #1E3A5F',
+                      borderRadius: '6px',
+                      color: 'white',
+                      fontSize: '1rem'
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '0',
+                      color: '#00c8ff'
+                    }}
+                    aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+                  >
+                    {showPassword ? <Icons.EyeClosed size={20} /> : <Icons.EyeOpen size={20} />}
+                  </button>
+                </div>
                 {fieldErrors.teamDeletePassWord && (
                   <div style={{ color: '#ff5c5c', marginTop: 4, fontSize: 13 }}>
                     {fieldErrors.teamDeletePassWord[0]}
