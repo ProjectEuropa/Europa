@@ -1,18 +1,60 @@
+# Project Europa
+
+このリポジトリは、LaravelバックエンドとNext.jsフロントエンドで構成されるProject Europaのコードベースを含んでいます。
+
 ## 環境構築手順
 
-### PHPビルトインサーバーで一旦
+### 技術スタック
 
-- PHP 8.4
-- Node.js >=20.0.0
-- Laravel 10.x
+#### バックエンド
+*   **PHP:** 8.4
+*   **Laravel Framework:** 11.x
 
-```console
-$ composer install
-$ cp .env.example .env
-$ php artisan key:generate
-$ npm install
-$ npm run dev
-```
+#### フロントエンド
+*   **Next.js:** 15.x (frontendディレクトリにあります)
+*   **React:** 19.x
+
+### PHPビルトインサーバーで開発する場合
+
+1.  **プロジェクトルートに移動:**
+    ```bash
+    cd /workspace/Europa
+    ```
+2.  **PHP依存関係のインストール:**
+    ```bash
+    composer install
+    ```
+3.  **環境ファイルのコピー:**
+    ```bash
+    cp .env.example .env
+    ```
+4.  **アプリケーションキーの生成:**
+    ```bash
+    php artisan key:generate
+    ```
+5.  **データベースマイグレーションの実行 (必要であればシーダーも):**
+    ```bash
+    php artisan migrate --seed
+    ```
+6.  **フロントエンドの依存関係のインストール:**
+    ```bash
+    cd frontend
+    npm install
+    # または yarn install
+    # または pnpm install
+    # または bun install
+    cd ..
+    ```
+7.  **Laravel開発サーバーの起動:**
+    ```bash
+    php artisan serve --host 0.0.0.0 --port 50756
+    ```
+8.  **Next.js開発サーバーの起動 (新しいターミナルで):**
+    ```bash
+    cd frontend
+    npm run dev
+    ```
+    (通常、`http://localhost:3000` または `http://localhost:3002` で起動します)
 
 ### Dockerを使う場合
 
