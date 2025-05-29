@@ -29,6 +29,7 @@ services:
         - NEW_RELIC_AGENT_VERSION=11.2.0.15
         - NEW_RELIC_LICENSE_KEY=${NRIA_LICENSE_KEY}
         - NEW_RELIC_APPNAME="project-europa - ${APP_ENV}"
+        - INSTALL_NEW_RELIC=false
     depends_on:
       - pg
     working_dir: /var/www/html

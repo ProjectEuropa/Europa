@@ -9,6 +9,7 @@ ARG NEW_RELIC_AGENT_VERSION
 ARG NEW_RELIC_LICENSE_KEY
 ARG NEW_RELIC_APPNAME
 ARG NEWRELIC_VERSION="11.9.0.23"
+ARG INSTALL_NEW_RELIC="true"
 
 RUN apt update \
     && apt install -y \
@@ -24,18 +25,20 @@ RUN apt update \
     libicu-dev && \
     docker-php-ext-install intl
 
-RUN curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-${NEWRELIC_VERSION}-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz \
-    && tar -xzf /tmp/newrelic-php-agent.tar.gz -C /tmp
-
-RUN find /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux -name "newrelic.ini" 2>/dev/null
-# New Relic PHP Agent をインストール
-WORKDIR /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux
-RUN ./newrelic-install install
-RUN echo "extension=newrelic.so" > /usr/local/etc/php/conf.d/newrelic.ini \
-    && echo "newrelic.license=\"${NEW_RELIC_LICENSE_KEY}\"" >> /usr/local/etc/php/conf.d/newrelic.ini \
-    && echo "newrelic.appname=\"${NEW_RELIC_APPNAME}\""   >> /usr/local/etc/php/conf.d/newrelic.ini \
-    && echo "newrelic.daemon.address=\"newrelic-php-daemon:31339\"" >> /usr/local/etc/php/conf.d/newrelic.ini
-RUN rm -rf /tmp/newrelic-php5-linux /tmp/newrelic-php5-linux.tar.gz
+# New Relic PHP Agent のインストール（条件付き）
+RUN if [ "$INSTALL_NEW_RELIC" = "true" ]; then \
+        curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-${NEWRELIC_VERSION}-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz && \
+        tar -xzf /tmp/newrelic-php-agent.tar.gz -C /tmp && \
+        cd /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux && \
+        ./newrelic-install install && \
+        echo "extension=newrelic.so" > /usr/local/etc/php/conf.d/newrelic.ini && \
+        echo "newrelic.license=\"${NEW_RELIC_LICENSE_KEY}\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
+        echo "newrelic.appname=\"${NEW_RELIC_APPNAME}\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
+        echo "newrelic.daemon.address=\"newrelic-php-daemon:31339\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
+        rm -rf /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux /tmp/newrelic-php-agent.tar.gz; \
+    else \
+        echo "New Relic installation skipped for local development"; \
+    fi
 
 RUN cd /usr/bin && curl -s http://getcomposer.org/installer | php -- --install-dir=/usr/bin && ln -s /usr/bin/composer.phar /usr/bin/composer
 
