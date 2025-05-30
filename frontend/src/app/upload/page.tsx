@@ -25,6 +25,7 @@ const UploadPage: React.FC = () => {
   const [showSpecialTags, setShowSpecialTags] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [downloadDate, setDownloadDate] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -120,11 +121,18 @@ const UploadPage: React.FC = () => {
       return;
     }
 
+    // 確認ダイアログを表示
+    setShowConfirmDialog(true);
+  };
+  
+  // アップロード実行関数
+  const executeUpload = async () => {
+    setShowConfirmDialog(false);
     setIsUploading(true);
     try {
       // ファイルアップロードAPI呼び出し
       await uploadTeamFile(
-        selectedFile,
+        selectedFile!,
         isAuthenticated,
         {
           ownerName,
@@ -797,6 +805,138 @@ const UploadPage: React.FC = () => {
       </main>
 
       <Footer />
+      
+      {/* アップロード確認ダイアログ */}
+      {showConfirmDialog && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}
+          onClick={() => setShowConfirmDialog(false)}
+        >
+          <div 
+            style={{
+              backgroundColor: '#0A1022',
+              border: '2px solid #00c8ff',
+              borderRadius: '8px',
+              padding: '24px',
+              maxWidth: '600px',
+              width: '90%',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 style={{ color: 'white', fontSize: '1.3rem', marginTop: 0, marginBottom: '16px' }}>
+              チームデータアップロードの確認
+            </h3>
+            <div style={{ color: '#b0c4d8', marginBottom: '24px', lineHeight: '1.6' }}>
+              <p style={{ marginBottom: '12px' }}>
+                以下の内容でチームデータをアップロードします。よろしいですか？
+              </p>
+              
+              <div style={{ background: '#061022', borderRadius: '6px', padding: '16px', fontSize: '0.9rem', marginBottom: '16px' }}>
+                <div style={{ marginBottom: '8px', display: 'flex' }}>
+                  <div style={{ width: '120px', color: '#00c8ff' }}>ファイル名:</div>
+                  <div style={{ flex: 1 }}>{selectedFile?.name}</div>
+                </div>
+                
+                <div style={{ marginBottom: '8px', display: 'flex' }}>
+                  <div style={{ width: '120px', color: '#00c8ff' }}>オーナー名:</div>
+                  <div style={{ flex: 1 }}>{ownerName || '設定なし'}</div>
+                </div>
+                
+                {comment && (
+                  <div style={{ marginBottom: '8px', display: 'flex' }}>
+                    <div style={{ width: '120px', color: '#00c8ff' }}>コメント:</div>
+                    <div style={{ flex: 1 }}>{comment}</div>
+                  </div>
+                )}
+                
+                {tags.length > 0 && (
+                  <div style={{ marginBottom: '8px', display: 'flex' }}>
+                    <div style={{ width: '120px', color: '#00c8ff' }}>タグ:</div>
+                    <div style={{ flex: 1 }}>
+                      {tags.map((tag, i) => (
+                        <span key={i} style={{ 
+                          display: 'inline-block', 
+                          background: 'rgba(0, 200, 255, 0.1)', 
+                          padding: '2px 6px', 
+                          borderRadius: '4px', 
+                          marginRight: '6px',
+                          marginBottom: '4px',
+                          border: '1px solid rgba(0, 200, 255, 0.3)'
+                        }}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {deletePassword && (
+                  <div style={{ marginBottom: '8px', display: 'flex' }}>
+                    <div style={{ width: '120px', color: '#00c8ff' }}>削除パスワード:</div>
+                    <div style={{ flex: 1 }}>設定済み</div>
+                  </div>
+                )}
+                
+                {downloadDate && (
+                  <div style={{ marginBottom: '8px', display: 'flex' }}>
+                    <div style={{ width: '120px', color: '#00c8ff' }}>ダウンロード日時:</div>
+                    <div style={{ flex: 1 }}>{new Date(downloadDate).toLocaleString('ja-JP')}</div>
+                  </div>
+                )}
+                
+                <div style={{ marginBottom: '0', display: 'flex' }}>
+                  <div style={{ width: '120px', color: '#00c8ff' }}>アップロードモード:</div>
+                  <div style={{ flex: 1 }}>{isAuthenticated ? '認証済み' : '非認証'}</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <button
+                type="button"
+                onClick={() => setShowConfirmDialog(false)}
+                style={{
+                  padding: '10px 20px',
+                  background: 'transparent',
+                  border: '1px solid #00c8ff',
+                  borderRadius: '4px',
+                  color: '#00c8ff',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={executeUpload}
+                style={{
+                  padding: '10px 24px',
+                  background: '#00c8ff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  color: '#0A1022',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                アップロードする
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
