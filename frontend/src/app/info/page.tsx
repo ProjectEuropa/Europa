@@ -83,7 +83,7 @@ const InformationPage: React.FC = () => {
                 width: '100%'
               }}>
                 <Calendar
-                  initialDate={new Date(2025, 4, 6)}
+                  initialDate={new Date()}
                   events={events.map(ev => ({
                     date: ev.event_closing_day,
                     title: ev.event_name,
