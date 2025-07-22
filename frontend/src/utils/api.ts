@@ -1,9 +1,14 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://local.europa.com";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://local.europa.com';
 const BASIC_AUTH_USER = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
 const BASIC_AUTH_PASSWORD = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 
-export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+export const apiRequest = async (
+  endpoint: string,
+  options: RequestInit = {}
+) => {
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   let baseHeaders: Record<string, string> = {};
 
   // 既存のヘッダーを処理
@@ -26,34 +31,35 @@ export const apiRequest = async (endpoint: string, options: RequestInit = {}) =>
     ...baseHeaders,
   };
 
-  if (!headers["Content-Type"]) {
-    headers["Content-Type"] = "application/json";
+  if (!headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
   }
 
   // トークンベースの認証
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   // Basic認証（特定の環境のみ）
   if (
-    API_BASE_URL.includes("stg.project-europa.work") &&
-    BASIC_AUTH_USER && BASIC_AUTH_PASSWORD &&
-    !endpoint.startsWith("/api/")
+    API_BASE_URL.includes('stg.project-europa.work') &&
+    BASIC_AUTH_USER &&
+    BASIC_AUTH_PASSWORD &&
+    !endpoint.startsWith('/api/')
   ) {
-    headers["Authorization"] = "Basic " + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers['Authorization'] =
+      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
   }
 
   try {
     return fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
-      credentials: "include",
+      credentials: 'include',
     });
   } catch (error) {
     console.error(`API Request to ${endpoint} failed:`, error);
     throw error;
   }
 };
-
 
 export const login = async (email: string, password: string) => {
   const res = await fetch(`${API_BASE_URL}/api/v1/login`, {
@@ -70,33 +76,42 @@ export const login = async (email: string, password: string) => {
 
 // チーム検索API
 export const searchTeams = async (keyword: string, page: number = 1) => {
-  const res = await apiRequest(`/api/v1/search/team?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+  const res = await apiRequest(
+    `/api/v1/search/team?keyword=${encodeURIComponent(keyword)}&page=${page}`
+  );
   if (!res.ok) throw new Error('検索失敗');
   return res.json();
 };
 
 // マッチ検索API
 export const searchMatch = async (keyword: string, page: number = 1) => {
-  const res = await apiRequest(`/api/v1/search/match?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+  const res = await apiRequest(
+    `/api/v1/search/match?keyword=${encodeURIComponent(keyword)}&page=${page}`
+  );
   if (!res.ok) throw new Error('検索失敗');
   return res.json();
 };
 
 // チームファイルのダウンロード可否チェック＆実行
-export const tryDownloadTeamFile = async (teamId: number): Promise<{ success: boolean; error?: string }> => {
+export const tryDownloadTeamFile = async (
+  teamId: number
+): Promise<{ success: boolean; error?: string }> => {
   const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download/${teamId}`;
   try {
     const res = await fetch(url, {
       method: 'GET',
       credentials: 'include',
-      headers: { 'Accept': 'application/json' }
+      headers: { Accept: 'application/json' },
     });
-    const contentType = res.headers.get('Content-Type') || "";
+    const contentType = res.headers.get('Content-Type') || '';
     if (!res.ok) {
       // 400, 404, 500 など
       if (contentType.includes('application/json')) {
         const data = await res.json();
-        return { success: false, error: data.error || `ダウンロードできません (${res.status})` };
+        return {
+          success: false,
+          error: data.error || `ダウンロードできません (${res.status})`,
+        };
       } else {
         return { success: false, error: `ダウンロード失敗 (${res.status})` };
       }
@@ -119,14 +134,17 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<{ success: bo
  * @param deletePassword 削除パスワード（設定されている場合）
  * @returns レスポンスデータ
  */
-export const deleteSearchFile = async (id: number, deletePassword: string = ''): Promise<{ message: string }> => {
+export const deleteSearchFile = async (
+  id: number,
+  deletePassword: string = ''
+): Promise<{ message: string }> => {
   try {
     const res = await apiRequest('/api/v1/delete/searchFile', {
       method: 'POST',
       body: JSON.stringify({
         id,
-        deletePassword
-      })
+        deletePassword,
+      }),
     });
 
     if (!res.ok) {
@@ -146,7 +164,7 @@ export const updateUserName = async (name: string) => {
   try {
     const res = await apiRequest('/api/v1/user/update', {
       method: 'POST',
-      body: JSON.stringify({ name })
+      body: JSON.stringify({ name }),
     });
 
     if (!res.ok) {
@@ -167,7 +185,7 @@ export const register = async (
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
     },
     body: JSON.stringify({
       name,
@@ -200,31 +218,38 @@ export const uploadTeamFile = async (
     downloadDate?: string;
   }
 ) => {
-  const endpoint = isAuthenticated ? '/api/v1/team/upload' : '/api/v1/team/simpleupload';
+  const endpoint = isAuthenticated
+    ? '/api/v1/team/upload'
+    : '/api/v1/team/simpleupload';
   const formData = new FormData();
   formData.append('teamFile', file);
   if (options?.ownerName) formData.append('teamOwnerName', options.ownerName);
   if (options?.comment) formData.append('teamComment', options.comment);
-  if (options?.deletePassword) formData.append('teamDeletePassWord', options.deletePassword);
-  if (options?.downloadDate) formData.append('teamDownloadableAt', options.downloadDate);
+  if (options?.deletePassword)
+    formData.append('teamDeletePassWord', options.deletePassword);
+  if (options?.downloadDate)
+    formData.append('teamDownloadableAt', options.downloadDate);
   if (options?.tags && Array.isArray(options.tags)) {
     formData.append('teamSearchTags', options.tags.join(','));
   }
 
   // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  let headers: Record<string, string> = {};
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const headers: Record<string, string> = {};
   // トークン認証
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   // APIリクエストとして認識させる
-  headers["Accept"] = "application/json";
+  headers['Accept'] = 'application/json';
   // Basic認証（特定環境のみ）
   if (
-    API_BASE_URL.includes("stg.project-europa.work") &&
-    BASIC_AUTH_USER && BASIC_AUTH_PASSWORD &&
-    !endpoint.startsWith("/api/")
+    API_BASE_URL.includes('stg.project-europa.work') &&
+    BASIC_AUTH_USER &&
+    BASIC_AUTH_PASSWORD &&
+    !endpoint.startsWith('/api/')
   ) {
-    headers["Authorization"] = "Basic " + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers['Authorization'] =
+      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
   }
 
   try {
@@ -252,15 +277,25 @@ export const uploadTeamFile = async (
  * @returns レスポンスデータ
  */
 // チーム一括DL用 検索API（ページネーション対応）
-export const sumDLSearchTeam = async (keyword: string = "", page: number = 1) => {
-  const res = await apiRequest(`/api/v1/sumDLSearch/team?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+export const sumDLSearchTeam = async (
+  keyword: string = '',
+  page: number = 1
+) => {
+  const res = await apiRequest(
+    `/api/v1/sumDLSearch/team?keyword=${encodeURIComponent(keyword)}&page=${page}`
+  );
   if (!res.ok) throw new Error('検索失敗');
   return res.json();
 };
 
 // マッチ一括DL用 検索API（ページネーション対応）
-export const sumDLSearchMatch = async (keyword: string = "", page: number = 1) => {
-  const res = await apiRequest(`/api/v1/sumDLSearch/match?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+export const sumDLSearchMatch = async (
+  keyword: string = '',
+  page: number = 1
+) => {
+  const res = await apiRequest(
+    `/api/v1/sumDLSearch/match?keyword=${encodeURIComponent(keyword)}&page=${page}`
+  );
   if (!res.ok) throw new Error('検索失敗');
   return res.json();
 };
@@ -270,7 +305,7 @@ export const sumDownload = async (checkedId: number[]) => {
   const res = await apiRequest('/api/v1/sumDownload', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ checkedId })
+    body: JSON.stringify({ checkedId }),
   });
   if (!res.ok) throw new Error('ダウンロード失敗');
   // ZIPファイル取得
@@ -342,10 +377,11 @@ export const deleteMyEvent = async (id: string | number) => {
   const res = await apiRequest('/api/v1/delete/usersRegisteredCloumn', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id })
+    body: JSON.stringify({ id }),
   });
   const data = await res.json();
-  if (!res.ok || !data.deleted) throw new Error(data.error || '削除に失敗しました');
+  if (!res.ok || !data.deleted)
+    throw new Error(data.error || '削除に失敗しました');
   return data;
 };
 
@@ -354,7 +390,7 @@ export const deleteMyFile = async (id: string | number) => {
   const res = await apiRequest('/api/v1/delete/myFile', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id })
+    body: JSON.stringify({ id }),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'ファイル削除に失敗しました');
@@ -362,8 +398,9 @@ export const deleteMyFile = async (id: string | number) => {
 };
 
 // マイページ：イベント取得API
-export const sendPasswordResetLink = async (email: string): Promise<{ status?: string; error?: string }> => {
-
+export const sendPasswordResetLink = async (
+  email: string
+): Promise<{ status?: string; error?: string }> => {
   const res = await apiRequest('/api/v1/forgot-password', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -375,14 +412,22 @@ export const sendPasswordResetLink = async (email: string): Promise<{ status?: s
 };
 
 // パスワードリセットトークン検証API
-export const checkResetPasswordToken = async (token: string, email: string): Promise<{ valid: boolean; message?: string }> => {
+export const checkResetPasswordToken = async (
+  token: string,
+  email: string
+): Promise<{ valid: boolean; message?: string }> => {
   const params = new URLSearchParams({ token, email });
-  const res = await apiRequest(`/api/v1/reset-password?${params.toString()}`, { method: 'GET' });
+  const res = await apiRequest(`/api/v1/reset-password?${params.toString()}`, {
+    method: 'GET',
+  });
   if (res.ok) {
     return { valid: true };
   } else {
     const data = await res.json().catch(() => ({}));
-    return { valid: false, message: data.message || '無効なリセットリンクです' };
+    return {
+      valid: false,
+      message: data.message || '無効なリセットリンクです',
+    };
   }
 };
 
@@ -421,7 +466,7 @@ export const fetchMyEvents = async () => {
     deadline: event.event_closing_day ?? '',
     endDisplayDate: event.event_displaying_day ?? '',
     type: event.event_type ?? '',
-    registeredDate: event.created_at ? event.created_at.slice(0, 10) : ''
+    registeredDate: event.created_at ? event.created_at.slice(0, 10) : '',
   }));
 };
 
@@ -436,28 +481,35 @@ export const uploadMatchFile = async (
     downloadDate?: string;
   }
 ) => {
-  const endpoint = isAuthenticated ? '/api/v1/match/upload' : '/api/v1/match/simpleupload';
+  const endpoint = isAuthenticated
+    ? '/api/v1/match/upload'
+    : '/api/v1/match/simpleupload';
   const formData = new FormData();
   formData.append('matchFile', file);
   if (options?.ownerName) formData.append('matchOwnerName', options.ownerName);
   if (options?.comment) formData.append('matchComment', options.comment);
-  if (options?.deletePassword) formData.append('matchDeletePassWord', options.deletePassword);
-  if (options?.downloadDate) formData.append('matchDownloadableAt', options.downloadDate);
+  if (options?.deletePassword)
+    formData.append('matchDeletePassWord', options.deletePassword);
+  if (options?.downloadDate)
+    formData.append('matchDownloadableAt', options.downloadDate);
   if (options?.tags && Array.isArray(options.tags)) {
     formData.append('matchSearchTags', options.tags.join(','));
   }
 
   // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  let headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  headers["Accept"] = "application/json";
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const headers: Record<string, string> = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  headers['Accept'] = 'application/json';
   if (
-    API_BASE_URL.includes("stg.project-europa.work") &&
-    BASIC_AUTH_USER && BASIC_AUTH_PASSWORD &&
-    !endpoint.startsWith("/api/")
+    API_BASE_URL.includes('stg.project-europa.work') &&
+    BASIC_AUTH_USER &&
+    BASIC_AUTH_PASSWORD &&
+    !endpoint.startsWith('/api/')
   ) {
-    headers["Authorization"] = "Basic " + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers['Authorization'] =
+      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
   }
 
   try {
@@ -477,4 +529,3 @@ export const uploadMatchFile = async (
     throw error;
   }
 };
-

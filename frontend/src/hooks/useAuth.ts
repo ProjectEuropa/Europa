@@ -1,11 +1,5 @@
-import { useState, useEffect } from 'react';
-
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  created_at?: string;
-}
+import { useEffect, useState } from 'react';
+import type { User } from '@/types/user';
 
 // XSS対策のためdangerouslySetInnerHTML禁止、CSP導入も推奨
 // ログイン・新規登録成功時は: localStorage.setItem('token', data.token);
@@ -22,12 +16,15 @@ export function useAuth() {
           setLoading(false);
           return;
         }
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/user/profile`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json',
-          },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/user/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+          }
+        );
         if (res.ok) {
           try {
             const data = await res.json();
@@ -38,7 +35,7 @@ export function useAuth() {
           }
         } else {
           setUser(null);
-          let errorText = await res.text();
+          const errorText = await res.text();
           try {
             const errorData = JSON.parse(errorText);
             console.error('ユーザー情報取得失敗', errorData);

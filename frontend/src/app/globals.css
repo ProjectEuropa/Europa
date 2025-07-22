@@ -16,16 +16,26 @@
   backdrop-filter: blur(2px);
 }
 .cyber-title {
-  text-shadow: 0 0 8px #00c8ff, 0 0 16px #3B82F6;
+  text-shadow:
+    0 0 8px #00c8ff,
+    0 0 16px #3b82f6;
   letter-spacing: 0.1em;
 }
 .shadow-cyber {
-  box-shadow: 0 0 8px 2px #00c8ff66, 0 0 0 2px #00c8ff33;
+  box-shadow:
+    0 0 8px 2px #00c8ff66,
+    0 0 0 2px #00c8ff33;
 }
 @keyframes cyber-border {
-  0% { border-color: #00c8ff; }
-  50% { border-color: #3B82F6; }
-  100% { border-color: #00c8ff; }
+  0% {
+    border-color: #00c8ff;
+  }
+  50% {
+    border-color: #3b82f6;
+  }
+  100% {
+    border-color: #00c8ff;
+  }
 }
 .animate-cyber-border {
   animation: cyber-border 2s infinite linear;
@@ -55,12 +65,16 @@ a {
 
 /* サイバーブルーのグロー効果 */
 .cyber-glow {
-  text-shadow: 0 0 5px rgba(var(--cyber-blue), 0.5), 0 0 10px rgba(var(--cyber-blue), 0.3);
+  text-shadow:
+    0 0 5px rgba(var(--cyber-blue), 0.5),
+    0 0 10px rgba(var(--cyber-blue), 0.3);
 }
 
 .cyber-border {
   border: 1px solid rgb(var(--cyber-blue));
-  box-shadow: 0 0 5px rgba(var(--cyber-blue), 0.5), inset 0 0 5px rgba(var(--cyber-blue), 0.3);
+  box-shadow:
+    0 0 5px rgba(var(--cyber-blue), 0.5),
+    inset 0 0 5px rgba(var(--cyber-blue), 0.3);
 }
 
 /* アニメーションのためのユーティリティクラス */
@@ -85,5 +99,7 @@ a {
 }
 
 .hover-glow:hover {
-  text-shadow: 0 0 8px rgba(var(--cyber-blue), 0.8), 0 0 15px rgba(var(--cyber-blue), 0.5);
+  text-shadow:
+    0 0 8px rgba(var(--cyber-blue), 0.8),
+    0 0 15px rgba(var(--cyber-blue), 0.5);
 }

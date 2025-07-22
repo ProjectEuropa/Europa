@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons } from "../icons";
+import { Icons } from '../icons';
 
 const HeaderLogo = () => (
   <div className="flex flex-col">

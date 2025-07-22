@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
+import type React from 'react';
+import { useState } from 'react';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 
 const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -30,12 +31,16 @@ const RegisterPage: React.FC = () => {
 
     try {
       // utils/api.tsのregister関数を利用
-      const res = await import('@/utils/api').then(mod => mod.register(name, email, password, confirmPassword));
+      const res = await import('@/utils/api').then(mod =>
+        mod.register(name, email, password, confirmPassword)
+      );
       if (res.token) {
         // 成功時の処理
         window.location.href = '/';
       } else {
-        setError(res.message || '登録に失敗しました。入力内容を確認してください。');
+        setError(
+          res.message || '登録に失敗しました。入力内容を確認してください。'
+        );
       }
     } catch (err) {
       setError('登録に失敗しました。入力内容を確認してください。');
@@ -45,49 +50,59 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      background: 'rgb(var(--background-rgb))'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        background: 'rgb(var(--background-rgb))',
+      }}
+    >
       <Header />
 
-      <main style={{
-        flex: '1',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '40px 20px'
-      }}>
-        <div style={{
-          width: '100%',
-          maxWidth: '450px',
-          background: '#0A1022',
-          borderRadius: '12px',
-          padding: '32px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-          border: '1px solid #1E3A5F'
-        }}>
-          <h1 style={{
-            color: '#00c8ff',
-            fontSize: '1.8rem',
-            fontWeight: 'bold',
-            marginBottom: '24px',
-            textAlign: 'center'
-          }}>
+      <main
+        style={{
+          flex: '1',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '40px 20px',
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            maxWidth: '450px',
+            background: '#0A1022',
+            borderRadius: '12px',
+            padding: '32px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            border: '1px solid #1E3A5F',
+          }}
+        >
+          <h1
+            style={{
+              color: '#00c8ff',
+              fontSize: '1.8rem',
+              fontWeight: 'bold',
+              marginBottom: '24px',
+              textAlign: 'center',
+            }}
+          >
             新規登録
           </h1>
 
           {error && (
-            <div style={{
-              background: 'rgba(255, 0, 0, 0.1)',
-              border: '1px solid rgba(255, 0, 0, 0.3)',
-              borderRadius: '4px',
-              padding: '10px',
-              marginBottom: '20px',
-              color: '#ff6b6b'
-            }}>
+            <div
+              style={{
+                background: 'rgba(255, 0, 0, 0.1)',
+                border: '1px solid rgba(255, 0, 0, 0.3)',
+                borderRadius: '4px',
+                padding: '10px',
+                marginBottom: '20px',
+                color: '#ff6b6b',
+              }}
+            >
               {error}
             </div>
           )}
@@ -101,7 +116,7 @@ const RegisterPage: React.FC = () => {
                   display: 'block',
                   marginBottom: '8px',
                   color: '#b0c4d8',
-                  fontSize: '0.9rem'
+                  fontSize: '0.9rem',
                 }}
               >
                 名前
@@ -110,7 +125,7 @@ const RegisterPage: React.FC = () => {
                 id="name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={e => setName(e.target.value)}
                 required
                 style={{
                   width: '100%',
@@ -121,7 +136,7 @@ const RegisterPage: React.FC = () => {
                   color: 'white',
                   fontSize: '1rem',
                   outline: 'none',
-                  transition: 'border-color 0.2s'
+                  transition: 'border-color 0.2s',
                 }}
                 placeholder="山田 太郎"
               />
@@ -135,7 +150,7 @@ const RegisterPage: React.FC = () => {
                   display: 'block',
                   marginBottom: '8px',
                   color: '#b0c4d8',
-                  fontSize: '0.9rem'
+                  fontSize: '0.9rem',
                 }}
               >
                 メールアドレス
@@ -144,7 +159,7 @@ const RegisterPage: React.FC = () => {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 required
                 style={{
                   width: '100%',
@@ -155,7 +170,7 @@ const RegisterPage: React.FC = () => {
                   color: 'white',
                   fontSize: '1rem',
                   outline: 'none',
-                  transition: 'border-color 0.2s'
+                  transition: 'border-color 0.2s',
                 }}
                 placeholder="example@europa.com"
               />
@@ -169,7 +184,7 @@ const RegisterPage: React.FC = () => {
                   display: 'block',
                   marginBottom: '8px',
                   color: '#b0c4d8',
-                  fontSize: '0.9rem'
+                  fontSize: '0.9rem',
                 }}
               >
                 パスワード
@@ -177,9 +192,9 @@ const RegisterPage: React.FC = () => {
               <div style={{ position: 'relative' }}>
                 <input
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   required
                   minLength={8}
                   style={{
@@ -192,7 +207,7 @@ const RegisterPage: React.FC = () => {
                     fontSize: '1rem',
                     outline: 'none',
                     transition: 'border-color 0.2s',
-                    paddingRight: '40px' // アイコンのスペースを確保
+                    paddingRight: '40px', // アイコンのスペースを確保
                   }}
                   placeholder="8文字以上"
                 />
@@ -211,22 +226,22 @@ const RegisterPage: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '4px'
+                    padding: '4px',
                   }}
-                  aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+                  aria-label={
+                    showPassword ? 'パスワードを隠す' : 'パスワードを表示'
+                  }
                 >
-                  {showPassword ? (
-                    <EyeOff size={20} />
-                  ) : (
-                    <Eye size={20} />
-                  )}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              <p style={{
-                color: '#8CB4FF',
-                fontSize: '0.8rem',
-                marginTop: '4px'
-              }}>
+              <p
+                style={{
+                  color: '#8CB4FF',
+                  fontSize: '0.8rem',
+                  marginTop: '4px',
+                }}
+              >
                 ※ 8文字以上の英数字を含むパスワードを設定してください
               </p>
             </div>
@@ -239,7 +254,7 @@ const RegisterPage: React.FC = () => {
                   display: 'block',
                   marginBottom: '8px',
                   color: '#b0c4d8',
-                  fontSize: '0.9rem'
+                  fontSize: '0.9rem',
                 }}
               >
                 パスワード再確認
@@ -247,9 +262,9 @@ const RegisterPage: React.FC = () => {
               <div style={{ position: 'relative' }}>
                 <input
                   id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={e => setConfirmPassword(e.target.value)}
                   required
                   style={{
                     width: '100%',
@@ -261,7 +276,7 @@ const RegisterPage: React.FC = () => {
                     fontSize: '1rem',
                     outline: 'none',
                     transition: 'border-color 0.2s',
-                    paddingRight: '40px' // アイコンのスペースを確保
+                    paddingRight: '40px', // アイコンのスペースを確保
                   }}
                   placeholder="パスワードを再入力"
                 />
@@ -280,9 +295,13 @@ const RegisterPage: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '4px'
+                    padding: '4px',
                   }}
-                  aria-label={showConfirmPassword ? "パスワードを隠す" : "パスワードを表示"}
+                  aria-label={
+                    showConfirmPassword
+                      ? 'パスワードを隠す'
+                      : 'パスワードを表示'
+                  }
                 >
                   {showConfirmPassword ? (
                     <EyeOff size={20} />
@@ -309,7 +328,7 @@ const RegisterPage: React.FC = () => {
                 cursor: isLoading ? 'not-allowed' : 'pointer',
                 opacity: isLoading ? 0.7 : 1,
                 transition: 'all 0.2s',
-                marginTop: '10px'
+                marginTop: '10px',
               }}
             >
               {isLoading ? '登録中...' : 'アカウント作成'}
@@ -317,19 +336,21 @@ const RegisterPage: React.FC = () => {
           </form>
 
           {/* ログインへのリンク */}
-          <div style={{
-            marginTop: '24px',
-            textAlign: 'center',
-            color: '#b0c4d8',
-            fontSize: '0.9rem'
-          }}>
+          <div
+            style={{
+              marginTop: '24px',
+              textAlign: 'center',
+              color: '#b0c4d8',
+              fontSize: '0.9rem',
+            }}
+          >
             すでにアカウントをお持ちですか？{' '}
             <Link
               href="/login"
               style={{
                 color: '#00c8ff',
                 textDecoration: 'none',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
               }}
             >
               ログイン

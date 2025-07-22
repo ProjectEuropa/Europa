@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { sumDLSearchTeam, sumDownload } from '@/utils/api';
@@ -12,7 +12,7 @@ type PaginationMeta = {
 
 // --- ページ番号配列生成 ---
 function getPaginationRange(current: number, last: number, delta = 2) {
-  const range: (number|string)[] = [];
+  const range: (number | string)[] = [];
   const left = Math.max(2, current - delta);
   const right = Math.min(last - 1, current + delta);
 
@@ -24,9 +24,8 @@ function getPaginationRange(current: number, last: number, delta = 2) {
   return range;
 }
 
-
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 
 export interface TeamData {
   id: string;
@@ -66,7 +65,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
         search_tag2: item.search_tag2 || '',
         search_tag3: item.search_tag3 || '',
         search_tag4: item.search_tag4 || '',
-        selected: false
+        selected: false,
       }));
       setTeamData(mapped);
       setCurrentPage(result.current_page || 1);
@@ -95,7 +94,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
   // ページ切り替え
   const handlePageChange = (page: number) => {
     handleSearch(searchQuery, page);
-  }
+  };
 
   const handleSelectAll = () => {
     const newSelectAll = !selectAll;
@@ -129,47 +128,63 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
   const selectedCount = teamData.filter(team => team.selected).length;
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      minHeight: "100vh",
-      background: "rgb(var(--background-rgb))"
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        background: 'rgb(var(--background-rgb))',
+      }}
+    >
       <Header />
 
-      <main style={{
-        flex: '1',
-        padding: '20px'
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto'
-        }}>
-          <h1 style={{
-            color: '#00c8ff',
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            marginBottom: '8px'
-          }}>
+      <main
+        style={{
+          flex: '1',
+          padding: '20px',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+          }}
+        >
+          <h1
+            style={{
+              color: '#00c8ff',
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              marginBottom: '8px',
+            }}
+          >
             チームデータ一括ダウンロード
           </h1>
-          <p style={{
-            color: '#b0c4d8',
-            fontSize: '1rem',
-            marginBottom: '24px'
-          }}>
+          <p
+            style={{
+              color: '#b0c4d8',
+              fontSize: '1rem',
+              marginBottom: '24px',
+            }}
+          >
             複数のチームデータを選択して一括ダウンロードできます。
           </p>
 
           {/* 検索バー */}
-          <div style={{ display: 'flex', marginBottom: '24px', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              marginBottom: '24px',
+              alignItems: 'center',
+            }}
+          >
             <form
               onSubmit={handleSearchSubmit}
-              style={{ 
-                display: 'flex', 
+              style={{
+                display: 'flex',
                 flex: 1,
                 position: 'relative',
-                marginRight: '16px'
+                marginRight: '16px',
               }}
             >
               <input
@@ -208,17 +223,26 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  zIndex: 1
+                  zIndex: 1,
                 }}
                 aria-label="検索実行"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <circle cx="11" cy="11" r="8" />
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </button>
             </form>
-            
+
             {/* ダウンロードボタン */}
             <button
               onClick={handleDownload}
@@ -231,13 +255,16 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                 borderRadius: '24px',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                cursor: selectedCount === 0 || isDownloading ? 'not-allowed' : 'pointer',
+                cursor:
+                  selectedCount === 0 || isDownloading
+                    ? 'not-allowed'
+                    : 'pointer',
                 opacity: selectedCount === 0 || isDownloading ? 0.7 : 1,
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
                 height: 48,
-                marginLeft: 16
+                marginLeft: 16,
               }}
             >
               {isDownloading ? (
@@ -246,7 +273,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                     style={{
                       width: '20px',
                       height: '20px',
-                      animation: 'spin 1s linear infinite'
+                      animation: 'spin 1s linear infinite',
                     }}
                     viewBox="0 0 24 24"
                     fill="none"
@@ -271,7 +298,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                   <svg
                     style={{
                       width: '20px',
-                      height: '20px'
+                      height: '20px',
                     }}
                     viewBox="0 0 24 24"
                     fill="none"
@@ -291,205 +318,274 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
           </div>
 
           {/* 選択情報 */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '16px'
-          }}>
-            <div style={{
-              color: '#b0c4d8',
-              fontSize: '0.9rem'
-            }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '16px',
+            }}
+          >
+            <div
+              style={{
+                color: '#b0c4d8',
+                fontSize: '0.9rem',
+              }}
+            >
               {teamData.length}件のチームデータが見つかりました
             </div>
-            <div style={{
-              color: '#00c8ff',
-              fontSize: '0.9rem'
-            }}>
+            <div
+              style={{
+                color: '#00c8ff',
+                fontSize: '0.9rem',
+              }}
+            >
               {/* {selectedCount > 0 ? `${selectedCount}件選択中 (合計 ${totalFileSize} MB)` : ''} */}
             </div>
           </div>
 
           {/* チームデータテーブル */}
-          <div style={{
-            background: '#0A1022',
-            borderRadius: '12px',
-            overflow: 'hidden',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-            border: '1px solid #1E3A5F',
-            marginBottom: '32px'
-          }}>
-            <table style={{
-              width: '100%',
-              borderCollapse: 'collapse'
-            }}>
+          <div
+            style={{
+              background: '#0A1022',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+              border: '1px solid #1E3A5F',
+              marginBottom: '32px',
+            }}
+          >
+            <table
+              style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+              }}
+            >
               <thead>
-              <tr style={{
-                background: '#0F1A2E',
-                borderBottom: '1px solid #1E3A5F'
-              }}>
-                <th style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal',
-                  width: '40px'
-                }}>
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    cursor: 'pointer'
-                  }}>
-                    <input
-                      type="checkbox"
-                      checked={selectAll}
-                      onChange={handleSelectAll}
-                      style={{
-                        width: '18px',
-                        height: '18px',
-                        accentColor: '#00c8ff'
-                      }}
-                    />
-                  </label>
-                </th>
-                <th style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal'
-                }}>
-                  チーム名
-                </th>
-                <th style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal'
-                }}>
-                  オーナー
-                </th>
-                <th style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal'
-                }}>
-                  アップロード日
-                </th>
-                <th style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal'
-                }}>
-                  ダウンロード可能日
-                </th>
-                <th style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal'
-                }}>
-                  コメント
-                </th>
-              </tr>
-              </thead>
-              <tbody>
-              {teamData.map((team, index) => (
-                <tr key={index + (currentPage - 1) * pageSize} style={{
-                  background: (index % 2 === 0) ? '#0F1A2E' : '#0A1022',
-                  borderBottom: '1px solid #1E3A5F'
-                }}>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'left',
-                    color: '#b0c4d8',
-                    fontWeight: 'normal',
-                    width: '40px'
-                  }}>
-                    <label style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      cursor: 'pointer'
-                    }}>
-                      <input
-                        type="checkbox"
-                        checked={team.selected}
-                        onChange={() => handleSelectTeam(team.id)}
-                        style={{
-                          width: '18px',
-                          height: '18px',
-                          accentColor: '#00c8ff',
-                          cursor: 'pointer',
-                          marginRight: '8px'
-                        }}
-                      />
-                    </label>
-                  </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'left',
-                    color: '#b0c4d8',
-                    fontWeight: 'normal'
-                  }}>
-                    {team.file_name}
-                  </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'left',
-                    color: '#b0c4d8',
-                    fontWeight: 'normal'
-                  }}>
-                    {team.upload_owner_name}
-                  </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'left',
-                    color: '#b0c4d8',
-                    fontWeight: 'normal',
-                    lineHeight: 1.5
-                  }}>
-                    <div>{team.created_at}</div>
-                  </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'left',
-                    color: '#b0c4d8',
-                    fontWeight: 'normal'
-                  }}>
-                    {team.downloadable_at}
-                  </td>
-                  <td
+                <tr
+                  style={{
+                    background: '#0F1A2E',
+                    borderBottom: '1px solid #1E3A5F',
+                  }}
+                >
+                  <th
                     style={{
                       padding: '16px',
                       textAlign: 'left',
                       color: '#b0c4d8',
-                      fontWeight: 'normal'
+                      fontWeight: 'normal',
+                      width: '40px',
                     }}
                   >
-                    {team.file_comment
-                      ? team.file_comment.split(/\r?\n/).map((line, idx) => (
-                          <React.Fragment key={idx}>
-                            {line}
-                            <br />
-                          </React.Fragment>
-                        ))
-                      : ''}
-                    <div style={{ marginTop: 4 }}>
-                      {[team.search_tag1, team.search_tag2, team.search_tag3, team.search_tag4].filter(Boolean).map((tag, i) => (
-                        <span key={i} style={{ background: '#1E3A5F', color: '#8CB4FF', borderRadius: '4px', padding: '2px 6px', marginRight: 4, fontSize: '0.8em', whiteSpace: 'nowrap' }}>{tag}</span>
-                      ))}
-                    </div>
-                  </td>
+                    <label
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          accentColor: '#00c8ff',
+                        }}
+                      />
+                    </label>
+                  </th>
+                  <th
+                    style={{
+                      padding: '16px',
+                      textAlign: 'left',
+                      color: '#b0c4d8',
+                      fontWeight: 'normal',
+                    }}
+                  >
+                    チーム名
+                  </th>
+                  <th
+                    style={{
+                      padding: '16px',
+                      textAlign: 'left',
+                      color: '#b0c4d8',
+                      fontWeight: 'normal',
+                    }}
+                  >
+                    オーナー
+                  </th>
+                  <th
+                    style={{
+                      padding: '16px',
+                      textAlign: 'left',
+                      color: '#b0c4d8',
+                      fontWeight: 'normal',
+                    }}
+                  >
+                    アップロード日
+                  </th>
+                  <th
+                    style={{
+                      padding: '16px',
+                      textAlign: 'left',
+                      color: '#b0c4d8',
+                      fontWeight: 'normal',
+                    }}
+                  >
+                    ダウンロード可能日
+                  </th>
+                  <th
+                    style={{
+                      padding: '16px',
+                      textAlign: 'left',
+                      color: '#b0c4d8',
+                      fontWeight: 'normal',
+                    }}
+                  >
+                    コメント
+                  </th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {teamData.map((team, index) => (
+                  <tr
+                    key={index + (currentPage - 1) * pageSize}
+                    style={{
+                      background: index % 2 === 0 ? '#0F1A2E' : '#0A1022',
+                      borderBottom: '1px solid #1E3A5F',
+                    }}
+                  >
+                    <td
+                      style={{
+                        padding: '16px',
+                        textAlign: 'left',
+                        color: '#b0c4d8',
+                        fontWeight: 'normal',
+                        width: '40px',
+                      }}
+                    >
+                      <label
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={team.selected}
+                          onChange={() => handleSelectTeam(team.id)}
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            accentColor: '#00c8ff',
+                            cursor: 'pointer',
+                            marginRight: '8px',
+                          }}
+                        />
+                      </label>
+                    </td>
+                    <td
+                      style={{
+                        padding: '16px',
+                        textAlign: 'left',
+                        color: '#b0c4d8',
+                        fontWeight: 'normal',
+                      }}
+                    >
+                      {team.file_name}
+                    </td>
+                    <td
+                      style={{
+                        padding: '16px',
+                        textAlign: 'left',
+                        color: '#b0c4d8',
+                        fontWeight: 'normal',
+                      }}
+                    >
+                      {team.upload_owner_name}
+                    </td>
+                    <td
+                      style={{
+                        padding: '16px',
+                        textAlign: 'left',
+                        color: '#b0c4d8',
+                        fontWeight: 'normal',
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      <div>{team.created_at}</div>
+                    </td>
+                    <td
+                      style={{
+                        padding: '16px',
+                        textAlign: 'left',
+                        color: '#b0c4d8',
+                        fontWeight: 'normal',
+                      }}
+                    >
+                      {team.downloadable_at}
+                    </td>
+                    <td
+                      style={{
+                        padding: '16px',
+                        textAlign: 'left',
+                        color: '#b0c4d8',
+                        fontWeight: 'normal',
+                      }}
+                    >
+                      {team.file_comment
+                        ? team.file_comment.split(/\r?\n/).map((line, idx) => (
+                            <React.Fragment key={idx}>
+                              {line}
+                              <br />
+                            </React.Fragment>
+                          ))
+                        : ''}
+                      <div style={{ marginTop: 4 }}>
+                        {[
+                          team.search_tag1,
+                          team.search_tag2,
+                          team.search_tag3,
+                          team.search_tag4,
+                        ]
+                          .filter(Boolean)
+                          .map((tag, i) => (
+                            <span
+                              key={i}
+                              style={{
+                                background: '#1E3A5F',
+                                color: '#8CB4FF',
+                                borderRadius: '4px',
+                                padding: '2px 6px',
+                                marginRight: 4,
+                                fontSize: '0.8em',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
           {/* ページネーション（サンプルUI風） */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, margin: '24px 0' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 8,
+              margin: '24px 0',
+            }}
+          >
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
@@ -502,37 +598,41 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                 fontWeight: 'bold',
                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
                 fontSize: '1rem',
-                marginRight: 8
+                marginRight: 8,
               }}
             >
               前へ
             </button>
             {getPaginationRange(currentPage, lastPage, 2).map((page, idx) =>
-  page === '...'
-    ? (
-      <span key={`ellipsis-${idx}`} style={{ color: '#8CB4FF', padding: '0 10px' }}>...</span>
-    ) : (
-      <button
-        key={page}
-        onClick={() => handlePageChange(Number(page))}
-        disabled={page === currentPage}
-        style={{
-          minWidth: 40,
-          padding: '8px 0',
-          borderRadius: 6,
-          border: 'none',
-          background: page === currentPage ? '#00c8ff' : '#19223a',
-          color: page === currentPage ? '#020824' : '#8CB4FF',
-          fontWeight: 'bold',
-          cursor: page === currentPage ? 'default' : 'pointer',
-          fontSize: '1rem',
-          marginRight: 4
-        }}
-      >
-        {page}
-      </button>
-    )
-)}
+              page === '...' ? (
+                <span
+                  key={`ellipsis-${idx}`}
+                  style={{ color: '#8CB4FF', padding: '0 10px' }}
+                >
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(Number(page))}
+                  disabled={page === currentPage}
+                  style={{
+                    minWidth: 40,
+                    padding: '8px 0',
+                    borderRadius: 6,
+                    border: 'none',
+                    background: page === currentPage ? '#00c8ff' : '#19223a',
+                    color: page === currentPage ? '#020824' : '#8CB4FF',
+                    fontWeight: 'bold',
+                    cursor: page === currentPage ? 'default' : 'pointer',
+                    fontSize: '1rem',
+                    marginRight: 4,
+                  }}
+                >
+                  {page}
+                </button>
+              )
+            )}
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === lastPage}
@@ -545,21 +645,22 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                 fontWeight: 'bold',
                 cursor: currentPage === lastPage ? 'not-allowed' : 'pointer',
                 fontSize: '1rem',
-                marginLeft: 8
+                marginLeft: 8,
               }}
             >
               次へ
             </button>
           </div>
 
-
           {/* ダウンロードボタン（下部） */}
           {selectedCount > 0 && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginBottom: '32px'
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginBottom: '32px',
+              }}
+            >
               <button
                 onClick={handleDownload}
                 disabled={isDownloading}
@@ -575,7 +676,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                   opacity: isDownloading ? 0.7 : 1,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px'
+                  gap: '8px',
                 }}
               >
                 {isDownloading ? (
@@ -584,7 +685,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                       style={{
                         width: '20px',
                         height: '20px',
-                        animation: 'spin 1s linear infinite'
+                        animation: 'spin 1s linear infinite',
                       }}
                       viewBox="0 0 24 24"
                       fill="none"
@@ -609,7 +710,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                     <svg
                       style={{
                         width: '20px',
-                        height: '20px'
+                        height: '20px',
                       }}
                       viewBox="0 0 24 24"
                       fill="none"
@@ -629,25 +730,29 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
           )}
 
           {/* 注意事項 */}
-          <div style={{
-            background: '#0A1022',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #1E3A5F'
-          }}>
-            <h2 style={{
-              color: '#00c8ff',
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              marginBottom: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
+          <div
+            style={{
+              background: '#0A1022',
+              borderRadius: '12px',
+              padding: '20px',
+              border: '1px solid #1E3A5F',
+            }}
+          >
+            <h2
+              style={{
+                color: '#00c8ff',
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                marginBottom: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
               <svg
                 style={{
                   width: '20px',
-                  height: '20px'
+                  height: '20px',
                 }}
                 viewBox="0 0 24 24"
                 fill="none"
@@ -662,16 +767,22 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
               </svg>
               ダウンロードに関する注意事項
             </h2>
-            <ul style={{
-              color: '#b0c4d8',
-              fontSize: '0.9rem',
-              lineHeight: '1.6',
-              paddingLeft: '20px'
-            }}>
+            <ul
+              style={{
+                color: '#b0c4d8',
+                fontSize: '0.9rem',
+                lineHeight: '1.6',
+                paddingLeft: '20px',
+              }}
+            >
               <li>一度に最大50件までのチームデータをダウンロードできます。</li>
-              <li>ダウンロードしたデータは自動的にZIPファイルに圧縮されます。</li>
+              <li>
+                ダウンロードしたデータは自動的にZIPファイルに圧縮されます。
+              </li>
               <li>ダウンロード履歴はアカウント設定ページで確認できます。</li>
-              <li>ダウンロードに問題がある場合は、管理者にお問い合わせください。</li>
+              <li>
+                ダウンロードに問題がある場合は、管理者にお問い合わせください。
+              </li>
             </ul>
           </div>
         </div>
