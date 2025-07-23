@@ -5,7 +5,7 @@ import type { SkeletonProps } from '@/types/ui';
 /**
  * スケルトンローディングコンポーネント
  */
-export function Skeleton({ width, height, className }: SkeletonProps) {
+export function Skeleton({ width, height, className, ...props }: SkeletonProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
@@ -16,6 +16,7 @@ export function Skeleton({ width, height, className }: SkeletonProps) {
         width: width || '100%',
         height: height || '1rem',
       }}
+      {...props}
     />
   );
 }
@@ -23,9 +24,9 @@ export function Skeleton({ width, height, className }: SkeletonProps) {
 /**
  * テキストスケルトンコンポーネント
  */
-export function TextSkeleton({ lines = 1, className }: { lines?: number; className?: string }) {
+export function TextSkeleton({ lines = 1, className, ...props }: { lines?: number; className?: string } & React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('space-y-2', className)} {...props}>
       {Array.from({ length: lines }).map((_, i) => (
         <Skeleton
           key={i}
@@ -42,9 +43,9 @@ export function TextSkeleton({ lines = 1, className }: { lines?: number; classNa
 /**
  * カードスケルトンコンポーネント
  */
-export function CardSkeleton() {
+export function CardSkeleton({ ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className="border border-gray-700 rounded-xl p-6 space-y-4">
+    <div className="border border-gray-700 rounded-xl p-6 space-y-4" {...props}>
       <Skeleton className="h-6 w-1/3" />
       <TextSkeleton lines={3} />
       <div className="flex justify-between items-center pt-4">

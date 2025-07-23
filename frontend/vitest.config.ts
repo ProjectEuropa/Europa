@@ -16,6 +16,31 @@ export default defineConfig({
       '**/.{idea,git,cache,output,temp}/**'
     ],
     include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'node_modules/',
+        'src/__tests__/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/e2e/**',
+        '**/.next/**',
+        '**/out/**',
+        '**/build/**',
+        'src/app/**', // Next.js app directory
+      ],
+      reportsDirectory: './coverage',
+      thresholds: {
+        global: {
+          branches: 60,
+          functions: 70,
+          lines: 50,
+          statements: 50,
+        },
+      },
+    },
   },
   resolve: {
     alias: {
