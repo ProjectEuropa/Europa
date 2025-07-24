@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { toast as sonnerToast } from '@/components/ui/toast';
 import type { ToastType } from '@/types/ui';
+
+// シンプルなID生成関数
+const generateId = () => Math.random().toString(36).substring(2, 15);
 
 /**
  * トースト通知を表示するためのフック
@@ -16,7 +18,7 @@ export const useToast = () => {
       message,
       duration = 5000,
     }: Omit<ToastType, 'id'>) => {
-      const id = uuidv4();
+      const id = generateId();
       const toastData: ToastType = {
         id,
         type,

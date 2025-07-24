@@ -33,7 +33,7 @@ export function FormField({
         {required && <span className="text-red-400 ml-1">*</span>}
       </label>
 
-      {React.cloneElement(children as React.ReactElement, {
+      {React.cloneElement(children as React.ReactElement<any>, {
         id,
         name,
         placeholder,

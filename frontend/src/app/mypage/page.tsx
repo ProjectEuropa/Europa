@@ -92,8 +92,8 @@ const MyPageContent: React.FC = () => {
   const profileData = {
     name: user.name,
     email: user.email,
-    joinDate: user.created_at
-      ? user.created_at.slice(0, 10).replace(/-/g, '/')
+    joinDate: user.createdAt
+      ? user.createdAt.slice(0, 10).replace(/-/g, '/')
       : '',
   };
 
