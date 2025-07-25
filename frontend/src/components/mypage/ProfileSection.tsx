@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 
 interface ProfileData {
   name: string;
@@ -51,25 +52,31 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
   };
 
   return (
-    <div style={{
-      background: '#0A1022',
-      borderRadius: '12px',
-      padding: '24px',
-      border: '1px solid #1E3A5F',
-      marginBottom: '24px'
-    }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '20px'
-      }}>
-        <h2 style={{
-          color: '#00c8ff',
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-          margin: 0
-        }}>
+    <div
+      style={{
+        background: '#0A1022',
+        borderRadius: '12px',
+        padding: '24px',
+        border: '1px solid #1E3A5F',
+        marginBottom: '24px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+        }}
+      >
+        <h2
+          style={{
+            color: '#00c8ff',
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            margin: 0,
+          }}
+        >
           プロフィール情報
         </h2>
         <button
@@ -81,19 +88,21 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
             color: '#00c8ff',
             padding: '8px 16px',
             fontSize: '0.9rem',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           {isEditing ? 'キャンセル' : '編集'}
         </button>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 2fr',
-        gap: '16px',
-        marginBottom: '20px'
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 2fr',
+          gap: '16px',
+          marginBottom: '20px',
+        }}
+      >
         <div style={{ color: '#8CB4FF', fontSize: '1rem' }}>名前</div>
         {isEditing ? (
           <input
@@ -107,7 +116,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
               color: 'white',
               padding: '8px 12px',
               fontSize: '1rem',
-              width: '100%'
+              width: '100%',
             }}
           />
         ) : (
@@ -118,14 +127,18 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
         <div style={{ color: 'white', fontSize: '1rem' }}>{profile.email}</div>
 
         <div style={{ color: '#8CB4FF', fontSize: '1rem' }}>登録日</div>
-        <div style={{ color: 'white', fontSize: '1rem' }}>{profile.joinDate}</div>
+        <div style={{ color: 'white', fontSize: '1rem' }}>
+          {profile.joinDate}
+        </div>
       </div>
 
       {isEditing && (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'flex-end'
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
           <button
             onClick={handleSave}
             disabled={isSaving}
@@ -141,7 +154,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
               opacity: isSaving ? 0.7 : 1,
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              gap: '8px',
             }}
           >
             {isSaving ? (
@@ -150,7 +163,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
                   style={{
                     width: '20px',
                     height: '20px',
-                    animation: 'spin 1s linear infinite'
+                    animation: 'spin 1s linear infinite',
                   }}
                   viewBox="0 0 24 24"
                   fill="none"

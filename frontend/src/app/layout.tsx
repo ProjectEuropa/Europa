@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ToastProvider } from "@/providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,8 +23,6 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://project-europa.work"),
 };
-
-import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -55,7 +54,7 @@ export default function RootLayout({
         }
       >
         {children}
-        <Toaster richColors position="top-right" />
+        <ToastProvider />
       </body>
     </html>
   );

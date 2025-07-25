@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import Calendar from '@/components/Calendar';
-import { registerEvent } from '@/utils/api';
+import { useRouter } from 'next/navigation';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import Calendar from '@/components/Calendar';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { useAuth } from '@/hooks/useAuth';
+import { registerEvent } from '@/utils/api';
 
 // イベント種別の定義
 type EventType = '大会' | '告知' | 'その他';
@@ -41,7 +41,7 @@ const EventPage: React.FC = () => {
     url: '',
     deadline: '',
     endDisplayDate: '',
-    type: '大会'
+    type: '大会',
   });
   const [showDeadlineCalendar, setShowDeadlineCalendar] = useState(false);
   const [showEndDateCalendar, setShowEndDateCalendar] = useState(false);
@@ -49,20 +49,23 @@ const EventPage: React.FC = () => {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.replace("/login");
+      router.replace('/login');
     }
   }, [user, loading, router]);
 
   if (loading) return <div>Loading...</div>;
   if (!user) return null; // 未認証時は描画しない
 
-
   // 入力フィールド変更ハンドラー
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -70,7 +73,7 @@ const EventPage: React.FC = () => {
   const handleDeadlineSelect = (date: Date) => {
     setFormData(prev => ({
       ...prev,
-      deadline: formatDateToJST(date)
+      deadline: formatDateToJST(date),
     }));
     setShowDeadlineCalendar(false);
   };
@@ -79,7 +82,7 @@ const EventPage: React.FC = () => {
   const handleEndDateSelect = (date: Date) => {
     setFormData(prev => ({
       ...prev,
-      endDisplayDate: formatDateToJST(date)
+      endDisplayDate: formatDateToJST(date),
     }));
     setShowEndDateCalendar(false);
   };
@@ -87,7 +90,12 @@ const EventPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // バリデーション
-    if (!formData.name || !formData.details || !formData.deadline || !formData.endDisplayDate) {
+    if (
+      !formData.name ||
+      !formData.details ||
+      !formData.deadline ||
+      !formData.endDisplayDate
+    ) {
       toast.error('必須項目を入力してください');
       return;
     }
@@ -101,7 +109,7 @@ const EventPage: React.FC = () => {
         url: '',
         deadline: '',
         endDisplayDate: '',
-        type: '大会'
+        type: '大会',
       });
     } catch (err) {
       toast.error('登録に失敗しました');
@@ -110,58 +118,70 @@ const EventPage: React.FC = () => {
     }
   };
 
-
-
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      background: 'rgb(var(--background-rgb))'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        background: 'rgb(var(--background-rgb))',
+      }}
+    >
       <Header />
 
-      <main style={{
-        flex: '1',
-        padding: '20px'
-      }}>
-        <div style={{
-          maxWidth: '800px',
-          margin: '0 auto'
-        }}>
-          <h1 style={{
-            color: '#00c8ff',
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            marginBottom: '8px'
-          }}>
+      <main
+        style={{
+          flex: '1',
+          padding: '20px',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '800px',
+            margin: '0 auto',
+          }}
+        >
+          <h1
+            style={{
+              color: '#00c8ff',
+              fontSize: '2rem',
+              fontWeight: 'bold',
+              marginBottom: '8px',
+            }}
+          >
             イベント登録
           </h1>
-          <p style={{
-            color: '#b0c4d8',
-            fontSize: '1rem',
-            marginBottom: '24px'
-          }}>
+          <p
+            style={{
+              color: '#b0c4d8',
+              fontSize: '1rem',
+              marginBottom: '24px',
+            }}
+          >
             新しいイベント情報を登録することができます
           </p>
 
           {/* イベント登録フォーム */}
           <form onSubmit={handleSubmit}>
-            <div style={{
-              background: '#0A1022',
-              borderRadius: '12px',
-              padding: '24px',
-              border: '1px solid #1E3A5F',
-              marginBottom: '24px'
-            }}>
+            <div
+              style={{
+                background: '#0A1022',
+                borderRadius: '12px',
+                padding: '24px',
+                border: '1px solid #1E3A5F',
+                marginBottom: '24px',
+              }}
+            >
               {/* イベント名 */}
               <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: '#00c8ff',
-                  fontSize: '1rem',
-                  marginBottom: '8px'
-                }}>
+                <label
+                  style={{
+                    display: 'block',
+                    color: '#00c8ff',
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                  }}
+                >
                   イベント名 <span style={{ color: '#ff4d4d' }}>*</span>
                 </label>
                 <input
@@ -177,7 +197,7 @@ const EventPage: React.FC = () => {
                     border: '1px solid #1E3A5F',
                     borderRadius: '6px',
                     color: 'white',
-                    fontSize: '1rem'
+                    fontSize: '1rem',
                   }}
                   required
                 />
@@ -185,12 +205,14 @@ const EventPage: React.FC = () => {
 
               {/* イベント詳細情報 */}
               <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: '#00c8ff',
-                  fontSize: '1rem',
-                  marginBottom: '8px'
-                }}>
+                <label
+                  style={{
+                    display: 'block',
+                    color: '#00c8ff',
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                  }}
+                >
                   イベント詳細情報 <span style={{ color: '#ff4d4d' }}>*</span>
                 </label>
                 <textarea
@@ -207,7 +229,7 @@ const EventPage: React.FC = () => {
                     color: 'white',
                     fontSize: '1rem',
                     minHeight: '150px',
-                    resize: 'vertical'
+                    resize: 'vertical',
                   }}
                   required
                 />
@@ -215,12 +237,14 @@ const EventPage: React.FC = () => {
 
               {/* イベント詳細URL */}
               <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: '#00c8ff',
-                  fontSize: '1rem',
-                  marginBottom: '8px'
-                }}>
+                <label
+                  style={{
+                    display: 'block',
+                    color: '#00c8ff',
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                  }}
+                >
                   イベント詳細URL
                 </label>
                 <input
@@ -236,19 +260,21 @@ const EventPage: React.FC = () => {
                     border: '1px solid #1E3A5F',
                     borderRadius: '6px',
                     color: 'white',
-                    fontSize: '1rem'
+                    fontSize: '1rem',
                   }}
                 />
               </div>
 
               {/* イベント受付締切日 */}
               <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: '#00c8ff',
-                  fontSize: '1rem',
-                  marginBottom: '8px'
-                }}>
+                <label
+                  style={{
+                    display: 'block',
+                    color: '#00c8ff',
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                  }}
+                >
                   イベント受付締切日 <span style={{ color: '#ff4d4d' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -266,21 +292,23 @@ const EventPage: React.FC = () => {
                         border: '1px solid #1E3A5F',
                         borderRadius: '6px',
                         color: 'white',
-                        fontSize: '1rem'
+                        fontSize: '1rem',
                       }}
                       required
                       readOnly
                     />
                     <button
                       type="button"
-                      onClick={() => setShowDeadlineCalendar(!showDeadlineCalendar)}
+                      onClick={() =>
+                        setShowDeadlineCalendar(!showDeadlineCalendar)
+                      }
                       style={{
                         background: 'transparent',
                         border: 'none',
                         color: '#00c8ff',
                         marginLeft: '-40px',
                         cursor: 'pointer',
-                        zIndex: 1
+                        zIndex: 1,
                       }}
                     >
                       <svg
@@ -293,7 +321,14 @@ const EventPage: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <rect
+                          x="3"
+                          y="4"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          ry="2"
+                        ></rect>
                         <line x1="16" y1="2" x2="16" y2="6"></line>
                         <line x1="8" y1="2" x2="8" y2="6"></line>
                         <line x1="3" y1="10" x2="21" y2="10"></line>
@@ -302,25 +337,31 @@ const EventPage: React.FC = () => {
                   </div>
 
                   {showDeadlineCalendar && (
-                    <div style={{
-                      position: 'fixed',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      zIndex: 1000,
-                      background: '#0A1022',
-                      padding: '20px',
-                      borderRadius: '12px',
-                      boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
-                      border: '1px solid #1E3A5F'
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '16px'
-                      }}>
-                        <h3 style={{ color: '#00c8ff', margin: 0 }}>日付を選択</h3>
+                    <div
+                      style={{
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 1000,
+                        background: '#0A1022',
+                        padding: '20px',
+                        borderRadius: '12px',
+                        boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
+                        border: '1px solid #1E3A5F',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '16px',
+                        }}
+                      >
+                        <h3 style={{ color: '#00c8ff', margin: 0 }}>
+                          日付を選択
+                        </h3>
                         <button
                           type="button"
                           onClick={() => setShowDeadlineCalendar(false)}
@@ -334,7 +375,7 @@ const EventPage: React.FC = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             width: '30px',
-                            height: '30px'
+                            height: '30px',
                           }}
                         >
                           ×
@@ -348,12 +389,14 @@ const EventPage: React.FC = () => {
 
               {/* イベント表示最終日 */}
               <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: '#00c8ff',
-                  fontSize: '1rem',
-                  marginBottom: '8px'
-                }}>
+                <label
+                  style={{
+                    display: 'block',
+                    color: '#00c8ff',
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                  }}
+                >
                   イベント表示最終日 <span style={{ color: '#ff4d4d' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -371,21 +414,23 @@ const EventPage: React.FC = () => {
                         border: '1px solid #1E3A5F',
                         borderRadius: '6px',
                         color: 'white',
-                        fontSize: '1rem'
+                        fontSize: '1rem',
                       }}
                       required
                       readOnly
                     />
                     <button
                       type="button"
-                      onClick={() => setShowEndDateCalendar(!showEndDateCalendar)}
+                      onClick={() =>
+                        setShowEndDateCalendar(!showEndDateCalendar)
+                      }
                       style={{
                         background: 'transparent',
                         border: 'none',
                         color: '#00c8ff',
                         marginLeft: '-40px',
                         cursor: 'pointer',
-                        zIndex: 1
+                        zIndex: 1,
                       }}
                     >
                       <svg
@@ -398,7 +443,14 @@ const EventPage: React.FC = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <rect
+                          x="3"
+                          y="4"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          ry="2"
+                        ></rect>
                         <line x1="16" y1="2" x2="16" y2="6"></line>
                         <line x1="8" y1="2" x2="8" y2="6"></line>
                         <line x1="3" y1="10" x2="21" y2="10"></line>
@@ -407,25 +459,31 @@ const EventPage: React.FC = () => {
                   </div>
 
                   {showEndDateCalendar && (
-                    <div style={{
-                      position: 'fixed',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      zIndex: 1000,
-                      background: '#0A1022',
-                      padding: '20px',
-                      borderRadius: '12px',
-                      boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
-                      border: '1px solid #1E3A5F'
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '16px'
-                      }}>
-                        <h3 style={{ color: '#00c8ff', margin: 0 }}>日付を選択</h3>
+                    <div
+                      style={{
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 1000,
+                        background: '#0A1022',
+                        padding: '20px',
+                        borderRadius: '12px',
+                        boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
+                        border: '1px solid #1E3A5F',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '16px',
+                        }}
+                      >
+                        <h3 style={{ color: '#00c8ff', margin: 0 }}>
+                          日付を選択
+                        </h3>
                         <button
                           type="button"
                           onClick={() => setShowEndDateCalendar(false)}
@@ -439,7 +497,7 @@ const EventPage: React.FC = () => {
                             alignItems: 'center',
                             justifyContent: 'center',
                             width: '30px',
-                            height: '30px'
+                            height: '30px',
                           }}
                         >
                           ×
@@ -453,12 +511,14 @@ const EventPage: React.FC = () => {
 
               {/* イベント種別 */}
               <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  color: '#00c8ff',
-                  fontSize: '1rem',
-                  marginBottom: '8px'
-                }}>
+                <label
+                  style={{
+                    display: 'block',
+                    color: '#00c8ff',
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                  }}
+                >
                   イベント種別 <span style={{ color: '#ff4d4d' }}>*</span>
                 </label>
                 <select
@@ -477,7 +537,7 @@ const EventPage: React.FC = () => {
                     backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300c8ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 12px center',
-                    backgroundSize: '16px'
+                    backgroundSize: '16px',
                   }}
                   required
                 >
@@ -489,11 +549,13 @@ const EventPage: React.FC = () => {
             </div>
 
             {/* 送信ボタン */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginBottom: '24px'
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginBottom: '24px',
+              }}
+            >
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -509,7 +571,7 @@ const EventPage: React.FC = () => {
                   opacity: isSubmitting ? 0.7 : 1,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px'
+                  gap: '8px',
                 }}
               >
                 {isSubmitting ? (
@@ -518,7 +580,7 @@ const EventPage: React.FC = () => {
                       style={{
                         width: '20px',
                         height: '20px',
-                        animation: 'spin 1s linear infinite'
+                        animation: 'spin 1s linear infinite',
                       }}
                       viewBox="0 0 24 24"
                       fill="none"
@@ -543,7 +605,7 @@ const EventPage: React.FC = () => {
                     <svg
                       style={{
                         width: '20px',
-                        height: '20px'
+                        height: '20px',
                       }}
                       viewBox="0 0 24 24"
                       fill="none"
@@ -563,25 +625,29 @@ const EventPage: React.FC = () => {
           </form>
 
           {/* 注意事項 */}
-          <div style={{
-            background: '#0A1022',
-            borderRadius: '12px',
-            padding: '20px',
-            border: '1px solid #1E3A5F'
-          }}>
-            <h2 style={{
-              color: '#00c8ff',
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              marginBottom: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
+          <div
+            style={{
+              background: '#0A1022',
+              borderRadius: '12px',
+              padding: '20px',
+              border: '1px solid #1E3A5F',
+            }}
+          >
+            <h2
+              style={{
+                color: '#00c8ff',
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                marginBottom: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
               <svg
                 style={{
                   width: '20px',
-                  height: '20px'
+                  height: '20px',
                 }}
                 viewBox="0 0 24 24"
                 fill="none"
@@ -596,16 +662,20 @@ const EventPage: React.FC = () => {
               </svg>
               イベント登録に関する注意事項
             </h2>
-            <ul style={{
-              color: '#b0c4d8',
-              fontSize: '0.9rem',
-              lineHeight: '1.6',
-              paddingLeft: '20px'
-            }}>
+            <ul
+              style={{
+                color: '#b0c4d8',
+                fontSize: '0.9rem',
+                lineHeight: '1.6',
+                paddingLeft: '20px',
+              }}
+            >
               <li>登録されたイベントは管理者の承認後に公開されます。</li>
               <li>イベント表示最終日を過ぎると自動的に表示が終了します。</li>
               <li>イベント詳細URLは正確に入力してください。</li>
-              <li>登録内容に問題がある場合は、管理者から連絡することがあります。</li>
+              <li>
+                登録内容に問題がある場合は、管理者から連絡することがあります。
+              </li>
             </ul>
           </div>
         </div>
