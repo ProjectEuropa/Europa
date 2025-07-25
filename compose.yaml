@@ -8,7 +8,7 @@ services:
     restart: always
     environment:
       DOMAINS: "${APP_DOMAIN} -> http://web:8000"
-      STAGE: ${APP_ENV}
+      STAGE: ${APP_STAGE}
     volumes:
       - https-portal-data:/var/lib/https-portal
   web:
@@ -90,7 +90,7 @@ services:
         - DB_PASSWORD=${DB_PASSWORD}
         - DB_DATABASE=${DB_DATABASE}
         - SSH_HOST=${SSH_HOST}
-        - ENVIRONMENT=${ENVIRONMENT}
+        - ENVIRONMENT=${APP_ENV}
     volumes:
       - ./backups:/backups
     depends_on:
