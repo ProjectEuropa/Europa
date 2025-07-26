@@ -1,13 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useAuthStore } from '@/stores/authStore';
-import { apiClient } from '@/lib/api/client';
+import { authApi } from '@/lib/api/auth';
 import type { User } from '@/types/user';
 
-// APIクライアントをモック
-vi.mock('@/lib/api/client', () => ({
-  apiClient: {
-    post: vi.fn(),
-    get: vi.fn(),
+// authApiをモック
+vi.mock('@/lib/api/auth', () => ({
+  authApi: {
+    login: vi.fn(),
+    register: vi.fn(),
+    getProfile: vi.fn(),
+    logout: vi.fn(),
   },
 }));
 
@@ -46,7 +48,7 @@ describe('authStore', () => {
   describe('Login', () => {
     it('should login successfully', async () => {
       const mockResponse = { token: mockToken, user: mockUser };
-      vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
+      vi.mocked(authApi.login).mockResolvedValue(mockResponse);
 
       const { login } = useAuthStore.getState();
 
@@ -64,7 +66,7 @@ describe('authStore', () => {
 
     it('should handle login error', async () => {
       const mockError = new Error('Login failed');
-      vi.mocked(apiClient.post).mockRejectedValue(mockError);
+      vi.mocked(authApi.login).mockRejectedValue(mockError);
 
       const { login } = useAuthStore.getState();
 
@@ -85,7 +87,7 @@ describe('authStore', () => {
       const loginPromise = new Promise((resolve) => {
         resolveLogin = resolve;
       });
-      vi.mocked(apiClient.post).mockReturnValue(loginPromise);
+      vi.mocked(authApi.login).mockReturnValue(loginPromise);
 
       const { login } = useAuthStore.getState();
 
@@ -108,7 +110,7 @@ describe('authStore', () => {
   describe('Register', () => {
     it('should register successfully', async () => {
       const mockResponse = { token: mockToken, user: mockUser };
-      vi.mocked(apiClient.post).mockResolvedValue(mockResponse);
+      vi.mocked(authApi.register).mockResolvedValue(mockResponse);
 
       const { register } = useAuthStore.getState();
 
@@ -128,7 +130,7 @@ describe('authStore', () => {
 
     it('should handle register error', async () => {
       const mockError = new Error('Registration failed');
-      vi.mocked(apiClient.post).mockRejectedValue(mockError);
+      vi.mocked(authApi.register).mockRejectedValue(mockError);
 
       const { register } = useAuthStore.getState();
 
@@ -170,7 +172,7 @@ describe('authStore', () => {
 
   describe('Fetch User', () => {
     it('should fetch user successfully', async () => {
-      vi.mocked(apiClient.get).mockResolvedValue(mockUser);
+      vi.mocked(authApi.getProfile).mockResolvedValue(mockUser);
 
       // トークンを設定
       useAuthStore.setState({ token: mockToken });
@@ -186,7 +188,7 @@ describe('authStore', () => {
 
     it('should handle fetch user error', async () => {
       const mockError = new Error('Fetch failed');
-      vi.mocked(apiClient.get).mockRejectedValue(mockError);
+      vi.mocked(authApi.getProfile).mockRejectedValue(mockError);
 
       // トークンを設定
       useAuthStore.setState({ token: mockToken });
@@ -209,7 +211,7 @@ describe('authStore', () => {
       expect(state.user).toBeNull();
       expect(state.isAuthenticated).toBe(false);
       expect(state.loading).toBe(false);
-      expect(apiClient.get).not.toHaveBeenCalled();
+      expect(authApi.getProfile).not.toHaveBeenCalled();
     });
   });
 

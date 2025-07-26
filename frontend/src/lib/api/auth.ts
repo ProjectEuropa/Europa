@@ -81,7 +81,19 @@ export const authApi = {
 
   async getProfile(): Promise<User> {
     const response = await apiClient.get<User>('/api/v1/user/profile');
-    return response.data;
+
+    // レスポンスが直接ユーザーデータを含む場合
+    if (response && typeof response === 'object' && 'id' in response) {
+      return response as unknown as User;
+    }
+
+    // レスポンスがdata プロパティを持つ場合
+    if (response && typeof response === 'object' && 'data' in response) {
+      const apiResponse = response as unknown as ApiResponse<User>;
+      return apiResponse.data;
+    }
+
+    throw new Error('Invalid user profile response structure');
   },
 
   async updateProfile(data: UserUpdateData): Promise<void> {
