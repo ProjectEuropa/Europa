@@ -13,7 +13,7 @@ export function Loading({ size = 'md', color = '#00c8ff', text }: LoadingProps) 
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center" data-testid="loading">
       <div
         className={cn('animate-spin', sizeMap[size])}
         role="status"

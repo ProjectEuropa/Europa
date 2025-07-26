@@ -7,7 +7,7 @@ import type React from 'react';
 import { Suspense, useEffect, useState } from 'react';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { checkResetPasswordToken, resetPassword } from '@/utils/api';
+import { authApi } from '@/lib/api/auth';
 
 // クライアントコンポーネントを分離
 const ResetPasswordForm = () => {
@@ -31,7 +31,7 @@ const ResetPasswordForm = () => {
       setToken(tokenParam);
       setEmail(emailParam);
       // APIでトークン検証
-      checkResetPasswordToken(tokenParam, emailParam).then(res => {
+      authApi.checkResetPasswordToken({ token: tokenParam, email: emailParam }).then(res => {
         setIsTokenValid(res.valid);
         if (!res.valid)
           setError(
@@ -72,12 +72,12 @@ const ResetPasswordForm = () => {
     setError('');
 
     try {
-      const result = await resetPassword(
+      const result = await authApi.resetPassword({
         token,
         email,
         password,
-        confirmPassword
-      );
+        passwordConfirmation: confirmPassword,
+      });
       if (result.message) {
         setIsSuccess(true);
       } else {

@@ -5,7 +5,7 @@ import type React from 'react';
 import { useState } from 'react';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
-import { sendPasswordResetLink } from '../../utils/api';
+import { authApi } from '@/lib/api/auth';
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +20,7 @@ const ForgotPasswordPage: React.FC = () => {
     setIsSuccess(false);
 
     try {
-      const result = await sendPasswordResetLink(email);
+      const result = await authApi.sendPasswordResetLink({ email });
       if (result.status) {
         setIsSuccess(true);
       } else {

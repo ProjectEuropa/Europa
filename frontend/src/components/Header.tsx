@@ -150,7 +150,7 @@ const Header = () => {
           >
             {/* 認証リンク or ユーザー名 */}
             {(() => {
-              const { user, loading } = useAuth();
+              const { user, loading, logout } = useAuth();
               if (loading) return null;
               if (user) {
                 return (
@@ -190,10 +190,7 @@ const Header = () => {
                       <Icons.Register size={18} /> マイページ
                     </Link>
                     <button
-                      onClick={() => {
-                        localStorage.removeItem('token');
-                        window.location.reload();
-                      }}
+                      onClick={logout}
                       style={{
                         color: '#8CB4FF',
                         background: 'none',

@@ -1,57 +1,39 @@
-import { useEffect, useState } from 'react';
-import type { User } from '@/types/user';
+import { useEffect } from 'react';
+import { useAuthStore } from '@/stores/authStore';
 
-// XSS対策のためdangerouslySetInnerHTML禁止、CSP導入も推奨
-// ログイン・新規登録成功時は: localStorage.setItem('token', data.token);
+/**
+ * 認証状態を管理するフック
+ * Zustandストアを使用して状態管理を行う
+ */
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    user,
+    token,
+    loading,
+    isAuthenticated,
+    login,
+    register,
+    logout,
+    fetchUser,
+    setUser,
+  } = useAuthStore();
 
+  // 初回マウント時にユーザー情報を取得
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setUser(null);
-          setLoading(false);
-          return;
-        }
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/user/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: 'application/json',
-            },
-          }
-        );
-        if (res.ok) {
-          try {
-            const data = await res.json();
-            setUser(data);
-          } catch (jsonErr) {
-            console.error('ユーザー情報のJSONパースエラー', jsonErr);
-            setUser(null);
-          }
-        } else {
-          setUser(null);
-          const errorText = await res.text();
-          try {
-            const errorData = JSON.parse(errorText);
-            console.error('ユーザー情報取得失敗', errorData);
-          } catch {
-            console.error('ユーザー情報取得失敗: レスポンス内容:', errorText);
-          }
-        }
-      } catch (e) {
-        console.error('ユーザー情報取得時の通信エラー', e);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
+    if (token && !user) {
+      fetchUser();
+    }
+  }, [token, user, fetchUser]);
 
-  return { user, loading, setUser };
+  return {
+    user,
+    token,
+    loading,
+    isAuthenticated,
+    login,
+    register,
+    logout,
+    fetchUser,
+    setUser,
+  };
 }

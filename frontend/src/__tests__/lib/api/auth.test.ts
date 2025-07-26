@@ -33,12 +33,34 @@ describe('authApi', () => {
   });
 
   describe('login', () => {
-    it('should login successfully and store token', async () => {
+    it('should login successfully with direct response structure', async () => {
       const credentials: LoginCredentials = {
         email: 'test@example.com',
         password: 'password123',
       };
 
+      // 直接データを含むレスポンス構造
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: 'test-token-123',
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      const result = await authApi.login(credentials);
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('token', 'test-token-123');
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should login successfully with wrapped response structure', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      // dataプロパティでラップされたレスポンス構造
       const mockResponse = {
         data: {
           user: { id: 1, name: 'Test User', email: 'test@example.com' },
@@ -55,16 +77,16 @@ describe('authApi', () => {
       expect(result).toEqual(mockResponse.data);
     });
 
-    it('should login without storing token if not provided', async () => {
+    it('should handle login without token storage when token is not provided', async () => {
       const credentials: LoginCredentials = {
         email: 'test@example.com',
         password: 'password123',
       };
 
+      // tokenがない場合のレスポンス
       const mockResponse = {
-        data: {
-          user: { id: 1, name: 'Test User', email: 'test@example.com' },
-        },
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // 空のtoken
       };
 
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
@@ -73,12 +95,29 @@ describe('authApi', () => {
 
       expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
       expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should handle unexpected response structure gracefully', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      // 予期しないレスポンス構造
+      const mockResponse = {
+        unexpected: 'structure',
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      // エラーが適切に処理されることを確認
+      await expect(authApi.login(credentials)).rejects.toThrow();
     });
   });
 
   describe('register', () => {
-    it('should register successfully and store token', async () => {
+    it('should register successfully with direct response structure', async () => {
       const credentials: RegisterCredentials = {
         name: 'Test User',
         email: 'test@example.com',
@@ -86,6 +125,35 @@ describe('authApi', () => {
         passwordConfirmation: 'password123',
       };
 
+      // 直接データを含むレスポンス構造
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: 'test-token-123',
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      const result = await authApi.register(credentials);
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/register', {
+        name: credentials.name,
+        email: credentials.email,
+        password: credentials.password,
+        password_confirmation: credentials.passwordConfirmation,
+      });
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('token', 'test-token-123');
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should register successfully with wrapped response structure', async () => {
+      const credentials: RegisterCredentials = {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+        passwordConfirmation: 'password123',
+      };
+
+      // dataプロパティでラップされたレスポンス構造
       const mockResponse = {
         data: {
           user: { id: 1, name: 'Test User', email: 'test@example.com' },
@@ -106,10 +174,45 @@ describe('authApi', () => {
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith('token', 'test-token-123');
       expect(result).toEqual(mockResponse.data);
     });
+
+    it('should handle unexpected register response structure gracefully', async () => {
+      const credentials: RegisterCredentials = {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+        passwordConfirmation: 'password123',
+      };
+
+      // 予期しないレスポンス構造
+      const mockResponse = {
+        unexpected: 'structure',
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      // エラーが適切に処理されることを確認
+      await expect(authApi.register(credentials)).rejects.toThrow();
+    });
   });
 
   describe('getProfile', () => {
-    it('should get user profile', async () => {
+    it('should get user profile with direct response', async () => {
+      const mockUser = {
+        id: 1,
+        name: 'Test User',
+        email: 'test@example.com',
+        createdAt: '2024-01-01T00:00:00Z',
+      };
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce(mockUser);
+
+      const result = await authApi.getProfile();
+
+      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/user/profile');
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should get user profile with wrapped response', async () => {
       const mockUser = {
         id: 1,
         name: 'Test User',

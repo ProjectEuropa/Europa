@@ -3,6 +3,7 @@
  */
 
 import { apiClient } from './client';
+import type { ApiResponse } from '@/types/api';
 import type {
   LoginCredentials,
   LoginResponse,
@@ -18,15 +19,41 @@ import type {
   UserUpdateData,
 } from '@/types/user';
 
+/**
+ * 認証レスポンスを正規化する関数
+ * 異なるレスポンス形式を統一された形式に変換
+ */
+function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(response: any): T {
+  // パターン1: 直接データ構造 { user: {...}, token: "..." }
+  if (response && typeof response === 'object' && 'token' in response && 'user' in response) {
+    return response as T;
+  }
+
+  // パターン2: dataプロパティでラップ { data: { user: {...}, token: "..." } }
+  if (response && typeof response === 'object' && 'data' in response) {
+    const apiResponse = response as ApiResponse<T>;
+    if (apiResponse.data) {
+      return apiResponse.data;
+    }
+  }
+
+  // 予期しない構造の場合
+  console.warn('Unexpected auth response structure:', response);
+  throw new Error(`Invalid authentication response structure. Expected either direct data or wrapped in 'data' property.`);
+}
+
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await apiClient.post<LoginResponse>('/api/v1/login', credentials);
 
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    // レスポンス構造の正規化
+    const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
+
+    if (normalizedResponse.token) {
+      localStorage.setItem('token', normalizedResponse.token);
     }
 
-    return response.data;
+    return normalizedResponse;
   },
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
@@ -37,16 +64,31 @@ export const authApi = {
       password_confirmation: credentials.passwordConfirmation,
     });
 
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    // レスポンス構造の正規化
+    const normalizedResponse = normalizeAuthResponse<RegisterResponse>(response);
+
+    if (normalizedResponse.token) {
+      localStorage.setItem('token', normalizedResponse.token);
     }
 
-    return response.data;
+    return normalizedResponse;
   },
 
   async getProfile(): Promise<User> {
     const response = await apiClient.get<User>('/api/v1/user/profile');
-    return response.data;
+
+    // レスポンスが直接ユーザーデータを含む場合
+    if (response && typeof response === 'object' && 'id' in response) {
+      return response as unknown as User;
+    }
+
+    // レスポンスがdata プロパティを持つ場合
+    if (response && typeof response === 'object' && 'data' in response) {
+      const apiResponse = response as unknown as ApiResponse<User>;
+      return apiResponse.data;
+    }
+
+    throw new Error('Invalid user profile response structure');
   },
 
   async updateProfile(data: UserUpdateData): Promise<void> {
