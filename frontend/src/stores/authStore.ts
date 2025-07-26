@@ -35,8 +35,8 @@ export const useAuthStore = create<AuthStore>()(
       login: async (credentials: LoginCredentials) => {
         set({ loading: true });
         try {
-          const response = await authApi.login(credentials);
-          const { token, user } = response;
+          const data = await authApi.login(credentials);
+          const { token, user } = data;
 
           set({
             user,
@@ -53,8 +53,8 @@ export const useAuthStore = create<AuthStore>()(
       register: async (credentials: RegisterCredentials) => {
         set({ loading: true });
         try {
-          const response = await authApi.register(credentials);
-          const { token, user } = response;
+          const data = await authApi.register(credentials);
+          const { token, user } = data;
 
           set({
             user,
@@ -88,10 +88,10 @@ export const useAuthStore = create<AuthStore>()(
 
         set({ loading: true });
         try {
-          const user = await authApi.getProfile();
+          const data = await authApi.getProfile();
 
           set({
-            user,
+            user: data,
             isAuthenticated: true,
             loading: false,
           });

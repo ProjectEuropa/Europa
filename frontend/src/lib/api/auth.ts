@@ -3,6 +3,7 @@
  */
 
 import { apiClient } from './client';
+import type { ApiResponse } from '@/types/api';
 import type {
   LoginCredentials,
   LoginResponse,
@@ -22,11 +23,28 @@ export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await apiClient.post<LoginResponse>('/api/v1/login', credentials);
 
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    // レスポンスの構造をログで確認
+    console.log('Login response:', response);
+
+    // レスポンスが直接データを含む場合（token と user プロパティがある）
+    if (response && typeof response === 'object' && 'token' in response && 'user' in response) {
+      const loginResponse = response as unknown as LoginResponse;
+      if (loginResponse.token) {
+        localStorage.setItem('token', loginResponse.token);
+      }
+      return loginResponse;
     }
 
-    return response.data;
+    // レスポンスがdata プロパティを持つ場合
+    if (response && typeof response === 'object' && 'data' in response) {
+      const apiResponse = response as unknown as ApiResponse<LoginResponse>;
+      if (apiResponse.data && apiResponse.data.token) {
+        localStorage.setItem('token', apiResponse.data.token);
+      }
+      return apiResponse.data;
+    }
+
+    throw new Error('Invalid login response structure');
   },
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
@@ -37,11 +55,28 @@ export const authApi = {
       password_confirmation: credentials.passwordConfirmation,
     });
 
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    // レスポンスの構造をログで確認
+    console.log('Register response:', response);
+
+    // レスポンスが直接データを含む場合（token と user プロパティがある）
+    if (response && typeof response === 'object' && 'token' in response && 'user' in response) {
+      const registerResponse = response as unknown as RegisterResponse;
+      if (registerResponse.token) {
+        localStorage.setItem('token', registerResponse.token);
+      }
+      return registerResponse;
     }
 
-    return response.data;
+    // レスポンスがdata プロパティを持つ場合
+    if (response && typeof response === 'object' && 'data' in response) {
+      const apiResponse = response as unknown as ApiResponse<RegisterResponse>;
+      if (apiResponse.data && apiResponse.data.token) {
+        localStorage.setItem('token', apiResponse.data.token);
+      }
+      return apiResponse.data;
+    }
+
+    throw new Error('Invalid register response structure');
   },
 
   async getProfile(): Promise<User> {
