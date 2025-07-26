@@ -7,10 +7,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { FormField } from '@/components/ui/form';
+
 import { processApiError, setFormErrors } from '@/utils/apiErrorHandler';
+import { Eye, EyeOff } from 'lucide-react';
 
 // バリデーションスキーマ
 const loginSchema = z.object({
@@ -33,6 +32,7 @@ interface LoginFormProps {
 
 export function LoginForm({ onSuccess, redirectTo = '/mypage' }: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
@@ -63,7 +63,7 @@ export function LoginForm({ onSuccess, redirectTo = '/mypage' }: LoginFormProps)
         router.push(redirectTo);
       }
     } catch (error: any) {
-      console.error('ログインエラー:', error);
+      console.error('Login error:', error);
 
       // 統一されたエラーハンドリングを使用
       const processedError = processApiError(error);
@@ -89,42 +89,128 @@ export function LoginForm({ onSuccess, redirectTo = '/mypage' }: LoginFormProps)
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <FormField
-        name="email"
-        label="メールアドレス"
-        required
-        error={errors.email?.message}
-      >
-        <Input
+    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* メールアドレスフィールド */}
+      <div>
+        <label
+          htmlFor="email"
+          style={{
+            display: 'block',
+            marginBottom: '8px',
+            color: '#b0c4d8',
+            fontSize: '0.9rem',
+          }}
+        >
+          メールアドレス*
+        </label>
+        <input
+          id="email"
           type="email"
           placeholder="example@example.com"
           {...register('email')}
           disabled={isSubmitting}
+          style={{
+            width: '100%',
+            padding: '12px 16px',
+            background: '#111A2E',
+            border: errors.email ? '1px solid #ef4444' : '1px solid #1E3A5F',
+            borderRadius: '6px',
+            color: 'white',
+            fontSize: '1rem',
+            outline: 'none',
+            transition: 'border-color 0.2s',
+          }}
         />
-      </FormField>
+        {errors.email && (
+          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+            {errors.email.message}
+          </p>
+        )}
+      </div>
 
-      <FormField
-        name="password"
-        label="パスワード"
-        required
-        error={errors.password?.message}
-      >
-        <Input
-          type="password"
-          placeholder="パスワードを入力"
-          {...register('password')}
-          disabled={isSubmitting}
-        />
-      </FormField>
+      {/* パスワードフィールド */}
+      <div>
+        <label
+          htmlFor="password"
+          style={{
+            display: 'block',
+            marginBottom: '8px',
+            color: '#b0c4d8',
+            fontSize: '0.9rem',
+          }}
+        >
+          パスワード*
+        </label>
+        <div style={{ position: 'relative' }}>
+          <input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="パスワードを入力"
+            {...register('password')}
+            disabled={isSubmitting}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              paddingRight: '48px',
+              background: '#111A2E',
+              border: errors.password ? '1px solid #ef4444' : '1px solid #1E3A5F',
+              borderRadius: '6px',
+              color: 'white',
+              fontSize: '1rem',
+              outline: 'none',
+              transition: 'border-color 0.2s',
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute',
+              right: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'transparent',
+              border: 'none',
+              color: '#b0c4d8',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '4px',
+            }}
+            aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+        {errors.password && (
+          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+            {errors.password.message}
+          </p>
+        )}
+      </div>
 
-      <Button
+      {/* 送信ボタン */}
+      <button
         type="submit"
-        className="w-full"
         disabled={isSubmitting}
+        style={{
+          width: '100%',
+          padding: '14px',
+          background: isSubmitting ? '#374151' : '#00c8ff',
+          color: isSubmitting ? '#9ca3af' : '#020824',
+          border: 'none',
+          borderRadius: '6px',
+          fontSize: '1rem',
+          fontWeight: 'bold',
+          cursor: isSubmitting ? 'not-allowed' : 'pointer',
+          opacity: isSubmitting ? 0.7 : 1,
+          transition: 'all 0.2s',
+          marginTop: '4px',
+        }}
       >
         {isSubmitting ? 'ログイン中...' : 'ログイン'}
-      </Button>
+      </button>
     </form>
   );
 }

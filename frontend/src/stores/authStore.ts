@@ -96,7 +96,7 @@ export const useAuthStore = create<AuthStore>()(
             loading: false,
           });
         } catch (error) {
-          console.error('ユーザー情報取得エラー:', error);
+          console.error('User profile fetch error:', error);
           set({
             user: null,
             token: null,

@@ -19,32 +19,41 @@ import type {
   UserUpdateData,
 } from '@/types/user';
 
+/**
+ * 認証レスポンスを正規化する関数
+ * 異なるレスポンス形式を統一された形式に変換
+ */
+function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(response: any): T {
+  // パターン1: 直接データ構造 { user: {...}, token: "..." }
+  if (response && typeof response === 'object' && 'token' in response && 'user' in response) {
+    return response as T;
+  }
+
+  // パターン2: dataプロパティでラップ { data: { user: {...}, token: "..." } }
+  if (response && typeof response === 'object' && 'data' in response) {
+    const apiResponse = response as ApiResponse<T>;
+    if (apiResponse.data) {
+      return apiResponse.data;
+    }
+  }
+
+  // 予期しない構造の場合
+  console.warn('Unexpected auth response structure:', response);
+  throw new Error(`Invalid authentication response structure. Expected either direct data or wrapped in 'data' property.`);
+}
+
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await apiClient.post<LoginResponse>('/api/v1/login', credentials);
 
-    // レスポンスの構造をログで確認
-    console.log('Login response:', response);
+    // レスポンス構造の正規化
+    const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
 
-    // レスポンスが直接データを含む場合（token と user プロパティがある）
-    if (response && typeof response === 'object' && 'token' in response && 'user' in response) {
-      const loginResponse = response as unknown as LoginResponse;
-      if (loginResponse.token) {
-        localStorage.setItem('token', loginResponse.token);
-      }
-      return loginResponse;
+    if (normalizedResponse.token) {
+      localStorage.setItem('token', normalizedResponse.token);
     }
 
-    // レスポンスがdata プロパティを持つ場合
-    if (response && typeof response === 'object' && 'data' in response) {
-      const apiResponse = response as unknown as ApiResponse<LoginResponse>;
-      if (apiResponse.data && apiResponse.data.token) {
-        localStorage.setItem('token', apiResponse.data.token);
-      }
-      return apiResponse.data;
-    }
-
-    throw new Error('Invalid login response structure');
+    return normalizedResponse;
   },
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
@@ -55,28 +64,14 @@ export const authApi = {
       password_confirmation: credentials.passwordConfirmation,
     });
 
-    // レスポンスの構造をログで確認
-    console.log('Register response:', response);
+    // レスポンス構造の正規化
+    const normalizedResponse = normalizeAuthResponse<RegisterResponse>(response);
 
-    // レスポンスが直接データを含む場合（token と user プロパティがある）
-    if (response && typeof response === 'object' && 'token' in response && 'user' in response) {
-      const registerResponse = response as unknown as RegisterResponse;
-      if (registerResponse.token) {
-        localStorage.setItem('token', registerResponse.token);
-      }
-      return registerResponse;
+    if (normalizedResponse.token) {
+      localStorage.setItem('token', normalizedResponse.token);
     }
 
-    // レスポンスがdata プロパティを持つ場合
-    if (response && typeof response === 'object' && 'data' in response) {
-      const apiResponse = response as unknown as ApiResponse<RegisterResponse>;
-      if (apiResponse.data && apiResponse.data.token) {
-        localStorage.setItem('token', apiResponse.data.token);
-      }
-      return apiResponse.data;
-    }
-
-    throw new Error('Invalid register response structure');
+    return normalizedResponse;
   },
 
   async getProfile(): Promise<User> {

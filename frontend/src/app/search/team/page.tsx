@@ -34,12 +34,10 @@ export default function TeamSearchPage() {
 //   }, [searchQuery]);
 //
 //   const handleDownload = (team: TeamData) => {
-//     console.log(`Downloading team: ${team.name}`);
 //     // 実際のダウンロード処理をここに実装
 //   };
 //
 //   const handleDelete = (team: TeamData) => {
-//     console.log(`Deleting team: ${team.name}`);
 //     // 実際の削除処理をここに実装
 //   };
 //

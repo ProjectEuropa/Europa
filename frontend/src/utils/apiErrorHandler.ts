@@ -66,15 +66,6 @@ function translateErrorMessage(message: string): string {
  * APIエラーを統一的に処理する関数
  */
 export function processApiError(error: any): ProcessedError {
-  console.log('=== processApiError called ===');
-  console.log('Error object:', error);
-  console.log('Error type:', typeof error);
-  console.log('Error constructor:', error?.constructor?.name);
-  console.log('Error name:', error?.name);
-  console.log('Error status:', error?.status);
-  console.log('Error data:', error?.data);
-  console.log('Error errors:', error?.errors);
-
   // デフォルトのエラー情報
   const defaultError: ProcessedError = {
     message: '予期しないエラーが発生しました。しばらくしてから再試行してください。',
@@ -96,47 +87,27 @@ export function processApiError(error: any): ProcessedError {
 
   // ApiErrorClassのインスタンスの場合
   if (error.name === 'ApiError' || error instanceof Error) {
-    console.log('Processing API error');
     const apiError = error as ApiErrorClass;
     const status = apiError.status || 0;
 
-    console.log('API error status:', status);
-    console.log('API error data:', apiError.data);
-    console.log('API error errors:', apiError.errors);
-
     // バリデーションエラー（422）の処理
     if (status === 422) {
-      console.log('Status is 422, checking for errors...');
-      console.log('apiError.errors:', apiError.errors);
-      console.log('apiError.data?.errors:', apiError.data?.errors);
-
       const hasErrors = apiError.errors || apiError.data?.errors;
-      console.log('Has errors:', !!hasErrors);
 
       if (hasErrors) {
-        console.log('Processing validation error (422)');
         const fieldErrors: Record<string, string> = {};
         const errors = apiError.errors || apiError.data?.errors || {};
 
-        console.log('Errors object:', errors);
-        console.log('Errors object type:', typeof errors);
-        console.log('Errors object keys:', Object.keys(errors));
-
       // Laravel形式のエラーレスポンス処理
       Object.entries(errors).forEach(([field, messages]) => {
-        console.log(`Processing field ${field} with messages:`, messages);
         if (Array.isArray(messages) && messages.length > 0) {
           const translatedMessage = translateErrorMessage(messages[0]);
           fieldErrors[field] = translatedMessage;
-          console.log(`Set field error for ${field}: ${messages[0]} -> ${translatedMessage}`);
         }
       });
 
       const message = apiError.data?.message || apiError.message || 'The given data was invalid.';
       const translatedMessage = translateErrorMessage(message);
-
-      console.log(`Main message: ${message} -> ${translatedMessage}`);
-      console.log('Field errors:', fieldErrors);
 
       const result = {
         message: translatedMessage,
@@ -147,10 +118,8 @@ export function processApiError(error: any): ProcessedError {
         isAuthError: false,
       };
 
-      console.log('Returning validation error result:', result);
       return result;
       } else {
-        console.log('No errors found in 422 response, treating as generic error');
       }
     }
 

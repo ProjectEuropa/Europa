@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { processApiError, setFormErrors } from '@/utils/apiErrorHandler';
 
@@ -77,26 +78,16 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
         router.push(redirectTo);
       }
     } catch (error: any) {
-      console.error('=== 登録エラー発生 ===');
-      console.log('エラーオブジェクト:', error);
-      console.log('エラータイプ:', typeof error);
-      console.log('エラーコンストラクタ:', error?.constructor?.name);
-      console.log('エラー名:', error?.name);
-      console.log('エラーステータス:', error?.status);
-      console.log('エラーデータ:', error?.data);
-      console.log('エラーエラーズ:', error?.errors);
+      console.error('Registration error:', error);
 
       // 統一されたエラーハンドリングを使用
       const processedError = processApiError(error);
-      console.log('=== 処理されたエラー ===', processedError);
 
       if (processedError.isValidationError && Object.keys(processedError.fieldErrors).length > 0) {
         // バリデーションエラーの場合、フィールドごとにエラーを設定
-        console.log('フィールドエラーを設定:', processedError.fieldErrors);
         setFormErrors(setError, processedError.fieldErrors);
       } else {
         // その他のエラーの場合、トーストでエラーメッセージを表示
-        console.log('トーストエラーを表示:', processedError.message);
         toast({
           type: 'error',
           title: '登録エラー',
@@ -232,7 +223,7 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
               padding: '4px',
             }}
           >
-            {showPassword ? '🙈' : '👁️'}
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
         {errors.password && (
@@ -290,7 +281,7 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
               padding: '4px',
             }}
           >
-            {showPasswordConfirmation ? '🙈' : '👁️'}
+            {showPasswordConfirmation ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
         {errors.passwordConfirmation && (
