@@ -40,7 +40,16 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          errorData = await response.json();
+        } catch {
+          // JSONパースに失敗した場合のフォールバック
+          errorData = {
+            message: `HTTP ${response.status}: ${response.statusText}`,
+            status: response.status,
+          };
+        }
         throw new ApiErrorClass(response.status, errorData);
       }
 
@@ -113,7 +122,16 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          errorData = await response.json();
+        } catch {
+          // JSONパースに失敗した場合のフォールバック
+          errorData = {
+            message: `HTTP ${response.status}: ${response.statusText}`,
+            status: response.status,
+          };
+        }
         throw new ApiErrorClass(response.status, errorData);
       }
 

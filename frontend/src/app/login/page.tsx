@@ -6,7 +6,9 @@ import type React from 'react';
 import { useState } from 'react';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { login } from '@/utils/api';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/useToast';
+import { processApiError } from '@/utils/apiErrorHandler';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -15,22 +17,39 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  const { login } = useAuth();
+  const { toast } = useToast();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
     try {
-      const data = await login(email, password);
-      if (data.token) {
-        window.location.href = '/'; // 成功時のみリダイレクト
+      await login({ email, password });
+
+      toast({
+        type: 'success',
+        title: 'ログイン成功',
+        message: 'ログインしました',
+      });
+
+      window.location.href = '/';
+    } catch (error: any) {
+      console.error('ログインエラー:', error);
+
+      // 統一されたエラーハンドリングを使用
+      const processedError = processApiError(error);
+
+      if (processedError.isAuthError) {
+        setError('メールアドレスまたはパスワードが正しくありません。');
+      } else if (processedError.isNetworkError) {
+        setError('接続に問題があります。しばらくしてから再試行してください。');
+      } else if (processedError.isServerError) {
+        setError('サーバーで問題が発生しました。しばらくしてから再試行してください。');
       } else {
-        setError(
-          data.message ||
-            'ログインに失敗しました。メールアドレスとパスワードを確認してください。'
-        );
+        setError(processedError.message);
       }
-    } catch (err) {
-      setError('通信エラーが発生しました。');
     } finally {
       setIsLoading(false);
     }
