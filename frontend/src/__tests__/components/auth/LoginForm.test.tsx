@@ -178,7 +178,12 @@ describe('LoginForm', () => {
 
     it('should handle 401 error', async () => {
       const user = userEvent.setup();
-      const error = { status: 401, message: 'Unauthorized' };
+      const error = {
+        status: 401,
+        message: 'Unauthorized',
+        name: 'ApiError',
+        data: { message: 'Unauthorized' }
+      };
       mockLogin.mockRejectedValue(error);
 
       render(<LoginForm />);
@@ -192,7 +197,7 @@ describe('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getAllByText('メールアドレスまたはパスワードが正しくありません')).toHaveLength(2);
+        expect(screen.getAllByText('メールアドレスまたはパスワードが正しくありません。')).toHaveLength(2);
       });
     });
 
@@ -200,11 +205,17 @@ describe('LoginForm', () => {
       const user = userEvent.setup();
       const error = {
         status: 422,
+        name: 'ApiError',
         data: {
+          message: 'The given data was invalid.',
           errors: {
-            email: ['メールアドレスの形式が正しくありません'],
-            password: ['パスワードが短すぎます'],
+            email: ['The email must be a valid email address.'],
+            password: ['The password must be at least 6 characters.'],
           },
+        },
+        errors: {
+          email: ['The email must be a valid email address.'],
+          password: ['The password must be at least 6 characters.'],
         },
       };
       mockLogin.mockRejectedValue(error);
