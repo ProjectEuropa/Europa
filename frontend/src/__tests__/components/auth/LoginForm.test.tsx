@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { useAuth } from '@/hooks/useAuth';
@@ -43,15 +43,16 @@ describe('LoginForm', () => {
       render(<LoginForm />);
 
       expect(screen.getByLabelText(/メールアドレス/)).toBeInTheDocument();
-      expect(screen.getByLabelText(/パスワード/)).toBeInTheDocument();
+      expect(screen.getByLabelText('パスワード*')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'ログイン' })).toBeInTheDocument();
     });
 
     it('should render required indicators', () => {
       render(<LoginForm />);
 
-      const requiredIndicators = screen.getAllByText('*');
-      expect(requiredIndicators).toHaveLength(2);
+      // ラベルに必須マーク（*）が含まれていることを確認
+      expect(screen.getByText('メールアドレス*')).toBeInTheDocument();
+      expect(screen.getByText('パスワード*')).toBeInTheDocument();
     });
   });
 
@@ -87,7 +88,7 @@ describe('LoginForm', () => {
       const user = userEvent.setup();
       render(<LoginForm />);
 
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
       await user.type(passwordInput, '123');
 
       const submitButton = screen.getByRole('button', { name: 'ログイン' });
@@ -107,7 +108,7 @@ describe('LoginForm', () => {
       render(<LoginForm />);
 
       const emailInput = screen.getByLabelText(/メールアドレス/);
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
       const submitButton = screen.getByRole('button', { name: 'ログイン' });
 
       await user.type(emailInput, 'test@example.com');
@@ -133,7 +134,7 @@ describe('LoginForm', () => {
       render(<LoginForm />);
 
       const emailInput = screen.getByLabelText(/メールアドレス/);
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
       const submitButton = screen.getByRole('button', { name: 'ログイン' });
 
       await user.type(emailInput, 'test@example.com');
@@ -160,7 +161,7 @@ describe('LoginForm', () => {
       render(<LoginForm />);
 
       const emailInput = screen.getByLabelText(/メールアドレス/);
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
       const submitButton = screen.getByRole('button', { name: 'ログイン' });
 
       await user.type(emailInput, 'test@example.com');
@@ -189,7 +190,7 @@ describe('LoginForm', () => {
       render(<LoginForm />);
 
       const emailInput = screen.getByLabelText(/メールアドレス/);
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
       const submitButton = screen.getByRole('button', { name: 'ログイン' });
 
       await user.type(emailInput, 'test@example.com');
@@ -223,7 +224,7 @@ describe('LoginForm', () => {
       render(<LoginForm />);
 
       const emailInput = screen.getByLabelText(/メールアドレス/);
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
       const submitButton = screen.getByRole('button', { name: 'ログイン' });
 
       await user.type(emailInput, 'test@example.com');
@@ -244,7 +245,7 @@ describe('LoginForm', () => {
       render(<LoginForm />);
 
       const emailInput = screen.getByLabelText(/メールアドレス/);
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
       const submitButton = screen.getByRole('button', { name: 'ログイン' });
 
       await user.type(emailInput, 'test@example.com');
@@ -270,7 +271,7 @@ describe('LoginForm', () => {
       render(<LoginForm onSuccess={onSuccess} />);
 
       const emailInput = screen.getByLabelText(/メールアドレス/);
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
       const submitButton = screen.getByRole('button', { name: 'ログイン' });
 
       await user.type(emailInput, 'test@example.com');
@@ -288,14 +289,14 @@ describe('LoginForm', () => {
       render(<LoginForm />);
 
       expect(screen.getByLabelText(/メールアドレス/)).toBeInTheDocument();
-      expect(screen.getByLabelText(/パスワード/)).toBeInTheDocument();
+      expect(screen.getByLabelText('パスワード*')).toBeInTheDocument();
     });
 
     it('should have proper input types', () => {
       render(<LoginForm />);
 
       const emailInput = screen.getByLabelText(/メールアドレス/);
-      const passwordInput = screen.getByLabelText(/パスワード/);
+      const passwordInput = screen.getByLabelText('パスワード*');
 
       expect(emailInput).toHaveAttribute('type', 'email');
       expect(passwordInput).toHaveAttribute('type', 'password');
