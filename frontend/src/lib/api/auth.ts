@@ -97,7 +97,8 @@ export const authApi = {
 
   async sendPasswordResetLink(request: PasswordResetRequest): Promise<PasswordResetResponse> {
     const response = await apiClient.post<PasswordResetResponse>('/api/v1/forgot-password', request);
-    return response.data;
+    // Laravel APIは直接レスポンスオブジェクトを返すため、response.dataではなくresponse自体を返す
+    return response as PasswordResetResponse;
   },
 
   async checkResetPasswordToken(check: PasswordResetTokenCheck): Promise<PasswordResetTokenResponse> {
@@ -126,7 +127,8 @@ export const authApi = {
         password_confirmation: data.passwordConfirmation,
       });
 
-      return { message: response.data.message };
+      // Laravel APIは直接レスポンスオブジェクトを返すため、response.dataではなくresponse自体を使用
+      return { message: (response as any).message };
     } catch (error: any) {
       return { error: error.message || 'リセットに失敗しました' };
     }
