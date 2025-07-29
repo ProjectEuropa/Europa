@@ -257,7 +257,7 @@ describe('authApi', () => {
       const result = await authApi.sendPasswordResetLink(request);
 
       expect(apiClient.post).toHaveBeenCalledWith('/api/v1/forgot-password', request);
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual(mockResponse);
     });
   });
 
@@ -299,7 +299,7 @@ describe('authApi', () => {
       };
 
       const mockResponse = {
-        data: { message: 'Password reset successfully' },
+        message: 'Password reset successfully',
       };
 
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
