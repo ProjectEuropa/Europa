@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ToastProvider } from "@/providers";
+import { ToastProvider, QueryProvider } from "@/providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -53,8 +53,10 @@ export default function RootLayout({
           " bg-[#0a0818] min-h-screen flex flex-col antialiased text-white selection:bg-[#00c8ff]/30 transition-colors duration-300"
         }
       >
-        {children}
-        <ToastProvider />
+        <QueryProvider>
+          {children}
+          <ToastProvider />
+        </QueryProvider>
       </body>
     </html>
   );

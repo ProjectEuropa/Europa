@@ -6,16 +6,32 @@ import type { DateString } from './utils';
 
 export interface BaseFile {
   id: number;
-  name: string;
-  ownerName: string;
-  comment: string;
-  tags: string[];
-  downloadableAt: DateString;
-  createdAt: DateString;
-  updatedAt?: DateString;
+  file_name: string;
+  upload_owner_name: string;
+  file_comment: string;
+  downloadable_at: DateString;
+  created_at: DateString;
+  updated_at?: DateString;
+  search_tag1?: string | null;
+  search_tag2?: string | null;
+  search_tag3?: string | null;
+  search_tag4?: string | null;
   size?: number;
   downloadCount?: number;
   isCommentVisible?: boolean;
+  upload_type?: string; // アップロードタイプ（'1': 認証アップロード, '2': 簡易アップロード）
+
+  // 互換性のためのエイリアス
+  name: string;
+  ownerName: string;
+  comment: string;
+  downloadableAt: DateString;
+  createdAt: DateString;
+  updatedAt?: DateString;
+  searchTag1?: string | null;
+  searchTag2?: string | null;
+  searchTag3?: string | null;
+  searchTag4?: string | null;
 }
 
 export interface TeamFile extends BaseFile {
