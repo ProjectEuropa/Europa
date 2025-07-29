@@ -46,7 +46,7 @@ describe('SearchForm', () => {
 
       expect(screen.getByRole('search')).toBeInTheDocument();
       expect(screen.getByLabelText('検索キーワード')).toBeInTheDocument();
-      expect(screen.getByLabelText('検索実行')).toBeInTheDocument();
+      expect(screen.getByLabelText('検索')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('キーワードを入力してください')).toBeInTheDocument();
     });
 
@@ -113,7 +113,7 @@ describe('SearchForm', () => {
       render(<SearchForm searchType="team" onSearch={mockOnSearch} />);
 
       const input = screen.getByLabelText('検索キーワード');
-      const submitButton = screen.getByLabelText('検索実行');
+      const submitButton = screen.getByLabelText('検索');
 
       await user.type(input, 'test query');
       await user.click(submitButton);
@@ -143,7 +143,7 @@ describe('SearchForm', () => {
 
       render(<SearchForm searchType="team" onSearch={mockOnSearch} />);
 
-      const submitButton = screen.getByLabelText('検索実行');
+      const submitButton = screen.getByLabelText('検索');
       await user.click(submitButton);
 
       expect(mockOnSearch).not.toHaveBeenCalled();
@@ -153,7 +153,7 @@ describe('SearchForm', () => {
     it('should disable submit button when query is empty', () => {
       render(<SearchForm searchType="team" />);
 
-      const submitButton = screen.getByLabelText('検索実行');
+      const submitButton = screen.getByLabelText('検索');
       expect(submitButton).toBeDisabled();
     });
 
@@ -162,7 +162,7 @@ describe('SearchForm', () => {
       render(<SearchForm searchType="team" />);
 
       const input = screen.getByLabelText('検索キーワード');
-      const submitButton = screen.getByLabelText('検索実行');
+      const submitButton = screen.getByLabelText('検索');
 
       await user.type(input, 'test');
       expect(submitButton).not.toBeDisabled();
@@ -216,11 +216,11 @@ describe('SearchForm', () => {
 
       const form = screen.getByRole('search');
       const input = screen.getByLabelText('検索キーワード');
-      const submitButton = screen.getByLabelText('検索実行');
+      const submitButton = screen.getByLabelText('検索');
 
       expect(form).toHaveAttribute('aria-label', 'チーム検索フォーム');
       expect(input).toHaveAttribute('aria-label', '検索キーワード');
-      expect(submitButton).toHaveAttribute('aria-label', '検索実行');
+      expect(submitButton).toHaveAttribute('aria-label', '検索');
     });
 
     it('should support keyboard navigation', async () => {

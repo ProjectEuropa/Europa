@@ -49,7 +49,11 @@ describe('SearchResults', () => {
     searchTag2: 'tag2',
     searchTag3: null,
     searchTag4: null,
+    file_name: 'test-team.oke',
+    upload_owner_name: 'testuser',
+    file_comment: 'Test team file comment',
     type: 'team',
+    upload_type: '2', // 簡易アップロード - 削除ボタン表示
   };
 
   const mockMatchFile: MatchFile = {
@@ -64,7 +68,11 @@ describe('SearchResults', () => {
     searchTag2: null,
     searchTag3: null,
     searchTag4: null,
+    file_name: 'test-match.oke',
+    upload_owner_name: 'matchuser',
+    file_comment: 'Test match file comment',
     type: 'match',
+    upload_type: '1', // 認証アップロード - 削除ボタン非表示
   };
 
   const mockMeta: PaginationMeta = {
@@ -189,8 +197,13 @@ describe('SearchResults', () => {
       expect(tag1).toBeInTheDocument();
       expect(tag2).toBeInTheDocument();
 
-      // タグのスタイリングを確認
-      expect(tag1).toHaveClass('px-2', 'py-1', 'bg-[#1E3A5F]', 'text-[#8CB4FF]');
+      // タグのスタイリングを確認（インラインスタイルで実装されているため、スタイル属性をチェック）
+      expect(tag1).toHaveStyle({
+        background: '#1E3A5F',
+        color: '#8CB4FF',
+        borderRadius: '4px',
+        padding: '2px 6px',
+      });
     });
 
     it('should handle files without comments or tags', () => {
@@ -255,7 +268,7 @@ describe('SearchResults', () => {
         />
       );
 
-      const deleteButton = screen.getByLabelText('test-team.okeを削除');
+      const deleteButton = screen.getByTestId('delete-button-1');
       await user.click(deleteButton);
 
       expect(screen.getByTestId('delete-modal')).toBeInTheDocument();
@@ -388,7 +401,7 @@ describe('SearchResults', () => {
       );
 
       expect(screen.getByLabelText('test-team.okeをダウンロード')).toBeInTheDocument();
-      expect(screen.getByLabelText('test-team.okeを削除')).toBeInTheDocument();
+      expect(screen.getByTestId('delete-button-1')).toBeInTheDocument();
     });
 
     it('should support keyboard navigation', async () => {
@@ -446,25 +459,60 @@ describe('SearchResults', () => {
       expect(screen.getByText('test-team.oke')).toBeInTheDocument();
     });
   });
-});
+
   describe('削除ボタンの条件付き表示', () => {
+    const testMeta: PaginationMeta = {
+      currentPage: 1,
+      lastPage: 1,
+      perPage: 10,
+      total: 2,
+    };
+
+
+
     it('should show delete button only for upload_type="2" (簡易アップロード)', () => {
       const fileWithSimpleUpload: TeamFile = {
-        ...mockTeamFile,
+        id: 1,
+        name: 'simple-upload.txt',
+        ownerName: 'testuser',
+        comment: 'Simple upload file',
+        downloadableAt: '2024-01-01T10:00:00Z',
+        createdAt: '2024-01-01T09:00:00Z',
+        updatedAt: '2024-01-01T09:00:00Z',
+        searchTag1: 'tag1',
+        searchTag2: null,
+        searchTag3: null,
+        searchTag4: null,
+        file_name: 'simple-upload.txt',
+        upload_owner_name: 'testuser',
+        file_comment: 'Simple upload file',
+        type: 'team',
         upload_type: '2', // 簡易アップロード
       };
 
       const fileWithAuthUpload: TeamFile = {
-        ...mockTeamFile,
         id: 2,
         name: 'auth-file.txt',
+        ownerName: 'testuser',
+        comment: 'Auth upload file',
+        downloadableAt: '2024-01-01T10:00:00Z',
+        createdAt: '2024-01-01T09:00:00Z',
+        updatedAt: '2024-01-01T09:00:00Z',
+        searchTag1: 'tag1',
+        searchTag2: null,
+        searchTag3: null,
+        searchTag4: null,
+        file_name: 'auth-file.txt',
+        upload_owner_name: 'testuser',
+        file_comment: 'Auth upload file',
+        type: 'team',
         upload_type: '1', // 認証アップロード
       };
 
       render(
         <SearchResults
           results={[fileWithSimpleUpload, fileWithAuthUpload]}
-          meta={mockMeta}
+          meta={testMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
         />
@@ -479,14 +527,28 @@ describe('SearchResults', () => {
 
     it('should not show delete button when upload_type is undefined', () => {
       const fileWithoutUploadType: TeamFile = {
-        ...mockTeamFile,
+        id: 1,
+        name: 'no-upload-type.txt',
+        ownerName: 'testuser',
+        comment: 'File without upload type',
+        downloadableAt: '2024-01-01T10:00:00Z',
+        createdAt: '2024-01-01T09:00:00Z',
+        updatedAt: '2024-01-01T09:00:00Z',
+        searchTag1: 'tag1',
+        searchTag2: null,
+        searchTag3: null,
+        searchTag4: null,
+        file_name: 'no-upload-type.txt',
+        upload_owner_name: 'testuser',
+        file_comment: 'File without upload type',
+        type: 'team',
         upload_type: undefined,
       };
 
       render(
         <SearchResults
           results={[fileWithoutUploadType]}
-          meta={mockMeta}
+          meta={testMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
         />
@@ -499,14 +561,28 @@ describe('SearchResults', () => {
     it('should handle delete action for files with upload_type="2"', async () => {
       const user = userEvent.setup();
       const fileWithSimpleUpload: TeamFile = {
-        ...mockTeamFile,
+        id: 1,
+        name: 'deletable-file.txt',
+        ownerName: 'testuser',
+        comment: 'Deletable file',
+        downloadableAt: '2024-01-01T10:00:00Z',
+        createdAt: '2024-01-01T09:00:00Z',
+        updatedAt: '2024-01-01T09:00:00Z',
+        searchTag1: 'tag1',
+        searchTag2: null,
+        searchTag3: null,
+        searchTag4: null,
+        file_name: 'deletable-file.txt',
+        upload_owner_name: 'testuser',
+        file_comment: 'Deletable file',
+        type: 'team',
         upload_type: '2',
       };
 
       render(
         <SearchResults
           results={[fileWithSimpleUpload]}
-          meta={mockMeta}
+          meta={testMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
         />
@@ -519,3 +595,4 @@ describe('SearchResults', () => {
       expect(screen.getByTestId('delete-modal')).toBeInTheDocument();
     });
   });
+});

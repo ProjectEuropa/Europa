@@ -13,7 +13,7 @@ test.describe('検索機能の統合テスト', () => {
 
     // 検索フォームの確認
     const searchInput = page.getByLabel('検索キーワード');
-    const searchButton = page.getByLabel('検索実行');
+    const searchButton = page.getByRole('button', { name: '検索' });
 
     await expect(searchInput).toBeVisible();
     await expect(searchButton).toBeVisible();
@@ -48,7 +48,7 @@ test.describe('検索機能の統合テスト', () => {
     // 検索実行
     const searchInput = page.getByLabel('検索キーワード');
     await searchInput.fill('テストマッチ');
-    await page.getByLabel('検索実行').click();
+    await page.getByRole('button', { name: '検索' }).click();
 
     // URLが更新されることを確認
     await expect(page).toHaveURL(/keyword=テストマッチ/);
@@ -56,7 +56,7 @@ test.describe('検索機能の統合テスト', () => {
 
   test('検索フォームのバリデーション', async ({ page }) => {
     const searchInput = page.getByLabel('検索キーワード');
-    const searchButton = page.getByLabel('検索実行');
+    const searchButton = page.getByRole('button', { name: '検索' });
 
     // 空の状態では検索ボタンが無効
     await expect(searchButton).toBeDisabled();
@@ -126,7 +126,7 @@ test.describe('検索機能の統合テスト', () => {
 
     // 検索実行
     await page.getByLabel('検索キーワード').fill('test');
-    await page.getByLabel('検索実行').click();
+    await page.getByRole('button', { name: '検索' }).click();
 
     // 検索結果の確認
     await expect(page.getByText('25件の結果 (ページ 1/3)')).toBeVisible();
@@ -171,7 +171,7 @@ test.describe('検索機能の統合テスト', () => {
 
     // 検索実行
     await page.getByLabel('検索キーワード').fill('存在しないファイル');
-    await page.getByLabel('検索実行').click();
+    await page.getByRole('button', { name: '検索' }).click();
 
     // 空の状態メッセージの確認
     await expect(page.getByText('検索結果が見つかりませんでした')).toBeVisible();
@@ -192,7 +192,7 @@ test.describe('検索機能の統合テスト', () => {
 
     // 検索実行
     await page.getByLabel('検索キーワード').fill('エラーテスト');
-    await page.getByLabel('検索実行').click();
+    await page.getByRole('button', { name: '検索' }).click();
 
     // エラーメッセージの確認
     await expect(page.getByText('チーム検索に失敗しました')).toBeVisible();
@@ -245,7 +245,7 @@ test.describe('検索機能の統合テスト', () => {
 
     // 検索実行
     await page.getByLabel('検索キーワード').fill('downloadable');
-    await page.getByLabel('検索実行').click();
+    await page.getByRole('button', { name: '検索' }).click();
 
     // ダウンロードボタンをクリック
     const downloadButton = page.getByLabel('downloadable-team.okeをダウンロード');
@@ -307,7 +307,7 @@ test.describe('検索機能の統合テスト', () => {
 
     // 検索実行
     await page.getByLabel('検索キーワード').fill('deletable');
-    await page.getByLabel('検索実行').click();
+    await page.getByRole('button', { name: '検索' }).click();
 
     // 削除ボタンをクリック
     const deleteButton = page.getByLabel('deletable-team.okeを削除');
@@ -341,7 +341,7 @@ test.describe('検索機能の統合テスト', () => {
 
     // 検索フォームが適切に表示されることを確認
     await expect(page.getByLabel('検索キーワード')).toBeVisible();
-    await expect(page.getByLabel('検索実行')).toBeVisible();
+    await expect(page.getByRole('button', { name: '検索' })).toBeVisible();
 
     // タブレットサイズに変更
     await page.setViewportSize({ width: 768, height: 1024 });
@@ -360,7 +360,7 @@ test.describe('検索機能の統合テスト', () => {
 
     // Tabキーで検索ボタンに移動
     await page.keyboard.press('Tab');
-    await expect(page.getByLabel('検索実行')).toBeFocused();
+    await expect(page.getByRole('button', { name: '検索' })).toBeFocused();
 
     // Enterキーで検索実行
     await page.keyboard.press('Enter');
