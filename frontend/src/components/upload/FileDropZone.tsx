@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 
 export interface FileDropZoneProps {
   onFileSelect: (file: File) => void;
+  onError?: (error: string) => void;
   accept?: string;
   maxSize?: number; // bytes
   multiple?: boolean;
@@ -18,6 +19,7 @@ export interface FileDropZoneProps {
 
 export const FileDropZone: React.FC<FileDropZoneProps> = ({
   onFileSelect,
+  onError,
   accept = '.che',
   maxSize = 25 * 1024, // 25KB default
   multiple = false,
@@ -105,8 +107,12 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
     const error = validateFile(file);
 
     if (error) {
-      // エラーハンドリングは親コンポーネントに委ねる
-      console.error('File validation error:', error);
+      // エラーを親コンポーネントに通知
+      if (onError) {
+        onError(error);
+      } else {
+        console.error('File validation error:', error);
+      }
       return;
     }
 
