@@ -1,14 +1,14 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
-import { passwordResetSchema } from '@/schemas/auth';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { usePasswordReset } from '@/hooks/usePasswordReset';
 import type { PasswordResetFormData } from '@/schemas/auth';
+import { passwordResetSchema } from '@/schemas/auth';
 
 interface PasswordResetFormProps {
   token: string;
@@ -16,12 +16,17 @@ interface PasswordResetFormProps {
   onSuccess?: () => void;
 }
 
-export function PasswordResetForm({ token, email, onSuccess }: PasswordResetFormProps) {
+export function PasswordResetForm({
+  token,
+  email,
+  onSuccess,
+}: PasswordResetFormProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isTokenValid, setIsTokenValid] = useState(true);
   const [tokenError, setTokenError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] =
+    useState(false);
   const { isLoading, checkToken, resetPassword } = usePasswordReset();
   const router = useRouter();
 
@@ -58,7 +63,9 @@ export function PasswordResetForm({ token, email, onSuccess }: PasswordResetForm
       validateToken();
     } else {
       setIsTokenValid(false);
-      setTokenError('無効なリセットリンクです。パスワードリセットを再度リクエストしてください。');
+      setTokenError(
+        '無効なリセットリンクです。パスワードリセットを再度リクエストしてください。'
+      );
     }
   }, [token, email, isSuccess]); // checkTokenを依存配列から削除
 
@@ -96,7 +103,9 @@ export function PasswordResetForm({ token, email, onSuccess }: PasswordResetForm
         <p style={{ marginBottom: '10px', fontWeight: 'bold' }}>
           パスワードが正常に変更されました！
         </p>
-        <p style={{ marginBottom: '16px' }}>新しいパスワードでログインできます。</p>
+        <p style={{ marginBottom: '16px' }}>
+          新しいパスワードでログインできます。
+        </p>
 
         <Link
           href="/login"
@@ -174,7 +183,10 @@ export function PasswordResetForm({ token, email, onSuccess }: PasswordResetForm
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+    >
       {/* 新しいパスワード */}
       <div>
         <label
@@ -200,7 +212,9 @@ export function PasswordResetForm({ token, email, onSuccess }: PasswordResetForm
               padding: '12px 16px',
               paddingRight: '48px',
               background: '#111A2E',
-              border: errors.password ? '1px solid #ef4444' : '1px solid #1E3A5F',
+              border: errors.password
+                ? '1px solid #ef4444'
+                : '1px solid #1E3A5F',
               borderRadius: '6px',
               color: 'white',
               fontSize: '1rem',
@@ -265,7 +279,9 @@ export function PasswordResetForm({ token, email, onSuccess }: PasswordResetForm
               padding: '12px 16px',
               paddingRight: '48px',
               background: '#111A2E',
-              border: errors.passwordConfirmation ? '1px solid #ef4444' : '1px solid #1E3A5F',
+              border: errors.passwordConfirmation
+                ? '1px solid #ef4444'
+                : '1px solid #1E3A5F',
               borderRadius: '6px',
               color: 'white',
               fontSize: '1rem',
@@ -275,7 +291,9 @@ export function PasswordResetForm({ token, email, onSuccess }: PasswordResetForm
           />
           <button
             type="button"
-            onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+            onClick={() =>
+              setShowPasswordConfirmation(!showPasswordConfirmation)
+            }
             style={{
               position: 'absolute',
               right: '12px',
@@ -290,9 +308,15 @@ export function PasswordResetForm({ token, email, onSuccess }: PasswordResetForm
               justifyContent: 'center',
               padding: '4px',
             }}
-            aria-label={showPasswordConfirmation ? 'パスワードを隠す' : 'パスワードを表示'}
+            aria-label={
+              showPasswordConfirmation ? 'パスワードを隠す' : 'パスワードを表示'
+            }
           >
-            {showPasswordConfirmation ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showPasswordConfirmation ? (
+              <EyeOff size={20} />
+            ) : (
+              <Eye size={20} />
+            )}
           </button>
         </div>
         {errors.passwordConfirmation && (

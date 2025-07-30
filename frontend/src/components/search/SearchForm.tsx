@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePrefetchSearch } from '@/hooks/useSearch';
 import type { SearchParams } from '@/types/search';
@@ -61,7 +61,13 @@ export function SearchForm({
     } else {
       prefetchMatchSearch(params);
     }
-  }, [debouncedQuery, searchType, prefetchTeamSearch, prefetchMatchSearch, isComposing]);
+  }, [
+    debouncedQuery,
+    searchType,
+    prefetchTeamSearch,
+    prefetchMatchSearch,
+    isComposing,
+  ]);
 
   // 検索実行
   const handleSubmit = useCallback(
@@ -88,9 +94,12 @@ export function SearchForm({
   );
 
   // 入力変更処理
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  }, []);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(e.target.value);
+    },
+    []
+  );
 
   // IME入力処理
   const handleCompositionStart = useCallback(() => {
@@ -166,10 +175,10 @@ export function SearchForm({
               transition: 'color 0.2s',
             }}
             aria-label="検索をクリア"
-            onMouseOver={(e) => {
+            onMouseOver={e => {
               e.currentTarget.style.color = '#fff';
             }}
-            onMouseOut={(e) => {
+            onMouseOut={e => {
               e.currentTarget.style.color = '#4A6FA5';
             }}
           >

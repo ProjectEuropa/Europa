@@ -1,18 +1,18 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import type { BaseFile, MatchFile, TeamFile } from '@/types/file';
 import type {
-  SearchParams,
-  SearchFilters,
   DateRange,
+  FileType,
+  MatchSearchResult,
+  PaginationMeta,
+  SearchFilters,
+  SearchParams,
+  SearchResult,
+  SearchState,
   SortField,
   SortOrder,
-  FileType,
-  SearchResult,
-  PaginationMeta,
   TeamSearchResult,
-  MatchSearchResult,
-  SearchState,
 } from '@/types/search';
-import type { BaseFile, TeamFile, MatchFile } from '@/types/file';
 
 describe('Search Types', () => {
   describe('SearchParams', () => {
@@ -91,11 +91,18 @@ describe('Search Types', () => {
 
   describe('Type Unions', () => {
     it('should accept valid SortField values', () => {
-      const sortFields: SortField[] = ['name', 'createdAt', 'downloadableAt', 'ownerName'];
+      const sortFields: SortField[] = [
+        'name',
+        'createdAt',
+        'downloadableAt',
+        'ownerName',
+      ];
 
       sortFields.forEach(field => {
         const sortBy: SortField = field;
-        expect(['name', 'createdAt', 'downloadableAt', 'ownerName']).toContain(sortBy);
+        expect(['name', 'createdAt', 'downloadableAt', 'ownerName']).toContain(
+          sortBy
+        );
       });
     });
 

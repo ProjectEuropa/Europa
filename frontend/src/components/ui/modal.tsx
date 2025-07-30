@@ -42,12 +42,12 @@ export function Modal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={closeOnOverlayClick ? onClose : undefined}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={closeOnOverlayClick ? onClose : undefined}
+    >
       <DialogContent
-        className={cn(
-          'bg-[#0a1022] border border-gray-700',
-          sizeClasses[size]
-        )}
+        className={cn('bg-[#0a1022] border border-gray-700', sizeClasses[size])}
         onInteractOutside={closeOnOverlayClick ? onClose : undefined}
       >
         <DialogHeader>

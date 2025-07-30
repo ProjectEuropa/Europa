@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User, LoginCredentials, RegisterCredentials } from '@/types/user';
 import { authApi } from '@/lib/api/auth';
+import type { LoginCredentials, RegisterCredentials, User } from '@/types/user';
 
 interface AuthState {
   user: User | null;
@@ -123,7 +123,7 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         token: state.token,
         user: state.user,
       }),

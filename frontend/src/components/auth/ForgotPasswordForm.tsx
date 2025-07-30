@@ -1,12 +1,12 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
 import Link from 'next/link';
-import { passwordResetRequestSchema } from '@/schemas/auth';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { usePasswordReset } from '@/hooks/usePasswordReset';
 import type { PasswordResetRequestFormData } from '@/schemas/auth';
+import { passwordResetRequestSchema } from '@/schemas/auth';
 
 interface ForgotPasswordFormProps {
   onSuccess?: (email: string) => void;
@@ -54,14 +54,18 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           リセット用のメールを送信しました！
         </p>
         <p style={{ fontSize: '0.9rem' }}>
-          {successEmail} 宛にパスワードリセット用のリンクを送信しました。メールをご確認ください。
+          {successEmail}{' '}
+          宛にパスワードリセット用のリンクを送信しました。メールをご確認ください。
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+    >
       <div>
         <label
           htmlFor="email"

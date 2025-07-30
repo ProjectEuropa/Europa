@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { eventSchema, type EventFormData } from '@/schemas/event';
+import { describe, expect, it } from 'vitest';
+import { type EventFormData, eventSchema } from '@/schemas/event';
 
 describe('eventSchema', () => {
   const validEventData: EventFormData = {
@@ -22,7 +22,9 @@ describe('eventSchema', () => {
       const result = eventSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('イベント名を入力してください');
+        expect(result.error.issues[0].message).toBe(
+          'イベント名を入力してください'
+        );
       }
     });
 
@@ -31,7 +33,9 @@ describe('eventSchema', () => {
       const result = eventSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('イベント名は100文字以内で入力してください');
+        expect(result.error.issues[0].message).toBe(
+          'イベント名は100文字以内で入力してください'
+        );
       }
     });
   });
@@ -56,7 +60,9 @@ describe('eventSchema', () => {
       const result = eventSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('詳細は1000文字以内で入力してください');
+        expect(result.error.issues[0].message).toBe(
+          '詳細は1000文字以内で入力してください'
+        );
       }
     });
   });
@@ -86,7 +92,9 @@ describe('eventSchema', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         // Zodのデフォルトメッセージまたはカスタムメッセージを確認
-        const urlError = result.error.issues.find(issue => issue.path.includes('url'));
+        const urlError = result.error.issues.find(issue =>
+          issue.path.includes('url')
+        );
         expect(urlError).toBeDefined();
         expect(urlError?.message).toMatch(/Invalid|有効なURL/);
       }
@@ -105,7 +113,9 @@ describe('eventSchema', () => {
       const result = eventSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('日付はYYYY-MM-DD形式で入力してください');
+        expect(result.error.issues[0].message).toBe(
+          '日付はYYYY-MM-DD形式で入力してください'
+        );
       }
     });
 
@@ -128,7 +138,9 @@ describe('eventSchema', () => {
       const result = eventSchema.safeParse(data);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('日付はYYYY-MM-DD形式で入力してください');
+        expect(result.error.issues[0].message).toBe(
+          '日付はYYYY-MM-DD形式で入力してください'
+        );
       }
     });
   });

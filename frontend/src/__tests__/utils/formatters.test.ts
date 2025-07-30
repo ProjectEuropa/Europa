@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 // 仮想的なフォーマッター関数
 const formatters = {
@@ -9,7 +9,7 @@ const formatters = {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / k ** i).toFixed(2)) + ' ' + sizes[i];
   },
 
   formatDate: (date: string | Date): string => {
@@ -213,7 +213,9 @@ describe('formatters', () => {
   describe('truncateText', () => {
     it('should truncate long text', () => {
       const longText = 'This is a very long text that should be truncated';
-      expect(formatters.truncateText(longText, 20)).toBe('This is a very long ...');
+      expect(formatters.truncateText(longText, 20)).toBe(
+        'This is a very long ...'
+      );
     });
 
     it('should not truncate short text', () => {
@@ -256,7 +258,9 @@ describe('formatters', () => {
     });
 
     it('should handle already formatted numbers', () => {
-      expect(formatters.formatPhoneNumber('090-1234-5678')).toBe('090-1234-5678');
+      expect(formatters.formatPhoneNumber('090-1234-5678')).toBe(
+        '090-1234-5678'
+      );
     });
 
     it('should handle invalid formats', () => {

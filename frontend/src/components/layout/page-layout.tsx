@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
-import { cn } from '@/lib/utils';
-import Header from '@/components/Header';
+import type React from 'react';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { cn } from '@/lib/utils';
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -55,13 +55,8 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section
-      id={id}
-      className={cn('py-12', className)}
-    >
-      <div className="container mx-auto px-4">
-        {children}
-      </div>
+    <section id={id} className={cn('py-12', className)}>
+      <div className="container mx-auto px-4">{children}</div>
     </section>
   );
 }
@@ -82,9 +77,7 @@ export function PageHeader({
     <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h1 className="text-2xl font-bold text-white">{title}</h1>
-        {description && (
-          <p className="mt-1 text-gray-400">{description}</p>
-        )}
+        {description && <p className="mt-1 text-gray-400">{description}</p>}
       </div>
       {action && <div className="mt-4 sm:mt-0">{action}</div>}
     </div>

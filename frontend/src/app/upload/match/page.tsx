@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import type React from 'react';
+import { useEffect } from 'react';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import { FileUploadForm } from '@/components/upload/FileUploadForm';
 import { UploadProgress } from '@/components/upload/UploadProgress';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import type { FileUploadOptions } from '@/types/file';
@@ -16,14 +17,15 @@ const MatchUploadPage: React.FC = () => {
   const { user } = useAuth();
   const isAuthenticated = !!user;
 
-  const { uploadProgress, uploadMatchFile, resetUpload, isUploading } = useFileUpload({
-    onSuccess: () => {
-      // 成功時の処理は FileUploadForm 内で行う
-    },
-    onError: (error) => {
-      console.error('Upload error:', error);
-    },
-  });
+  const { uploadProgress, uploadMatchFile, resetUpload, isUploading } =
+    useFileUpload({
+      onSuccess: () => {
+        // 成功時の処理は FileUploadForm 内で行う
+      },
+      onError: error => {
+        console.error('Upload error:', error);
+      },
+    });
 
   const handleUpload = async (file: File, options: FileUploadOptions) => {
     await uploadMatchFile(file, isAuthenticated, options);
@@ -46,7 +48,15 @@ const MatchUploadPage: React.FC = () => {
           padding: '32px 20px',
         }}
       >
-        <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div
+          style={{
+            maxWidth: '1000px',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '24px',
+          }}
+        >
           {/* アップロード進捗表示 */}
           {uploadProgress.status !== 'idle' && (
             <UploadProgress

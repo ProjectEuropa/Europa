@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import Icons from '@/components/Icons';
 
 describe('Icons', () => {
@@ -65,7 +65,9 @@ describe('Icons', () => {
     });
 
     it('should render with custom size and color', () => {
-      const { container } = render(<Icons.TeamSearch size={24} color="#ff0000" />);
+      const { container } = render(
+        <Icons.TeamSearch size={24} color="#ff0000" />
+      );
       const svg = container.querySelector('svg');
 
       expect(svg).toHaveAttribute('width', '24');
@@ -264,7 +266,7 @@ describe('Icons', () => {
         <Icons.Menu color={customColor} />,
       ];
 
-      icons.forEach((icon) => {
+      icons.forEach(icon => {
         const { container } = render(icon);
         const svg = container.querySelector('svg');
         expect(svg).toBeInTheDocument();

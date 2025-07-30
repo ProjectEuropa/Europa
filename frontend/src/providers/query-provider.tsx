@@ -21,14 +21,19 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
             // エラー時のリトライ設定
             retry: (failureCount, error: any) => {
               // 401, 403, 404エラーはリトライしない
-              if (error?.status === 401 || error?.status === 403 || error?.status === 404) {
+              if (
+                error?.status === 401 ||
+                error?.status === 403 ||
+                error?.status === 404
+              ) {
                 return false;
               }
               // 最大3回まで
               return failureCount < 3;
             },
             // リトライ間隔（指数バックオフ）
-            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+            retryDelay: attemptIndex =>
+              Math.min(1000 * 2 ** attemptIndex, 30000),
           },
           mutations: {
             // ミューテーション失敗時のリトライ設定

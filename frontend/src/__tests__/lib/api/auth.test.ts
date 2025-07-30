@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { authApi } from '@/lib/api/auth';
 import { apiClient } from '@/lib/api/client';
 import type { LoginCredentials, RegisterCredentials } from '@/types/user';
@@ -50,7 +50,10 @@ describe('authApi', () => {
       const result = await authApi.login(credentials);
 
       expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('token', 'test-token-123');
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        'token',
+        'test-token-123'
+      );
       expect(result).toEqual(mockResponse);
     });
 
@@ -73,7 +76,10 @@ describe('authApi', () => {
       const result = await authApi.login(credentials);
 
       expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('token', 'test-token-123');
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        'token',
+        'test-token-123'
+      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -141,7 +147,10 @@ describe('authApi', () => {
         password: credentials.password,
         password_confirmation: credentials.passwordConfirmation,
       });
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('token', 'test-token-123');
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        'token',
+        'test-token-123'
+      );
       expect(result).toEqual(mockResponse);
     });
 
@@ -171,7 +180,10 @@ describe('authApi', () => {
         password: credentials.password,
         password_confirmation: credentials.passwordConfirmation,
       });
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('token', 'test-token-123');
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        'token',
+        'test-token-123'
+      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -241,7 +253,10 @@ describe('authApi', () => {
 
       await authApi.updateProfile(updateData);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/user/update', updateData);
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/v1/user/update',
+        updateData
+      );
     });
   });
 
@@ -256,7 +271,10 @@ describe('authApi', () => {
 
       const result = await authApi.sendPasswordResetLink(request);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/forgot-password', request);
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/v1/forgot-password',
+        request
+      );
       expect(result).toEqual(mockResponse);
     });
   });
@@ -278,7 +296,9 @@ describe('authApi', () => {
     it('should return invalid for invalid token', async () => {
       const check = { token: 'invalid-token', email: 'test@example.com' };
 
-      vi.mocked(apiClient.get).mockRejectedValueOnce(new Error('Invalid token'));
+      vi.mocked(apiClient.get).mockRejectedValueOnce(
+        new Error('Invalid token')
+      );
 
       const result = await authApi.checkResetPasswordToken(check);
 
@@ -323,7 +343,9 @@ describe('authApi', () => {
         passwordConfirmation: 'newpassword123',
       };
 
-      vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Reset failed'));
+      vi.mocked(apiClient.post).mockRejectedValueOnce(
+        new Error('Reset failed')
+      );
 
       const result = await authApi.resetPassword(data);
 

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 // 仮想的なバリデーション関数
 const validation = {
@@ -119,7 +119,9 @@ describe('validation', () => {
     });
 
     it('should remove dangerous HTML characters', () => {
-      expect(validation.sanitizeInput('hello<script>alert("xss")</script>')).toBe('helloscriptalert("xss")/script');
+      expect(
+        validation.sanitizeInput('hello<script>alert("xss")</script>')
+      ).toBe('helloscriptalert("xss")/script');
       expect(validation.sanitizeInput('test>value<')).toBe('testvalue');
     });
 
@@ -131,10 +133,14 @@ describe('validation', () => {
 
   describe('validateFileSize', () => {
     it('should validate file size correctly', () => {
-      const smallFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+      const smallFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
       Object.defineProperty(smallFile, 'size', { value: 1024 * 1024 }); // 1MB
 
-      const largeFile = new File(['content'], 'large.txt', { type: 'text/plain' });
+      const largeFile = new File(['content'], 'large.txt', {
+        type: 'text/plain',
+      });
       Object.defineProperty(largeFile, 'size', { value: 10 * 1024 * 1024 }); // 10MB
 
       expect(validation.validateFileSize(smallFile, 5)).toBe(true); // 1MB < 5MB
@@ -144,9 +150,15 @@ describe('validation', () => {
 
   describe('validateFileType', () => {
     it('should validate file types correctly', () => {
-      const textFile = new File(['content'], 'test.txt', { type: 'text/plain' });
-      const imageFile = new File(['content'], 'image.jpg', { type: 'image/jpeg' });
-      const pdfFile = new File(['content'], 'doc.pdf', { type: 'application/pdf' });
+      const textFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
+      const imageFile = new File(['content'], 'image.jpg', {
+        type: 'image/jpeg',
+      });
+      const pdfFile = new File(['content'], 'doc.pdf', {
+        type: 'application/pdf',
+      });
 
       const allowedTypes = ['text/plain', 'image/jpeg', 'image/png'];
 

@@ -19,7 +19,9 @@ describe('FileDropZone', () => {
     render(<FileDropZone {...defaultProps} />);
 
     expect(screen.getByText('ファイルをドラッグ&ドロップ')).toBeInTheDocument();
-    expect(screen.getByText('またはクリックしてファイルを選択')).toBeInTheDocument();
+    expect(
+      screen.getByText('またはクリックしてファイルを選択')
+    ).toBeInTheDocument();
     expect(screen.getByText('対応形式: .che')).toBeInTheDocument();
     expect(screen.getByText('最大サイズ: 25KB')).toBeInTheDocument();
   });

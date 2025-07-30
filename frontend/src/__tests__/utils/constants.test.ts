@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 // 仮想的な定数ファイル
 const CONSTANTS = {
@@ -102,8 +102,10 @@ const helpers = {
     if (fileType.startsWith('video/')) return 'video';
     if (fileType.startsWith('audio/')) return 'audio';
     if (fileType === 'application/pdf') return 'pdf';
-    if (fileType.includes('spreadsheet') || fileType.includes('excel')) return 'spreadsheet';
-    if (fileType.includes('document') || fileType.includes('word')) return 'document';
+    if (fileType.includes('spreadsheet') || fileType.includes('excel'))
+      return 'spreadsheet';
+    if (fileType.includes('document') || fileType.includes('word'))
+      return 'document';
     return 'other';
   },
 
@@ -112,9 +114,11 @@ const helpers = {
   },
 
   isValidPassword: (password: string): boolean => {
-    return password.length >= CONSTANTS.MIN_PASSWORD_LENGTH &&
-           password.length <= CONSTANTS.MAX_PASSWORD_LENGTH &&
-           CONSTANTS.REGEX.PASSWORD.test(password);
+    return (
+      password.length >= CONSTANTS.MIN_PASSWORD_LENGTH &&
+      password.length <= CONSTANTS.MAX_PASSWORD_LENGTH &&
+      CONSTANTS.REGEX.PASSWORD.test(password)
+    );
   },
 
   isValidUsername: (username: string): boolean => {
@@ -280,13 +284,25 @@ describe('helpers', () => {
     });
 
     it('should categorize document files', () => {
-      expect(helpers.getFileTypeCategory('application/msword')).toBe('document');
-      expect(helpers.getFileTypeCategory('application/vnd.openxmlformats-officedocument.wordprocessingml.document')).toBe('document');
+      expect(helpers.getFileTypeCategory('application/msword')).toBe(
+        'document'
+      );
+      expect(
+        helpers.getFileTypeCategory(
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+      ).toBe('document');
     });
 
     it('should categorize spreadsheet files', () => {
-      expect(helpers.getFileTypeCategory('application/vnd.ms-excel')).toBe('spreadsheet');
-      expect(helpers.getFileTypeCategory('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')).toBe('spreadsheet');
+      expect(helpers.getFileTypeCategory('application/vnd.ms-excel')).toBe(
+        'spreadsheet'
+      );
+      expect(
+        helpers.getFileTypeCategory(
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+      ).toBe('spreadsheet');
     });
 
     it('should categorize unknown files as other', () => {

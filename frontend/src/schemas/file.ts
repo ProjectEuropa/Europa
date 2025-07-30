@@ -17,10 +17,7 @@ const baseFileUploadSchema = z.object({
     .string()
     .max(500, 'コメントは500文字以内で入力してください')
     .optional(),
-  tags: z
-    .array(z.string())
-    .max(5, '検索タグは5つまで設定できます')
-    .optional(),
+  tags: z.array(z.string()).max(5, '検索タグは5つまで設定できます').optional(),
   deletePassword: z
     .string()
     .max(50, '削除パスワードは50文字以内で入力してください')
@@ -35,11 +32,11 @@ const baseFileUploadSchema = z.object({
 export const teamFileUploadSchema = baseFileUploadSchema.extend({
   file: z
     .instanceof(File)
-    .refine((file) => file.size <= 10 * 1024 * 1024, {
+    .refine(file => file.size <= 10 * 1024 * 1024, {
       message: 'ファイルサイズは10MB以下にしてください',
     })
     .refine(
-      (file) => {
+      file => {
         const extension = file.name.split('.').pop()?.toLowerCase();
         return ['oke', 'zip'].includes(extension || '');
       },
@@ -53,11 +50,11 @@ export const teamFileUploadSchema = baseFileUploadSchema.extend({
 export const matchFileUploadSchema = baseFileUploadSchema.extend({
   file: z
     .instanceof(File)
-    .refine((file) => file.size <= 10 * 1024 * 1024, {
+    .refine(file => file.size <= 10 * 1024 * 1024, {
       message: 'ファイルサイズは10MB以下にしてください',
     })
     .refine(
-      (file) => {
+      file => {
         const extension = file.name.split('.').pop()?.toLowerCase();
         return ['oke', 'zip'].includes(extension || '');
       },
@@ -75,7 +72,9 @@ export const fileDeleteSchema = z.object({
 
 // 一括ダウンロードスキーマ
 export const sumDownloadSchema = z.object({
-  checkedId: z.array(z.number()).min(1, '少なくとも1つのファイルを選択してください'),
+  checkedId: z
+    .array(z.number())
+    .min(1, '少なくとも1つのファイルを選択してください'),
 });
 
 // 型推論

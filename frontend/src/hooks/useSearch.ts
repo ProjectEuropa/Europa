@@ -1,8 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { filesApi } from '@/lib/api/files';
-import type { SearchParams, TeamSearchResult, MatchSearchResult } from '@/types/search';
 import type { FileDeleteRequest } from '@/types/file';
+import type {
+  MatchSearchResult,
+  SearchParams,
+  TeamSearchResult,
+} from '@/types/search';
 
 /**
  * 検索機能用のカスタムフック
@@ -13,8 +17,10 @@ import type { FileDeleteRequest } from '@/types/file';
 export const SEARCH_QUERY_KEYS = {
   teams: (params: SearchParams) => ['search', 'teams', params] as const,
   matches: (params: SearchParams) => ['search', 'matches', params] as const,
-  sumDLTeams: (params: SearchParams) => ['search', 'sumDL', 'teams', params] as const,
-  sumDLMatches: (params: SearchParams) => ['search', 'sumDL', 'matches', params] as const,
+  sumDLTeams: (params: SearchParams) =>
+    ['search', 'sumDL', 'teams', params] as const,
+  sumDLMatches: (params: SearchParams) =>
+    ['search', 'sumDL', 'matches', params] as const,
 } as const;
 
 /**
@@ -76,7 +82,8 @@ export function useDeleteFile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (request: FileDeleteRequest) => filesApi.deleteSearchFile(request),
+    mutationFn: (request: FileDeleteRequest) =>
+      filesApi.deleteSearchFile(request),
     onSuccess: () => {
       // 検索結果のキャッシュを無効化
       queryClient.invalidateQueries({

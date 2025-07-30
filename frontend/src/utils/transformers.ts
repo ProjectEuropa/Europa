@@ -16,22 +16,30 @@ export function snakeToCamel<T extends object>(obj: T): SnakeToCamelObject<T> {
     return obj.map(snakeToCamel) as any;
   }
 
-  return Object.entries(obj).reduce((result, [key, value]) => {
-    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  return Object.entries(obj).reduce(
+    (result, [key, value]) => {
+      const camelKey = key.replace(/_([a-z])/g, (_, letter) =>
+        letter.toUpperCase()
+      );
 
-    result[camelKey as keyof typeof result] =
-      value !== null && typeof value === 'object'
-        ? snakeToCamel(value as object)
-        : value;
+      result[camelKey as keyof typeof result] =
+        value !== null && typeof value === 'object'
+          ? snakeToCamel(value as object)
+          : value;
 
-    return result;
-  }, {} as SnakeToCamelObject<T>);
+      return result;
+    },
+    {} as SnakeToCamelObject<T>
+  );
 }
 
 /**
  * 日付文字列をフォーマット
  */
-export function formatDate(dateString: string, format: string = 'YYYY-MM-DD'): string {
+export function formatDate(
+  dateString: string,
+  format: string = 'YYYY-MM-DD'
+): string {
   if (!dateString) return '';
 
   const date = new Date(dateString);

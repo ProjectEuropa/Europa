@@ -1,4 +1,5 @@
-import React, { Component, ErrorInfo, PropsWithChildren } from 'react';
+import type React from 'react';
+import { Component, type ErrorInfo, type PropsWithChildren } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface ErrorBoundaryProps {
@@ -51,7 +52,9 @@ export class ErrorBoundary extends Component<
       }
 
       // デフォルトのエラー表示
-      return <ErrorFallback error={this.state.error} onReset={this.handleReset} />;
+      return (
+        <ErrorFallback error={this.state.error} onReset={this.handleReset} />
+      );
     }
 
     return this.props.children;
@@ -69,10 +72,13 @@ interface ErrorFallbackProps {
 export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
   return (
     <div className="p-6 rounded-lg bg-destructive/10 border border-destructive/30 flex flex-col items-center justify-center min-h-[200px] text-center">
-      <h2 className="text-xl font-semibold text-destructive mb-2">エラーが発生しました</h2>
+      <h2 className="text-xl font-semibold text-destructive mb-2">
+        エラーが発生しました
+      </h2>
       {error && (
         <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-          {error.message || 'アプリケーションで予期しないエラーが発生しました。'}
+          {error.message ||
+            'アプリケーションで予期しないエラーが発生しました。'}
         </p>
       )}
       {onReset && (

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { FileUploadForm } from '@/components/upload/FileUploadForm';
@@ -44,7 +44,9 @@ describe('FileUploadForm', () => {
     expect(screen.getByLabelText('コメント')).toBeInTheDocument();
     expect(screen.getByLabelText('タグ')).toBeInTheDocument();
     expect(screen.getByLabelText('削除パスワード')).toBeInTheDocument();
-    expect(screen.getByText('CHEファイルをドラッグ&ドロップ')).toBeInTheDocument();
+    expect(
+      screen.getByText('CHEファイルをドラッグ&ドロップ')
+    ).toBeInTheDocument();
   });
 
   it('should not show delete password field when authenticated', () => {
@@ -54,9 +56,13 @@ describe('FileUploadForm', () => {
   });
 
   it('should set default owner name when provided', () => {
-    render(<FileUploadForm {...defaultProps} defaultOwnerName="テストユーザー" />);
+    render(
+      <FileUploadForm {...defaultProps} defaultOwnerName="テストユーザー" />
+    );
 
-    const ownerNameInput = screen.getByLabelText('オーナー名') as HTMLInputElement;
+    const ownerNameInput = screen.getByLabelText(
+      'オーナー名'
+    ) as HTMLInputElement;
     expect(ownerNameInput.value).toBe('テストユーザー');
   });
 
@@ -64,7 +70,9 @@ describe('FileUploadForm', () => {
     const user = userEvent.setup();
     render(<FileUploadForm {...defaultProps} />);
 
-    const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+    const tagInput = screen.getByPlaceholderText(
+      'タグを入力（Enterキーで追加）'
+    );
 
     // タグを追加
     await user.type(tagInput, 'テストタグ');
@@ -77,8 +85,8 @@ describe('FileUploadForm', () => {
 
     // 削除ボタンを探す（名前のないボタンで、SVGアイコンを含むもの）
     const buttons = screen.getAllByRole('button');
-    const removeButton = buttons.find(button =>
-      button.querySelector('svg') && !button.textContent?.trim()
+    const removeButton = buttons.find(
+      button => button.querySelector('svg') && !button.textContent?.trim()
     );
 
     if (removeButton) {
@@ -99,7 +107,9 @@ describe('FileUploadForm', () => {
     const user = userEvent.setup();
     render(<FileUploadForm {...defaultProps} />);
 
-    const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+    const tagInput = screen.getByPlaceholderText(
+      'タグを入力（Enterキーで追加）'
+    );
     await user.click(tagInput);
 
     expect(screen.getByText('タグ1')).toBeInTheDocument();
@@ -110,7 +120,9 @@ describe('FileUploadForm', () => {
     const user = userEvent.setup();
     render(<FileUploadForm {...defaultProps} />);
 
-    const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+    const tagInput = screen.getByPlaceholderText(
+      'タグを入力（Enterキーで追加）'
+    );
     await user.click(tagInput);
 
     const specialTagCheckbox = screen.getByRole('checkbox', { name: 'タグ1' });
@@ -124,7 +136,9 @@ describe('FileUploadForm', () => {
     const user = userEvent.setup();
     render(<FileUploadForm {...defaultProps} />);
 
-    const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+    const tagInput = screen.getByPlaceholderText(
+      'タグを入力（Enterキーで追加）'
+    );
 
     // 4つのタグを追加
     for (let i = 1; i <= 4; i++) {
@@ -150,7 +164,9 @@ describe('FileUploadForm', () => {
     const unauthenticatedProps = { ...defaultProps, isAuthenticated: false };
     render(<FileUploadForm {...unauthenticatedProps} />);
 
-    const passwordInput = screen.getByLabelText('削除パスワード') as HTMLInputElement;
+    const passwordInput = screen.getByLabelText(
+      '削除パスワード'
+    ) as HTMLInputElement;
     const toggleButton = screen.getByRole('button', { name: '' }); // アイコンボタンなので名前は空
 
     expect(passwordInput.type).toBe('password');
@@ -166,8 +182,12 @@ describe('FileUploadForm', () => {
     const user = userEvent.setup();
     render(<FileUploadForm {...defaultProps} />);
 
-    const file = new File(['test content'], 'test.che', { type: 'application/octet-stream' });
-    const dropZone = screen.getByText('CHEファイルをドラッグ&ドロップ').closest('div');
+    const file = new File(['test content'], 'test.che', {
+      type: 'application/octet-stream',
+    });
+    const dropZone = screen
+      .getByText('CHEファイルをドラッグ&ドロップ')
+      .closest('div');
 
     // ファイルをドロップ
     fireEvent.drop(dropZone!, {
@@ -185,7 +205,9 @@ describe('FileUploadForm', () => {
     render(<FileUploadForm {...defaultProps} />);
 
     const file = new File(['test content'], 'test.txt', { type: 'text/plain' });
-    const dropZone = screen.getByText('CHEファイルをドラッグ&ドロップ').closest('div');
+    const dropZone = screen
+      .getByText('CHEファイルをドラッグ&ドロップ')
+      .closest('div');
 
     // 無効なファイルをドロップ
     fireEvent.drop(dropZone!, {
@@ -202,8 +224,12 @@ describe('FileUploadForm', () => {
     render(<FileUploadForm {...defaultProps} maxFileSize={1} />); // 1KB制限
 
     const largeContent = 'x'.repeat(2048); // 2KB
-    const file = new File([largeContent], 'test.che', { type: 'application/octet-stream' });
-    const dropZone = screen.getByText('CHEファイルをドラッグ&ドロップ').closest('div');
+    const file = new File([largeContent], 'test.che', {
+      type: 'application/octet-stream',
+    });
+    const dropZone = screen
+      .getByText('CHEファイルをドラッグ&ドロップ')
+      .closest('div');
 
     fireEvent.drop(dropZone!, {
       dataTransfer: {
@@ -224,8 +250,12 @@ describe('FileUploadForm', () => {
     await user.type(screen.getByLabelText('削除パスワード'), 'password');
 
     // ファイルを選択
-    const file = new File(['test'], 'test.che', { type: 'application/octet-stream' });
-    const dropZone = screen.getByText('CHEファイルをドラッグ&ドロップ').closest('div');
+    const file = new File(['test'], 'test.che', {
+      type: 'application/octet-stream',
+    });
+    const dropZone = screen
+      .getByText('CHEファイルをドラッグ&ドロップ')
+      .closest('div');
     fireEvent.drop(dropZone!, {
       dataTransfer: { files: [file] },
     });
@@ -251,8 +281,12 @@ describe('FileUploadForm', () => {
     await user.type(screen.getByLabelText('削除パスワード'), 'password');
 
     // ファイルを選択
-    const file = new File(['test'], 'test.che', { type: 'application/octet-stream' });
-    const dropZone = screen.getByText('CHEファイルをドラッグ&ドロップ').closest('div');
+    const file = new File(['test'], 'test.che', {
+      type: 'application/octet-stream',
+    });
+    const dropZone = screen
+      .getByText('CHEファイルをドラッグ&ドロップ')
+      .closest('div');
     fireEvent.drop(dropZone!, {
       dataTransfer: { files: [file] },
     });
@@ -262,7 +296,9 @@ describe('FileUploadForm', () => {
     });
 
     // フォームを送信
-    const submitButton = screen.getAllByRole('button', { name: /アップロード/ })[0]; // フォームのボタン
+    const submitButton = screen.getAllByRole('button', {
+      name: /アップロード/,
+    })[0]; // フォームのボタン
     await user.click(submitButton);
 
     // 確認ダイアログが表示されることを確認
@@ -271,7 +307,9 @@ describe('FileUploadForm', () => {
     });
 
     // 確認ダイアログでアップロードを実行
-    const confirmButton = screen.getAllByRole('button', { name: /アップロード/ })[1]; // ダイアログのボタン
+    const confirmButton = screen.getAllByRole('button', {
+      name: /アップロード/,
+    })[1]; // ダイアログのボタン
     await user.click(confirmButton);
 
     expect(mockOnSubmit).toHaveBeenCalledWith(

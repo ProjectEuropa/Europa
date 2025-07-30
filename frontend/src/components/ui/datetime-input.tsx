@@ -1,6 +1,7 @@
 'use client';
 
-import React, { forwardRef, useRef } from 'react';
+import type React from 'react';
+import { forwardRef, useRef } from 'react';
 import { Icons } from '@/icons';
 
 export interface DateTimeInputProps {

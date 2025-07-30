@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 // 仮想的なファイルスキーマ（実際の実装がない場合）
@@ -98,7 +98,9 @@ describe('File Schemas', () => {
 
   describe('FileUploadSchema', () => {
     it('should validate correct file upload data', () => {
-      const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+      const mockFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
       const validUpload = {
         file: mockFile,
         description: 'Test file upload',
@@ -120,7 +122,9 @@ describe('File Schemas', () => {
     });
 
     it('should allow optional fields', () => {
-      const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+      const mockFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
       const minimalUpload = {
         file: mockFile,
       };
@@ -133,7 +137,9 @@ describe('File Schemas', () => {
     });
 
     it('should validate description length', () => {
-      const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+      const mockFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
       const uploadWithLongDescription = {
         file: mockFile,
         description: 'a'.repeat(501), // exceeds 500 character limit
@@ -144,7 +150,9 @@ describe('File Schemas', () => {
     });
 
     it('should validate tags array length', () => {
-      const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+      const mockFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
       const uploadWithManyTags = {
         file: mockFile,
         tags: Array(11).fill('tag'), // exceeds 10 tag limit

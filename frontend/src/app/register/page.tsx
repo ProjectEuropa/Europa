@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import type React from 'react';
+import { RegisterForm } from '@/components/auth/RegisterForm';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { RegisterForm } from '@/components/auth/RegisterForm';
 
 const RegisterPage: React.FC = () => {
   const handleRegistrationSuccess = () => {
@@ -55,10 +55,7 @@ const RegisterPage: React.FC = () => {
             新規登録
           </h1>
 
-          <RegisterForm
-            onSuccess={handleRegistrationSuccess}
-            redirectTo="/"
-          />
+          <RegisterForm onSuccess={handleRegistrationSuccess} redirectTo="/" />
 
           {/* ログインへのリンク */}
           <div

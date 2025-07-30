@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { Tabs } from '@/components/ui/tabs';
 
 const mockItems = [
@@ -44,7 +44,9 @@ describe('Tabs', () => {
     const tab2 = screen.getByRole('tab', { name: 'Tab 2' });
     fireEvent.click(tab2);
 
-    expect(screen.getByText('Content 2').parentElement).not.toHaveClass('hidden');
+    expect(screen.getByText('Content 2').parentElement).not.toHaveClass(
+      'hidden'
+    );
     expect(screen.getByText('Content 1').parentElement).toHaveClass('hidden');
   });
 
@@ -55,7 +57,9 @@ describe('Tabs', () => {
     fireEvent.click(tab3);
 
     // 無効なタブをクリックしても、アクティブなタブは変わらない
-    expect(screen.getByText('Content 1').parentElement).not.toHaveClass('hidden');
+    expect(screen.getByText('Content 1').parentElement).not.toHaveClass(
+      'hidden'
+    );
     expect(screen.getByText('Content 3').parentElement).toHaveClass('hidden');
   });
 

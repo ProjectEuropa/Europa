@@ -1,7 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from '@/components/ui/dropdown';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  Dropdown,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+} from '@/components/ui/dropdown';
 
 describe('Dropdown Components', () => {
   describe('Dropdown', () => {
@@ -137,7 +142,9 @@ describe('Dropdown Components', () => {
         </Dropdown>
       );
 
-      const dropdown = screen.getByText('Open Menu').closest('.custom-dropdown');
+      const dropdown = screen
+        .getByText('Open Menu')
+        .closest('.custom-dropdown');
       expect(dropdown).toBeInTheDocument();
     });
 

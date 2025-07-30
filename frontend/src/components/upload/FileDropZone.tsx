@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import type React from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Icons } from '@/icons';
 import { cn } from '@/lib/utils';
 
@@ -30,45 +31,53 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
   const [isDragActive, setIsDragActive] = useState(false);
   const [isDragReject, setIsDragReject] = useState(false);
 
-  const validateFile = useCallback((file: File): string | null => {
-    // ファイルサイズチェック
-    if (file.size > maxSize) {
-      return `ファイルサイズが制限（${(maxSize / 1024).toFixed(0)}KB）を超えています`;
-    }
-
-    // ファイル拡張子チェック
-    if (accept) {
-      const acceptedExtensions = accept.split(',').map(ext => ext.trim().toLowerCase());
-      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-
-      if (!acceptedExtensions.includes(fileExtension)) {
-        return `対応形式（${accept}）のファイルをアップロードしてください`;
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      // ファイルサイズチェック
+      if (file.size > maxSize) {
+        return `ファイルサイズが制限（${(maxSize / 1024).toFixed(0)}KB）を超えています`;
       }
-    }
 
-    return null;
-  }, [accept, maxSize]);
+      // ファイル拡張子チェック
+      if (accept) {
+        const acceptedExtensions = accept
+          .split(',')
+          .map(ext => ext.trim().toLowerCase());
+        const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
 
-  const handleDragEnter = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (disabled) return;
-
-    setIsDragActive(true);
-
-    // ドラッグされているファイルをチェック
-    const items = Array.from(e.dataTransfer.items);
-    const hasValidFile = items.some(item => {
-      if (item.kind === 'file') {
-        const file = item.getAsFile();
-        return file && validateFile(file) === null;
+        if (!acceptedExtensions.includes(fileExtension)) {
+          return `対応形式（${accept}）のファイルをアップロードしてください`;
+        }
       }
-      return false;
-    });
 
-    setIsDragReject(!hasValidFile);
-  }, [disabled, validateFile]);
+      return null;
+    },
+    [accept, maxSize]
+  );
+
+  const handleDragEnter = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (disabled) return;
+
+      setIsDragActive(true);
+
+      // ドラッグされているファイルをチェック
+      const items = Array.from(e.dataTransfer.items);
+      const hasValidFile = items.some(item => {
+        if (item.kind === 'file') {
+          const file = item.getAsFile();
+          return file && validateFile(file) === null;
+        }
+        return false;
+      });
+
+      setIsDragReject(!hasValidFile);
+    },
+    [disabled, validateFile]
+  );
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -90,49 +99,55 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
     e.stopPropagation();
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    setIsDragActive(false);
-    setIsDragReject(false);
+      setIsDragActive(false);
+      setIsDragReject(false);
 
-    if (disabled) return;
+      if (disabled) return;
 
-    const files = Array.from(e.dataTransfer.files);
+      const files = Array.from(e.dataTransfer.files);
 
-    if (files.length === 0) return;
+      if (files.length === 0) return;
 
-    const file = files[0]; // 最初のファイルのみ処理
-    const error = validateFile(file);
+      const file = files[0]; // 最初のファイルのみ処理
+      const error = validateFile(file);
 
-    if (error) {
-      // エラーを親コンポーネントに通知
-      if (onError) {
-        onError(error);
-      } else {
-        console.error('File validation error:', error);
+      if (error) {
+        // エラーを親コンポーネントに通知
+        if (onError) {
+          onError(error);
+        } else {
+          console.error('File validation error:', error);
+        }
+        return;
       }
-      return;
-    }
 
-    onFileSelect(file);
-  }, [disabled, validateFile, onFileSelect]);
+      onFileSelect(file);
+    },
+    [disabled, validateFile, onFileSelect]
+  );
 
-  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const handleFileInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
 
-    const file = files[0];
-    const error = validateFile(file);
+      const file = files[0];
+      const error = validateFile(file);
 
-    if (error) {
-      console.error('File validation error:', error);
-      return;
-    }
+      if (error) {
+        console.error('File validation error:', error);
+        return;
+      }
 
-    onFileSelect(file);
-  }, [validateFile, onFileSelect]);
+      onFileSelect(file);
+    },
+    [validateFile, onFileSelect]
+  );
 
   const openFileDialog = useCallback(() => {
     if (disabled) return;
@@ -141,7 +156,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
     input.type = 'file';
     input.accept = accept;
     input.multiple = multiple;
-    input.onchange = (e) => {
+    input.onchange = e => {
       const target = e.target as HTMLInputElement;
       const syntheticEvent = {
         target,
@@ -161,11 +176,13 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
   return (
     <Card
       className={cn(
-        "border-2 border-dashed transition-all duration-200 cursor-pointer",
-        "hover:border-primary/50 hover:bg-accent/50",
-        isDragActive && !isDragReject && "border-primary bg-accent/50 scale-[1.02]",
-        isDragReject && "border-destructive bg-destructive/10",
-        disabled && "opacity-50 cursor-not-allowed",
+        'border-2 border-dashed transition-all duration-200 cursor-pointer',
+        'hover:border-primary/50 hover:bg-accent/50',
+        isDragActive &&
+          !isDragReject &&
+          'border-primary bg-accent/50 scale-[1.02]',
+        isDragReject && 'border-destructive bg-destructive/10',
+        disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
       onClick={openFileDialog}
@@ -190,17 +207,18 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
             </div>
 
             <div className="space-y-2">
-              <p className={cn(
-                "font-medium",
-                isDragActive && !isDragReject && "text-primary",
-                isDragReject && "text-destructive"
-              )}>
+              <p
+                className={cn(
+                  'font-medium',
+                  isDragActive && !isDragReject && 'text-primary',
+                  isDragReject && 'text-destructive'
+                )}
+              >
                 {isDragActive
                   ? isDragReject
-                    ? "対応していないファイル形式です"
-                    : "ファイルをドロップしてください"
-                  : "ファイルをドラッグ&ドロップ"
-                }
+                    ? '対応していないファイル形式です'
+                    : 'ファイルをドロップしてください'
+                  : 'ファイルをドラッグ&ドロップ'}
               </p>
 
               {!isDragActive && (

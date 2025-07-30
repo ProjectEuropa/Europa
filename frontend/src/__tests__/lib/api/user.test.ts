@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '@/lib/api/client';
 import type { User } from '@/types/user';
 
@@ -20,7 +20,10 @@ const userApi = {
   },
 
   async updateProfile(data: Partial<User>): Promise<User> {
-    const response = await apiClient.put<{ user: User }>('/api/v1/user/profile', data);
+    const response = await apiClient.put<{ user: User }>(
+      '/api/v1/user/profile',
+      data
+    );
     return response.data.user;
   },
 
@@ -30,7 +33,9 @@ const userApi = {
   },
 
   async deleteAccount(): Promise<{ success: boolean }> {
-    const response = await apiClient.delete<{ success: boolean }>('/api/v1/user/account');
+    const response = await apiClient.delete<{ success: boolean }>(
+      '/api/v1/user/account'
+    );
     return response.data;
   },
 };
@@ -89,7 +94,10 @@ describe('userApi', () => {
 
       const result = await userApi.updateProfile(updateData);
 
-      expect(apiClient.put).toHaveBeenCalledWith('/api/v1/user/profile', updateData);
+      expect(apiClient.put).toHaveBeenCalledWith(
+        '/api/v1/user/profile',
+        updateData
+      );
       expect(result).toEqual(mockUser);
     });
 
@@ -98,7 +106,9 @@ describe('userApi', () => {
       const error = new Error('Validation failed');
       vi.mocked(apiClient.put).mockRejectedValueOnce(error);
 
-      await expect(userApi.updateProfile(updateData)).rejects.toThrow('Validation failed');
+      await expect(userApi.updateProfile(updateData)).rejects.toThrow(
+        'Validation failed'
+      );
     });
   });
 
@@ -130,7 +140,9 @@ describe('userApi', () => {
       const error = new Error('User not found');
       vi.mocked(apiClient.get).mockRejectedValueOnce(error);
 
-      await expect(userApi.getUserById(userId)).rejects.toThrow('User not found');
+      await expect(userApi.getUserById(userId)).rejects.toThrow(
+        'User not found'
+      );
     });
   });
 
@@ -152,7 +164,9 @@ describe('userApi', () => {
       const error = new Error('Cannot delete account');
       vi.mocked(apiClient.delete).mockRejectedValueOnce(error);
 
-      await expect(userApi.deleteAccount()).rejects.toThrow('Cannot delete account');
+      await expect(userApi.deleteAccount()).rejects.toThrow(
+        'Cannot delete account'
+      );
     });
   });
 });

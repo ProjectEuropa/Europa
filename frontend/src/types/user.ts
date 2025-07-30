@@ -79,3 +79,46 @@ export interface PasswordResetResult {
 export interface UserUpdateData {
   name: string;
 }
+
+// マイページ関連の型定義
+export interface ProfileData {
+  name: string;
+  email: string;
+  joinDate: string;
+}
+
+export interface MyPageFile {
+  id: string;
+  name: string;
+  uploadDate: string;
+  downloadableAt?: string;
+  comment?: string;
+  type: 'team' | 'match';
+}
+
+export interface MyPageEvent {
+  id: string;
+  name: string;
+  details: string;
+  url: string;
+  deadline: string;
+  endDisplayDate: string;
+  type: 'tournament' | 'announcement' | 'other';
+  registeredDate: string;
+}
+
+export type MyPageTab = 'profile' | 'teams' | 'matches' | 'events';
+
+export interface MyPageState {
+  activeTab: MyPageTab;
+  profile: ProfileData | null;
+  files: MyPageFile[];
+  events: MyPageEvent[];
+  loading: {
+    profile: boolean;
+    teams: boolean;
+    matches: boolean;
+    events: boolean;
+  };
+  error: string | null;
+}

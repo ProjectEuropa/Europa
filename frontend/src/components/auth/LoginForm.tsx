@@ -1,15 +1,14 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
-
 import { processApiError, setFormErrors } from '@/utils/apiErrorHandler';
-import { Eye, EyeOff } from 'lucide-react';
 
 // バリデーションスキーマ
 const loginSchema = z.object({
@@ -30,7 +29,10 @@ interface LoginFormProps {
   redirectTo?: string;
 }
 
-export function LoginForm({ onSuccess, redirectTo = '/mypage' }: LoginFormProps) {
+export function LoginForm({
+  onSuccess,
+  redirectTo = '/mypage',
+}: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
@@ -72,7 +74,10 @@ export function LoginForm({ onSuccess, redirectTo = '/mypage' }: LoginFormProps)
         // 認証エラーの場合、両方のフィールドにエラーを設定
         setError('email', { message: processedError.message });
         setError('password', { message: processedError.message });
-      } else if (processedError.isValidationError && Object.keys(processedError.fieldErrors).length > 0) {
+      } else if (
+        processedError.isValidationError &&
+        Object.keys(processedError.fieldErrors).length > 0
+      ) {
         // バリデーションエラーの場合、フィールドごとにエラーを設定
         setFormErrors(setError, processedError.fieldErrors);
       } else {
@@ -89,7 +94,10 @@ export function LoginForm({ onSuccess, redirectTo = '/mypage' }: LoginFormProps)
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+    >
       {/* メールアドレスフィールド */}
       <div>
         <label
@@ -153,7 +161,9 @@ export function LoginForm({ onSuccess, redirectTo = '/mypage' }: LoginFormProps)
               padding: '12px 16px',
               paddingRight: '48px',
               background: '#111A2E',
-              border: errors.password ? '1px solid #ef4444' : '1px solid #1E3A5F',
+              border: errors.password
+                ? '1px solid #ef4444'
+                : '1px solid #1E3A5F',
               borderRadius: '6px',
               color: 'white',
               fontSize: '1rem',

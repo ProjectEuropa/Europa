@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SearchForm } from '@/components/search/SearchForm';
 
 // Next.jsのフックをモック
@@ -12,7 +12,7 @@ vi.mock('next/navigation', () => ({
 
 // useDebounceフックをモック
 vi.mock('@/hooks/useDebounce', () => ({
-  useDebounce: vi.fn((value) => value),
+  useDebounce: vi.fn(value => value),
 }));
 
 // usePrefetchSearchフックをモック
@@ -47,26 +47,33 @@ describe('SearchForm', () => {
       expect(screen.getByRole('search')).toBeInTheDocument();
       expect(screen.getByLabelText('検索キーワード')).toBeInTheDocument();
       expect(screen.getByLabelText('検索')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('キーワードを入力してください')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('キーワードを入力してください')
+      ).toBeInTheDocument();
     });
 
     it('should render with custom placeholder', () => {
       render(
-        <SearchForm
-          searchType="team"
-          placeholder="カスタムプレースホルダー"
-        />
+        <SearchForm searchType="team" placeholder="カスタムプレースホルダー" />
       );
 
-      expect(screen.getByPlaceholderText('カスタムプレースホルダー')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('カスタムプレースホルダー')
+      ).toBeInTheDocument();
     });
 
     it('should have correct aria-label based on search type', () => {
       const { rerender } = render(<SearchForm searchType="team" />);
-      expect(screen.getByRole('search')).toHaveAttribute('aria-label', 'チーム検索フォーム');
+      expect(screen.getByRole('search')).toHaveAttribute(
+        'aria-label',
+        'チーム検索フォーム'
+      );
 
       rerender(<SearchForm searchType="match" />);
-      expect(screen.getByRole('search')).toHaveAttribute('aria-label', 'マッチ検索フォーム');
+      expect(screen.getByRole('search')).toHaveAttribute(
+        'aria-label',
+        'マッチ検索フォーム'
+      );
     });
   });
 
@@ -245,7 +252,9 @@ describe('SearchForm', () => {
 
   describe('エラーハンドリング', () => {
     it('should handle router errors gracefully', async () => {
-      const mockPushError = vi.fn().mockRejectedValue(new Error('Router error'));
+      const mockPushError = vi
+        .fn()
+        .mockRejectedValue(new Error('Router error'));
       vi.mocked(useRouter).mockReturnValue({
         push: mockPushError,
         replace: vi.fn(),

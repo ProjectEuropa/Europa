@@ -1,17 +1,19 @@
-import React from 'react';
+import type React from 'react';
 import { cn } from '@/lib/utils';
 import type { SkeletonProps } from '@/types/ui';
 
 /**
  * スケルトンローディングコンポーネント
  */
-export function Skeleton({ width, height, className, ...props }: SkeletonProps & React.HTMLAttributes<HTMLDivElement>) {
+export function Skeleton({
+  width,
+  height,
+  className,
+  ...props
+}: SkeletonProps & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        'animate-pulse rounded bg-gray-700/30',
-        className
-      )}
+      className={cn('animate-pulse rounded bg-gray-700/30', className)}
       style={{
         width: width || '100%',
         height: height || '1rem',
@@ -24,7 +26,14 @@ export function Skeleton({ width, height, className, ...props }: SkeletonProps &
 /**
  * テキストスケルトンコンポーネント
  */
-export function TextSkeleton({ lines = 1, className, ...props }: { lines?: number; className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+export function TextSkeleton({
+  lines = 1,
+  className,
+  ...props
+}: {
+  lines?: number;
+  className?: string;
+} & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn('space-y-2', className)} {...props}>
       {Array.from({ length: lines }).map((_, i) => (
@@ -43,7 +52,9 @@ export function TextSkeleton({ lines = 1, className, ...props }: { lines?: numbe
 /**
  * カードスケルトンコンポーネント
  */
-export function CardSkeleton({ ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function CardSkeleton({
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className="border border-gray-700 rounded-xl p-6 space-y-4" {...props}>
       <Skeleton className="h-6 w-1/3" />

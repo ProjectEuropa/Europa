@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { eventsApi } from '@/lib/api/events';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '@/lib/api/client';
-import type { EventFormData, Event } from '@/types/event';
+import { eventsApi } from '@/lib/api/events';
+import type { Event, EventFormData } from '@/types/event';
 
 // APIクライアントをモック
 vi.mock('@/lib/api/client', () => ({
@@ -190,7 +190,10 @@ describe('eventsApi', () => {
 
       const result = await eventsApi.deleteMyEvent(eventId);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/delete/usersRegisteredCloumn', { id: eventId });
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/v1/delete/usersRegisteredCloumn',
+        { id: eventId }
+      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -205,7 +208,9 @@ describe('eventsApi', () => {
 
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
 
-      await expect(eventsApi.deleteMyEvent(eventId)).rejects.toThrow('Deletion failed');
+      await expect(eventsApi.deleteMyEvent(eventId)).rejects.toThrow(
+        'Deletion failed'
+      );
     });
 
     it('should throw default error message when no error provided', async () => {
@@ -218,7 +223,9 @@ describe('eventsApi', () => {
 
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
 
-      await expect(eventsApi.deleteMyEvent(eventId)).rejects.toThrow('削除に失敗しました');
+      await expect(eventsApi.deleteMyEvent(eventId)).rejects.toThrow(
+        '削除に失敗しました'
+      );
     });
 
     it('should handle numeric event ID', async () => {
@@ -234,7 +241,10 @@ describe('eventsApi', () => {
 
       const result = await eventsApi.deleteMyEvent(eventId);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/delete/usersRegisteredCloumn', { id: eventId });
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/v1/delete/usersRegisteredCloumn',
+        { id: eventId }
+      );
       expect(result).toEqual(mockResponse.data);
     });
   });

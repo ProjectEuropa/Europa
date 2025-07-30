@@ -2,37 +2,16 @@
 
 import type React from 'react';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { useMyEvents } from '@/hooks/api/useMyPage';
+import type { MyPageEvent } from '@/types/user';
 
-// イベント種別の定義
-type EventType = '大会' | '告知' | 'その他';
-
-interface EventData {
-  id: string;
-  name: string;
-  details: string;
-  url: string;
-  deadline: string;
-  endDisplayDate: string;
-  type: EventType;
-  registeredDate: string;
-}
-
-interface RegisteredEventsSectionProps {
-  initialEvents: EventData[];
-}
-
-const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({
-  initialEvents,
-}) => {
-  // setEventsは現在使用されていないが、将来的に使用する可能性があるため、
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [events, setEvents] = useState<EventData[]>(initialEvents);
+const RegisteredEventsSection: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-
-  // モーダル用state
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetails, setModalDetails] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState<MyPageEvent | null>(null);
+
+  const { data: events = [], isLoading, error } = useMyEvents();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -44,6 +23,52 @@ const RegisteredEventsSection: React.FC<RegisteredEventsSectionProps> = ({
       .includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
+
+  const handleDetailsClick = (event: MyPageEvent) => {
+    setSelectedEvent(event);
+    setModalDetails(event.details);
+    setModalOpen(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    return dateString.slice(0, 10).replace(/-/g, '/');
+  };
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          background: '#0A1022',
+          borderRadius: '12px',
+          padding: '24px',
+          border: '1px solid #1E3A5F',
+          marginBottom: '24px',
+          textAlign: 'center',
+        }}
+      >
+        <div style={{ color: '#b0c4d8' }}>イベント情報を読み込み中...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          background: '#0A1022',
+          borderRadius: '12px',
+          padding: '24px',
+          border: '1px solid #1E3A5F',
+          marginBottom: '24px',
+        }}
+      >
+        <p style={{ color: '#ff6b6b', margin: 0 }}>
+          イベント情報の読み込みに失敗しました
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div

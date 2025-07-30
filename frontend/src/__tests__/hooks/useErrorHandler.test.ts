@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { ApiErrorClass } from '@/types/api';
 
@@ -41,7 +41,9 @@ describe('useErrorHandler', () => {
 
   it('should handle ApiErrorClass with status 404', () => {
     const { result } = renderHook(() => useErrorHandler());
-    const error = new ApiErrorClass(404, { message: 'リソースが見つかりません' });
+    const error = new ApiErrorClass(404, {
+      message: 'リソースが見つかりません',
+    });
 
     result.current.handleError(error);
 
@@ -52,7 +54,7 @@ describe('useErrorHandler', () => {
     const { result } = renderHook(() => useErrorHandler());
     const error = new ApiErrorClass(422, {
       message: 'バリデーションエラー',
-      errors: { email: ['無効なメールアドレスです'] }
+      errors: { email: ['無効なメールアドレスです'] },
     });
 
     result.current.handleError(error);

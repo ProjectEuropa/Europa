@@ -3,9 +3,7 @@ import { UploadProgress } from '@/components/upload/UploadProgress';
 
 describe('UploadProgress', () => {
   it('should not render when status is idle', () => {
-    const { container } = render(
-      <UploadProgress progress={0} status="idle" />
-    );
+    const { container } = render(<UploadProgress progress={0} status="idle" />);
 
     expect(container.firstChild).toBeNull();
   });
@@ -39,7 +37,9 @@ describe('UploadProgress', () => {
 
     expect(screen.getByText('test.che')).toBeInTheDocument();
     expect(screen.getByText('アップロード完了')).toBeInTheDocument();
-    expect(screen.getByText('ファイルが正常にアップロードされました。')).toBeInTheDocument();
+    expect(
+      screen.getByText('ファイルが正常にアップロードされました。')
+    ).toBeInTheDocument();
   });
 
   it('should render error state correctly', () => {
@@ -59,9 +59,7 @@ describe('UploadProgress', () => {
   });
 
   it('should render without file information', () => {
-    render(
-      <UploadProgress progress={75} status="uploading" />
-    );
+    render(<UploadProgress progress={75} status="uploading" />);
 
     expect(screen.getByText('アップロード中... 75%')).toBeInTheDocument();
     expect(screen.queryByText(/KB/)).not.toBeInTheDocument();
@@ -107,18 +105,14 @@ describe('UploadProgress', () => {
   });
 
   it('should handle zero progress', () => {
-    render(
-      <UploadProgress progress={0} status="uploading" />
-    );
+    render(<UploadProgress progress={0} status="uploading" />);
 
     expect(screen.getByText('0%')).toBeInTheDocument();
     expect(screen.getByText('アップロード中... 0%')).toBeInTheDocument();
   });
 
   it('should handle 100% progress', () => {
-    render(
-      <UploadProgress progress={100} status="uploading" />
-    );
+    render(<UploadProgress progress={100} status="uploading" />);
 
     expect(screen.getByText('100%')).toBeInTheDocument();
     expect(screen.getByText('アップロード中... 100%')).toBeInTheDocument();

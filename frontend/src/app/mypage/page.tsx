@@ -20,15 +20,13 @@ const MyPageAuthGuard: React.FC<{ children: React.ReactNode }> = ({
   return <>{children}</>;
 };
 
+import { useMyPageStore } from '@/stores/myPageStore';
+import type { MyPageTab } from '@/types/user';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
+import FileListSection from '../../components/mypage/FileListSection';
 import ProfileSection from '../../components/mypage/ProfileSection';
 import RegisteredEventsSection from '../../components/mypage/RegisteredEventsSection';
-import UploadedMatchesSection from '../../components/mypage/UploadedMatchesSection';
-import UploadedTeamsSection from '../../components/mypage/UploadedTeamsSection';
-
-// タブの種類
-type TabType = 'profile' | 'teams' | 'matches' | 'events';
 
 const MyPage: React.FC = () => {
   // 認証ガードで囲む
@@ -42,68 +40,18 @@ const MyPage: React.FC = () => {
 
 // 元の内容をMyPageContentとして分離
 const MyPageContent: React.FC = () => {
-  // Hooksは必ず関数の先頭で宣言
-  const [activeTab, setActiveTab] = useState<TabType>('profile');
-  const [teamData, setTeamData] = useState<any[]>([]);
-  const [matchData, setMatchData] = useState<any[]>([]);
-  const [eventData, setEventData] = useState<any[]>([]);
-  const [loading, setLoading] = useState({
-    teams: false,
-    matches: false,
-    events: false,
-  });
+  const { activeTab, setActiveTab } = useMyPageStore();
   const { user } = useAuth();
 
-  // 各タブごとにuseEffectを分離し、Hooksの順序を固定
-  useEffect(() => {
-    if (activeTab !== 'teams') return;
-    setLoading(l => ({ ...l, teams: true }));
-    import('@/utils/api')
-      .then(api => api.fetchMyTeamFiles())
-      .then(setTeamData)
-      .catch(() => setTeamData([]))
-      .finally(() => setLoading(l => ({ ...l, teams: false })));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab !== 'matches') return;
-    setLoading(l => ({ ...l, matches: true }));
-    import('@/utils/api')
-      .then(api => api.fetchMyMatchFiles())
-      .then(setMatchData)
-      .catch(() => setMatchData([]))
-      .finally(() => setLoading(l => ({ ...l, matches: false })));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab !== 'events') return;
-    setLoading(l => ({ ...l, events: true }));
-    import('@/utils/api')
-      .then(api => api.fetchMyEvents())
-      .then(setEventData)
-      .catch(() => setEventData([]))
-      .finally(() => setLoading(l => ({ ...l, events: false })));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
-
   if (!user) return <div>Loading...</div>;
-  const profileData = {
-    name: user.name,
-    email: user.email,
-    joinDate: user.createdAt
-      ? user.createdAt.slice(0, 10).replace(/-/g, '/')
-      : '',
-  };
 
   // タブ切り替え処理
-  const handleTabChange = (tab: TabType) => {
+  const handleTabChange = (tab: MyPageTab) => {
     setActiveTab(tab);
   };
 
   // タブボタンのスタイルを生成する関数
-  const getTabStyle = (tab: TabType) => {
+  const getTabStyle = (tab: MyPageTab) => {
     const isActive = activeTab === tab;
     return {
       padding: '12px 20px',
@@ -203,30 +151,10 @@ const MyPageContent: React.FC = () => {
               marginBottom: '24px',
             }}
           >
-            {activeTab === 'profile' && (
-              <ProfileSection initialProfile={profileData} />
-            )}
-
-            {activeTab === 'teams' &&
-              (loading.teams ? (
-                <div>Loading...</div>
-              ) : (
-                <UploadedTeamsSection initialTeams={teamData} />
-              ))}
-
-            {activeTab === 'matches' &&
-              (loading.matches ? (
-                <div>Loading...</div>
-              ) : (
-                <UploadedMatchesSection initialMatches={matchData} />
-              ))}
-
-            {activeTab === 'events' &&
-              (loading.events ? (
-                <div>Loading...</div>
-              ) : (
-                <RegisteredEventsSection initialEvents={eventData} />
-              ))}
+            {activeTab === 'profile' && <ProfileSection />}
+            {activeTab === 'teams' && <FileListSection type="team" />}
+            {activeTab === 'matches' && <FileListSection type="match" />}
+            {activeTab === 'events' && <RegisteredEventsSection />}
           </div>
 
           {/* 注意事項 */}

@@ -140,7 +140,7 @@ input[type="datetime-local"] {
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   background-color: transparent;
   background-image: none;
-  color: #8CB4FF;
+  color: #8cb4ff;
   cursor: pointer;
   filter: invert(0.7) sepia(1) saturate(2) hue-rotate(180deg);
   opacity: 0.8;
@@ -156,7 +156,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
 /* Firefox用 */
 input[type="datetime-local"]::-moz-calendar-picker-indicator {
   background-color: transparent;
-  color: #8CB4FF;
+  color: #8cb4ff;
   cursor: pointer;
   opacity: 0.8;
 }

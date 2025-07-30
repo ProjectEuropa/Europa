@@ -28,12 +28,16 @@ export function Pagination({
       }
     } else {
       // 現在のページの前後にdelta個のページを表示
-      for (let i = Math.max(1, currentPage - delta); i <= Math.min(totalPages, currentPage + delta); i++) {
+      for (
+        let i = Math.max(1, currentPage - delta);
+        i <= Math.min(totalPages, currentPage + delta);
+        i++
+      ) {
         range.push(i);
       }
 
       // 省略記号を追加
-      for (let i of range) {
+      for (const i of range) {
         if (l) {
           if (i - l === 2) {
             rangeWithDots.push(l + 1);
@@ -64,7 +68,10 @@ export function Pagination({
   const pageNumbers = getPageNumbers();
 
   return (
-    <nav className="flex justify-center items-center space-x-1 mt-4" aria-label="ページネーション">
+    <nav
+      className="flex justify-center items-center space-x-1 mt-4"
+      aria-label="ページネーション"
+    >
       {/* 最初のページへのリンク */}
       {showFirstLast && (
         <button
@@ -103,10 +110,7 @@ export function Pagination({
       {pageNumbers.map((page, index) => {
         if (page === '...') {
           return (
-            <span
-              key={`ellipsis-${index}`}
-              className="px-3 py-1 text-gray-400"
-            >
+            <span key={`ellipsis-${index}`} className="px-3 py-1 text-gray-400">
               ...
             </span>
           );

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // 仮想的なストレージユーティリティ
 const storage = {
@@ -114,8 +114,8 @@ const storage = {
     const storage = storageType === 'local' ? localStorage : sessionStorage;
     let total = 0;
 
-    for (let key in storage) {
-      if (storage.hasOwnProperty(key)) {
+    for (const key in storage) {
+      if (Object.hasOwn(storage, key)) {
         total += storage[key].length + key.length;
       }
     }
@@ -157,7 +157,9 @@ Object.defineProperty(window, 'sessionStorage', {
 });
 
 // console.error をモック
-const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+const mockConsoleError = vi
+  .spyOn(console, 'error')
+  .mockImplementation(() => {});
 
 describe('storage utilities', () => {
   beforeEach(() => {
@@ -168,7 +170,9 @@ describe('storage utilities', () => {
   describe('session storage', () => {
     describe('get', () => {
       it('should get value from session storage', () => {
-        mockSessionStorage.getItem.mockReturnValue(JSON.stringify('test value'));
+        mockSessionStorage.getItem.mockReturnValue(
+          JSON.stringify('test value')
+        );
 
         const result = storage.session.get('test-key');
 
@@ -395,7 +399,9 @@ describe('storage utilities', () => {
 
   describe('getSize', () => {
     it('should calculate local storage size', () => {
-      mockLocalStorage.hasOwnProperty.mockImplementation((key) => key === 'test-key');
+      mockLocalStorage.hasOwnProperty.mockImplementation(
+        key => key === 'test-key'
+      );
       Object.defineProperty(mockLocalStorage, 'test-key', {
         value: 'test-value',
         enumerable: true,
@@ -407,7 +413,9 @@ describe('storage utilities', () => {
     });
 
     it('should calculate session storage size', () => {
-      mockSessionStorage.hasOwnProperty.mockImplementation((key) => key === 'session-key');
+      mockSessionStorage.hasOwnProperty.mockImplementation(
+        key => key === 'session-key'
+      );
       Object.defineProperty(mockSessionStorage, 'session-key', {
         value: 'session-value',
         enumerable: true,

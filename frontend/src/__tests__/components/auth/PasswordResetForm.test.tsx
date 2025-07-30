@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PasswordResetForm } from '@/components/auth/PasswordResetForm';
 import { usePasswordReset } from '@/hooks/usePasswordReset';
 
@@ -47,14 +47,16 @@ describe('PasswordResetForm', () => {
     it('should show error for invalid token', async () => {
       mockCheckToken.mockResolvedValue({
         isValid: false,
-        message: 'Invalid token'
+        message: 'Invalid token',
       });
 
       render(<PasswordResetForm {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.getByText('Invalid token')).toBeInTheDocument();
-        expect(screen.getByText('パスワードリセットを再リクエスト')).toBeInTheDocument();
+        expect(
+          screen.getByText('パスワードリセットを再リクエスト')
+        ).toBeInTheDocument();
       });
     });
 
@@ -75,7 +77,9 @@ describe('PasswordResetForm', () => {
       await waitFor(() => {
         expect(screen.getByLabelText('新しいパスワード*')).toBeInTheDocument();
         expect(screen.getByLabelText('パスワード再確認*')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'パスワードを変更' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'パスワードを変更' })
+        ).toBeInTheDocument();
       });
     });
 
@@ -83,7 +87,8 @@ describe('PasswordResetForm', () => {
       render(<PasswordResetForm {...defaultProps} />);
 
       await waitFor(() => {
-        const toggleButtons = screen.getAllByLabelText(/パスワードを表示|パスワードを隠す/);
+        const toggleButtons =
+          screen.getAllByLabelText(/パスワードを表示|パスワードを隠す/);
         expect(toggleButtons).toHaveLength(2);
       });
     });
@@ -98,12 +103,18 @@ describe('PasswordResetForm', () => {
         expect(screen.getByLabelText('新しいパスワード*')).toBeInTheDocument();
       });
 
-      const submitButton = screen.getByRole('button', { name: 'パスワードを変更' });
+      const submitButton = screen.getByRole('button', {
+        name: 'パスワードを変更',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('パスワードを入力してください')).toBeInTheDocument();
-        expect(screen.getByText('パスワード（確認）を入力してください')).toBeInTheDocument();
+        expect(
+          screen.getByText('パスワードを入力してください')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('パスワード（確認）を入力してください')
+        ).toBeInTheDocument();
       });
     });
 
@@ -118,11 +129,15 @@ describe('PasswordResetForm', () => {
       const passwordInput = screen.getByLabelText('新しいパスワード*');
       await user.type(passwordInput, '123');
 
-      const submitButton = screen.getByRole('button', { name: 'パスワードを変更' });
+      const submitButton = screen.getByRole('button', {
+        name: 'パスワードを変更',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('パスワードは8文字以上で入力してください')).toBeInTheDocument();
+        expect(
+          screen.getByText('パスワードは8文字以上で入力してください')
+        ).toBeInTheDocument();
       });
     });
 
@@ -140,11 +155,15 @@ describe('PasswordResetForm', () => {
       await user.type(passwordInput, 'password123');
       await user.type(confirmPasswordInput, 'different123');
 
-      const submitButton = screen.getByRole('button', { name: 'パスワードを変更' });
+      const submitButton = screen.getByRole('button', {
+        name: 'パスワードを変更',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('パスワードが一致しません')).toBeInTheDocument();
+        expect(
+          screen.getByText('パスワードが一致しません')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -166,7 +185,9 @@ describe('PasswordResetForm', () => {
       await user.type(passwordInput, 'newpassword123');
       await user.type(confirmPasswordInput, 'newpassword123');
 
-      const submitButton = screen.getByRole('button', { name: 'パスワードを変更' });
+      const submitButton = screen.getByRole('button', {
+        name: 'パスワードを変更',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -195,11 +216,15 @@ describe('PasswordResetForm', () => {
       await user.type(passwordInput, 'newpassword123');
       await user.type(confirmPasswordInput, 'newpassword123');
 
-      const submitButton = screen.getByRole('button', { name: 'パスワードを変更' });
+      const submitButton = screen.getByRole('button', {
+        name: 'パスワードを変更',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('パスワードが正常に変更されました！')).toBeInTheDocument();
+        expect(
+          screen.getByText('パスワードが正常に変更されました！')
+        ).toBeInTheDocument();
         expect(screen.getByText('ログインページへ')).toBeInTheDocument();
       });
     });
@@ -216,7 +241,9 @@ describe('PasswordResetForm', () => {
 
       await waitFor(() => {
         expect(screen.getByText('処理中...')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '処理中...' })).toBeDisabled();
+        expect(
+          screen.getByRole('button', { name: '処理中...' })
+        ).toBeDisabled();
       });
     });
 
@@ -237,7 +264,9 @@ describe('PasswordResetForm', () => {
       await user.type(passwordInput, 'newpassword123');
       await user.type(confirmPasswordInput, 'newpassword123');
 
-      const submitButton = screen.getByRole('button', { name: 'パスワードを変更' });
+      const submitButton = screen.getByRole('button', {
+        name: 'パスワードを変更',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
