@@ -82,8 +82,8 @@ describe('filesApi', () => {
       const mockResponse = {
         data: {
           data: [
-            { id: 1, name: 'Team 1', ownerName: 'Owner 1' },
-            { id: 2, name: 'Team 2', ownerName: 'Owner 2' },
+            { id: 1, file_name: 'Team 1', upload_owner_name: 'Owner 1' },
+            { id: 2, file_name: 'Team 2', upload_owner_name: 'Owner 2' },
           ],
           meta: { currentPage: 1, lastPage: 1, total: 2 },
         },
@@ -94,7 +94,50 @@ describe('filesApi', () => {
       const result = await filesApi.searchTeams(params);
 
       expect(apiClient.get).toHaveBeenCalledWith('/api/v1/search/team?keyword=test&page=1');
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual({
+        data: [
+          {
+            id: 1,
+            file_name: 'Team 1',
+            upload_owner_name: 'Owner 1',
+            name: 'Team 1',
+            ownerName: 'Owner 1',
+            comment: '',
+            downloadableAt: '',
+            createdAt: '',
+            updatedAt: undefined,
+            searchTag1: undefined,
+            searchTag2: undefined,
+            searchTag3: undefined,
+            searchTag4: undefined,
+            upload_type: undefined,
+            type: 'team',
+          },
+          {
+            id: 2,
+            file_name: 'Team 2',
+            upload_owner_name: 'Owner 2',
+            name: 'Team 2',
+            ownerName: 'Owner 2',
+            comment: '',
+            downloadableAt: '',
+            createdAt: '',
+            updatedAt: undefined,
+            searchTag1: undefined,
+            searchTag2: undefined,
+            searchTag3: undefined,
+            searchTag4: undefined,
+            upload_type: undefined,
+            type: 'team',
+          },
+        ],
+        meta: {
+          currentPage: 1,
+          lastPage: 1,
+          perPage: 10,
+          total: 0,
+        },
+      });
     });
 
     it('should handle special characters in keyword', async () => {
@@ -113,7 +156,7 @@ describe('filesApi', () => {
       const params: SearchParams = { keyword: 'match', page: 2 };
       const mockResponse = {
         data: {
-          data: [{ id: 1, name: 'Match 1', ownerName: 'Owner 1' }],
+          data: [{ id: 1, file_name: 'Match 1', upload_owner_name: 'Owner 1' }],
           meta: { currentPage: 2, lastPage: 3, total: 10 },
         },
       };
@@ -123,7 +166,33 @@ describe('filesApi', () => {
       const result = await filesApi.searchMatches(params);
 
       expect(apiClient.get).toHaveBeenCalledWith('/api/v1/search/match?keyword=match&page=2');
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual({
+        data: [
+          {
+            id: 1,
+            file_name: 'Match 1',
+            upload_owner_name: 'Owner 1',
+            name: 'Match 1',
+            ownerName: 'Owner 1',
+            comment: '',
+            downloadableAt: '',
+            createdAt: '',
+            updatedAt: undefined,
+            searchTag1: undefined,
+            searchTag2: undefined,
+            searchTag3: undefined,
+            searchTag4: undefined,
+            upload_type: undefined,
+            type: 'match',
+          },
+        ],
+        meta: {
+          currentPage: 1,
+          lastPage: 1,
+          perPage: 10,
+          total: 0,
+        },
+      });
     });
   });
 

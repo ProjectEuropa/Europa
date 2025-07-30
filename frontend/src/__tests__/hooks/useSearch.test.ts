@@ -97,14 +97,30 @@ describe('useSearch hooks', () => {
       expect(filesApi.searchTeams).toHaveBeenCalledWith({ keyword: 'test', page: 1 });
     });
 
-    it('should not fetch when keyword is empty', () => {
+    it('should fetch even when keyword is empty', async () => {
+      const mockResult: TeamSearchResult = {
+        data: [],
+        meta: {
+          currentPage: 1,
+          lastPage: 1,
+          perPage: 10,
+          total: 0,
+        },
+      };
+
+      vi.mocked(filesApi.searchTeams).mockResolvedValueOnce(mockResult);
+
       const { result } = renderHook(
         () => useTeamSearch({ keyword: '', page: 1 }),
         { wrapper: createWrapper() }
       );
 
-      expect(result.current.fetchStatus).toBe('idle');
-      expect(filesApi.searchTeams).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual(mockResult);
+      expect(filesApi.searchTeams).toHaveBeenCalledWith({ keyword: '', page: 1 });
     });
 
     it('should handle search errors', async () => {

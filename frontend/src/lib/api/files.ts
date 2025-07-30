@@ -70,7 +70,7 @@ export const filesApi = {
       searchTag2: item.search_tag2,
       searchTag3: item.search_tag3,
       searchTag4: item.search_tag4,
-      upload_type: item.upload_type,
+      uploadType: item.upload_type,
       type: 'team' as const,
     }));
 
@@ -139,7 +139,7 @@ export const filesApi = {
       searchTag2: item.search_tag2,
       searchTag3: item.search_tag3,
       searchTag4: item.search_tag4,
-      upload_type: item.upload_type,
+      uploadType: item.upload_type,
       type: 'match' as const,
     }));
 
