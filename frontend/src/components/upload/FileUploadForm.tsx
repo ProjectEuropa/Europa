@@ -442,11 +442,11 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
               id="comment"
               value={formData.comment}
               onChange={(e) => updateFormData({ comment: e.target.value })}
-              placeholder={`${fileType === 'team' ? 'チーム' : 'マッチ'}についての説明や特徴を入力`}
-              rows={4}
+              placeholder={`${fileType === 'team' ? 'チームの特徴、戦術、強さ、注目ポイントなどを詳しく入力してください。\n例：攻撃的なフォーメーションで、カウンター攻撃が得意なチームです。' : 'マッチの内容、見どころ、結果、印象的なプレーなどを詳しく入力してください。\n例：接戦で最後まで勝敗が分からない熱い試合でした。'}`}
+              rows={6}
               style={{
                 width: '100%',
-                padding: '12px 16px',
+                padding: '16px 20px',
                 background: '#020824',
                 border: fieldErrors[`${fileType}Comment`] ? '2px solid #ef4444' : '1px solid #1E3A5F',
                 borderRadius: '8px',
@@ -454,9 +454,11 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                 fontSize: '14px',
                 outline: 'none',
                 resize: 'vertical',
-                minHeight: '100px',
+                minHeight: '140px',
+                maxHeight: '300px',
                 fontFamily: 'inherit',
                 transition: 'border-color 0.2s',
+                lineHeight: '1.5',
               }}
               onFocus={(e) => {
                 if (!fieldErrors[`${fileType}Comment`]) {
