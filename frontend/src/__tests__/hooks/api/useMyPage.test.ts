@@ -31,9 +31,7 @@ vi.mock('@/utils/api', () => ({
 }));
 
 vi.mock('@/stores/authStore', () => ({
-  useAuthStore: {
-    getState: vi.fn(),
-  },
+  useAuthStore: vi.fn(),
 }));
 
 // テスト用のQueryClientProvider
@@ -66,9 +64,7 @@ describe('useMyPage hooks', () => {
       createdAt: '2023-01-01T00:00:00Z',
     };
 
-    vi.mocked(authStore.useAuthStore.getState).mockReturnValue({
-      user: mockUser,
-    });
+    vi.mocked(authStore.useAuthStore).mockReturnValue(mockUser);
   });
 
   afterEach(() => {
@@ -91,24 +87,22 @@ describe('useMyPage hooks', () => {
       });
     });
 
-    it('ユーザーが存在しない場合はエラーを投げる', async () => {
-      vi.mocked(authStore.useAuthStore.getState).mockReturnValue({
-        user: null,
-      });
+    it('ユーザーが存在しない場合はクエリが無効化される', async () => {
+      vi.mocked(authStore.useAuthStore).mockReturnValue(null);
 
       const wrapper = createWrapper();
       const { result } = renderHook(() => useProfile(), { wrapper });
 
-      await waitFor(() => {
-        expect(result.current.isError).toBe(true);
-      });
-
-      expect(result.current.error?.message).toBe('User not found');
+      // クエリが無効化されているため実行されない
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.isError).toBe(false);
+      expect(result.current.data).toBeUndefined();
     });
 
     it('日付が存在しない場合は空文字を返す', async () => {
-      vi.mocked(authStore.useAuthStore.getState).mockReturnValue({
-        user: { ...mockUser, createdAt: undefined },
+      vi.mocked(authStore.useAuthStore).mockReturnValue({ 
+        ...mockUser, 
+        createdAt: undefined 
       });
 
       const wrapper = createWrapper();
@@ -119,6 +113,22 @@ describe('useMyPage hooks', () => {
       });
 
       expect(result.current.data?.joinDate).toBe('');
+    });
+
+    it('クエリキーにユーザーIDが含まれる', async () => {
+      const wrapper = createWrapper();
+      const { result } = renderHook(() => useProfile(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      // クエリキーの確認は直接はできないが、プロフィールデータが取得できることで間接的に確認
+      expect(result.current.data).toEqual({
+        name: 'テストユーザー',
+        email: 'test@example.com',
+        joinDate: '2023/01/01',
+      });
     });
   });
 

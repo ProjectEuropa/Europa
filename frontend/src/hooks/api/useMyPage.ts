@@ -13,16 +13,16 @@ import {
   fetchMyTeamFiles,
   updateUserName,
 } from '@/utils/api';
+import { useAuthStore } from '@/stores/authStore';
 
 // プロフィール取得
 export const useProfile = () => {
-  return useQuery({
-    queryKey: ['profile'],
-    queryFn: async (): Promise<ProfileData> => {
-      // authStoreからユーザー情報を取得してプロフィールデータに変換
-      const { useAuthStore } = await import('@/stores/authStore');
-      const user = useAuthStore.getState().user;
+  // authStoreからユーザー情報を取得
+  const user = useAuthStore((state) => state.user);
 
+  return useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async (): Promise<ProfileData> => {
       if (!user) {
         throw new Error('User not found');
       }
@@ -35,6 +35,7 @@ export const useProfile = () => {
           : '',
       };
     },
+    enabled: !!user, // ユーザーが存在する場合のみクエリを実行
     staleTime: 1000 * 60 * 5, // 5分間キャッシュ
   });
 };
@@ -42,12 +43,18 @@ export const useProfile = () => {
 // プロフィール更新
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
 
   return useMutation({
     mutationFn: async (data: UserUpdateData) => {
       return updateUserName(data.name);
     },
     onSuccess: () => {
+      // ユーザーIDを含むプロフィールクエリを無効化
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: ['profile', user.id] });
+      }
+      // 全てのプロフィールクエリを無効化（フォールバック）
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
       toast.success('プロフィールを更新しました');
