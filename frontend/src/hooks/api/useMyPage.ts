@@ -143,3 +143,24 @@ export const useDeleteFile = () => {
     },
   });
 };
+
+// イベント削除
+export const useDeleteEvent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (eventId: string) => {
+      const { deleteMyEvent } = await import('@/utils/api');
+      return deleteMyEvent(eventId);
+    },
+    onSuccess: () => {
+      // イベントクエリを無効化
+      queryClient.invalidateQueries({ queryKey: ['mypage', 'events'] });
+      toast.success('イベントを削除しました');
+    },
+    onError: error => {
+      console.error('Event deletion error:', error);
+      toast.error('イベントの削除に失敗しました');
+    },
+  });
+};

@@ -9,7 +9,8 @@
       "Bash(npm run lint)",
       "Bash(npm run test:run:*)",
       "Bash(npm run test:*)",
-      "Bash(npm run check:fix:*)"
+      "Bash(npm run check:fix:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }

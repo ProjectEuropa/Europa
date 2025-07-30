@@ -2,7 +2,7 @@
 
 import type React from 'react';
 import { useState } from 'react';
-import { useMyEvents } from '@/hooks/api/useMyPage';
+import { useMyEvents, useDeleteEvent } from '@/hooks/api/useMyPage';
 import type { MyPageEvent } from '@/types/user';
 
 const RegisteredEventsSection: React.FC = () => {
@@ -12,6 +12,7 @@ const RegisteredEventsSection: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<MyPageEvent | null>(null);
 
   const { data: events = [], isLoading, error } = useMyEvents();
+  const deleteEventMutation = useDeleteEvent();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -310,14 +311,9 @@ const RegisteredEventsSection: React.FC = () => {
                           )
                             return;
                           try {
-                            const api = await import('@/utils/api');
-                            await api.deleteMyEvent(event.id);
-                            setEvents(prev =>
-                              prev.filter(e => e.id !== event.id)
-                            );
-                            toast('イベントを削除しました');
-                          } catch (e: any) {
-                            alert(e?.message || '削除に失敗しました');
+                            await deleteEventMutation.mutateAsync(event.id);
+                          } catch (error) {
+                            console.error('Delete failed:', error);
                           }
                         }}
                       >
