@@ -10,7 +10,7 @@ import { SearchResults } from '@/components/search/SearchResults';
 import { useMatchSearch } from '@/hooks/useSearch';
 import { tryDownloadTeamFile } from '@/utils/api';
 import type { SearchParams } from '@/types/search';
-import type { MatchFile } from '@/types/file';
+import type { TeamFile, MatchFile } from '@/types/file';
 
 export default function ClientMatchSearch() {
   const router = useRouter();
@@ -51,15 +51,23 @@ export default function ClientMatchSearch() {
   }, [searchQuery, searchParams]);
 
   // ダウンロード処理
-  const handleDownload = useCallback(async (file: MatchFile) => {
-    try {
-      const result = await tryDownloadTeamFile(file.id);
-      if (!result.success) {
-        toast.error(result.error || 'ダウンロードに失敗しました', { duration: 4000 });
-      }
-    } catch (error) {
-      toast.error('ダウンロードに失敗しました');
+  const handleDownload = useCallback((file: TeamFile | MatchFile) => {
+    // マッチファイルのみ処理
+    if (file.type !== 'match') {
+      toast.error('マッチファイルのみダウンロードできます');
+      return;
     }
+
+    // 非同期処理をPromiseチェーンで実行（void型を返す）
+    tryDownloadTeamFile(file.id)
+      .then(result => {
+        if (!result.success) {
+          toast.error(result.error || 'ダウンロードに失敗しました', { duration: 4000 });
+        }
+      })
+      .catch(() => {
+        toast.error('ダウンロードに失敗しました');
+      });
   }, []);
 
   // ページ変更処理

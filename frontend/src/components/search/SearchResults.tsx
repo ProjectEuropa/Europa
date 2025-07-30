@@ -174,17 +174,6 @@ export const SearchResults = memo<SearchResultsProps>(({
     );
   }
 
-  // デバッグ情報をコンソールに出力
-  console.log('SearchResults Render Count:', Date.now());
-  console.log('SearchResults Props Hash:', {
-    resultsLength: results.length,
-    metaCurrentPage: meta.currentPage,
-    metaLastPage: meta.lastPage,
-    metaTotal: meta.total,
-    loading: loading,
-    error: error,
-    firstResultId: results[0]?.id,
-  });
 
   if (processedResults.length === 0 && !loading) {
     return (

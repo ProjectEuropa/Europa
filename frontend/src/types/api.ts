@@ -6,6 +6,11 @@ export interface ApiResponse<T = any> {
   data: T;
   message?: string;
   errors?: Record<string, string[]>;
+  // ページネーション情報（Laravel標準）
+  current_page?: number;
+  last_page?: number;
+  per_page?: number;
+  total?: number;
 }
 
 export interface ApiError {

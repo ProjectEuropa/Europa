@@ -20,42 +20,22 @@ export const filesApi = {
   // 検索関連
   async searchTeams(params: SearchParams): Promise<TeamSearchResult> {
     const url = `/api/v1/search/team?keyword=${encodeURIComponent(params.keyword)}&page=${params.page || 1}`;
-    console.log('API Request URL:', url);
 
     const response = await apiClient.get<any>(url);
-
-    console.log('API Response:', response);
-    console.log('API Response Data:', response.data);
-    console.log('API Response Type:', typeof response);
-    console.log('API Response Data Type:', typeof response.data);
-    console.log('API Response Keys:', Object.keys(response));
-    console.log('API Response Data Keys:', response.data ? Object.keys(response.data) : 'no data');
 
     // APIレスポンスを変換（スネークケース → キャメルケース + エイリアス）
     // response は既にJSONパース済みなので、response.data ではなく response を使用
     const rawData = response.data || response;
-    console.log('Raw Data:', rawData);
-    console.log('Raw Data Type:', typeof rawData);
-    console.log('Raw Data Keys:', Object.keys(rawData));
-    console.log('Raw Data.data:', rawData.data);
-    console.log('Raw Data.data Type:', typeof rawData.data);
-    console.log('Raw Data.data Length:', Array.isArray(rawData.data) ? rawData.data.length : 'not array');
 
     // APIレスポンスが配列として直接返される場合と、dataプロパティに含まれる場合の両方に対応
     let dataArray = [];
     if (Array.isArray(rawData)) {
-      console.log('Raw data is array, using directly');
       dataArray = rawData;
     } else if (Array.isArray(rawData.data)) {
-      console.log('Raw data.data is array, using rawData.data');
       dataArray = rawData.data;
     } else {
-      console.log('No array found in response');
       dataArray = [];
     }
-
-    console.log('Data Array:', dataArray);
-    console.log('Data Array Length:', dataArray.length);
 
     const transformedData = dataArray.map((item: any) => ({
       ...item,
@@ -84,47 +64,26 @@ export const filesApi = {
       },
     };
 
-    console.log('Transformed Result:', result);
     return result;
   },
 
   async searchMatches(params: SearchParams): Promise<MatchSearchResult> {
     const url = `/api/v1/search/match?keyword=${encodeURIComponent(params.keyword)}&page=${params.page || 1}`;
-    console.log('API Request URL (Match):', url);
 
     const response = await apiClient.get<any>(url);
 
-    console.log('API Response (Match):', response);
-    console.log('API Response Data (Match):', response.data);
-    console.log('API Response Type (Match):', typeof response);
-    console.log('API Response Data Type (Match):', typeof response.data);
-    console.log('API Response Keys (Match):', Object.keys(response));
-    console.log('API Response Data Keys (Match):', response.data ? Object.keys(response.data) : 'no data');
-
     // APIレスポンスを変換（スネークケース → キャメルケース + エイリアス）
     const rawData = response.data || response;
-    console.log('Raw Data (Match):', rawData);
-    console.log('Raw Data Type (Match):', typeof rawData);
-    console.log('Raw Data Keys (Match):', Object.keys(rawData));
-    console.log('Raw Data.data (Match):', rawData.data);
-    console.log('Raw Data.data Type (Match):', typeof rawData.data);
-    console.log('Raw Data.data Length (Match):', Array.isArray(rawData.data) ? rawData.data.length : 'not array');
 
     // APIレスポンスが配列として直接返される場合と、dataプロパティに含まれる場合の両方に対応
     let dataArray = [];
     if (Array.isArray(rawData)) {
-      console.log('Raw data is array (Match), using directly');
       dataArray = rawData;
     } else if (Array.isArray(rawData.data)) {
-      console.log('Raw data.data is array (Match), using rawData.data');
       dataArray = rawData.data;
     } else {
-      console.log('No array found in response (Match)');
       dataArray = [];
     }
-
-    console.log('Data Array (Match):', dataArray);
-    console.log('Data Array Length (Match):', dataArray.length);
 
     const transformedData = dataArray.map((item: any) => ({
       ...item,
@@ -153,7 +112,6 @@ export const filesApi = {
       },
     };
 
-    console.log('Transformed Result (Match):', result);
     return result;
   },
 
