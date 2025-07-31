@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React from 'react';
 import Icons from '@/components/Icons';
 
@@ -77,44 +78,59 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <a
+              <Link
                 href="/search/team"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 チームデータ検索
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/search/match"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 マッチデータ検索
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/sumdownload/team"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 チームデータ一括DL
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/sumdownload/match"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 マッチデータ一括DL
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/info"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 Information
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -130,20 +146,26 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <a
+              <Link
                 href="/login"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 ログイン
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/register"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 新規登録
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -159,12 +181,15 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <a
+              <Link
                 href="/about"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 私たちについて
-              </a>
+              </Link>
             </li>
             <li>
               <a
@@ -177,28 +202,37 @@ const Footer: React.FC<FooterProps> = ({
               </a>
             </li>
             <li>
-              <a
+              <Link
                 href="/privacy-policy"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 プライバシーポリシー
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/terms-of-service"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 利用規約
-              </a>
+              </Link>
             </li>
             <li>
-              <a
+              <Link
                 href="/faq"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none'
+                }}
               >
                 よくある質問
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>

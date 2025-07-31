@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,6 +19,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
   const menuRef = useRef<HTMLDivElement>(null);
   const [animationClass, setAnimationClass] = useState('');
   const pathname = usePathname();
+  const router = useRouter();
   const { isMobile, isTablet } = useBreakpoint();
 
   // 開閉状態に応じてアニメーションクラスを設定
@@ -84,12 +85,13 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
       alignItems: 'center',
       padding: '12px 16px',
       color: isActive ? '#00c8ff' : '#b0c4d8',
-      textDecoration: 'none',
       marginBottom: '8px',
       fontSize: '1rem',
       borderRadius: '6px',
       backgroundColor: isActive ? 'rgba(0, 200, 255, 0.1)' : 'transparent',
       transition: 'all 0.2s ease',
+      textDecoration: 'none',
+      width: '100%',
     };
   };
 
@@ -193,7 +195,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
 
         <div style={{ flex: 1, padding: isMobile ? '16px' : '20px' }}>
           {/* ホーム */}
-          <Link href="/" style={getLinkStyle('/')}>
+          <Link href="/" style={getLinkStyle('/')} onClick={onClose}>
             <svg
               width="24"
               height="24"
@@ -215,22 +217,16 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
 
           {!loading && user && (
             <button
-              style={{
-                ...getLinkStyle('/logout'),
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                width: '100%',
-                textAlign: 'left',
-              }}
+              style={getLinkStyle('/logout')}
               onClick={() => {
                 try {
-                  logout();
+                  logout(() => router.push('/'));
                   onClose(); // メニューを閉じる
                 } catch (error) {
                   console.error('ログアウトエラー:', error);
                 }
               }}
+              aria-label="ログアウト"
             >
               {/* 一般的なログアウトアイコン */}
               <svg
@@ -269,7 +265,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
           {/* 検索カテゴリ */}
           <div style={categoryStyle}>検索</div>
 
-          <Link href="/search/team" style={getLinkStyle('/search/team')}>
+          <Link href="/search/team" style={getLinkStyle('/search/team')} onClick={onClose} aria-label="チームデータ検索">
             <svg
               width="24"
               height="24"
@@ -289,7 +285,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
             チームデータ検索
           </Link>
 
-          <Link href="/search/match" style={getLinkStyle('/search/match')}>
+          <Link href="/search/match" style={getLinkStyle('/search/match')} onClick={onClose} aria-label="マッチデータ検索">
             <svg
               width="24"
               height="24"
@@ -312,7 +308,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
           {/* アップロードカテゴリ */}
           <div style={categoryStyle}>アップロード</div>
 
-          <Link href="/upload" style={getLinkStyle('/upload')}>
+          <Link href="/upload" style={getLinkStyle('/upload')} onClick={onClose} aria-label="チームアップロード">
             <svg
               width="24"
               height="24"
@@ -339,7 +335,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
             チームアップロード
           </Link>
 
-          <Link href="/upload/match" style={getLinkStyle('/upload/match')}>
+          <Link href="/upload/match" style={getLinkStyle('/upload/match')} onClick={onClose} aria-label="マッチアップロード">
             <svg
               width="24"
               height="24"
@@ -372,6 +368,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
           <Link
             href="/sumdownload/team"
             style={getLinkStyle('/sumdownload/team')}
+            onClick={onClose}
+            aria-label="チームデータ一括ダウンロード"
           >
             <svg
               width="24"
@@ -406,6 +404,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
           <Link
             href="/sumdownload/match"
             style={getLinkStyle('/sumdownload/match')}
+            onClick={onClose}
+            aria-label="マッチデータ一括ダウンロード"
           >
             <svg
               width="24"
@@ -440,7 +440,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
           {/* アカウントカテゴリ */}
           <div style={categoryStyle}>アカウント</div>
 
-          <Link href="/login" style={getLinkStyle('/login')}>
+          <Link href="/login" style={getLinkStyle('/login')} onClick={onClose} aria-label="ログイン">
             <svg
               width="24"
               height="24"
@@ -460,7 +460,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
             ログイン
           </Link>
 
-          <Link href="/register" style={getLinkStyle('/register')}>
+          <Link href="/register" style={getLinkStyle('/register')} onClick={onClose} aria-label="新規登録">
             <svg
               width="24"
               height="24"
@@ -490,6 +490,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
           <Link
             href="/forgot-password"
             style={getLinkStyle('/forgot-password')}
+            onClick={onClose}
+            aria-label="パスワード再設定"
           >
             <svg
               width="24"
@@ -527,7 +529,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
           {/* 情報カテゴリ */}
           <div style={categoryStyle}>情報</div>
 
-          <Link href="/info" style={getLinkStyle('/info')}>
+          <Link href="/info" style={getLinkStyle('/info')} onClick={onClose} aria-label="Information">
             <svg
               width="24"
               height="24"
@@ -559,7 +561,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
             Information
           </Link>
 
-          <Link href="/event" style={getLinkStyle('/event')}>
+          <Link href="/event" style={getLinkStyle('/event')} onClick={onClose} aria-label="イベント登録">
             <svg
               width="24"
               height="24"
@@ -610,7 +612,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
             イベント登録
           </Link>
 
-          <Link href="/mypage" style={getLinkStyle('/mypage')}>
+          <Link href="/mypage" style={getLinkStyle('/mypage')} onClick={onClose} aria-label="マイページ">
             <svg
               width="24"
               height="24"
@@ -637,7 +639,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
             マイページ
           </Link>
 
-          <Link href="/external-links" style={getLinkStyle('/external-links')}>
+          <Link href="/external-links" style={getLinkStyle('/external-links')} onClick={onClose} aria-label="外部リンク集">
             <svg
               width="24"
               height="24"
