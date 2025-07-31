@@ -17,6 +17,7 @@ vi.mock('@/hooks/api/useMyPage', () => ({
 vi.mock('@/utils/dateFormatters', () => ({
   formatDownloadDateTime: vi.fn(),
   formatUploadDateTime: vi.fn(),
+  getAccessibilityDateInfo: vi.fn(),
 }));
 
 // 認証ストアのモック
@@ -116,6 +117,14 @@ describe('FileListSection', () => {
       if (dateString === '2023-01-03T00:00:00Z') return '2023/01/03 09:00';
       if (dateString === '2023-01-05T00:00:00Z') return '2023/01/05 09:00';
       return '-';
+    });
+
+    vi.mocked(dateFormatters.getAccessibilityDateInfo).mockImplementation((dateString: string, formattedValue: string, context: 'download' | 'upload') => {
+      const contextLabel = context === 'download' ? 'ダウンロード' : 'アップロード';
+      return {
+        ariaLabel: `${contextLabel}日時: ${formattedValue}`,
+        title: `${contextLabel}日時: ${formattedValue}`,
+      };
     });
   });
 

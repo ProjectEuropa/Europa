@@ -10,7 +10,7 @@ import {
 } from '@/hooks/api/useMyPage';
 import type { MyPageFile } from '@/types/user';
 import { useAuthStore } from '@/stores/authStore';
-import { formatDownloadDateTime, formatUploadDateTime } from '@/utils/dateFormatters';
+import { formatDownloadDateTime, formatUploadDateTime, getAccessibilityDateInfo } from '@/utils/dateFormatters';
 
 interface FileListSectionProps {
   type: 'team' | 'match';
@@ -29,7 +29,6 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
 
   // 認証状態を確認
   const { user, token, isAuthenticated } = useAuthStore();
-  console.log('Auth state:', { user: !!user, token: !!token, isAuthenticated });
 
   // 条件付きでフックを使用
   const teamQuery = useMyTeamFiles();
@@ -191,11 +190,27 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
 
       {/* 検索バー */}
       <div style={{ marginBottom: '20px' }}>
+        <label
+          htmlFor={`search-${isTeam ? 'team' : 'match'}-files`}
+          style={{
+            position: 'absolute',
+            left: '-10000px',
+            width: '1px',
+            height: '1px',
+            overflow: 'hidden',
+          }}
+        >
+          {isTeam ? 'チーム' : 'マッチ'}ファイルを検索
+        </label>
         <input
+          id={`search-${isTeam ? 'team' : 'match'}-files`}
           type="text"
           placeholder={`${isTeam ? 'チーム' : 'マッチ'}を検索...`}
           value={searchQuery}
           onChange={handleSearchChange}
+          aria-label={`${isTeam ? 'チーム' : 'マッチ'}ファイルを検索`}
+          aria-describedby={`search-help-${isTeam ? 'team' : 'match'}`}
+          role="searchbox"
           style={{
             background: '#0F1A2E',
             border: '1px solid #1E3A5F',
@@ -206,6 +221,18 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
             width: '100%',
           }}
         />
+        <div
+          id={`search-help-${isTeam ? 'team' : 'match'}`}
+          style={{
+            position: 'absolute',
+            left: '-10000px',
+            width: '1px',
+            height: '1px',
+            overflow: 'hidden',
+          }}
+        >
+          ファイル名で検索できます。検索結果は入力と同時に更新されます。
+        </div>
       </div>
 
       {filteredFiles.length === 0 ? (
@@ -228,7 +255,21 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
               display: isMobile ? 'none' : 'block',
             }}
           >
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <table
+              style={{ width: '100%', borderCollapse: 'collapse' }}
+              role="table"
+              aria-label={`${isTeam ? 'チーム' : 'マッチ'}ファイル一覧テーブル`}
+            >
+              <caption style={{
+                position: 'absolute',
+                left: '-10000px',
+                width: '1px',
+                height: '1px',
+                overflow: 'hidden'
+              }}>
+                {isTeam ? 'アップロードしたチームファイル' : 'アップロードしたマッチファイル'}の一覧。
+                ファイル名、アップロード日時、ダウンロード日時、操作ボタンが表示されています。
+              </caption>
               <thead>
                 <tr style={{ borderBottom: '1px solid #1E3A5F' }}>
                   <th
@@ -286,36 +327,46 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                 </tr>
               </thead>
               <tbody>
-                {filteredFiles.map(file => (
-                  <tr
-                    key={file.id}
-                    style={{ borderBottom: '1px solid #1E3A5F' }}
-                  >
-                    <td
-                      aria-label={`ファイル名: ${file.name}`}
-                      style={{ padding: '12px 8px', color: 'white' }}
+                {filteredFiles.map(file => {
+                  const uploadFormatted = formatUploadDateTime(file.uploadDate);
+                  const downloadFormatted = formatDownloadDateTime(file.downloadableAt);
+                  const uploadAccessibility = getAccessibilityDateInfo(file.uploadDate, uploadFormatted, 'upload');
+                  const downloadAccessibility = getAccessibilityDateInfo(file.downloadableAt, downloadFormatted, 'download');
+
+                  return (
+                    <tr
+                      key={file.id}
+                      style={{ borderBottom: '1px solid #1E3A5F' }}
                     >
-                      {file.name}
-                    </td>
-                    <td
-                      aria-label={`アップロード日時: ${formatUploadDateTime(file.uploadDate)}`}
-                      style={{ padding: '12px 8px', color: '#b0c4d8' }}
-                    >
-                      {formatUploadDateTime(file.uploadDate)}
-                    </td>
-                    <td
-                      aria-label={`ダウンロード日時: ${formatDownloadDateTime(file.downloadableAt)}`}
-                      style={{ padding: '12px 8px', color: '#b0c4d8' }}
-                    >
-                      {formatDownloadDateTime(file.downloadableAt)}
-                    </td>
-                    <td
-                      aria-label={`${file.name}の操作`}
-                      style={{
-                        padding: '12px 8px',
-                        textAlign: 'center',
-                      }}
-                    >
+                      <td
+                        aria-label={`ファイル名: ${file.name}`}
+                        title={`ファイル名: ${file.name}`}
+                        style={{ padding: '12px 8px', color: 'white' }}
+                      >
+                        {file.name}
+                      </td>
+                      <td
+                        aria-label={uploadAccessibility.ariaLabel}
+                        title={uploadAccessibility.title}
+                        style={{ padding: '12px 8px', color: '#b0c4d8' }}
+                      >
+                        {uploadFormatted}
+                      </td>
+                      <td
+                        aria-label={downloadAccessibility.ariaLabel}
+                        title={downloadAccessibility.title}
+                        style={{ padding: '12px 8px', color: '#b0c4d8' }}
+                      >
+                        {downloadFormatted}
+                      </td>
+                      <td
+                        aria-label={`${file.name}の操作`}
+                        title={`${file.name}に対する操作ボタン`}
+                        style={{
+                          padding: '12px 8px',
+                          textAlign: 'center',
+                        }}
+                      >
                       <div
                         style={{
                           display: 'flex',
@@ -326,7 +377,15 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                         {file.comment && (
                           <button
                             onClick={() => handleCommentClick(file)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleCommentClick(file);
+                              }
+                            }}
                             aria-label={`${file.name}のコメントを表示`}
+                            title={`${file.name}のコメントを表示します`}
+                            tabIndex={0}
                             style={{
                               background: 'transparent',
                               border: '1px solid #8CB4FF',
@@ -342,8 +401,17 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                         )}
                         <button
                           onClick={() => handleDelete(file.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleDelete(file.id);
+                            }
+                          }}
                           disabled={deleteFileMutation.isPending}
                           aria-label={`${file.name}を削除`}
+                          aria-describedby={deleteFileMutation.isPending ? `delete-status-${file.id}` : undefined}
+                          title={deleteFileMutation.isPending ? '削除処理中です' : `${file.name}を削除します`}
+                          tabIndex={0}
                           style={{
                             background: 'transparent',
                             border: '1px solid #ff6b6b',
@@ -359,10 +427,25 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                         >
                           削除
                         </button>
+                        {deleteFileMutation.isPending && (
+                          <span
+                            id={`delete-status-${file.id}`}
+                            style={{
+                              position: 'absolute',
+                              left: '-10000px',
+                              width: '1px',
+                              height: '1px',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            削除処理中です
+                          </span>
+                        )}
                       </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -82,12 +82,50 @@ const logDateFormatError = (error: DateFormatError, context: string): void => {
 };
 
 /**
+ * アクセシビリティ対応の日時表示情報を生成する
+ * @param dateString - 日時文字列
+ * @param formattedValue - フォーマット済みの表示値
+ * @param context - コンテキスト（'download' | 'upload'）
+ * @returns アクセシビリティ情報
+ */
+export const getAccessibilityDateInfo = (
+  dateString: string | null,
+  formattedValue: string,
+  context: 'download' | 'upload'
+): { ariaLabel: string; title: string } => {
+  const contextLabel = context === 'download' ? 'ダウンロード' : 'アップロード';
+
+  if (!dateString || formattedValue === '未設定') {
+    return {
+      ariaLabel: `${contextLabel}日時は未設定です`,
+      title: `${contextLabel}日時が設定されていません`,
+    };
+  }
+
+  if (formattedValue.includes('エラー')) {
+    return {
+      ariaLabel: `${contextLabel}日時の表示でエラーが発生しました`,
+      title: `${contextLabel}日時の処理中にエラーが発生しました`,
+    };
+  }
+
+  return {
+    ariaLabel: `${contextLabel}日時: ${formattedValue}`,
+    title: `${contextLabel}日時: ${formattedValue}`,
+  };
+};
+
+/**
  * ダウンロード日時をフォーマットする
  * @param dateString - ISO 8601形式の日時文字列
  * @returns フォーマットされた日時文字列（YYYY/MM/DD HH:mm形式）または「未設定」
  */
-export const formatDownloadDateTime = (dateString: string): string => {
-  // 空文字列や null/undefined の場合は「未設定」を返す
+export const formatDownloadDateTime = (dateString: string | null): string => {
+  // null、undefined、空文字列の場合は「未設定」を返す
+  if (!dateString || dateString.trim() === '') {
+    return '未設定';
+  }
+  
   const validationError = validateDateString(dateString);
   if (validationError?.type === DateFormatErrorType.EMPTY_STRING) {
     return '未設定';

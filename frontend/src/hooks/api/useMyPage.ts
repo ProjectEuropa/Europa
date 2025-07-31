@@ -71,14 +71,12 @@ export const useUpdateProfile = () => {
 // チームファイル取得
 export const useMyTeamFiles = () => {
   const user = useAuthStore((state) => state.user);
-  
+
   return useQuery({
     queryKey: ['mypage', 'teams', user?.id],
     queryFn: async (): Promise<MyPageFile[]> => {
       try {
-        console.log('Fetching team files...');
         const data = await fetchMyTeamFiles();
-        console.log('Team files response:', data);
         return data.map((item: any) => ({
           id: String(item.id),
           name: item.file_name ?? item.name ?? '',
@@ -100,14 +98,12 @@ export const useMyTeamFiles = () => {
 // マッチファイル取得
 export const useMyMatchFiles = () => {
   const user = useAuthStore((state) => state.user);
-  
+
   return useQuery({
     queryKey: ['mypage', 'matches', user?.id],
     queryFn: async (): Promise<MyPageFile[]> => {
       try {
-        console.log('Fetching match files...');
         const data = await fetchMyMatchFiles();
-        console.log('Match files response:', data);
         return data.map((item: any) => ({
           id: String(item.id),
           name: item.file_name ?? item.name ?? '',
@@ -129,14 +125,12 @@ export const useMyMatchFiles = () => {
 // イベント取得
 export const useMyEvents = () => {
   const user = useAuthStore((state) => state.user);
-  
+
   return useQuery({
     queryKey: ['mypage', 'events', user?.id],
     queryFn: async (): Promise<MyPageEvent[]> => {
       try {
-        console.log('Fetching events...');
         const data = await fetchMyEvents();
-        console.log('Events response:', data);
         return data.map((item: any) => ({
           id: String(item.id),
           name: item.name || item.event_name || '',

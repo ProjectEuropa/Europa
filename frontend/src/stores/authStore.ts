@@ -41,6 +41,11 @@ export const useAuthStore = create<AuthStore>()(
           const data = await authApi.login(credentials);
           const { token, user } = data;
 
+          // localStorageにもトークンを保存（api.tsとの互換性のため）
+          if (typeof window !== 'undefined' && token) {
+            localStorage.setItem('token', token);
+          }
+
           set({
             user,
             token,
@@ -58,6 +63,11 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const data = await authApi.register(credentials);
           const { token, user } = data;
+
+          // localStorageにもトークンを保存（api.tsとの互換性のため）
+          if (typeof window !== 'undefined' && token) {
+            localStorage.setItem('token', token);
+          }
 
           set({
             user,

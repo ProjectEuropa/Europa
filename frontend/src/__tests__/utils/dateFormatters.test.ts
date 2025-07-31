@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { formatDownloadDateTime, formatUploadDateTime } from '@/utils/dateFormatters';
+import { formatDownloadDateTime, formatUploadDateTime, getAccessibilityDateInfo } from '@/utils/dateFormatters';
 
 describe('dateFormatters', () => {
   describe('formatDownloadDateTime', () => {
@@ -284,6 +284,43 @@ describe('dateFormatters', () => {
       );
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('getAccessibilityDateInfo', () => {
+    it('未設定の場合に適切なアクセシビリティ情報を返す', () => {
+      const result = getAccessibilityDateInfo('', '未設定', 'download');
+
+      expect(result.ariaLabel).toBe('ダウンロード日時は未設定です');
+      expect(result.title).toBe('ダウンロード日時が設定されていません');
+    });
+
+    it('アップロード日時の未設定の場合に適切なアクセシビリティ情報を返す', () => {
+      const result = getAccessibilityDateInfo('', '-', 'upload');
+
+      expect(result.ariaLabel).toBe('アップロード日時は未設定です');
+      expect(result.title).toBe('アップロード日時が設定されていません');
+    });
+
+    it('エラー状態の場合に適切なアクセシビリティ情報を返す', () => {
+      const result = getAccessibilityDateInfo('invalid', '日時形式エラー', 'download');
+
+      expect(result.ariaLabel).toBe('ダウンロード日時の表示でエラーが発生しました');
+      expect(result.title).toBe('ダウンロード日時の処理中にエラーが発生しました');
+    });
+
+    it('正常な日時の場合に適切なアクセシビリティ情報を返す', () => {
+      const result = getAccessibilityDateInfo('2023-01-01T00:00:00Z', '2023/01/01 09:00', 'download');
+
+      expect(result.ariaLabel).toBe('ダウンロード日時: 2023/01/01 09:00');
+      expect(result.title).toBe('ダウンロード日時: 2023/01/01 09:00');
+    });
+
+    it('アップロード日時の正常な場合に適切なアクセシビリティ情報を返す', () => {
+      const result = getAccessibilityDateInfo('2023-01-01T00:00:00Z', '2023/01/01 09:00', 'upload');
+
+      expect(result.ariaLabel).toBe('アップロード日時: 2023/01/01 09:00');
+      expect(result.title).toBe('アップロード日時: 2023/01/01 09:00');
     });
   });
 });

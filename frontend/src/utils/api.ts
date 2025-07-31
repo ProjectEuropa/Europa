@@ -7,9 +7,26 @@ export const apiRequest = async (
   endpoint: string,
   options: RequestInit = {}
 ) => {
-  const token =
-    typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  console.log('API Request:', endpoint, 'with token:', token ? 'present' : 'missing');
+  let token = null;
+  
+  if (typeof window !== 'undefined') {
+    // まずlocalStorageの'token'キーを確認
+    token = localStorage.getItem('token');
+    
+    // なければZustandのpersistストレージを確認
+    if (!token) {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage);
+          token = parsed.state?.token || null;
+        } catch (e) {
+          console.warn('Failed to parse auth-storage:', e);
+        }
+      }
+    }
+  }
+  
   let baseHeaders: Record<string, string> = {};
 
   // 既存のヘッダーを処理
@@ -358,22 +375,16 @@ export const fetchEvents = async () => {
 // マイページ：チームファイル取得API
 export const fetchMyTeamFiles = async () => {
   try {
-    console.log('API request: /api/v1/mypage/team');
     const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
-    console.log('API response status:', res.status);
     
     if (!res.ok) {
       const errorText = await res.text();
-      console.error('API error response:', errorText);
       throw new Error(`チームデータ取得失敗 (${res.status}): ${errorText}`);
     }
     
     const data = await res.json();
-    console.log('API response data:', data);
-    // 返却形式: { files: [...] }
     return data.files || [];
   } catch (error) {
-    console.error('fetchMyTeamFiles error:', error);
     throw error;
   }
 };
@@ -381,22 +392,16 @@ export const fetchMyTeamFiles = async () => {
 // マイページ：マッチファイル取得API
 export const fetchMyMatchFiles = async () => {
   try {
-    console.log('API request: /api/v1/mypage/match');
     const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
-    console.log('API response status:', res.status);
     
     if (!res.ok) {
       const errorText = await res.text();
-      console.error('API error response:', errorText);
       throw new Error(`マッチデータ取得失敗 (${res.status}): ${errorText}`);
     }
     
     const data = await res.json();
-    console.log('API response data:', data);
-    // 返却形式: { files: [...] }
     return data.files || [];
   } catch (error) {
-    console.error('fetchMyMatchFiles error:', error);
     throw error;
   }
 };

@@ -155,7 +155,25 @@ export class ApiClient {
   }
 
   private getToken(): string | null {
-    return typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (typeof window === 'undefined') return null;
+    
+    // まずlocalStorageの'token'キーを確認
+    let token = localStorage.getItem('token');
+    
+    // なければZustandのpersistストレージを確認
+    if (!token) {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage);
+          token = parsed.state?.token || null;
+        } catch (e) {
+          console.warn('Failed to parse auth-storage:', e);
+        }
+      }
+    }
+    
+    return token;
   }
 
   private processHeaders(headers?: HeadersInit): Record<string, string> {

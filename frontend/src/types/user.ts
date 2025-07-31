@@ -91,7 +91,7 @@ export interface MyPageFile {
   id: string;
   name: string;
   uploadDate: string;
-  downloadableAt?: string;
+  downloadableAt?: string | null;
   comment?: string;
   type: 'team' | 'match';
 }
