@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -91,41 +91,52 @@ describe('FileListSection', () => {
       data: mockTeamFiles,
       isLoading: false,
       error: null,
-    } as any);
+    });
 
     vi.mocked(useMyPageHooks.useMyMatchFiles).mockReturnValue({
       data: mockMatchFiles,
       isLoading: false,
       error: null,
-    } as any);
+    });
 
     vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue(
-      mockDeleteFile as any
+      mockDeleteFile
     );
 
     // 日時フォーマット関数のモック設定
-    vi.mocked(dateFormatters.formatDownloadDateTime).mockImplementation((dateString: string) => {
-      if (!dateString) return '未設定';
-      if (dateString === '2023-01-02T00:00:00Z') return '2023/01/02 09:00';
-      if (dateString === '2023-01-06T00:00:00Z') return '2023/01/06 09:00';
-      return '未設定';
-    });
+    vi.mocked(dateFormatters.formatDownloadDateTime).mockImplementation(
+      (dateString: string) => {
+        if (!dateString) return '未設定';
+        if (dateString === '2023-01-02T00:00:00Z') return '2023/01/02 09:00';
+        if (dateString === '2023-01-06T00:00:00Z') return '2023/01/06 09:00';
+        return '未設定';
+      }
+    );
 
-    vi.mocked(dateFormatters.formatUploadDateTime).mockImplementation((dateString: string) => {
-      if (!dateString) return '-';
-      if (dateString === '2023-01-01T00:00:00Z') return '2023/01/01 09:00';
-      if (dateString === '2023-01-03T00:00:00Z') return '2023/01/03 09:00';
-      if (dateString === '2023-01-05T00:00:00Z') return '2023/01/05 09:00';
-      return '-';
-    });
+    vi.mocked(dateFormatters.formatUploadDateTime).mockImplementation(
+      (dateString: string) => {
+        if (!dateString) return '-';
+        if (dateString === '2023-01-01T00:00:00Z') return '2023/01/01 09:00';
+        if (dateString === '2023-01-03T00:00:00Z') return '2023/01/03 09:00';
+        if (dateString === '2023-01-05T00:00:00Z') return '2023/01/05 09:00';
+        return '-';
+      }
+    );
 
-    vi.mocked(dateFormatters.getAccessibilityDateInfo).mockImplementation((dateString: string, formattedValue: string, context: 'download' | 'upload') => {
-      const contextLabel = context === 'download' ? 'ダウンロード' : 'アップロード';
-      return {
-        ariaLabel: `${contextLabel}日時: ${formattedValue}`,
-        title: `${contextLabel}日時: ${formattedValue}`,
-      };
-    });
+    vi.mocked(dateFormatters.getAccessibilityDateInfo).mockImplementation(
+      (
+        _dateString: string,
+        formattedValue: string,
+        context: 'download' | 'upload'
+      ) => {
+        const contextLabel =
+          context === 'download' ? 'ダウンロード' : 'アップロード';
+        return {
+          ariaLabel: `${contextLabel}日時: ${formattedValue}`,
+          title: `${contextLabel}日時: ${formattedValue}`,
+        };
+      }
+    );
   });
 
   afterEach(() => {
@@ -173,7 +184,7 @@ describe('FileListSection', () => {
         data: [],
         isLoading: false,
         error: null,
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
@@ -192,7 +203,7 @@ describe('FileListSection', () => {
     });
 
     it('マッチ検索機能が動作する', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       const wrapper = createWrapper();
       render(<FileListSection type="match" />, { wrapper });
 
@@ -273,7 +284,7 @@ describe('FileListSection', () => {
       vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue({
         ...mockDeleteFile,
         isPending: true,
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
@@ -342,7 +353,9 @@ describe('FileListSection', () => {
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
 
-      expect(dateFormatters.formatDownloadDateTime).toHaveBeenCalledWith('2023-01-02T00:00:00Z');
+      expect(dateFormatters.formatDownloadDateTime).toHaveBeenCalledWith(
+        '2023-01-02T00:00:00Z'
+      );
       expect(dateFormatters.formatDownloadDateTime).toHaveBeenCalledWith('');
     });
 
@@ -350,16 +363,24 @@ describe('FileListSection', () => {
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
 
-      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith('2023-01-01T00:00:00Z');
-      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith('2023-01-03T00:00:00Z');
+      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith(
+        '2023-01-01T00:00:00Z'
+      );
+      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith(
+        '2023-01-03T00:00:00Z'
+      );
     });
 
     it('マッチファイルでも日時フォーマット関数が正しく呼び出される', () => {
       const wrapper = createWrapper();
       render(<FileListSection type="match" />, { wrapper });
 
-      expect(dateFormatters.formatDownloadDateTime).toHaveBeenCalledWith('2023-01-06T00:00:00Z');
-      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith('2023-01-05T00:00:00Z');
+      expect(dateFormatters.formatDownloadDateTime).toHaveBeenCalledWith(
+        '2023-01-06T00:00:00Z'
+      );
+      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith(
+        '2023-01-05T00:00:00Z'
+      );
     });
   });
 
@@ -369,7 +390,7 @@ describe('FileListSection', () => {
         data: undefined,
         isLoading: true,
         error: null,
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
@@ -384,7 +405,7 @@ describe('FileListSection', () => {
         data: undefined,
         isLoading: true,
         error: null,
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<FileListSection type="match" />, { wrapper });
@@ -401,7 +422,7 @@ describe('FileListSection', () => {
         data: undefined,
         isLoading: false,
         error: new Error('取得エラー'),
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
@@ -416,7 +437,7 @@ describe('FileListSection', () => {
         data: undefined,
         isLoading: false,
         error: new Error('取得エラー'),
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<FileListSection type="match" />, { wrapper });
@@ -464,10 +485,20 @@ describe('FileListSection', () => {
       render(<FileListSection type="team" />, { wrapper });
 
       // 各ヘッダーのaria-label属性を確認
-      expect(screen.getByRole('columnheader', { name: 'ファイル名' })).toBeInTheDocument();
-      expect(screen.getByRole('columnheader', { name: 'ファイルのアップロード日時' })).toBeInTheDocument();
-      expect(screen.getByRole('columnheader', { name: 'ファイルのダウンロード可能日時' })).toBeInTheDocument();
-      expect(screen.getByRole('columnheader', { name: 'ファイル操作' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('columnheader', { name: 'ファイル名' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('columnheader', { name: 'ファイルのアップロード日時' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('columnheader', {
+          name: 'ファイルのダウンロード可能日時',
+        })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('columnheader', { name: 'ファイル操作' })
+      ).toBeInTheDocument();
     });
 
     it('データセルに適切なaria-label属性がある', () => {

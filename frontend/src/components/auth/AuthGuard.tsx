@@ -33,7 +33,7 @@ export function AuthGuard({
         router.replace('/mypage');
       }
     }
-  }, [user, loading, isAuthenticated, requireAuth, redirectTo, router]);
+  }, [loading, isAuthenticated, requireAuth, redirectTo, router]);
 
   // ローディング中は Loading コンポーネントを表示
   if (loading) {

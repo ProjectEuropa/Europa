@@ -102,7 +102,7 @@ describe('authStore', () => {
       expect(useAuthStore.getState().loading).toBe(true);
 
       // ログインを完了
-      resolveLogin!({ token: mockToken, user: mockUser });
+      resolveLogin?.({ token: mockToken, user: mockUser });
       await loginCall;
 
       expect(useAuthStore.getState().loading).toBe(false);

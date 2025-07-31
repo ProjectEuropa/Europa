@@ -4,7 +4,7 @@ import { Toaster, toast } from '@/components/ui/toast';
 
 // sonnerのモック
 vi.mock('sonner', () => ({
-  Toaster: ({ children, ...props }: any) => (
+  Toaster: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
     <div data-testid="toaster" {...props}>
       {children}
     </div>

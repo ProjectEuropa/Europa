@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import DownloadSection from '../components/DownloadSection';
 import FeaturesSection from '../components/FeaturesSection';
 import Footer from '../components/Footer';

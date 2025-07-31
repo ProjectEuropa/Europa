@@ -8,11 +8,11 @@ export const apiRequest = async (
   options: RequestInit = {}
 ) => {
   let token = null;
-  
+
   if (typeof window !== 'undefined') {
     // まずlocalStorageの'token'キーを確認
     token = localStorage.getItem('token');
-    
+
     // なければZustandのpersistストレージを確認
     if (!token) {
       const authStorage = localStorage.getItem('auth-storage');
@@ -26,7 +26,7 @@ export const apiRequest = async (
       }
     }
   }
-  
+
   let baseHeaders: Record<string, string> = {};
 
   // 既存のヘッダーを処理
@@ -54,7 +54,7 @@ export const apiRequest = async (
   }
 
   // トークンベースの認証
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token) headers.Authorization = `Bearer ${token}`;
 
   // Basic認証（特定の環境のみ）
   if (
@@ -63,8 +63,7 @@ export const apiRequest = async (
     BASIC_AUTH_PASSWORD &&
     !endpoint.startsWith('/api/')
   ) {
-    headers['Authorization'] =
-      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
   }
 
   try {
@@ -141,7 +140,7 @@ export const tryDownloadTeamFile = async (
     }
     window.open(url, '_blank');
     return { success: true };
-  } catch (e) {
+  } catch (_e) {
     return { success: false, error: 'ダウンロード通信エラー' };
   }
 };
@@ -256,9 +255,9 @@ export const uploadTeamFile = async (
     typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const headers: Record<string, string> = {};
   // トークン認証
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token) headers.Authorization = `Bearer ${token}`;
   // APIリクエストとして認識させる
-  headers['Accept'] = 'application/json';
+  headers.Accept = 'application/json';
   // Basic認証（特定環境のみ）
   if (
     API_BASE_URL.includes('stg.project-europa.work') &&
@@ -266,8 +265,7 @@ export const uploadTeamFile = async (
     BASIC_AUTH_PASSWORD &&
     !endpoint.startsWith('/api/')
   ) {
-    headers['Authorization'] =
-      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
   }
 
   try {
@@ -374,36 +372,28 @@ export const fetchEvents = async () => {
 
 // マイページ：チームファイル取得API
 export const fetchMyTeamFiles = async () => {
-  try {
-    const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
-    
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`チームデータ取得失敗 (${res.status}): ${errorText}`);
-    }
-    
-    const data = await res.json();
-    return data.files || [];
-  } catch (error) {
-    throw error;
+  const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`チームデータ取得失敗 (${res.status}): ${errorText}`);
   }
+
+  const data = await res.json();
+  return data.files || [];
 };
 
 // マイページ：マッチファイル取得API
 export const fetchMyMatchFiles = async () => {
-  try {
-    const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
-    
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`マッチデータ取得失敗 (${res.status}): ${errorText}`);
-    }
-    
-    const data = await res.json();
-    return data.files || [];
-  } catch (error) {
-    throw error;
+  const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`マッチデータ取得失敗 (${res.status}): ${errorText}`);
   }
+
+  const data = await res.json();
+  return data.files || [];
 };
 
 // マイページ：イベント削除API
@@ -534,16 +524,15 @@ export const uploadMatchFile = async (
   const token =
     typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const headers: Record<string, string> = {};
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  headers['Accept'] = 'application/json';
+  if (token) headers.Authorization = `Bearer ${token}`;
+  headers.Accept = 'application/json';
   if (
     API_BASE_URL.includes('stg.project-europa.work') &&
     BASIC_AUTH_USER &&
     BASIC_AUTH_PASSWORD &&
     !endpoint.startsWith('/api/')
   ) {
-    headers['Authorization'] =
-      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
   }
 
   try {

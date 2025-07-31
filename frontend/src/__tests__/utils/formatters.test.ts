@@ -9,7 +9,7 @@ const formatters = {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-    return parseFloat((bytes / k ** i).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
   },
 
   formatDate: (date: string | Date): string => {
@@ -65,7 +65,7 @@ const formatters = {
 
   truncateText: (text: string, maxLength: number): string => {
     if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + '...';
+    return `${text.slice(0, maxLength)}...`;
   },
 
   capitalizeFirst: (text: string): string => {

@@ -39,7 +39,7 @@ export const DateTimeInput = forwardRef<HTMLInputElement, DateTimeInputProps>(
       onChange(e.target.value);
     };
 
-    const handleIconClick = (e: React.MouseEvent) => {
+    const _handleIconClick = (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
 

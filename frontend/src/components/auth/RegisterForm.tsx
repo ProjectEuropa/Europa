@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 
-import { processApiError, setFormErrors } from '@/utils/apiErrorHandler';
+import { processApiError } from '@/utils/apiErrorHandler';
 
 // バリデーションスキーマ
 const registerSchema = z
@@ -90,7 +90,11 @@ export function RegisterForm({
         Object.keys(processedError.fieldErrors).length > 0
       ) {
         // バリデーションエラーの場合、フィールドごとにエラーを設定
-        setFormErrors(setError, processedError.fieldErrors);
+        Object.entries(processedError.fieldErrors).forEach(([field, message]) => {
+          if (field === 'name' || field === 'email' || field === 'password' || field === 'password_confirmation') {
+            setError(field as keyof RegisterFormData, { message });
+          }
+        });
       } else {
         // その他のエラーの場合、トーストでエラーメッセージを表示
         toast({

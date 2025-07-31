@@ -9,11 +9,11 @@ import type { SnakeToCamelObject } from '@/types/utils';
  */
 export function snakeToCamel<T extends object>(obj: T): SnakeToCamelObject<T> {
   if (obj === null || typeof obj !== 'object') {
-    return obj as any;
+    return obj as SnakeToCamelObject<T>;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(snakeToCamel) as any;
+    return obj.map(snakeToCamel) as SnakeToCamelObject<T>;
   }
 
   return Object.entries(obj).reduce(
@@ -44,7 +44,7 @@ export function formatDate(
 
   const date = new Date(dateString);
 
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     return dateString;
   }
 

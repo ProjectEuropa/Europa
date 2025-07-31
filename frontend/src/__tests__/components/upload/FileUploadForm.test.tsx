@@ -179,7 +179,7 @@ describe('FileUploadForm', () => {
   });
 
   it('should handle file selection', async () => {
-    const user = userEvent.setup();
+    const _user = userEvent.setup();
     render(<FileUploadForm {...defaultProps} />);
 
     const file = new File(['test content'], 'test.che', {

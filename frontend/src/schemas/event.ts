@@ -3,7 +3,6 @@
  */
 
 import { z } from 'zod';
-import type { EventType } from '@/types/event';
 
 // 日付バリデーション用の正規表現（YYYY-MM-DD形式）
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;

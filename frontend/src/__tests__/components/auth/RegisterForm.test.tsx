@@ -195,7 +195,7 @@ describe('RegisterForm', () => {
     });
 
     // 登録完了
-    resolveRegister!();
+    resolveRegister?.();
     await registerPromise;
 
     // 元の状態に戻ることを確認

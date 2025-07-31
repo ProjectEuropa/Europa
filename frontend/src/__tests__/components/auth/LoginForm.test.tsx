@@ -148,7 +148,7 @@ describe('LoginForm', () => {
       expect(submitButton).toBeDisabled();
 
       // ログインを完了
-      resolveLogin!();
+      resolveLogin?.();
       await loginPromise;
 
       await waitFor(() => {

@@ -74,7 +74,7 @@ function translateErrorMessage(message: string): string {
 /**
  * APIエラーを統一的に処理する関数
  */
-export function processApiError(error: any): ProcessedError {
+export function processApiError(error: unknown): ProcessedError {
   // デフォルトのエラー情報
   const defaultError: ProcessedError = {
     message:
@@ -87,7 +87,7 @@ export function processApiError(error: any): ProcessedError {
   };
 
   // ネットワークエラーやその他の非APIエラーの場合
-  if (!error || (!error.status && !error.name)) {
+  if (!error || (typeof error !== 'object') || (!('status' in error) && !('name' in error))) {
     return {
       ...defaultError,
       message: '接続に問題があります。しばらくしてから再試行してください。',
@@ -96,7 +96,7 @@ export function processApiError(error: any): ProcessedError {
   }
 
   // ApiErrorClassのインスタンスの場合
-  if (error.name === 'ApiError' || error instanceof Error) {
+  if (('name' in error && error.name === 'ApiError') || error instanceof Error) {
     const apiError = error as ApiErrorClass;
     const status = apiError.status || 0;
 
@@ -192,29 +192,31 @@ export function processApiError(error: any): ProcessedError {
   }
 
   // その他のエラー
-  const message = error.message || error.data?.message || defaultError.message;
+  const message = (typeof error === 'object' && error && 'message' in error ? error.message : null) || 
+                 (typeof error === 'object' && error && 'data' in error && typeof error.data === 'object' && error.data && 'message' in error.data ? error.data.message : null) || 
+                 defaultError.message;
   return {
     ...defaultError,
-    message: translateErrorMessage(message),
+    message: translateErrorMessage(String(message)),
   };
 }
 
 /**
  * フォームエラーを設定するヘルパー関数
  */
-export function setFormErrors<T extends Record<string, any>>(
-  setError: (name: keyof T, error: { message: string }) => void,
+export function setFormErrors<T extends Record<string, unknown>>(
+  setError: (name: string, error: { message: string }) => void,
   fieldErrors: Record<string, string>
 ): void {
   Object.entries(fieldErrors).forEach(([field, message]) => {
-    setError(field as keyof T, { message });
+    setError(field, { message });
   });
 }
 
 /**
  * 認証関連のエラーメッセージを取得（後方互換性のため）
  */
-export function getAuthErrorMessage(error: any): string {
+export function getAuthErrorMessage(error: unknown): string {
   const processed = processApiError(error);
   return processed.message;
 }
@@ -222,7 +224,7 @@ export function getAuthErrorMessage(error: any): string {
 /**
  * フォームフィールドのエラーメッセージを取得（後方互換性のため）
  */
-export function getFieldErrorMessages(error: any): Record<string, string> {
+export function getFieldErrorMessages(error: unknown): Record<string, string> {
   const processed = processApiError(error);
   return processed.fieldErrors;
 }

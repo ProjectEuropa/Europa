@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   Dropdown,
   DropdownContent,
@@ -14,7 +14,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -29,7 +29,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -46,7 +46,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -65,7 +65,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -89,7 +89,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown onOpenChange={onOpenChange}>
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -106,7 +106,7 @@ describe('Dropdown Components', () => {
       const { rerender } = render(
         <Dropdown open={false}>
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -119,7 +119,7 @@ describe('Dropdown Components', () => {
       rerender(
         <Dropdown open={true}>
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -134,7 +134,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown className="custom-dropdown">
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -154,7 +154,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Open Menu</button>
+            <button type="button">Open Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <div>Menu Content</div>
@@ -181,7 +181,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem>Menu Item</DropdownItem>
@@ -201,7 +201,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem onClick={onClick}>Clickable Item</DropdownItem>
@@ -223,7 +223,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem onClick={onClick} disabled>
@@ -246,7 +246,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem disabled>Disabled Item</DropdownItem>
@@ -266,7 +266,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem className="custom-item">Custom Item</DropdownItem>
@@ -286,7 +286,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem>Menu Item</DropdownItem>
@@ -307,7 +307,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem disabled>Disabled Item</DropdownItem>
@@ -328,7 +328,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem onClick={onClick}>Keyboard Item</DropdownItem>
@@ -356,7 +356,7 @@ describe('Dropdown Components', () => {
       render(
         <Dropdown>
           <DropdownTrigger>
-            <button>Menu</button>
+            <button type="button">Menu</button>
           </DropdownTrigger>
           <DropdownContent>
             <DropdownItem onClick={onItem1Click}>Item 1</DropdownItem>

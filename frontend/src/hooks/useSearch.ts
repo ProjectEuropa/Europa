@@ -2,11 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { filesApi } from '@/lib/api/files';
 import type { FileDeleteRequest } from '@/types/file';
-import type {
-  MatchSearchResult,
-  SearchParams,
-  TeamSearchResult,
-} from '@/types/search';
+import type { SearchParams } from '@/types/search';
 
 /**
  * 検索機能用のカスタムフック

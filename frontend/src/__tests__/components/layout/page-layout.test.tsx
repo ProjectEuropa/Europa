@@ -1,11 +1,25 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { PageLayout, Section, PageHeader } from '@/components/layout/page-layout';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  PageHeader,
+  PageLayout,
+  Section,
+} from '@/components/layout/page-layout';
 
 // Header と Footer コンポーネントのモック
 vi.mock('@/components/Header', () => ({
-  default: ({ showMenu, variant }: { showMenu?: boolean; variant?: string }) => (
-    <header data-testid="header" data-show-menu={showMenu} data-variant={variant}>
+  default: ({
+    showMenu,
+    variant,
+  }: {
+    showMenu?: boolean;
+    variant?: string;
+  }) => (
+    <header
+      data-testid="header"
+      data-show-menu={showMenu}
+      data-variant={variant}
+    >
       Header
     </header>
   ),
@@ -21,8 +35,16 @@ vi.mock('@/components/Footer', () => ({
 
 // focus-manager のモック
 vi.mock('@/components/layout/focus-manager', () => ({
-  SkipLink: ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <a href={href} data-testid="skip-link">{children}</a>
+  SkipLink: ({
+    href,
+    children,
+  }: {
+    href: string;
+    children: React.ReactNode;
+  }) => (
+    <a href={href} data-testid="skip-link">
+      {children}
+    </a>
   ),
   useFocusVisible: () => {},
 }));
@@ -170,36 +192,34 @@ describe('Section', () => {
 
 describe('PageHeader', () => {
   it('should render title', () => {
-    render(
-      <PageHeader title="Test Page" />
-    );
+    render(<PageHeader title="Test Page" />);
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Test Page');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Test Page'
+    );
   });
 
   it('should render description when provided', () => {
-    render(
-      <PageHeader title="Test Page" description="This is a test page" />
-    );
+    render(<PageHeader title="Test Page" description="This is a test page" />);
 
     expect(screen.getByText('This is a test page')).toBeInTheDocument();
   });
 
   it('should render action when provided', () => {
     render(
-      <PageHeader 
-        title="Test Page" 
-        action={<button>Action Button</button>} 
+      <PageHeader
+        title="Test Page"
+        action={<button type="button">Action Button</button>}
       />
     );
 
-    expect(screen.getByRole('button', { name: 'Action Button' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Action Button' })
+    ).toBeInTheDocument();
   });
 
   it('should have responsive layout classes', () => {
-    const { container } = render(
-      <PageHeader title="Test Page" />
-    );
+    const { container } = render(<PageHeader title="Test Page" />);
 
     const headerDiv = container.firstChild as HTMLElement;
     expect(headerDiv).toHaveClass('flex');

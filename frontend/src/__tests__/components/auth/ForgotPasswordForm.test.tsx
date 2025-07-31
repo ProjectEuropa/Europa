@@ -127,7 +127,7 @@ describe('ForgotPasswordForm', () => {
     });
 
     it('should show loading state during submission', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       vi.mocked(usePasswordReset).mockReturnValue({
         isLoading: true,
         sendResetLink: mockSendResetLink,

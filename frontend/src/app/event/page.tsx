@@ -111,7 +111,7 @@ const EventPage: React.FC = () => {
         endDisplayDate: '',
         type: '大会',
       });
-    } catch (err) {
+    } catch (_err) {
       toast.error('登録に失敗しました');
     } finally {
       setIsSubmitting(false);

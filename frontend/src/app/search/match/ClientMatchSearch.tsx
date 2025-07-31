@@ -48,7 +48,7 @@ export default function ClientMatchSearch() {
     if (!pageParam) {
       setCurrentPage(1);
     }
-  }, [searchQuery, searchParams]);
+  }, [searchParams]);
 
   // ダウンロード処理
   const handleDownload = useCallback((file: TeamFile | MatchFile) => {
@@ -86,7 +86,7 @@ export default function ClientMatchSearch() {
   );
 
   // 検索処理
-  const handleSearch = useCallback((params: SearchParams) => {
+  const handleSearch = useCallback((_params: SearchParams) => {
     setCurrentPage(1);
   }, []);
 

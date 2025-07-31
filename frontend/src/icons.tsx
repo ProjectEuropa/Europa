@@ -1,5 +1,3 @@
-import React from 'react';
-
 // icons.tsx - Central icon export for Europa
 
 // 外部リンク用のアイコンをエクスポート
