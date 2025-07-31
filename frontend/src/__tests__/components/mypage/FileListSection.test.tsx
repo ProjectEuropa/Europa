@@ -270,8 +270,10 @@ describe('FileListSection', () => {
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
 
-      expect(screen.getByText('2023/01/01')).toBeInTheDocument();
-      expect(screen.getByText('2023/01/02')).toBeInTheDocument();
+      // アップロード日時とダウンロード日時の両方をチェック
+      expect(screen.getByText('2023/01/01 09:00')).toBeInTheDocument(); // アップロード日時
+      expect(screen.getByText('2023/01/02 09:00')).toBeInTheDocument(); // ダウンロード日時
+      expect(screen.getByText('2023/01/03 09:00')).toBeInTheDocument(); // 2番目のファイルのアップロード日時
       expect(screen.getByText('未設定')).toBeInTheDocument();
     });
   });

@@ -10,6 +10,7 @@ import {
 } from '@/hooks/api/useMyPage';
 import type { MyPageFile } from '@/types/user';
 import { useAuthStore } from '@/stores/authStore';
+import { formatDownloadDateTime, formatUploadDateTime } from '@/utils/dateFormatters';
 
 interface FileListSectionProps {
   type: 'team' | 'match';
@@ -96,10 +97,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    return dateString.slice(0, 10).replace(/-/g, '/');
-  };
+
 
   const formatFileSize = (size?: number) => {
     if (!size) return '';
@@ -146,9 +144,9 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
           <summary style={{ cursor: 'pointer', marginBottom: '8px' }}>
             エラー詳細を表示
           </summary>
-          <pre style={{ 
-            background: '#0F1A2E', 
-            padding: '8px', 
+          <pre style={{
+            background: '#0F1A2E',
+            padding: '8px',
             borderRadius: '4px',
             overflow: 'auto',
             fontSize: '0.8rem',
@@ -234,6 +232,8 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
               <thead>
                 <tr style={{ borderBottom: '1px solid #1E3A5F' }}>
                   <th
+                    scope="col"
+                    aria-label="ファイル名"
                     style={{
                       color: '#8CB4FF',
                       fontSize: '0.9rem',
@@ -245,6 +245,8 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                     ファイル名
                   </th>
                   <th
+                    scope="col"
+                    aria-label="ファイルのアップロード日時"
                     style={{
                       color: '#8CB4FF',
                       fontSize: '0.9rem',
@@ -256,6 +258,8 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                     アップロード日
                   </th>
                   <th
+                    scope="col"
+                    aria-label="ファイルのダウンロード可能日時"
                     style={{
                       color: '#8CB4FF',
                       fontSize: '0.9rem',
@@ -264,9 +268,11 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                       textAlign: 'left',
                     }}
                   >
-                    公開日
+                    ダウンロード日時
                   </th>
                   <th
+                    scope="col"
+                    aria-label="ファイル操作"
                     style={{
                       color: '#8CB4FF',
                       fontSize: '0.9rem',
@@ -285,18 +291,26 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                     key={file.id}
                     style={{ borderBottom: '1px solid #1E3A5F' }}
                   >
-                    <td style={{ padding: '12px 8px', color: 'white' }}>
+                    <td
+                      aria-label={`ファイル名: ${file.name}`}
+                      style={{ padding: '12px 8px', color: 'white' }}
+                    >
                       {file.name}
                     </td>
-                    <td style={{ padding: '12px 8px', color: '#b0c4d8' }}>
-                      {formatDate(file.uploadDate)}
-                    </td>
-                    <td style={{ padding: '12px 8px', color: '#b0c4d8' }}>
-                      {file.downloadableAt
-                        ? formatDate(file.downloadableAt)
-                        : '未設定'}
+                    <td
+                      aria-label={`アップロード日時: ${formatUploadDateTime(file.uploadDate)}`}
+                      style={{ padding: '12px 8px', color: '#b0c4d8' }}
+                    >
+                      {formatUploadDateTime(file.uploadDate)}
                     </td>
                     <td
+                      aria-label={`ダウンロード日時: ${formatDownloadDateTime(file.downloadableAt)}`}
+                      style={{ padding: '12px 8px', color: '#b0c4d8' }}
+                    >
+                      {formatDownloadDateTime(file.downloadableAt)}
+                    </td>
+                    <td
+                      aria-label={`${file.name}の操作`}
                       style={{
                         padding: '12px 8px',
                         textAlign: 'center',
@@ -312,6 +326,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                         {file.comment && (
                           <button
                             onClick={() => handleCommentClick(file)}
+                            aria-label={`${file.name}のコメントを表示`}
                             style={{
                               background: 'transparent',
                               border: '1px solid #8CB4FF',
@@ -328,6 +343,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                         <button
                           onClick={() => handleDelete(file.id)}
                           disabled={deleteFileMutation.isPending}
+                          aria-label={`${file.name}を削除`}
                           style={{
                             background: 'transparent',
                             border: '1px solid #ff6b6b',
@@ -387,12 +403,9 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                     marginBottom: '12px',
                   }}
                 >
-                  <span>アップロード: {formatDate(file.uploadDate)}</span>
+                  <span>アップロード: {formatUploadDateTime(file.uploadDate)}</span>
                   <span>
-                    公開:{' '}
-                    {file.downloadableAt
-                      ? formatDate(file.downloadableAt)
-                      : '未設定'}
+                    公開: {formatDownloadDateTime(file.downloadableAt)}
                   </span>
                 </div>
                 <div
