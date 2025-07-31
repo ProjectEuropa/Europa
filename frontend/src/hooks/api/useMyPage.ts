@@ -17,46 +17,48 @@ import { useAuthStore } from '@/stores/authStore';
 
 // プロフィール取得
 export const useProfile = () => {
-  // authStoreからユーザー情報を取得
+  // authStoreからユーザー情報を直接取得
   const user = useAuthStore((state) => state.user);
 
-  return useQuery({
-    queryKey: ['profile', user?.id],
-    queryFn: async (): Promise<ProfileData> => {
-      if (!user) {
-        throw new Error('User not found');
-      }
+  // ユーザーが存在しない場合のエラー処理
+  if (!user) {
+    return {
+      data: null,
+      isLoading: false,
+      error: new Error('User not found'),
+    };
+  }
 
-      return {
-        name: user.name,
-        email: user.email,
-        joinDate: user.createdAt
-          ? user.createdAt.slice(0, 10).replace(/-/g, '/')
-          : '',
-      };
-    },
-    enabled: !!user, // ユーザーが存在する場合のみクエリを実行
-    staleTime: 1000 * 60 * 5, // 5分間キャッシュ
-  });
+  // authStoreのデータをそのまま返す（React Queryは不要）
+  const profileData: ProfileData = {
+    name: user.name,
+    email: user.email,
+    joinDate: user.createdAt
+      ? user.createdAt.slice(0, 10).replace(/-/g, '/')
+      : '',
+  };
+
+  return {
+    data: profileData,
+    isLoading: false,
+    error: null,
+  };
 };
 
 // プロフィール更新
 export const useUpdateProfile = () => {
-  const queryClient = useQueryClient();
-  const user = useAuthStore((state) => state.user);
+  const { user, setUser } = useAuthStore();
 
   return useMutation({
     mutationFn: async (data: UserUpdateData) => {
       return updateUserName(data.name);
     },
-    onSuccess: () => {
-      // ユーザーIDを含むプロフィールクエリを無効化
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: ['profile', user.id] });
+    onSuccess: (_, variables) => {
+      // authStore内のユーザー情報を即座に更新
+      if (user) {
+        const updatedUser = { ...user, name: variables.name };
+        setUser(updatedUser);
       }
-      // 全てのプロフィールクエリを無効化（フォールバック）
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-      queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
       toast.success('プロフィールを更新しました');
     },
     onError: error => {
