@@ -13,6 +13,16 @@ vi.mock('@/hooks/api/useMyPage', () => ({
   useDeleteFile: vi.fn(),
 }));
 
+// 認証ストアのモック
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: vi.fn(() => ({
+    user: { id: '1', name: 'Test User', email: 'test@example.com' },
+    token: 'mock-token',
+    isAuthenticated: true,
+    loading: false,
+  })),
+}));
+
 // window.confirm のモック
 const mockConfirm = vi.fn();
 Object.defineProperty(window, 'confirm', {

@@ -73,57 +73,118 @@ describe('useMyPage hooks', () => {
 
   describe('useProfile', () => {
     it('ユーザー情報からプロフィールデータを正しく変換する', async () => {
+      // 認証状態をモック
+      vi.mocked(authStore.useAuthStore).mockImplementation((selector) => {
+        const state = {
+          user: {
+            id: '1',
+            name: 'テストユーザー',
+            email: 'test@example.com',
+            createdAt: '2023-01-01T00:00:00Z',
+          },
+          token: 'mock-token',
+          isAuthenticated: true,
+          loading: false,
+          login: vi.fn(),
+          register: vi.fn(),
+          logout: vi.fn(),
+          fetchUser: vi.fn(),
+          setUser: vi.fn(),
+          hasHydrated: true,
+        };
+        return selector ? selector(state) : state;
+      });
+
       const wrapper = createWrapper();
       const { result } = renderHook(() => useProfile(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true);
-      });
 
       expect(result.current.data).toEqual({
         name: 'テストユーザー',
         email: 'test@example.com',
         joinDate: '2023/01/01',
       });
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBe(null);
     });
 
-    it('ユーザーが存在しない場合はクエリが無効化される', async () => {
-      vi.mocked(authStore.useAuthStore).mockReturnValue(null);
+    it('ユーザーが存在しない場合はエラーを返す', async () => {
+      vi.mocked(authStore.useAuthStore).mockImplementation((selector) => {
+        const state = {
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          loading: false,
+          login: vi.fn(),
+          register: vi.fn(),
+          logout: vi.fn(),
+          fetchUser: vi.fn(),
+          setUser: vi.fn(),
+          hasHydrated: true,
+        };
+        return selector ? selector(state) : state;
+      });
 
       const wrapper = createWrapper();
       const { result } = renderHook(() => useProfile(), { wrapper });
 
-      // クエリが無効化されているため実行されない
       expect(result.current.isLoading).toBe(false);
-      expect(result.current.isError).toBe(false);
-      expect(result.current.data).toBeUndefined();
+      expect(result.current.error).toBeInstanceOf(Error);
+      expect(result.current.data).toBe(null);
     });
 
     it('日付が存在しない場合は空文字を返す', async () => {
-      vi.mocked(authStore.useAuthStore).mockReturnValue({ 
-        ...mockUser, 
-        createdAt: undefined 
+      vi.mocked(authStore.useAuthStore).mockImplementation((selector) => {
+        const state = {
+          user: {
+            id: '1',
+            name: 'テストユーザー',
+            email: 'test@example.com',
+            createdAt: undefined,
+          },
+          token: 'mock-token',
+          isAuthenticated: true,
+          loading: false,
+          login: vi.fn(),
+          register: vi.fn(),
+          logout: vi.fn(),
+          fetchUser: vi.fn(),
+          setUser: vi.fn(),
+          hasHydrated: true,
+        };
+        return selector ? selector(state) : state;
       });
 
       const wrapper = createWrapper();
       const { result } = renderHook(() => useProfile(), { wrapper });
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true);
-      });
 
       expect(result.current.data?.joinDate).toBe('');
     });
 
-    it('クエリキーにユーザーIDが含まれる', async () => {
+    it('プロフィールデータが正しく取得できる', async () => {
+      vi.mocked(authStore.useAuthStore).mockImplementation((selector) => {
+        const state = {
+          user: {
+            id: '1',
+            name: 'テストユーザー',
+            email: 'test@example.com',
+            createdAt: '2023-01-01T00:00:00Z',
+          },
+          token: 'mock-token',
+          isAuthenticated: true,
+          loading: false,
+          login: vi.fn(),
+          register: vi.fn(),
+          logout: vi.fn(),
+          fetchUser: vi.fn(),
+          setUser: vi.fn(),
+          hasHydrated: true,
+        };
+        return selector ? selector(state) : state;
+      });
+
       const wrapper = createWrapper();
       const { result } = renderHook(() => useProfile(), { wrapper });
 
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true);
-      });
-
-      // クエリキーの確認は直接はできないが、プロフィールデータが取得できることで間接的に確認
       expect(result.current.data).toEqual({
         name: 'テストユーザー',
         email: 'test@example.com',
