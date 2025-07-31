@@ -1,8 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import ClientSumDownloadMatchSearch from './ClientSumDownloadMatchSearch' ;
-
+import ClientSumDownloadMatchSearch from './ClientSumDownloadMatchSearch';
 
 export default function SumDownloadMatchPage() {
   return (

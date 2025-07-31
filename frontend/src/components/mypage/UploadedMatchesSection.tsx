@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import { deleteMyFile } from '@/utils/api';
+import type React from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { deleteMyFile } from '@/utils/api';
 
 interface MatchData {
   id: string;
@@ -16,7 +17,9 @@ interface UploadedMatchesSectionProps {
   initialMatches: MatchData[];
 }
 
-const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initialMatches }) => {
+const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({
+  initialMatches,
+}) => {
   // APIから渡されたデータをフロント用に自動マッピング
   const [matches, setMatches] = useState<MatchData[]>(
     (initialMatches as any[]).map(match => ({
@@ -35,32 +38,38 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
     setSearchQuery(e.target.value);
   };
 
-  const filteredMatches = matches.filter(match => 
+  const filteredMatches = matches.filter(match =>
     (match.name ?? '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div style={{
-      background: '#0A1022',
-      borderRadius: '12px',
-      padding: '24px',
-      border: '1px solid #1E3A5F',
-      marginBottom: '24px'
-    }}>
-      <h2 style={{
-        color: '#00c8ff',
-        fontSize: '1.5rem',
-        fontWeight: 'bold',
-        marginBottom: '20px'
-      }}>
+    <div
+      style={{
+        background: '#0A1022',
+        borderRadius: '12px',
+        padding: '24px',
+        border: '1px solid #1E3A5F',
+        marginBottom: '24px',
+      }}
+    >
+      <h2
+        style={{
+          color: '#00c8ff',
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
+          marginBottom: '20px',
+        }}
+      >
         アップロードしたマッチデータ
       </h2>
 
       {/* 検索バー */}
-      <div style={{
-        position: 'relative',
-        marginBottom: '20px'
-      }}>
+      <div
+        style={{
+          position: 'relative',
+          marginBottom: '20px',
+        }}
+      >
         <input
           type="text"
           value={searchQuery}
@@ -73,7 +82,7 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
             border: '1px solid #1E3A5F',
             borderRadius: '6px',
             color: 'white',
-            fontSize: '1rem'
+            fontSize: '1rem',
           }}
         />
         <svg
@@ -84,7 +93,7 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
             transform: 'translateY(-50%)',
             width: '20px',
             height: '20px',
-            color: '#8CB4FF'
+            color: '#8CB4FF',
           }}
           viewBox="0 0 24 24"
           fill="none"
@@ -99,91 +108,115 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
       </div>
 
       {/* マッチデータテーブル */}
-      <div style={{
-        overflowX: 'auto'
-      }}>
-        <table style={{
-          width: '100%',
-          borderCollapse: 'collapse'
-        }}>
+      <div
+        style={{
+          overflowX: 'auto',
+        }}
+      >
+        <table
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+          }}
+        >
           <thead>
-            <tr style={{
-              background: '#0F1A2E',
-              borderBottom: '1px solid #1E3A5F'
-            }}>
-              <th style={{
-                padding: '16px',
-                textAlign: 'left',
-                color: '#b0c4d8',
-                fontWeight: 'normal'
-              }}>
+            <tr
+              style={{
+                background: '#0F1A2E',
+                borderBottom: '1px solid #1E3A5F',
+              }}
+            >
+              <th
+                style={{
+                  padding: '16px',
+                  textAlign: 'left',
+                  color: '#b0c4d8',
+                  fontWeight: 'normal',
+                }}
+              >
                 マッチ名
               </th>
-              <th style={{
-                padding: '16px',
-                textAlign: 'left',
-                color: '#b0c4d8',
-                fontWeight: 'normal'
-              }}>
+              <th
+                style={{
+                  padding: '16px',
+                  textAlign: 'left',
+                  color: '#b0c4d8',
+                  fontWeight: 'normal',
+                }}
+              >
                 アップロード日
               </th>
-              <th style={{
-                padding: '16px',
-                textAlign: 'center',
-                color: '#b0c4d8',
-                fontWeight: 'normal'
-              }}>
+              <th
+                style={{
+                  padding: '16px',
+                  textAlign: 'center',
+                  color: '#b0c4d8',
+                  fontWeight: 'normal',
+                }}
+              >
                 ダウンロード可能日
               </th>
-              <th style={{
-                padding: '16px',
-                textAlign: 'center',
-                color: '#b0c8ff',
-                fontWeight: 'normal'
-              }}>
+              <th
+                style={{
+                  padding: '16px',
+                  textAlign: 'center',
+                  color: '#b0c8ff',
+                  fontWeight: 'normal',
+                }}
+              >
                 操作
               </th>
             </tr>
           </thead>
           <tbody>
             {filteredMatches.length > 0 ? (
-              filteredMatches.map((match) => (
+              filteredMatches.map(match => (
                 <tr
                   key={match.id}
                   style={{
-                    borderBottom: '1px solid #1E3A5F'
+                    borderBottom: '1px solid #1E3A5F',
                   }}
                 >
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'left',
-                    color: 'white'
-                  }}>
+                  <td
+                    style={{
+                      padding: '16px',
+                      textAlign: 'left',
+                      color: 'white',
+                    }}
+                  >
                     {match.name}
                   </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'left',
-                    color: '#b0c4d8'
-                  }}>
+                  <td
+                    style={{
+                      padding: '16px',
+                      textAlign: 'left',
+                      color: '#b0c4d8',
+                    }}
+                  >
                     {match.uploadDate}
                   </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'center',
-                    color: '#b0c4d8'
-                  }}>
+                  <td
+                    style={{
+                      padding: '16px',
+                      textAlign: 'center',
+                      color: '#b0c4d8',
+                    }}
+                  >
                     {match.downloadableAt ? match.downloadableAt : '-'}
                   </td>
-                  <td style={{
-                    padding: '16px',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      gap: '8px'
-                    }}>
+                  <td
+                    style={{
+                      padding: '16px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: '8px',
+                      }}
+                    >
                       <button
                         style={{
                           background: 'transparent',
@@ -192,9 +225,14 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
                           color: '#00c8ff',
                           padding: '6px 10px',
                           fontSize: '0.8rem',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
                         }}
-                        onClick={() => { setModalComment(match.comment || '詳細情報がありません'); setModalOpen(true); }}
+                        onClick={() => {
+                          setModalComment(
+                            match.comment || '詳細情報がありません'
+                          );
+                          setModalOpen(true);
+                        }}
                       >
                         詳細
                       </button>
@@ -206,13 +244,15 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
                           color: '#ff4d4d',
                           padding: '6px 10px',
                           fontSize: '0.8rem',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
                         }}
                         onClick={async () => {
                           if (!window.confirm('本当に削除しますか？')) return;
                           try {
                             await deleteMyFile(match.id);
-                            setMatches(prev => prev.filter(m => m.id !== match.id));
+                            setMatches(prev =>
+                              prev.filter(m => m.id !== match.id)
+                            );
                             toast.success('ファイルを削除しました');
                           } catch (e: any) {
                             toast.error(e.message || '削除に失敗しました');
@@ -232,56 +272,66 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({ initial
                   style={{
                     padding: '32px',
                     textAlign: 'center',
-                    color: '#b0c4d8'
+                    color: '#b0c4d8',
                   }}
                 >
-                  {searchQuery ? '検索条件に一致するマッチデータが見つかりませんでした' : 'アップロードしたマッチデータはありません'}
+                  {searchQuery
+                    ? '検索条件に一致するマッチデータが見つかりませんでした'
+                    : 'アップロードしたマッチデータはありません'}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-    {/* モーダル */}
-    {modalOpen && (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        background: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000
-      }}>
-        <div style={{
-          background: '#1E293B',
-          color: 'white',
-          borderRadius: '10px',
-          padding: '32px',
-          minWidth: '320px',
-          maxWidth: '90vw',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
-        }}>
-          <h3 style={{marginBottom: '16px'}}>マッチ詳細</h3>
-          <div style={{marginBottom: '24px', whiteSpace: 'pre-line'}}>{modalComment}</div>
-          <button
-            onClick={() => setModalOpen(false)}
+      {/* モーダル */}
+      {modalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
             style={{
-              background: '#00c8ff',
+              background: '#1E293B',
               color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '8px 24px',
-              fontSize: '1rem',
-              cursor: 'pointer'
+              borderRadius: '10px',
+              padding: '32px',
+              minWidth: '320px',
+              maxWidth: '90vw',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
             }}
-          >閉じる</button>
+          >
+            <h3 style={{ marginBottom: '16px' }}>マッチ詳細</h3>
+            <div style={{ marginBottom: '24px', whiteSpace: 'pre-line' }}>
+              {modalComment}
+            </div>
+            <button
+              onClick={() => setModalOpen(false)}
+              style={{
+                background: '#00c8ff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '8px 24px',
+                fontSize: '1rem',
+                cursor: 'pointer',
+              }}
+            >
+              閉じる
+            </button>
+          </div>
         </div>
-      </div>
-    )}
+      )}
     </div>
   );
 };

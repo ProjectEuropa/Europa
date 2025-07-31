@@ -1,12 +1,13 @@
-export const dynamic = "force-static";
+export const dynamic = 'force-static';
 export const revalidate = 0;
-export const contentType = "application/manifest+json";
+export const contentType = 'application/manifest+json';
 
 export default function manifest() {
   return {
     name: 'EUROPA Platform',
     short_name: 'EUROPA',
-    description: 'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+    description:
+      'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
     start_url: '/',
     display: 'standalone',
     background_color: '#0a0818',
@@ -23,5 +24,5 @@ export default function manifest() {
         type: 'image/png',
       },
     ],
-  }
+  };
 }
