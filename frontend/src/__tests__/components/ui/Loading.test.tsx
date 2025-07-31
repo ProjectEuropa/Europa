@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Loading, ButtonLoading, PageLoading } from '@/components/ui/loading';
+import { describe, expect, it } from 'vitest';
+import { ButtonLoading, Loading, PageLoading } from '@/components/ui/loading';
 
 describe('Loading', () => {
   it('should render loading spinner', () => {

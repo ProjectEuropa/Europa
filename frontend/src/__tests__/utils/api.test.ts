@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // localStorageのモック
 const localStorageMock = {
@@ -53,7 +53,10 @@ describe('API Utils', () => {
     it('should store tokens in localStorage', () => {
       localStorage.setItem('token', 'new-token');
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('token', 'new-token');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'token',
+        'new-token'
+      );
     });
 
     it('should remove tokens from localStorage', () => {
@@ -123,11 +126,16 @@ describe('API Utils', () => {
 
   describe('Error Handling Utilities', () => {
     it('should handle console error logging', () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       console.error('Test error message', new Error('Test error'));
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Test error message', expect.any(Error));
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Test error message',
+        expect.any(Error)
+      );
 
       consoleErrorSpy.mockRestore();
     });
@@ -136,7 +144,9 @@ describe('API Utils', () => {
   describe('FormData Handling', () => {
     it('should create FormData for file uploads', () => {
       const formData = new FormData();
-      const file = new File(['test content'], 'test.txt', { type: 'text/plain' });
+      const file = new File(['test content'], 'test.txt', {
+        type: 'text/plain',
+      });
 
       formData.append('file', file);
       formData.append('name', 'test-file');
@@ -176,11 +186,16 @@ describe('API Utils', () => {
 
   describe('Window Object Utilities', () => {
     it('should handle window.open for downloads', () => {
-      const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const windowOpenSpy = vi
+        .spyOn(window, 'open')
+        .mockImplementation(() => null);
 
       window.open('https://example.com/download', '_blank');
 
-      expect(windowOpenSpy).toHaveBeenCalledWith('https://example.com/download', '_blank');
+      expect(windowOpenSpy).toHaveBeenCalledWith(
+        'https://example.com/download',
+        '_blank'
+      );
 
       windowOpenSpy.mockRestore();
     });

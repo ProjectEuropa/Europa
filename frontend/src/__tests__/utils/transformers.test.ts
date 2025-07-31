@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { snakeToCamel, formatDate, relativeTime } from '@/utils/transformers';
+import { describe, expect, it } from 'vitest';
+import { formatDate, relativeTime, snakeToCamel } from '@/utils/transformers';
 
 describe('snakeToCamel', () => {
   it('should convert snake_case keys to camelCase', () => {
@@ -37,17 +37,11 @@ describe('snakeToCamel', () => {
   });
 
   it('should handle arrays', () => {
-    const input = [
-      { user_name: 'John' },
-      { user_name: 'Jane' },
-    ];
+    const input = [{ user_name: 'John' }, { user_name: 'Jane' }];
 
     const result = snakeToCamel(input);
 
-    expect(result).toEqual([
-      { userName: 'John' },
-      { userName: 'Jane' },
-    ]);
+    expect(result).toEqual([{ userName: 'John' }, { userName: 'Jane' }]);
   });
 
   it('should handle null and undefined values', () => {

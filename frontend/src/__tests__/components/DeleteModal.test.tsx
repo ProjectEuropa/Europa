@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DeleteModal } from '@/components/DeleteModal';
 
 // lucide-reactのモック
@@ -33,7 +33,9 @@ describe('DeleteModal', () => {
       render(<DeleteModal {...defaultProps} />);
 
       expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(screen.getByText(`${testFileName}を本当に削除しますか？`)).toBeInTheDocument();
+      expect(
+        screen.getByText(`${testFileName}を本当に削除しますか？`)
+      ).toBeInTheDocument();
     });
 
     it('should not render when open is false', () => {
@@ -46,7 +48,9 @@ describe('DeleteModal', () => {
       const customFileName = 'custom-file.pdf';
       render(<DeleteModal {...defaultProps} fileName={customFileName} />);
 
-      expect(screen.getByText(`${customFileName}を本当に削除しますか？`)).toBeInTheDocument();
+      expect(
+        screen.getByText(`${customFileName}を本当に削除しますか？`)
+      ).toBeInTheDocument();
     });
   });
 
@@ -299,7 +303,10 @@ describe('DeleteModal', () => {
       render(<DeleteModal {...defaultProps} />);
 
       const form = screen.getByRole('dialog').querySelector('form');
-      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+      const submitEvent = new Event('submit', {
+        bubbles: true,
+        cancelable: true,
+      });
 
       fireEvent(form!, submitEvent);
 

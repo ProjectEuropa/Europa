@@ -1,7 +1,8 @@
 'use client';
 
+import type React from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 interface DropdownContextType {
   isOpen: boolean;
@@ -9,7 +10,9 @@ interface DropdownContextType {
   onOpenChange?: (open: boolean) => void;
 }
 
-const DropdownContext = createContext<DropdownContextType | undefined>(undefined);
+const DropdownContext = createContext<DropdownContextType | undefined>(
+  undefined
+);
 
 const useDropdownContext = () => {
   const context = useContext(DropdownContext);
@@ -26,7 +29,12 @@ interface DropdownProps {
   className?: string;
 }
 
-export function Dropdown({ children, open, onOpenChange, className }: DropdownProps) {
+export function Dropdown({
+  children,
+  open,
+  onOpenChange,
+  className,
+}: DropdownProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = open !== undefined;
   const isOpen = isControlled ? open : internalOpen;
@@ -43,7 +51,10 @@ export function Dropdown({ children, open, onOpenChange, className }: DropdownPr
   // クリック外でメニューを閉じる
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -149,7 +160,12 @@ interface DropdownItemProps {
   className?: string;
 }
 
-export function DropdownItem({ children, onClick, disabled = false, className }: DropdownItemProps) {
+export function DropdownItem({
+  children,
+  onClick,
+  disabled = false,
+  className,
+}: DropdownItemProps) {
   const { setIsOpen } = useDropdownContext();
 
   const handleClick = () => {

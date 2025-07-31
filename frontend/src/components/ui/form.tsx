@@ -2,7 +2,12 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import type { FormFieldProps, FileInputProps, DateInputProps, SelectOption } from '@/types/form';
+import type {
+  DateInputProps,
+  FileInputProps,
+  FormFieldProps,
+  SelectOption,
+} from '@/types/form';
 import { Input } from './input';
 
 /**
@@ -125,7 +130,12 @@ export function TextareaField(props: FormFieldProps) {
 /**
  * ファイル入力フィールド
  */
-export function FileField({ accept, multiple, maxSize, ...props }: FileInputProps) {
+export function FileField({
+  accept,
+  multiple,
+  maxSize,
+  ...props
+}: FileInputProps) {
   const id = `field-${props.name}`;
 
   return (
@@ -183,7 +193,7 @@ export function SelectField({
         )}
       >
         <option value="">選択してください</option>
-        {options.map((option) => (
+        {options.map(option => (
           <option
             key={option.value}
             value={option.value}

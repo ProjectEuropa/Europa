@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useToast } from '@/hooks/useToast';
 
 // sonnerのモック
@@ -13,10 +13,7 @@ vi.mock('@/components/ui/toast', () => ({
   },
 }));
 
-// uuidのモック
-vi.mock('uuid', () => ({
-  v4: () => 'test-uuid-123',
-}));
+// Math.randomは実際の値を使用
 
 describe('useToast', () => {
   beforeEach(() => {
@@ -148,7 +145,9 @@ describe('useToast', () => {
       });
     });
 
-    expect(id!).toBe('test-uuid-123');
+    expect(id!).toBeDefined();
+    expect(typeof id!).toBe('string');
+    expect(id!.length).toBeGreaterThan(0);
   });
 
   it('should call custom toast for unknown type', async () => {
@@ -163,12 +162,14 @@ describe('useToast', () => {
       });
     });
 
-    expect(toastUtils.custom).toHaveBeenCalledWith({
-      id: 'test-uuid-123',
-      type: 'unknown',
-      title: 'Unknown',
-      message: 'Unknown type',
-      duration: 5000,
-    });
+    expect(toastUtils.custom).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: expect.any(String),
+        type: 'unknown',
+        title: 'Unknown',
+        message: 'Unknown type',
+        duration: 5000,
+      })
+    );
   });
 });

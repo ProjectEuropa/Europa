@@ -1,180 +1,172 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import type { User } from '@/types/user';
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore } from '@/stores/authStore';
 
-// 仮想的なuseAuthフックの実装
-const useAuth = () => {
-  const [user, setUser] = React.useState<User | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+// Zustand ストアをモック
+vi.mock('@/stores/authStore');
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      // 仮想的なログイン処理
-      const mockUser: User = {
-        id: 1,
-        name: 'Test User',
-        email,
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
-      };
-      setUser(mockUser);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setError(null);
-  };
-
-  const register = async (name: string, email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const mockUser: User = {
-        id: 2,
-        name,
-        email,
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
-      };
-      setUser(mockUser);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return {
-    user,
-    isLoading,
-    error,
-    login,
-    logout,
-    register,
-    isAuthenticated: !!user,
-  };
+const mockAuthStore = {
+  user: null,
+  token: null,
+  loading: false,
+  isAuthenticated: false,
+  login: vi.fn(),
+  register: vi.fn(),
+  logout: vi.fn(),
+  fetchUser: vi.fn(),
+  setUser: vi.fn(),
 };
-
-// React をモック
-const React = {
-  useState: vi.fn(),
-};
-
-vi.mock('react', () => React);
 
 describe('useAuth', () => {
   beforeEach(() => {
+    vi.mocked(useAuthStore).mockReturnValue(mockAuthStore);
     vi.clearAllMocks();
-
-    // useState のモック実装
-    let state: any;
-    React.useState.mockImplementation((initial: any) => {
-      if (state === undefined) state = initial;
-      return [state, (newState: any) => { state = newState; }];
-    });
   });
 
-  it('should initialize with default values', () => {
-    React.useState
-      .mockReturnValueOnce([null, vi.fn()]) // user
-      .mockReturnValueOnce([false, vi.fn()]) // isLoading
-      .mockReturnValueOnce([null, vi.fn()]); // error
-
+  it('should return auth state from store', () => {
     const { result } = renderHook(() => useAuth());
 
     expect(result.current.user).toBeNull();
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.error).toBeNull();
+    expect(result.current.token).toBeNull();
+    expect(result.current.loading).toBe(false);
     expect(result.current.isAuthenticated).toBe(false);
   });
 
-  it('should handle login successfully', async () => {
-    const mockSetUser = vi.fn();
-    const mockSetIsLoading = vi.fn();
-    const mockSetError = vi.fn();
-
-    React.useState
-      .mockReturnValueOnce([null, mockSetUser]) // user
-      .mockReturnValueOnce([false, mockSetIsLoading]) // isLoading
-      .mockReturnValueOnce([null, mockSetError]); // error
-
+  it('should return auth actions from store', () => {
     const { result } = renderHook(() => useAuth());
 
-    await act(async () => {
-      await result.current.login('test@example.com', 'password');
-    });
-
-    expect(mockSetIsLoading).toHaveBeenCalledWith(true);
-    expect(mockSetError).toHaveBeenCalledWith(null);
-    expect(mockSetUser).toHaveBeenCalledWith(expect.objectContaining({
-      email: 'test@example.com',
-      name: 'Test User',
-    }));
-    expect(mockSetIsLoading).toHaveBeenCalledWith(false);
+    expect(result.current.login).toBe(mockAuthStore.login);
+    expect(result.current.register).toBe(mockAuthStore.register);
+    expect(result.current.logout).toBe(mockAuthStore.logout);
+    expect(result.current.fetchUser).toBe(mockAuthStore.fetchUser);
+    expect(result.current.setUser).toBe(mockAuthStore.setUser);
   });
 
-  it('should handle logout', () => {
-    const mockSetUser = vi.fn();
-    const mockSetError = vi.fn();
+  it('should fetch user when token exists but user is null', () => {
+    vi.mocked(useAuthStore).mockReturnValue({
+      ...mockAuthStore,
+      token: 'mock-token',
+      user: null,
+    });
 
-    React.useState
-      .mockReturnValueOnce([{ id: 1, name: 'Test' }, mockSetUser]) // user
-      .mockReturnValueOnce([false, vi.fn()]) // isLoading
-      .mockReturnValueOnce([null, mockSetError]); // error
+    renderHook(() => useAuth());
 
+    expect(mockAuthStore.fetchUser).toHaveBeenCalled();
+  });
+
+  it('should not fetch user when token is null', () => {
+    vi.mocked(useAuthStore).mockReturnValue({
+      ...mockAuthStore,
+      token: null,
+      user: null,
+    });
+
+    renderHook(() => useAuth());
+
+    expect(mockAuthStore.fetchUser).not.toHaveBeenCalled();
+  });
+
+  it('should not fetch user when user already exists', () => {
+    vi.mocked(useAuthStore).mockReturnValue({
+      ...mockAuthStore,
+      token: 'mock-token',
+      user: {
+        id: '1',
+        name: 'Test User',
+        email: 'test@example.com',
+        createdAt: '2024-01-01',
+      },
+    });
+
+    renderHook(() => useAuth());
+
+    expect(mockAuthStore.fetchUser).not.toHaveBeenCalled();
+  });
+
+  it('should handle store state changes', () => {
+    const { result, rerender } = renderHook(() => useAuth());
+
+    // 初期状態
+    expect(result.current.isAuthenticated).toBe(false);
+
+    // ストアの状態を変更
+    vi.mocked(useAuthStore).mockReturnValue({
+      ...mockAuthStore,
+      user: {
+        id: '1',
+        name: 'Test User',
+        email: 'test@example.com',
+        createdAt: '2024-01-01',
+      },
+      token: 'mock-token',
+      isAuthenticated: true,
+    });
+
+    rerender();
+
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.user).toEqual({
+      id: '1',
+      name: 'Test User',
+      email: 'test@example.com',
+      createdAt: '2024-01-01',
+    });
+  });
+
+  it('should call login action', async () => {
+    const { result } = renderHook(() => useAuth());
+    const credentials = {
+      email: 'test@example.com',
+      password: 'password123',
+    };
+
+    await act(async () => {
+      await result.current.login(credentials);
+    });
+
+    expect(mockAuthStore.login).toHaveBeenCalledWith(credentials);
+  });
+
+  it('should call register action', async () => {
+    const { result } = renderHook(() => useAuth());
+    const credentials = {
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'password123',
+      passwordConfirmation: 'password123',
+    };
+
+    await act(async () => {
+      await result.current.register(credentials);
+    });
+
+    expect(mockAuthStore.register).toHaveBeenCalledWith(credentials);
+  });
+
+  it('should call logout action', () => {
     const { result } = renderHook(() => useAuth());
 
     act(() => {
       result.current.logout();
     });
 
-    expect(mockSetUser).toHaveBeenCalledWith(null);
-    expect(mockSetError).toHaveBeenCalledWith(null);
+    expect(mockAuthStore.logout).toHaveBeenCalled();
   });
 
-  it('should handle registration successfully', async () => {
-    const mockSetUser = vi.fn();
-    const mockSetIsLoading = vi.fn();
-    const mockSetError = vi.fn();
-
-    React.useState
-      .mockReturnValueOnce([null, mockSetUser]) // user
-      .mockReturnValueOnce([false, mockSetIsLoading]) // isLoading
-      .mockReturnValueOnce([null, mockSetError]); // error
-
+  it('should call setUser action', () => {
     const { result } = renderHook(() => useAuth());
+    const user = {
+      id: '1',
+      name: 'Test User',
+      email: 'test@example.com',
+      createdAt: '2024-01-01',
+    };
 
-    await act(async () => {
-      await result.current.register('New User', 'new@example.com', 'password');
+    act(() => {
+      result.current.setUser(user);
     });
 
-    expect(mockSetIsLoading).toHaveBeenCalledWith(true);
-    expect(mockSetError).toHaveBeenCalledWith(null);
-    expect(mockSetUser).toHaveBeenCalledWith(expect.objectContaining({
-      name: 'New User',
-      email: 'new@example.com',
-    }));
-    expect(mockSetIsLoading).toHaveBeenCalledWith(false);
-  });
-
-  it('should return correct isAuthenticated value', () => {
-    const mockUser = { id: 1, name: 'Test User', email: 'test@example.com' };
-
-    React.useState
-      .mockReturnValueOnce([mockUser, vi.fn()]) // user (authenticated)
-      .mockReturnValueOnce([false, vi.fn()]) // isLoading
-      .mockReturnValueOnce([null, vi.fn()]); // error
-
-    const { result } = renderHook(() => useAuth());
-
-    expect(result.current.isAuthenticated).toBe(true);
+    expect(mockAuthStore.setUser).toHaveBeenCalledWith(user);
   });
 });

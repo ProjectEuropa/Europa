@@ -33,7 +33,7 @@ export const registerSchema = z
       .string()
       .min(1, 'パスワード（確認）を入力してください'),
   })
-  .refine((data) => data.password === data.passwordConfirmation, {
+  .refine(data => data.password === data.passwordConfirmation, {
     message: 'パスワードが一致しません',
     path: ['passwordConfirmation'],
   });
@@ -60,7 +60,7 @@ export const passwordResetSchema = z
       .string()
       .min(1, 'パスワード（確認）を入力してください'),
   })
-  .refine((data) => data.password === data.passwordConfirmation, {
+  .refine(data => data.password === data.passwordConfirmation, {
     message: 'パスワードが一致しません',
     path: ['passwordConfirmation'],
   });
@@ -75,6 +75,8 @@ export const userUpdateSchema = z.object({
 // 型推論
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
-export type PasswordResetRequestFormData = z.infer<typeof passwordResetRequestSchema>;
+export type PasswordResetRequestFormData = z.infer<
+  typeof passwordResetRequestSchema
+>;
 export type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
 export type UserUpdateFormData = z.infer<typeof userUpdateSchema>;

@@ -2,7 +2,7 @@
  * 型安全なAPIクライアント
  */
 
-import type { ApiResponse, ApiClientConfig } from '@/types/api';
+import type { ApiClientConfig, ApiResponse } from '@/types/api';
 import { ApiErrorClass } from '@/types/api';
 
 export class ApiClient {
@@ -10,10 +10,13 @@ export class ApiClient {
   private defaultHeaders: Record<string, string>;
 
   constructor(config?: Partial<ApiClientConfig>) {
-    this.baseURL = config?.baseURL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://local.europa.com';
+    this.baseURL =
+      config?.baseURL ||
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      'https://local.europa.com';
     this.defaultHeaders = {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
       ...config?.defaultHeaders,
     };
   }
@@ -40,7 +43,16 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          errorData = await response.json();
+        } catch {
+          // JSONパースに失敗した場合のフォールバック
+          errorData = {
+            message: `HTTP ${response.status}: ${response.statusText}`,
+            status: response.status,
+          };
+        }
         throw new ApiErrorClass(response.status, errorData);
       }
 
@@ -54,7 +66,10 @@ export class ApiClient {
     }
   }
 
-  async get<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
+  async get<T>(
+    endpoint: string,
+    options?: RequestInit
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
@@ -82,7 +97,10 @@ export class ApiClient {
     });
   }
 
-  async delete<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
+  async delete<T>(
+    endpoint: string,
+    options?: RequestInit
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
 
@@ -113,7 +131,16 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: any = {};
+        try {
+          errorData = await response.json();
+        } catch {
+          // JSONパースに失敗した場合のフォールバック
+          errorData = {
+            message: `HTTP ${response.status}: ${response.statusText}`,
+            status: response.status,
+          };
+        }
         throw new ApiErrorClass(response.status, errorData);
       }
 
@@ -128,7 +155,25 @@ export class ApiClient {
   }
 
   private getToken(): string | null {
-    return typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (typeof window === 'undefined') return null;
+    
+    // まずlocalStorageの'token'キーを確認
+    let token = localStorage.getItem('token');
+    
+    // なければZustandのpersistストレージを確認
+    if (!token) {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage);
+          token = parsed.state?.token || null;
+        } catch (e) {
+          console.warn('Failed to parse auth-storage:', e);
+        }
+      }
+    }
+    
+    return token;
   }
 
   private processHeaders(headers?: HeadersInit): Record<string, string> {
@@ -153,7 +198,10 @@ export class ApiClient {
     return headers as Record<string, string>;
   }
 
-  private addBasicAuthIfNeeded(headers: Record<string, string>, endpoint: string): void {
+  private addBasicAuthIfNeeded(
+    headers: Record<string, string>,
+    endpoint: string
+  ): void {
     const basicAuthUser = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
     const basicAuthPassword = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 
@@ -163,7 +211,8 @@ export class ApiClient {
       basicAuthPassword &&
       !endpoint.startsWith('/api/')
     ) {
-      headers['Authorization'] = 'Basic ' + btoa(`${basicAuthUser}:${basicAuthPassword}`);
+      headers['Authorization'] =
+        'Basic ' + btoa(`${basicAuthUser}:${basicAuthPassword}`);
     }
   }
 }

@@ -1,27 +1,30 @@
-import "./globals.css";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { ToastProvider } from "@/providers";
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { QueryProvider, ToastProvider } from '@/providers';
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "EUROPA",
-  description: "カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム",
+  title: 'EUROPA',
+  description:
+    'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
   openGraph: {
-    title: "EUROPA",
-    description: "カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム",
-    type: "website",
-    locale: "ja_JP",
+    title: 'EUROPA',
+    description:
+      'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+    type: 'website',
+    locale: 'ja_JP',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "EUROPA",
-    description: "カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム",
+    card: 'summary_large_image',
+    title: 'EUROPA',
+    description:
+      'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
   },
-  metadataBase: new URL("https://project-europa.work"),
+  metadataBase: new URL('https://project-europa.work'),
 };
 
 export default function RootLayout({
@@ -38,23 +41,37 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
         {/* OGP & Twitter meta tags */}
         <meta property="og:title" content="EUROPA" />
-        <meta property="og:description" content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム" />
+        <meta
+          property="og:description"
+          content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム"
+        />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://project-europa.work/icon.png" />
+        <meta
+          property="og:image"
+          content="https://project-europa.work/icon.png"
+        />
         <meta property="og:url" content="https://project-europa.work" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="EUROPA" />
-        <meta name="twitter:description" content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム" />
-        <meta name="twitter:image" content="https://project-europa.work/icon.png" />
+        <meta
+          name="twitter:description"
+          content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム"
+        />
+        <meta
+          name="twitter:image"
+          content="https://project-europa.work/icon.png"
+        />
       </head>
       <body
         className={
           inter.className +
-          " bg-[#0a0818] min-h-screen flex flex-col antialiased text-white selection:bg-[#00c8ff]/30 transition-colors duration-300"
+          ' bg-[#0a0818] min-h-screen flex flex-col antialiased text-white selection:bg-[#00c8ff]/30 transition-colors duration-300'
         }
       >
-        {children}
-        <ToastProvider />
+        <QueryProvider>
+          {children}
+          <ToastProvider />
+        </QueryProvider>
       </body>
     </html>
   );

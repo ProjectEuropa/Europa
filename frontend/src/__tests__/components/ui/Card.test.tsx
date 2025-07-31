@@ -1,13 +1,13 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import {
   Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   CardAction,
   CardContent,
+  CardDescription,
   CardFooter,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
 
 describe('Card Components', () => {
@@ -22,7 +22,17 @@ describe('Card Components', () => {
     it('should apply default classes', () => {
       render(<Card data-testid="card" />);
       const card = screen.getByTestId('card');
-      expect(card).toHaveClass('bg-card', 'text-card-foreground', 'flex', 'flex-col', 'gap-6', 'rounded-xl', 'border', 'py-6', 'shadow-sm');
+      expect(card).toHaveClass(
+        'bg-card',
+        'text-card-foreground',
+        'flex',
+        'flex-col',
+        'gap-6',
+        'rounded-xl',
+        'border',
+        'py-6',
+        'shadow-sm'
+      );
     });
 
     it('should apply custom className', () => {
@@ -49,7 +59,11 @@ describe('Card Components', () => {
     it('should apply default classes', () => {
       render(<CardHeader data-testid="card-header" />);
       const header = screen.getByTestId('card-header');
-      expect(header).toHaveClass('@container/card-header', 'grid', 'auto-rows-min');
+      expect(header).toHaveClass(
+        '@container/card-header',
+        'grid',
+        'auto-rows-min'
+      );
     });
 
     it('should have correct data-slot attribute', () => {
@@ -82,7 +96,11 @@ describe('Card Components', () => {
 
   describe('CardDescription', () => {
     it('should render card description element', () => {
-      render(<CardDescription data-testid="card-description">Description content</CardDescription>);
+      render(
+        <CardDescription data-testid="card-description">
+          Description content
+        </CardDescription>
+      );
       const description = screen.getByTestId('card-description');
       expect(description).toBeInTheDocument();
       expect(description).toHaveTextContent('Description content');
@@ -112,7 +130,13 @@ describe('Card Components', () => {
     it('should apply default classes', () => {
       render(<CardAction data-testid="card-action" />);
       const action = screen.getByTestId('card-action');
-      expect(action).toHaveClass('col-start-2', 'row-span-2', 'row-start-1', 'self-start', 'justify-self-end');
+      expect(action).toHaveClass(
+        'col-start-2',
+        'row-span-2',
+        'row-start-1',
+        'self-start',
+        'justify-self-end'
+      );
     });
 
     it('should have correct data-slot attribute', () => {

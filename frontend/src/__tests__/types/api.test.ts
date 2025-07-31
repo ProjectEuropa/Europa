@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { ApiErrorClass } from '@/types/api';
 
 describe('ApiErrorClass', () => {
@@ -40,7 +40,7 @@ describe('ApiErrorClass', () => {
       const error404 = new ApiErrorClass(404, { message: 'Not found' });
       const error422 = new ApiErrorClass(422, {
         message: 'Validation error',
-        errors: { field: ['error'] }
+        errors: { field: ['error'] },
       });
       const error500 = new ApiErrorClass(500, { message: 'Server error' });
 
@@ -70,9 +70,13 @@ describe('ApiErrorClass', () => {
     });
 
     it('should identify server errors correctly', () => {
-      const error500 = new ApiErrorClass(500, { message: 'Internal server error' });
+      const error500 = new ApiErrorClass(500, {
+        message: 'Internal server error',
+      });
       const error502 = new ApiErrorClass(502, { message: 'Bad gateway' });
-      const error503 = new ApiErrorClass(503, { message: 'Service unavailable' });
+      const error503 = new ApiErrorClass(503, {
+        message: 'Service unavailable',
+      });
 
       expect(error500.isServerError()).toBe(true);
       expect(error502.isServerError()).toBe(true);

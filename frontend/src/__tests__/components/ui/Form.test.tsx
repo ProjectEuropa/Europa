@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import {
-  FormField,
-  TextField,
-  PasswordField,
-  EmailField,
-  TextareaField,
-  FileField,
   DateField,
+  EmailField,
+  FileField,
+  FormField,
+  PasswordField,
   SelectField,
+  TextareaField,
+  TextField,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
@@ -90,14 +90,18 @@ describe('Form Components', () => {
     });
 
     it('should apply error styles when error exists', () => {
-      render(<TextField name="text" label="Text Field" error="Error message" />);
+      render(
+        <TextField name="text" label="Text Field" error="Error message" />
+      );
 
       const input = screen.getByRole('textbox');
       expect(input).toHaveClass('border-red-500');
     });
 
     it('should show placeholder', () => {
-      render(<TextField name="text" label="Text Field" placeholder="Enter text" />);
+      render(
+        <TextField name="text" label="Text Field" placeholder="Enter text" />
+      );
 
       expect(screen.getByPlaceholderText('Enter text')).toBeInTheDocument();
     });
@@ -131,7 +135,13 @@ describe('Form Components', () => {
     });
 
     it('should apply error styles when error exists', () => {
-      render(<TextareaField name="textarea" label="Textarea Field" error="Error message" />);
+      render(
+        <TextareaField
+          name="textarea"
+          label="Textarea Field"
+          error="Error message"
+        />
+      );
 
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveClass('border-red-500');
@@ -172,7 +182,14 @@ describe('Form Components', () => {
     });
 
     it('should apply min and max attributes', () => {
-      render(<DateField name="date" label="Date Field" min="2023-01-01" max="2023-12-31" />);
+      render(
+        <DateField
+          name="date"
+          label="Date Field"
+          min="2023-01-01"
+          max="2023-12-31"
+        />
+      );
 
       const input = screen.getByLabelText('Date Field');
       expect(input).toHaveAttribute('min', '2023-01-01');
@@ -188,7 +205,9 @@ describe('Form Components', () => {
     ];
 
     it('should render select field with options', () => {
-      render(<SelectField name="select" label="Select Field" options={options} />);
+      render(
+        <SelectField name="select" label="Select Field" options={options} />
+      );
 
       expect(screen.getByText('Select Field')).toBeInTheDocument();
       expect(screen.getByRole('combobox')).toBeInTheDocument();
@@ -198,20 +217,31 @@ describe('Form Components', () => {
     });
 
     it('should render default placeholder option', () => {
-      render(<SelectField name="select" label="Select Field" options={options} />);
+      render(
+        <SelectField name="select" label="Select Field" options={options} />
+      );
 
       expect(screen.getByText('選択してください')).toBeInTheDocument();
     });
 
     it('should disable options when specified', () => {
-      render(<SelectField name="select" label="Select Field" options={options} />);
+      render(
+        <SelectField name="select" label="Select Field" options={options} />
+      );
 
       const option3 = screen.getByRole('option', { name: 'Option 3' });
       expect(option3).toBeDisabled();
     });
 
     it('should apply error styles when error exists', () => {
-      render(<SelectField name="select" label="Select Field" options={options} error="Error message" />);
+      render(
+        <SelectField
+          name="select"
+          label="Select Field"
+          options={options}
+          error="Error message"
+        />
+      );
 
       const select = screen.getByRole('combobox');
       expect(select).toHaveClass('border-red-500');
