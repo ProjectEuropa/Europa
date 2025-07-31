@@ -329,9 +329,9 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
               <tbody>
                 {filteredFiles.map(file => {
                   const uploadFormatted = formatUploadDateTime(file.uploadDate);
-                  const downloadFormatted = formatDownloadDateTime(file.downloadableAt);
+                  const downloadFormatted = formatDownloadDateTime(file.downloadableAt ?? null);
                   const uploadAccessibility = getAccessibilityDateInfo(file.uploadDate, uploadFormatted, 'upload');
-                  const downloadAccessibility = getAccessibilityDateInfo(file.downloadableAt, downloadFormatted, 'download');
+                  const downloadAccessibility = getAccessibilityDateInfo(file.downloadableAt ?? null, downloadFormatted, 'download');
 
                   return (
                     <tr
@@ -488,7 +488,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                 >
                   <span>アップロード: {formatUploadDateTime(file.uploadDate)}</span>
                   <span>
-                    公開: {formatDownloadDateTime(file.downloadableAt)}
+                    公開: {formatDownloadDateTime(file.downloadableAt ?? null)}
                   </span>
                 </div>
                 <div

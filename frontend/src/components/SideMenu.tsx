@@ -5,18 +5,21 @@ import { usePathname } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { logout } from '@/lib/logout';
+import { useBreakpoint } from '@/components/layout/responsive';
+import { FocusTrap } from '@/components/layout/focus-manager';
 
 interface SideMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  className?: string;
 }
 
-const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
-  const { user, loading } = useAuth();
+const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) => {
+  const { user, loading, logout } = useAuth();
   const menuRef = useRef<HTMLDivElement>(null);
   const [animationClass, setAnimationClass] = useState('');
   const pathname = usePathname();
+  const { isMobile, isTablet } = useBreakpoint();
 
   // 開閉状態に応じてアニメーションクラスを設定
   useEffect(() => {
@@ -104,6 +107,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
+      className={className}
       style={{
         position: 'fixed',
         top: 0,
@@ -123,27 +127,33 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
         transition: 'opacity 0.3s ease',
         visibility: animationClass ? 'visible' : 'hidden',
       }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="サイドメニュー"
     >
-      <div
-        ref={menuRef}
-        style={{
-          width: '300px',
-          height: '100%',
-          backgroundColor: '#020824',
-          borderRight: '1px solid #1E3A5F',
-          transition: 'transform 0.3s ease',
-          transform:
-            animationClass === 'menu-open'
-              ? 'translateX(0)'
-              : 'translateX(-100%)',
-          padding: '20px 0',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '2px 0 10px rgba(0, 0, 0, 0.5)',
-          overflowY: 'auto',
-        }}
-        onTransitionEnd={handleTransitionEnd}
-      >
+      <FocusTrap active={isOpen}>
+        <div
+          ref={menuRef}
+          style={{
+            width: isMobile ? '280px' : '300px',
+            height: '100%',
+            backgroundColor: '#020824',
+            borderRight: '1px solid #1E3A5F',
+            transition: 'transform 0.3s ease',
+            transform:
+              animationClass === 'menu-open'
+                ? 'translateX(0)'
+                : 'translateX(-100%)',
+            padding: isMobile ? '16px 0' : '20px 0',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '2px 0 10px rgba(0, 0, 0, 0.5)',
+            overflowY: 'auto',
+          }}
+          onTransitionEnd={handleTransitionEnd}
+          role="navigation"
+          aria-label="メインナビゲーション"
+        >
         <div
           style={{
             display: 'flex',
@@ -175,12 +185,13 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
+            aria-label="メニューを閉じる"
           >
             ✕
           </button>
         </div>
 
-        <div style={{ flex: 1, padding: '20px' }}>
+        <div style={{ flex: 1, padding: isMobile ? '16px' : '20px' }}>
           {/* ホーム */}
           <Link href="/" style={getLinkStyle('/')}>
             <svg
@@ -203,11 +214,22 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
           </Link>
 
           {!loading && user && (
-            <Link
-              href="#"
-              style={getLinkStyle('/logout')}
-              onClick={() => {
-                logout();
+            <button
+              style={{
+                ...getLinkStyle('/logout'),
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+              }}
+              onClick={async () => {
+                try {
+                  await logout();
+                  onClose(); // メニューを閉じる
+                } catch (error) {
+                  console.error('ログアウトエラー:', error);
+                }
               }}
             >
               {/* 一般的なログアウトアイコン */}
@@ -241,7 +263,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
                 />
               </svg>
               ログアウト
-            </Link>
+            </button>
           )}
 
           {/* 検索カテゴリ */}
@@ -649,7 +671,8 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
             外部リンク集
           </Link>
         </div>
-      </div>
+        </div>
+      </FocusTrap>
     </div>
   );
 };
