@@ -5,12 +5,18 @@ import React, { type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import FileListSection from '@/components/mypage/FileListSection';
 import * as useMyPageHooks from '@/hooks/api/useMyPage';
+import * as dateFormatters from '@/utils/dateFormatters';
 
 // モック設定
 vi.mock('@/hooks/api/useMyPage', () => ({
   useMyTeamFiles: vi.fn(),
   useMyMatchFiles: vi.fn(),
   useDeleteFile: vi.fn(),
+}));
+
+vi.mock('@/utils/dateFormatters', () => ({
+  formatDownloadDateTime: vi.fn(),
+  formatUploadDateTime: vi.fn(),
 }));
 
 // 認証ストアのモック
@@ -95,6 +101,22 @@ describe('FileListSection', () => {
     vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue(
       mockDeleteFile as any
     );
+
+    // 日時フォーマット関数のモック設定
+    vi.mocked(dateFormatters.formatDownloadDateTime).mockImplementation((dateString: string) => {
+      if (!dateString) return '未設定';
+      if (dateString === '2023-01-02T00:00:00Z') return '2023/01/02 09:00';
+      if (dateString === '2023-01-06T00:00:00Z') return '2023/01/06 09:00';
+      return '未設定';
+    });
+
+    vi.mocked(dateFormatters.formatUploadDateTime).mockImplementation((dateString: string) => {
+      if (!dateString) return '-';
+      if (dateString === '2023-01-01T00:00:00Z') return '2023/01/01 09:00';
+      if (dateString === '2023-01-03T00:00:00Z') return '2023/01/03 09:00';
+      if (dateString === '2023-01-05T00:00:00Z') return '2023/01/05 09:00';
+      return '-';
+    });
   });
 
   afterEach(() => {
@@ -278,6 +300,60 @@ describe('FileListSection', () => {
     });
   });
 
+  describe('ヘッダー表示', () => {
+    it('チームファイル一覧で「ダウンロード日時」ヘッダーが表示される', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="team" />, { wrapper });
+
+      expect(screen.getByText('ダウンロード日時')).toBeInTheDocument();
+      expect(screen.queryByText('公開日')).not.toBeInTheDocument();
+    });
+
+    it('マッチファイル一覧で「ダウンロード日時」ヘッダーが表示される', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="match" />, { wrapper });
+
+      expect(screen.getByText('ダウンロード日時')).toBeInTheDocument();
+      expect(screen.queryByText('公開日')).not.toBeInTheDocument();
+    });
+
+    it('すべての必要なヘッダーが表示される', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="team" />, { wrapper });
+
+      expect(screen.getByText('ファイル名')).toBeInTheDocument();
+      expect(screen.getByText('アップロード日')).toBeInTheDocument();
+      expect(screen.getByText('ダウンロード日時')).toBeInTheDocument();
+      expect(screen.getByText('操作')).toBeInTheDocument();
+    });
+  });
+
+  describe('日時フォーマット関数の使用', () => {
+    it('formatDownloadDateTime関数が正しく呼び出される', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="team" />, { wrapper });
+
+      expect(dateFormatters.formatDownloadDateTime).toHaveBeenCalledWith('2023-01-02T00:00:00Z');
+      expect(dateFormatters.formatDownloadDateTime).toHaveBeenCalledWith('');
+    });
+
+    it('formatUploadDateTime関数が正しく呼び出される', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="team" />, { wrapper });
+
+      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith('2023-01-01T00:00:00Z');
+      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith('2023-01-03T00:00:00Z');
+    });
+
+    it('マッチファイルでも日時フォーマット関数が正しく呼び出される', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="match" />, { wrapper });
+
+      expect(dateFormatters.formatDownloadDateTime).toHaveBeenCalledWith('2023-01-06T00:00:00Z');
+      expect(dateFormatters.formatUploadDateTime).toHaveBeenCalledWith('2023-01-05T00:00:00Z');
+    });
+  });
+
   describe('ローディング状態', () => {
     it('チームファイル読み込み中のメッセージが表示される', () => {
       vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue({
@@ -361,6 +437,62 @@ describe('FileListSection', () => {
         // They are buttons by nature, so we just check they're button elements
         expect(button.tagName).toBe('BUTTON');
       });
+    });
+
+    it('テーブルヘッダーに適切なscope属性がある', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="team" />, { wrapper });
+
+      // テーブルヘッダーのscope属性を確認
+      const headers = screen.getAllByRole('columnheader');
+      headers.forEach(header => {
+        expect(header).toHaveAttribute('scope', 'col');
+      });
+    });
+
+    it('テーブルヘッダーに適切なaria-label属性がある', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="team" />, { wrapper });
+
+      // 各ヘッダーのaria-label属性を確認
+      expect(screen.getByRole('columnheader', { name: 'ファイル名' })).toBeInTheDocument();
+      expect(screen.getByRole('columnheader', { name: 'ファイルのアップロード日時' })).toBeInTheDocument();
+      expect(screen.getByRole('columnheader', { name: 'ファイルのダウンロード可能日時' })).toBeInTheDocument();
+      expect(screen.getByRole('columnheader', { name: 'ファイル操作' })).toBeInTheDocument();
+    });
+
+    it('データセルに適切なaria-label属性がある', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="team" />, { wrapper });
+
+      // ファイル名セルのaria-label属性を確認
+      const fileNameCells = screen.getAllByLabelText(/^ファイル名:/);
+      expect(fileNameCells.length).toBeGreaterThan(0);
+
+      // アップロード日時セルのaria-label属性を確認
+      const uploadDateCells = screen.getAllByLabelText(/^アップロード日時:/);
+      expect(uploadDateCells.length).toBeGreaterThan(0);
+
+      // ダウンロード日時セルのaria-label属性を確認
+      const downloadDateCells = screen.getAllByLabelText(/^ダウンロード日時:/);
+      expect(downloadDateCells.length).toBeGreaterThan(0);
+
+      // 操作セルのaria-label属性を確認
+      const actionCells = screen.getAllByLabelText(/の操作$/);
+      expect(actionCells.length).toBeGreaterThan(0);
+    });
+
+    it('操作ボタンに適切なaria-label属性がある', () => {
+      const wrapper = createWrapper();
+      render(<FileListSection type="team" />, { wrapper });
+
+      // コメントボタンのaria-label属性を確認
+      const commentButtons = screen.getAllByLabelText(/のコメントを表示$/);
+      expect(commentButtons.length).toBeGreaterThan(0);
+
+      // 削除ボタンのaria-label属性を確認
+      const deleteButtons = screen.getAllByLabelText(/を削除$/);
+      expect(deleteButtons.length).toBeGreaterThan(0);
     });
   });
 });

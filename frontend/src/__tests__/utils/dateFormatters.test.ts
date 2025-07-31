@@ -30,29 +30,33 @@ describe('dateFormatters', () => {
       expect(result).toBe('未設定');
     });
 
-    it('無効な日時文字列の場合は「-」を返し、警告をログに出力する', () => {
+    it('無効な日時文字列の場合は「日時解析エラー」を返し、警告をログに出力する', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const result = formatDownloadDateTime('invalid-date');
 
-      expect(result).toBe('-');
-      expect(consoleSpy).toHaveBeenCalledWith('Invalid date string:', 'invalid-date');
+      expect(result).toBe('日時解析エラー');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[formatDownloadDateTime] Date format error: Failed to parse date string')
+      );
 
       consoleSpy.mockRestore();
     });
 
-    it('数値のみの無効な文字列の場合は「-」を返す', () => {
+    it('数値のみの無効な文字列の場合は「日時形式エラー」を返す', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const result = formatDownloadDateTime('12345');
 
-      expect(result).toBe('-');
-      expect(consoleSpy).toHaveBeenCalledWith('Invalid date string:', '12345');
+      expect(result).toBe('日時形式エラー');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[formatDownloadDateTime] Date format error: Date string contains only numbers')
+      );
 
       consoleSpy.mockRestore();
     });
 
-    it('Date()コンストラクタでエラーが発生した場合は「-」を返し、エラーをログに出力する', () => {
+    it('Date()コンストラクタでエラーが発生した場合は「日時処理エラー」を返し、エラーをログに出力する', () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Dateコンストラクタをモックしてエラーを投げる
@@ -63,8 +67,10 @@ describe('dateFormatters', () => {
 
       const result = formatDownloadDateTime('2023-01-01T00:00:00Z');
 
-      expect(result).toBe('-');
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Date formatting error:', expect.any(Error));
+      expect(result).toBe('日時処理エラー');
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[formatDownloadDateTime] Date format error: Date constructor error')
+      );
 
       // 元のDateを復元
       global.Date = originalDate;
@@ -113,29 +119,33 @@ describe('dateFormatters', () => {
       expect(result).toBe('-');
     });
 
-    it('無効な日時文字列の場合は「-」を返し、警告をログに出力する', () => {
+    it('無効な日時文字列の場合は「日時解析エラー」を返し、警告をログに出力する', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const result = formatUploadDateTime('invalid-date');
 
-      expect(result).toBe('-');
-      expect(consoleSpy).toHaveBeenCalledWith('Invalid date string:', 'invalid-date');
+      expect(result).toBe('日時解析エラー');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[formatUploadDateTime] Date format error: Failed to parse date string')
+      );
 
       consoleSpy.mockRestore();
     });
 
-    it('数値のみの無効な文字列の場合は「-」を返す', () => {
+    it('数値のみの無効な文字列の場合は「日時形式エラー」を返す', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       const result = formatUploadDateTime('12345');
 
-      expect(result).toBe('-');
-      expect(consoleSpy).toHaveBeenCalledWith('Invalid date string:', '12345');
+      expect(result).toBe('日時形式エラー');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[formatUploadDateTime] Date format error: Date string contains only numbers')
+      );
 
       consoleSpy.mockRestore();
     });
 
-    it('Date()コンストラクタでエラーが発生した場合は「-」を返し、エラーをログに出力する', () => {
+    it('Date()コンストラクタでエラーが発生した場合は「日時処理エラー」を返し、エラーをログに出力する', () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Dateコンストラクタをモックしてエラーを投げる
@@ -146,8 +156,10 @@ describe('dateFormatters', () => {
 
       const result = formatUploadDateTime('2023-01-01T00:00:00Z');
 
-      expect(result).toBe('-');
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Date formatting error:', expect.any(Error));
+      expect(result).toBe('日時処理エラー');
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[formatUploadDateTime] Date format error: Date constructor error')
+      );
 
       // 元のDateを復元
       global.Date = originalDate;
@@ -189,14 +201,89 @@ describe('dateFormatters', () => {
             expect(uploadResult).toBe('-');
           }
         } else if (input === 'invalid-date') {
-          // 無効な日時の場合は両方とも「-」
-          expect(downloadResult).toBe('-');
-          expect(uploadResult).toBe('-');
+          // 無効な日時の場合は両方とも「日時解析エラー」
+          expect(downloadResult).toBe('日時解析エラー');
+          expect(uploadResult).toBe('日時解析エラー');
         } else {
           // 有効な日時の場合は同じフォーマット結果
           expect(downloadResult).toBe(uploadResult);
         }
       });
+    });
+  });
+
+  describe('エラーハンドリング強化', () => {
+    it('無効な日時文字列に対して適切なエラーメッセージを返す', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const result = formatDownloadDateTime('invalid-date');
+
+      expect(result).toBe('日時解析エラー');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[formatDownloadDateTime] Date format error: Failed to parse date string')
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('空文字列に対して適切なフォールバック値を返す', () => {
+      const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+      const downloadResult = formatDownloadDateTime('');
+      const uploadResult = formatUploadDateTime('');
+
+      expect(downloadResult).toBe('未設定');
+      expect(uploadResult).toBe('-');
+
+      // 空文字列の場合はログ出力されない（正常な動作）
+      expect(consoleSpy).not.toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+
+    it('異なるエラータイプに対して適切なログレベルを使用する', () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      // 形式エラー（warn レベル）
+      formatDownloadDateTime('12345');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Date string contains only numbers')
+      );
+
+      // パースエラー（warn レベル）
+      formatDownloadDateTime('invalid-date');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to parse date string')
+      );
+
+      // 予期しないエラー（error レベル）
+      const originalDate = global.Date;
+      global.Date = vi.fn(() => {
+        throw new Error('Unexpected error');
+      }) as any;
+
+      formatDownloadDateTime('2023-01-01T00:00:00Z');
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Unexpected error')
+      );
+
+      // 復元
+      global.Date = originalDate;
+      consoleWarnSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('エラーメッセージに元の値が含まれる', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      formatDownloadDateTime('invalid-input');
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('(Original value: "invalid-input")')
+      );
+
+      consoleSpy.mockRestore();
     });
   });
 });
