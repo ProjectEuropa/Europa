@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,6 +18,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
   const menuRef = useRef<HTMLDivElement>(null);
   const [animationClass, setAnimationClass] = useState('');
   const pathname = usePathname();
+  const router = useRouter();
   const { isMobile, isTablet } = useBreakpoint();
 
   // 開閉状態に応じてアニメーションクラスを設定
@@ -76,21 +76,31 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
   // isOpenがtrueの場合は常に表示
   if (!isOpen && animationClass === '') return null;
 
-  // リンクのスタイルを生成する関数
-  const getLinkStyle = (path: string) => {
+  // ボタンのスタイルを生成する関数
+  const getButtonStyle = (path: string) => {
     const isActive = pathname === path;
     return {
       display: 'flex',
       alignItems: 'center',
       padding: '12px 16px',
       color: isActive ? '#00c8ff' : '#b0c4d8',
-      textDecoration: 'none',
+      background: 'none',
+      border: 'none',
       marginBottom: '8px',
       fontSize: '1rem',
       borderRadius: '6px',
       backgroundColor: isActive ? 'rgba(0, 200, 255, 0.1)' : 'transparent',
       transition: 'all 0.2s ease',
+      cursor: 'pointer',
+      width: '100%',
+      textAlign: 'left' as const,
     };
+  };
+
+  // ナビゲーション関数
+  const handleNavigate = (path: string) => {
+    router.push(path);
+    onClose(); // メニューを閉じる
   };
 
   // カテゴリヘッダーのスタイル
@@ -193,7 +203,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
 
         <div style={{ flex: 1, padding: isMobile ? '16px' : '20px' }}>
           {/* ホーム */}
-          <Link href="/" style={getLinkStyle('/')}>
+          <button onClick={() => handleNavigate('/')} style={getButtonStyle('/')}>
             <svg
               width="24"
               height="24"
@@ -211,26 +221,20 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             ホーム
-          </Link>
+          </button>
 
           {!loading && user && (
             <button
-              style={{
-                ...getLinkStyle('/logout'),
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                width: '100%',
-                textAlign: 'left',
-              }}
+              style={getButtonStyle('/logout')}
               onClick={() => {
                 try {
-                  logout();
+                  logout(() => router.push('/'));
                   onClose(); // メニューを閉じる
                 } catch (error) {
                   console.error('ログアウトエラー:', error);
                 }
               }}
+              aria-label="ログアウト"
             >
               {/* 一般的なログアウトアイコン */}
               <svg
@@ -269,7 +273,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
           {/* 検索カテゴリ */}
           <div style={categoryStyle}>検索</div>
 
-          <Link href="/search/team" style={getLinkStyle('/search/team')}>
+          <button onClick={() => handleNavigate('/search/team')} style={getButtonStyle('/search/team')} aria-label="チームデータ検索">
             <svg
               width="24"
               height="24"
@@ -287,9 +291,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             チームデータ検索
-          </Link>
+          </button>
 
-          <Link href="/search/match" style={getLinkStyle('/search/match')}>
+          <button onClick={() => handleNavigate('/search/match')} style={getButtonStyle('/search/match')} aria-label="マッチデータ検索">
             <svg
               width="24"
               height="24"
@@ -307,12 +311,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             マッチデータ検索
-          </Link>
+          </button>
 
           {/* アップロードカテゴリ */}
           <div style={categoryStyle}>アップロード</div>
 
-          <Link href="/upload" style={getLinkStyle('/upload')}>
+          <button onClick={() => handleNavigate('/upload')} style={getButtonStyle('/upload')} aria-label="チームアップロード">
             <svg
               width="24"
               height="24"
@@ -337,9 +341,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             チームアップロード
-          </Link>
+          </button>
 
-          <Link href="/upload/match" style={getLinkStyle('/upload/match')}>
+          <button onClick={() => handleNavigate('/upload/match')} style={getButtonStyle('/upload/match')} aria-label="マッチアップロード">
             <svg
               width="24"
               height="24"
@@ -364,14 +368,15 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             マッチアップロード
-          </Link>
+          </button>
 
           {/* ダウンロードカテゴリ */}
           <div style={categoryStyle}>ダウンロード</div>
 
-          <Link
-            href="/sumdownload/team"
-            style={getLinkStyle('/sumdownload/team')}
+          <button
+            onClick={() => handleNavigate('/sumdownload/team')}
+            style={getButtonStyle('/sumdownload/team')}
+            aria-label="チームデータ一括ダウンロード"
           >
             <svg
               width="24"
@@ -401,11 +406,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             チームデータ一括DL
-          </Link>
+          </button>
 
-          <Link
-            href="/sumdownload/match"
-            style={getLinkStyle('/sumdownload/match')}
+          <button
+            onClick={() => handleNavigate('/sumdownload/match')}
+            style={getButtonStyle('/sumdownload/match')}
+            aria-label="マッチデータ一括ダウンロード"
           >
             <svg
               width="24"
@@ -435,12 +441,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             マッチデータ一括DL
-          </Link>
+          </button>
 
           {/* アカウントカテゴリ */}
           <div style={categoryStyle}>アカウント</div>
 
-          <Link href="/login" style={getLinkStyle('/login')}>
+          <button onClick={() => handleNavigate('/login')} style={getButtonStyle('/login')} aria-label="ログイン">
             <svg
               width="24"
               height="24"
@@ -458,9 +464,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             ログイン
-          </Link>
+          </button>
 
-          <Link href="/register" style={getLinkStyle('/register')}>
+          <button onClick={() => handleNavigate('/register')} style={getButtonStyle('/register')} aria-label="新規登録">
             <svg
               width="24"
               height="24"
@@ -485,11 +491,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             新規登録
-          </Link>
+          </button>
 
-          <Link
-            href="/forgot-password"
-            style={getLinkStyle('/forgot-password')}
+          <button
+            onClick={() => handleNavigate('/forgot-password')}
+            style={getButtonStyle('/forgot-password')}
+            aria-label="パスワード再設定"
           >
             <svg
               width="24"
@@ -522,12 +529,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             パスワード再設定
-          </Link>
+          </button>
 
           {/* 情報カテゴリ */}
           <div style={categoryStyle}>情報</div>
 
-          <Link href="/info" style={getLinkStyle('/info')}>
+          <button onClick={() => handleNavigate('/info')} style={getButtonStyle('/info')} aria-label="Information">
             <svg
               width="24"
               height="24"
@@ -557,9 +564,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             Information
-          </Link>
+          </button>
 
-          <Link href="/event" style={getLinkStyle('/event')}>
+          <button onClick={() => handleNavigate('/event')} style={getButtonStyle('/event')} aria-label="イベント登録">
             <svg
               width="24"
               height="24"
@@ -608,9 +615,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             イベント登録
-          </Link>
+          </button>
 
-          <Link href="/mypage" style={getLinkStyle('/mypage')}>
+          <button onClick={() => handleNavigate('/mypage')} style={getButtonStyle('/mypage')} aria-label="マイページ">
             <svg
               width="24"
               height="24"
@@ -635,9 +642,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             マイページ
-          </Link>
+          </button>
 
-          <Link href="/external-links" style={getLinkStyle('/external-links')}>
+          <button onClick={() => handleNavigate('/external-links')} style={getButtonStyle('/external-links')} aria-label="外部リンク集">
             <svg
               width="24"
               height="24"
@@ -669,7 +676,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
               />
             </svg>
             外部リンク集
-          </Link>
+          </button>
         </div>
         </div>
       </FocusTrap>

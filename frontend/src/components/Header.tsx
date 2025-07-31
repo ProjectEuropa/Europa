@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import Icons from '@/components/Icons';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,6 +22,7 @@ const Header: React.FC<HeaderProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuButtonAnimated, setIsMenuButtonAnimated] = useState(false);
   const { isMobile, isTablet } = useBreakpoint();
+  const router = useRouter();
 
   // ページ読み込み時にボタンをハイライトするアニメーション
   useEffect(() => {
@@ -216,7 +218,7 @@ const Header: React.FC<HeaderProps> = ({
                     <button
                       onClick={() => {
                         try {
-                          logout();
+                          logout(() => router.push('/'));
                         } catch (error) {
                           console.error('ログアウトエラー:', error);
                         }

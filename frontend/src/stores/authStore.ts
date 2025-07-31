@@ -14,7 +14,7 @@ interface AuthState {
 interface AuthActions {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
-  logout: () => void;
+  logout: (redirectCallback?: () => void) => void;
   fetchUser: () => Promise<void>;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
@@ -81,7 +81,7 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      logout: () => {
+      logout: (redirectCallback?: () => void) => {
         // APIのlogout関数を呼び出してlocalStorageからトークンを削除
         authApi.logout();
 
@@ -97,8 +97,11 @@ export const useAuthStore = create<AuthStore>()(
           loading: false,
         });
 
-        // ログアウト後にホームページにリダイレクト
-        if (typeof window !== 'undefined') {
+        // リダイレクトコールバックが提供されていれば実行、そうでなければfallback
+        if (redirectCallback) {
+          redirectCallback();
+        } else if (typeof window !== 'undefined') {
+          // fallback: 直接リダイレクト
           window.location.href = '/';
         }
       },

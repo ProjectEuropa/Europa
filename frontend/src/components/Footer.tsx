@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import Icons from '@/components/Icons';
 
 interface FooterProps {
@@ -12,6 +13,11 @@ const Footer: React.FC<FooterProps> = ({
   className = '', 
   variant = 'default' 
 }) => {
+  const router = useRouter();
+
+  const handleNavigate = (path: string) => {
+    router.push(path);
+  };
   return (
     <footer
       className={className}
@@ -77,44 +83,94 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <a
-                href="/search/team"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/search/team')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 チームデータ検索
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/search/match"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/search/match')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 マッチデータ検索
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/sumdownload/team"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/sumdownload/team')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 チームデータ一括DL
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/sumdownload/match"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/sumdownload/match')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 マッチデータ一括DL
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/info"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/info')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 Information
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
@@ -130,20 +186,40 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <a
-                href="/login"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/login')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 ログイン
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/register"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/register')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 新規登録
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
@@ -159,12 +235,22 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <a
-                href="/about"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/about')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 私たちについて
-              </a>
+              </button>
             </li>
             <li>
               <a
@@ -177,28 +263,58 @@ const Footer: React.FC<FooterProps> = ({
               </a>
             </li>
             <li>
-              <a
-                href="/privacy-policy"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/privacy-policy')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 プライバシーポリシー
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/terms-of-service"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/terms-of-service')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 利用規約
-              </a>
+              </button>
             </li>
             <li>
-              <a
-                href="/faq"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+              <button
+                onClick={() => handleNavigate('/faq')}
+                style={{ 
+                  color: '#b0c4d8', 
+                  textDecoration: 'none',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  fontSize: 'inherit',
+                  fontFamily: 'inherit',
+                  textAlign: 'left'
+                }}
               >
                 よくある質問
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
