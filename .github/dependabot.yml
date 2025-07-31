@@ -1,0 +1,74 @@
+version: 2
+updates:
+  # Frontend dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "ProjectEuropa" # Replace with actual GitHub username
+    assignees:
+      - "ProjectEuropa" # Replace with actual GitHub username
+    commit-message:
+      prefix: "frontend"
+      include: "scope"
+    groups:
+      production-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@types/*"
+          - "@vitest/*"
+          - "@playwright/*"
+          - "@testing-library/*"
+          - "vitest"
+          - "playwright"
+      development-dependencies:
+        patterns:
+          - "@types/*"
+          - "@vitest/*"
+          - "@playwright/*"
+          - "@testing-library/*"
+          - "vitest"
+          - "playwright"
+          - "@biomejs/*"
+          - "husky"
+          - "lint-staged"
+
+  # Backend dependencies
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "masato"
+    assignees:
+      - "masato"
+    commit-message:
+      prefix: "backend"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "first-monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "masato"
+    assignees:
+      - "masato"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

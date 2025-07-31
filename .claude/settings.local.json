@@ -17,7 +17,18 @@
       "Bash(npm test:*)",
       "Bash(npm run format:*)",
       "Bash(npm run check:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(npm run ci:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(kill:*)",
+      "Bash(npx playwright test:*)",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__find_file",
+      "mcp__serena__list_dir",
+      "mcp__serena__summarize_changes"
     ],
     "deny": []
   }

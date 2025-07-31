@@ -33,13 +33,18 @@
     "rules": {
       "recommended": true,
       "a11y": {
-        "recommended": true
+        "recommended": true,
+        "useButtonType": "error"
       },
       "complexity": {
-        "recommended": true
+        "recommended": true,
+        "noExcessiveCognitiveComplexity": "warn",
+        "noForEach": "off"
       },
       "correctness": {
-        "recommended": true
+        "recommended": true,
+        "noUnusedVariables": "error",
+        "useExhaustiveDependencies": "warn"
       },
       "performance": {
         "recommended": true
@@ -50,11 +55,13 @@
       "style": {
         "recommended": true,
         "useConst": "error",
-        "useTemplate": "error"
+        "useTemplate": "error",
+        "noNonNullAssertion": "warn"
       },
       "suspicious": {
         "recommended": true,
-        "noExplicitAny": "warn"
+        "noExplicitAny": "error",
+        "noArrayIndexKey": "warn"
       }
     }
   },

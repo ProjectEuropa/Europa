@@ -27,6 +27,7 @@ vi.mock('@/stores/authStore', () => ({
     token: 'mock-token',
     isAuthenticated: true,
     loading: false,
+    hasHydrated: true,
   })),
 }));
 
@@ -99,9 +100,7 @@ describe('FileListSection', () => {
       error: null,
     });
 
-    vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue(
-      mockDeleteFile
-    );
+    vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue(mockDeleteFile);
 
     // 日時フォーマット関数のモック設定
     vi.mocked(dateFormatters.formatDownloadDateTime).mockImplementation(

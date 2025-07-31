@@ -79,7 +79,7 @@ export function RegisterForm({
       } else {
         router.push(redirectTo);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration error:', error);
 
       // 統一されたエラーハンドリングを使用
@@ -90,11 +90,18 @@ export function RegisterForm({
         Object.keys(processedError.fieldErrors).length > 0
       ) {
         // バリデーションエラーの場合、フィールドごとにエラーを設定
-        Object.entries(processedError.fieldErrors).forEach(([field, message]) => {
-          if (field === 'name' || field === 'email' || field === 'password' || field === 'password_confirmation') {
-            setError(field as keyof RegisterFormData, { message });
+        Object.entries(processedError.fieldErrors).forEach(
+          ([field, message]) => {
+            if (
+              field === 'name' ||
+              field === 'email' ||
+              field === 'password' ||
+              field === 'password_confirmation'
+            ) {
+              setError(field as keyof RegisterFormData, { message });
+            }
           }
-        });
+        );
       } else {
         // その他のエラーの場合、トーストでエラーメッセージを表示
         toast({

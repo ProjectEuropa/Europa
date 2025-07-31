@@ -15,7 +15,11 @@ vi.mock('@/hooks/useSearch', () => ({
 
 // DeleteModalをモック
 vi.mock('@/components/DeleteModal', () => ({
-  DeleteModal: ({ open, onDelete, fileName }: {
+  DeleteModal: ({
+    open,
+    onDelete,
+    fileName,
+  }: {
     open: boolean;
     onDelete: (password: string) => void;
     fileName: string;
