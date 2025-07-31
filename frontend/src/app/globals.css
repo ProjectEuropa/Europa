@@ -131,3 +131,36 @@ input[type="search"]::-ms-reveal {
   width: 0;
   height: 0;
 }
+
+/* datetime-local入力フィールドのスタイル */
+input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  background-color: transparent;
+  background-image: none;
+  color: #8cb4ff;
+  cursor: pointer;
+  filter: invert(0.7) sepia(1) saturate(2) hue-rotate(180deg);
+  opacity: 0.8;
+  padding: 4px;
+  margin-left: 4px;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  filter: invert(0.5) sepia(1) saturate(3) hue-rotate(180deg);
+}
+
+/* Firefox用 */
+input[type="datetime-local"]::-moz-calendar-picker-indicator {
+  background-color: transparent;
+  color: #8cb4ff;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+input[type="datetime-local"]::-moz-calendar-picker-indicator:hover {
+  opacity: 1;
+}

@@ -1,15 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
-import { filesApi } from '@/lib/api/files';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  useTeamSearch,
-  useMatchSearch,
-  useDeleteFile,
   SEARCH_QUERY_KEYS,
+  useDeleteFile,
+  useMatchSearch,
+  useTeamSearch,
 } from '@/hooks/useSearch';
-import type { SearchParams, TeamSearchResult, MatchSearchResult } from '@/types/search';
+import { filesApi } from '@/lib/api/files';
+import type {
+  MatchSearchResult,
+  SearchParams,
+  TeamSearchResult,
+} from '@/types/search';
 
 // APIをモック
 vi.mock('@/lib/api/files', () => ({
@@ -33,7 +37,11 @@ const createWrapper = () => {
   });
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    return React.createElement(QueryClientProvider, { client: queryClient }, children);
+    return React.createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      children
+    );
   };
 
   return Wrapper;
@@ -48,10 +56,28 @@ describe('useSearch hooks', () => {
     it('should generate correct query keys', () => {
       const params: SearchParams = { keyword: 'test', page: 1 };
 
-      expect(SEARCH_QUERY_KEYS.teams(params)).toEqual(['search', 'teams', params]);
-      expect(SEARCH_QUERY_KEYS.matches(params)).toEqual(['search', 'matches', params]);
-      expect(SEARCH_QUERY_KEYS.sumDLTeams(params)).toEqual(['search', 'sumDL', 'teams', params]);
-      expect(SEARCH_QUERY_KEYS.sumDLMatches(params)).toEqual(['search', 'sumDL', 'matches', params]);
+      expect(SEARCH_QUERY_KEYS.teams(params)).toEqual([
+        'search',
+        'teams',
+        params,
+      ]);
+      expect(SEARCH_QUERY_KEYS.matches(params)).toEqual([
+        'search',
+        'matches',
+        params,
+      ]);
+      expect(SEARCH_QUERY_KEYS.sumDLTeams(params)).toEqual([
+        'search',
+        'sumDL',
+        'teams',
+        params,
+      ]);
+      expect(SEARCH_QUERY_KEYS.sumDLMatches(params)).toEqual([
+        'search',
+        'sumDL',
+        'matches',
+        params,
+      ]);
     });
   });
 
@@ -94,7 +120,10 @@ describe('useSearch hooks', () => {
       });
 
       expect(result.current.data).toEqual(mockResult);
-      expect(filesApi.searchTeams).toHaveBeenCalledWith({ keyword: 'test', page: 1 });
+      expect(filesApi.searchTeams).toHaveBeenCalledWith({
+        keyword: 'test',
+        page: 1,
+      });
     });
 
     it('should fetch even when keyword is empty', async () => {
@@ -120,7 +149,10 @@ describe('useSearch hooks', () => {
       });
 
       expect(result.current.data).toEqual(mockResult);
-      expect(filesApi.searchTeams).toHaveBeenCalledWith({ keyword: '', page: 1 });
+      expect(filesApi.searchTeams).toHaveBeenCalledWith({
+        keyword: '',
+        page: 1,
+      });
     });
 
     it('should handle search errors', async () => {
@@ -179,7 +211,10 @@ describe('useSearch hooks', () => {
       });
 
       expect(result.current.data).toEqual(mockResult);
-      expect(filesApi.searchMatches).toHaveBeenCalledWith({ keyword: 'test', page: 1 });
+      expect(filesApi.searchMatches).toHaveBeenCalledWith({
+        keyword: 'test',
+        page: 1,
+      });
     });
   });
 
@@ -209,7 +244,9 @@ describe('useSearch hooks', () => {
 
       const deleteRequest = { id: 1, deletePassword: 'password123' };
 
-      await expect(result.current.mutateAsync(deleteRequest)).rejects.toThrow('Delete failed');
+      await expect(result.current.mutateAsync(deleteRequest)).rejects.toThrow(
+        'Delete failed'
+      );
     });
   });
 

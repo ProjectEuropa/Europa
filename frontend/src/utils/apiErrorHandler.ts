@@ -19,8 +19,8 @@ const ERROR_TRANSLATIONS = {
   // 一般的なエラーメッセージ
   'The given data was invalid.': '入力されたデータが無効です。',
   'Validation failed': 'バリデーションに失敗しました。',
-  'Unauthorized': 'メールアドレスまたはパスワードが正しくありません。',
-  'Forbidden': 'アクセスが拒否されました。',
+  Unauthorized: 'メールアドレスまたはパスワードが正しくありません。',
+  Forbidden: 'アクセスが拒否されました。',
   'Not Found': 'リソースが見つかりません。',
   'Internal Server Error': 'サーバーエラーが発生しました。',
   'Network Error': 'ネットワークエラーが発生しました。',
@@ -28,18 +28,25 @@ const ERROR_TRANSLATIONS = {
 
   // フィールド固有のエラーメッセージ
   'The email field is required.': 'メールアドレスは必須です。',
-  'The email must be a valid email address.': '有効なメールアドレスを入力してください。',
-  'The email has already been taken.': 'このメールアドレスは既に使用されています。',
-  'メールアドレスの値は既に存在しています。': 'このメールアドレスは既に使用されています。',
+  'The email must be a valid email address.':
+    '有効なメールアドレスを入力してください。',
+  'The email has already been taken.':
+    'このメールアドレスは既に使用されています。',
+  'メールアドレスの値は既に存在しています。':
+    'このメールアドレスは既に使用されています。',
 
   'The password field is required.': 'パスワードは必須です。',
-  'The password must be at least 6 characters.': 'パスワードは6文字以上で入力してください。',
-  'The password must be at least 8 characters.': 'パスワードは8文字以上で入力してください。',
+  'The password must be at least 6 characters.':
+    'パスワードは6文字以上で入力してください。',
+  'The password must be at least 8 characters.':
+    'パスワードは8文字以上で入力してください。',
   'The password confirmation does not match.': 'パスワードが一致しません。',
 
   'The name field is required.': '名前は必須です。',
-  'The name must be at least 2 characters.': '名前は2文字以上で入力してください。',
-  'The name may not be greater than 50 characters.': '名前は50文字以内で入力してください。',
+  'The name must be at least 2 characters.':
+    '名前は2文字以上で入力してください。',
+  'The name may not be greater than 50 characters.':
+    '名前は50文字以内で入力してください。',
 } as const;
 
 /**
@@ -52,7 +59,9 @@ function translateErrorMessage(message: string): string {
   }
 
   // 部分一致での翻訳を試行
-  for (const [englishMessage, japaneseMessage] of Object.entries(ERROR_TRANSLATIONS)) {
+  for (const [englishMessage, japaneseMessage] of Object.entries(
+    ERROR_TRANSLATIONS
+  )) {
     if (message.includes(englishMessage) || englishMessage.includes(message)) {
       return japaneseMessage;
     }
@@ -68,7 +77,8 @@ function translateErrorMessage(message: string): string {
 export function processApiError(error: any): ProcessedError {
   // デフォルトのエラー情報
   const defaultError: ProcessedError = {
-    message: '予期しないエラーが発生しました。しばらくしてから再試行してください。',
+    message:
+      '予期しないエラーが発生しました。しばらくしてから再試行してください。',
     fieldErrors: {},
     isValidationError: false,
     isNetworkError: false,
@@ -98,27 +108,30 @@ export function processApiError(error: any): ProcessedError {
         const fieldErrors: Record<string, string> = {};
         const errors = apiError.errors || apiError.data?.errors || {};
 
-      // Laravel形式のエラーレスポンス処理
-      Object.entries(errors).forEach(([field, messages]) => {
-        if (Array.isArray(messages) && messages.length > 0) {
-          const translatedMessage = translateErrorMessage(messages[0]);
-          fieldErrors[field] = translatedMessage;
-        }
-      });
+        // Laravel形式のエラーレスポンス処理
+        Object.entries(errors).forEach(([field, messages]) => {
+          if (Array.isArray(messages) && messages.length > 0) {
+            const translatedMessage = translateErrorMessage(messages[0]);
+            fieldErrors[field] = translatedMessage;
+          }
+        });
 
-      const message = apiError.data?.message || apiError.message || 'The given data was invalid.';
-      const translatedMessage = translateErrorMessage(message);
+        const message =
+          apiError.data?.message ||
+          apiError.message ||
+          'The given data was invalid.';
+        const translatedMessage = translateErrorMessage(message);
 
-      const result = {
-        message: translatedMessage,
-        fieldErrors,
-        isValidationError: true,
-        isNetworkError: false,
-        isServerError: false,
-        isAuthError: false,
-      };
+        const result = {
+          message: translatedMessage,
+          fieldErrors,
+          isValidationError: true,
+          isNetworkError: false,
+          isServerError: false,
+          isAuthError: false,
+        };
 
-      return result;
+        return result;
       } else {
       }
     }
@@ -152,7 +165,8 @@ export function processApiError(error: any): ProcessedError {
     if (status === 429) {
       return {
         ...defaultError,
-        message: 'リクエストが多すぎます。しばらく待ってから再試行してください。',
+        message:
+          'リクエストが多すぎます。しばらく待ってから再試行してください。',
       };
     }
 
@@ -160,13 +174,17 @@ export function processApiError(error: any): ProcessedError {
     if (status >= 500) {
       return {
         ...defaultError,
-        message: 'サーバーで問題が発生しました。しばらくしてから再試行してください。',
+        message:
+          'サーバーで問題が発生しました。しばらくしてから再試行してください。',
         isServerError: true,
       };
     }
 
     // その他のAPIエラー
-    const message = apiError.data?.message || apiError.message || `エラーが発生しました（${status}）`;
+    const message =
+      apiError.data?.message ||
+      apiError.message ||
+      `エラーが発生しました（${status}）`;
     return {
       ...defaultError,
       message: translateErrorMessage(message),
@@ -214,10 +232,12 @@ export function getFieldErrorMessages(error: any): Record<string, string> {
  */
 export const ERROR_MESSAGES = {
   NETWORK_ERROR: '接続に問題があります。しばらくしてから再試行してください。',
-  SERVER_ERROR: 'サーバーで問題が発生しました。しばらくしてから再試行してください。',
+  SERVER_ERROR:
+    'サーバーで問題が発生しました。しばらくしてから再試行してください。',
   AUTH_ERROR: 'メールアドレスまたはパスワードが正しくありません。',
   PERMISSION_ERROR: 'アクセスが拒否されました。',
   NOT_FOUND_ERROR: '要求されたリソースが見つかりません。',
   VALIDATION_ERROR: '入力されたデータが無効です。',
-  UNKNOWN_ERROR: '予期しないエラーが発生しました。しばらくしてから再試行してください。',
+  UNKNOWN_ERROR:
+    '予期しないエラーが発生しました。しばらくしてから再試行してください。',
 } as const;

@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import type React from 'react';
+import { LoginForm } from '@/components/auth/LoginForm';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { LoginForm } from '@/components/auth/LoginForm';
 
 const LoginPage: React.FC = () => {
-
   return (
     <div
       style={{

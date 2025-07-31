@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
+import { useEffect } from 'react';
 import { Loading } from '@/components/ui/loading';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ interface AuthGuardProps {
 export function AuthGuard({
   children,
   redirectTo = '/login',
-  requireAuth = true
+  requireAuth = true,
 }: AuthGuardProps) {
   const { user, loading, isAuthenticated } = useAuth();
   const router = useRouter();

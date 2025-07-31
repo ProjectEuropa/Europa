@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useAuthStore } from '@/stores/authStore';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { authApi } from '@/lib/api/auth';
+import { useAuthStore } from '@/stores/authStore';
 import type { User } from '@/types/user';
 
 // authApiをモック
@@ -70,10 +70,12 @@ describe('authStore', () => {
 
       const { login } = useAuthStore.getState();
 
-      await expect(login({
-        email: 'test@example.com',
-        password: 'wrongpassword',
-      })).rejects.toThrow('Login failed');
+      await expect(
+        login({
+          email: 'test@example.com',
+          password: 'wrongpassword',
+        })
+      ).rejects.toThrow('Login failed');
 
       const state = useAuthStore.getState();
       expect(state.user).toBeNull();
@@ -84,7 +86,7 @@ describe('authStore', () => {
 
     it('should set loading state during login', async () => {
       let resolveLogin: (value: any) => void;
-      const loginPromise = new Promise((resolve) => {
+      const loginPromise = new Promise(resolve => {
         resolveLogin = resolve;
       });
       vi.mocked(authApi.login).mockReturnValue(loginPromise);
@@ -134,12 +136,14 @@ describe('authStore', () => {
 
       const { register } = useAuthStore.getState();
 
-      await expect(register({
-        name: 'Test User',
-        email: 'test@example.com',
-        password: 'password123',
-        passwordConfirmation: 'password123',
-      })).rejects.toThrow('Registration failed');
+      await expect(
+        register({
+          name: 'Test User',
+          email: 'test@example.com',
+          password: 'password123',
+          passwordConfirmation: 'password123',
+        })
+      ).rejects.toThrow('Registration failed');
 
       const state = useAuthStore.getState();
       expect(state.user).toBeNull();

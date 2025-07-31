@@ -1,11 +1,15 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import Footer from '@/components/Footer';
 
 // Iconsコンポーネントのモック
 vi.mock('@/components/Icons', () => ({
   default: {
-    Logo: ({ size }: { size: number }) => <div data-testid="logo-icon" data-size={size}>Logo</div>,
+    Logo: ({ size }: { size: number }) => (
+      <div data-testid="logo-icon" data-size={size}>
+        Logo
+      </div>
+    ),
   },
 }));
 
@@ -34,13 +38,17 @@ describe('Footer', () => {
   });
 
   it('should display description', () => {
-    const description = screen.getByText(/OKE共有とチームコラボレーションのための非公式カルネージハートEXAプラットフォーム/);
+    const description = screen.getByText(
+      /OKE共有とチームコラボレーションのための非公式カルネージハートEXAプラットフォーム/
+    );
     expect(description).toBeInTheDocument();
   });
 
   it('should display copyright with current year', () => {
     const currentYear = new Date().getFullYear();
-    const copyright = screen.getByText(`Team Project Europa 2016-${currentYear}`);
+    const copyright = screen.getByText(
+      `Team Project Europa 2016-${currentYear}`
+    );
     expect(copyright).toBeInTheDocument();
   });
 
@@ -92,7 +100,10 @@ describe('Footer', () => {
     it('should render external contact link with correct attributes', () => {
       const contactLink = screen.getByRole('link', { name: 'お問い合わせ' });
       expect(contactLink).toBeInTheDocument();
-      expect(contactLink).toHaveAttribute('href', 'https://hp.project-europa.work/contact');
+      expect(contactLink).toHaveAttribute(
+        'href',
+        'https://hp.project-europa.work/contact'
+      );
       expect(contactLink).toHaveAttribute('target', '_blank');
       expect(contactLink).toHaveAttribute('rel', 'noopener');
     });
@@ -100,11 +111,7 @@ describe('Footer', () => {
 
   describe('Section Headers', () => {
     it('should display section headers', () => {
-      const sectionHeaders = [
-        '機能',
-        'アカウント',
-        'お問い合わせ・法的情報',
-      ];
+      const sectionHeaders = ['機能', 'アカウント', 'お問い合わせ・法的情報'];
 
       sectionHeaders.forEach(header => {
         expect(screen.getByText(header)).toBeInTheDocument();

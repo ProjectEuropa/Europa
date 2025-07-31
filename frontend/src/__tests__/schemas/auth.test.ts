@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { loginSchema, registerSchema, passwordResetRequestSchema } from '@/schemas/auth';
+import { describe, expect, it } from 'vitest';
+import {
+  loginSchema,
+  passwordResetRequestSchema,
+  registerSchema,
+} from '@/schemas/auth';
 
 describe('auth schemas', () => {
   describe('loginSchema', () => {
@@ -22,7 +26,9 @@ describe('auth schemas', () => {
       const result = loginSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('有効なメールアドレスを入力してください');
+        expect(result.error.issues[0].message).toBe(
+          '有効なメールアドレスを入力してください'
+        );
       }
     });
 
@@ -35,7 +41,9 @@ describe('auth schemas', () => {
       const result = loginSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('パスワードは8文字以上で入力してください');
+        expect(result.error.issues[0].message).toBe(
+          'パスワードは8文字以上で入力してください'
+        );
       }
     });
 
@@ -78,8 +86,8 @@ describe('auth schemas', () => {
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        const passwordError = result.error.issues.find(
-          issue => issue.path.includes('passwordConfirmation')
+        const passwordError = result.error.issues.find(issue =>
+          issue.path.includes('passwordConfirmation')
         );
         expect(passwordError?.message).toBe('パスワードが一致しません');
       }
@@ -96,7 +104,9 @@ describe('auth schemas', () => {
       const result = registerSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('名前は50文字以内で入力してください');
+        expect(result.error.issues[0].message).toBe(
+          '名前は50文字以内で入力してください'
+        );
       }
     });
   });
@@ -119,7 +129,9 @@ describe('auth schemas', () => {
       const result = passwordResetRequestSchema.safeParse(invalidData);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('有効なメールアドレスを入力してください');
+        expect(result.error.issues[0].message).toBe(
+          '有効なメールアドレスを入力してください'
+        );
       }
     });
   });

@@ -2,9 +2,9 @@
  * APIエラーハンドラーのテスト
  */
 
-import { describe, it, expect } from 'vitest';
-import { processApiError, setFormErrors } from '@/utils/apiErrorHandler';
+import { describe, expect, it } from 'vitest';
 import { ApiErrorClass } from '@/types/api';
+import { processApiError, setFormErrors } from '@/utils/apiErrorHandler';
 
 describe('processApiError', () => {
   it('should handle validation errors (422)', () => {
@@ -34,7 +34,9 @@ describe('processApiError', () => {
     const result = processApiError(error);
 
     expect(result.isAuthError).toBe(true);
-    expect(result.message).toBe('メールアドレスまたはパスワードが正しくありません。');
+    expect(result.message).toBe(
+      'メールアドレスまたはパスワードが正しくありません。'
+    );
     expect(result.fieldErrors).toEqual({});
   });
 
@@ -46,7 +48,9 @@ describe('processApiError', () => {
     const result = processApiError(error);
 
     expect(result.isServerError).toBe(true);
-    expect(result.message).toBe('サーバーで問題が発生しました。しばらくしてから再試行してください。');
+    expect(result.message).toBe(
+      'サーバーで問題が発生しました。しばらくしてから再試行してください。'
+    );
   });
 
   it('should handle network errors', () => {
@@ -55,7 +59,9 @@ describe('processApiError', () => {
     const result = processApiError(error);
 
     expect(result.isNetworkError).toBe(true);
-    expect(result.message).toBe('接続に問題があります。しばらくしてから再試行してください。');
+    expect(result.message).toBe(
+      '接続に問題があります。しばらくしてから再試行してください。'
+    );
   });
 
   it('should translate Japanese error messages correctly', () => {
@@ -68,7 +74,9 @@ describe('processApiError', () => {
 
     const result = processApiError(error);
 
-    expect(result.fieldErrors.email).toBe('このメールアドレスは既に使用されています。');
+    expect(result.fieldErrors.email).toBe(
+      'このメールアドレスは既に使用されています。'
+    );
   });
 });
 

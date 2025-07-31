@@ -1,17 +1,17 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type {
-  Optional,
-  RequiredFields,
+  DateString,
   DeepPartial,
   DeepReadonly,
-  Rename,
-  SnakeToCamel,
-  SnakeToCamelObject,
-  DateString,
-  TimeString,
+  EnvironmentVariables,
   ID,
   LoadingState,
-  EnvironmentVariables,
+  Optional,
+  Rename,
+  RequiredFields,
+  SnakeToCamel,
+  SnakeToCamelObject,
+  TimeString,
 } from '@/types/utils';
 
 describe('Utils Types', () => {
@@ -277,7 +277,9 @@ describe('Utils Types', () => {
         NEXT_PUBLIC_API_BASE_URL: 'https://api.example.com',
       };
 
-      expect(minimalEnv.NEXT_PUBLIC_API_BASE_URL).toBe('https://api.example.com');
+      expect(minimalEnv.NEXT_PUBLIC_API_BASE_URL).toBe(
+        'https://api.example.com'
+      );
       expect(minimalEnv.NEXT_PUBLIC_BASIC_AUTH_USER).toBeUndefined();
       expect(minimalEnv.NEXT_PUBLIC_BASIC_AUTH_PASSWORD).toBeUndefined();
     });
@@ -295,7 +297,9 @@ describe('Utils Types', () => {
     }
 
     it('should combine multiple utility types', () => {
-      type OptionalIdAndReadonly = DeepReadonly<Optional<ComplexInterface, 'id'>>;
+      type OptionalIdAndReadonly = DeepReadonly<
+        Optional<ComplexInterface, 'id'>
+      >;
 
       const complexObject: OptionalIdAndReadonly = {
         name: 'Test User',

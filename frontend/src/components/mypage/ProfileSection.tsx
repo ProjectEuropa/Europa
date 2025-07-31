@@ -2,27 +2,22 @@
 
 import type React from 'react';
 import { useState } from 'react';
+import { useProfile, useUpdateProfile } from '@/hooks/api/useMyPage';
 
-interface ProfileData {
-  name: string;
-  email: string;
-  joinDate: string;
-}
-
-interface ProfileSectionProps {
-  initialProfile: ProfileData;
-}
-
-const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
-  const [profile, setProfile] = useState<ProfileData>(initialProfile);
+const ProfileSection: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [tempName, setTempName] = useState(initialProfile.name);
-  const [isSaving, setIsSaving] = useState(false);
+  const [tempName, setTempName] = useState('');
+
+  const { data: profile, isLoading, error } = useProfile();
+  const updateProfileMutation = useUpdateProfile();
 
   const handleEditToggle = () => {
     if (isEditing) {
       // キャンセル時は元の値に戻す
-      setTempName(profile.name);
+      setTempName(profile?.name || '');
+    } else {
+      // 編集開始時に現在の値をセット
+      setTempName(profile?.name || '');
     }
     setIsEditing(!isEditing);
   };
@@ -33,23 +28,47 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
 
   const handleSave = async () => {
     if (!tempName.trim()) {
-      alert('名前を入力してください');
       return;
     }
-    setIsSaving(true);
-    try {
-      // API連携
-      const { updateUserName } = await import('@/utils/api');
-      await updateUserName(tempName);
-      setProfile(prev => ({ ...prev, name: tempName }));
-      setIsEditing(false);
-    } catch (e) {
-      console.error(e);
-      alert('名前の更新に失敗しました');
-    } finally {
-      setIsSaving(false);
-    }
+
+    await updateProfileMutation.mutateAsync({ name: tempName });
+    setIsEditing(false);
   };
+
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          background: '#0A1022',
+          borderRadius: '12px',
+          padding: '24px',
+          border: '1px solid #1E3A5F',
+          marginBottom: '24px',
+          textAlign: 'center',
+        }}
+      >
+        <div style={{ color: '#b0c4d8' }}>プロフィール情報を読み込み中...</div>
+      </div>
+    );
+  }
+
+  if (error || !profile) {
+    return (
+      <div
+        style={{
+          background: '#0A1022',
+          borderRadius: '12px',
+          padding: '24px',
+          border: '1px solid #1E3A5F',
+          marginBottom: '24px',
+        }}
+      >
+        <p style={{ color: '#ff6b6b', margin: 0 }}>
+          プロフィール情報の読み込みに失敗しました
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -109,6 +128,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
             type="text"
             value={tempName}
             onChange={handleNameChange}
+            placeholder="名前を入力してください"
             style={{
               background: '#0F1A2E',
               border: '1px solid #1E3A5F',
@@ -141,7 +161,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
         >
           <button
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={updateProfileMutation.isPending || !tempName.trim()}
             style={{
               background: '#00c8ff',
               border: 'none',
@@ -150,14 +170,18 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
               padding: '10px 20px',
               fontSize: '1rem',
               fontWeight: 'bold',
-              cursor: isSaving ? 'not-allowed' : 'pointer',
-              opacity: isSaving ? 0.7 : 1,
+              cursor:
+                updateProfileMutation.isPending || !tempName.trim()
+                  ? 'not-allowed'
+                  : 'pointer',
+              opacity:
+                updateProfileMutation.isPending || !tempName.trim() ? 0.7 : 1,
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
             }}
           >
-            {isSaving ? (
+            {updateProfileMutation.isPending ? (
               <>
                 <svg
                   style={{
@@ -184,7 +208,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ initialProfile }) => {
                 保存中...
               </>
             ) : (
-              <>保存</>
+              '保存'
             )}
           </button>
         </div>

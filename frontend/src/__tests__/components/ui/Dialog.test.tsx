@@ -1,15 +1,15 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import {
   Dialog,
-  DialogTrigger,
+  DialogClose,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 
 describe('Dialog Components', () => {
@@ -147,7 +147,15 @@ describe('Dialog Components', () => {
       await user.click(screen.getByText('Open'));
 
       const content = screen.getByTestId('dialog-content');
-      expect(content).toHaveClass('fixed', 'left-1/2', 'top-1/2', 'z-50', 'grid', 'w-full', 'max-w-lg');
+      expect(content).toHaveClass(
+        'fixed',
+        'left-1/2',
+        'top-1/2',
+        'z-50',
+        'grid',
+        'w-full',
+        'max-w-lg'
+      );
     });
 
     it('should apply custom className', async () => {
@@ -174,11 +182,21 @@ describe('Dialog Components', () => {
       render(<DialogHeader data-testid="dialog-header">Header</DialogHeader>);
       const header = screen.getByTestId('dialog-header');
       expect(header).toBeInTheDocument();
-      expect(header).toHaveClass('flex', 'flex-col', 'space-y-1.5', 'text-center', 'sm:text-left');
+      expect(header).toHaveClass(
+        'flex',
+        'flex-col',
+        'space-y-1.5',
+        'text-center',
+        'sm:text-left'
+      );
     });
 
     it('should apply custom className', () => {
-      render(<DialogHeader data-testid="dialog-header" className="custom-class">Header</DialogHeader>);
+      render(
+        <DialogHeader data-testid="dialog-header" className="custom-class">
+          Header
+        </DialogHeader>
+      );
       const header = screen.getByTestId('dialog-header');
       expect(header).toHaveClass('custom-class');
     });
@@ -201,7 +219,12 @@ describe('Dialog Components', () => {
 
       const title = screen.getByTestId('dialog-title');
       expect(title).toBeInTheDocument();
-      expect(title).toHaveClass('text-lg', 'font-semibold', 'leading-none', 'tracking-tight');
+      expect(title).toHaveClass(
+        'text-lg',
+        'font-semibold',
+        'leading-none',
+        'tracking-tight'
+      );
       expect(title).toHaveTextContent('Test Title');
     });
   });
@@ -235,11 +258,21 @@ describe('Dialog Components', () => {
       render(<DialogFooter data-testid="dialog-footer">Footer</DialogFooter>);
       const footer = screen.getByTestId('dialog-footer');
       expect(footer).toBeInTheDocument();
-      expect(footer).toHaveClass('flex', 'flex-col-reverse', 'sm:flex-row', 'sm:justify-end', 'sm:space-x-2');
+      expect(footer).toHaveClass(
+        'flex',
+        'flex-col-reverse',
+        'sm:flex-row',
+        'sm:justify-end',
+        'sm:space-x-2'
+      );
     });
 
     it('should apply custom className', () => {
-      render(<DialogFooter data-testid="dialog-footer" className="custom-class">Footer</DialogFooter>);
+      render(
+        <DialogFooter data-testid="dialog-footer" className="custom-class">
+          Footer
+        </DialogFooter>
+      );
       const footer = screen.getByTestId('dialog-footer');
       expect(footer).toHaveClass('custom-class');
     });

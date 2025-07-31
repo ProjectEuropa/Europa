@@ -2,7 +2,7 @@
  * 検索関連の型定義
  */
 
-import type { BaseFile, TeamFile, MatchFile } from './file';
+import type { BaseFile, MatchFile, TeamFile } from './file';
 
 import type { DateString } from './utils';
 

@@ -5,10 +5,22 @@ import React, { useEffect, useState } from 'react';
 import Icons from '@/components/Icons';
 import { useAuth } from '@/hooks/useAuth';
 import SideMenu from './SideMenu';
+import { useBreakpoint } from '@/components/layout/responsive';
 
-const Header = () => {
+interface HeaderProps {
+  className?: string;
+  showMenu?: boolean;
+  variant?: 'default' | 'minimal';
+}
+
+const Header: React.FC<HeaderProps> = ({ 
+  className = '', 
+  showMenu = true, 
+  variant = 'default' 
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuButtonAnimated, setIsMenuButtonAnimated] = useState(false);
+  const { isMobile, isTablet } = useBreakpoint();
 
   // ページ読み込み時にボタンをハイライトするアニメーション
   useEffect(() => {
@@ -35,13 +47,16 @@ const Header = () => {
   return (
     <>
       <header
+        className={className}
         style={{
-          padding: '20px 5%',
+          padding: variant === 'minimal' ? '16px 5%' : '20px 5%',
           borderBottom: '1px solid rgba(0, 200, 255, 0.3)',
           zIndex: 10,
           position: 'relative',
           background: '#0a0818',
         }}
+        role="banner"
+        aria-label="サイトヘッダー"
       >
         <div
           style={{
@@ -50,20 +65,22 @@ const Header = () => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: isMobile ? 'wrap' : 'nowrap',
           }}
         >
           {/* メニューボタンとロゴをグループ化 */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {/* ハンバーガーメニューボタン */}
+            {showMenu && (
             <div
               onClick={toggleMenu}
               style={{
                 cursor: 'pointer',
-                marginRight: '16px',
+                marginRight: isMobile ? '8px' : '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '8px 12px',
+                padding: isMobile ? '6px 8px' : '8px 12px',
                 borderRadius: '8px',
                 background: isMenuOpen
                   ? 'rgba(0, 200, 255, 0.2)'
@@ -103,18 +120,20 @@ const Header = () => {
                 )}
                 <span
                   style={{
-                    marginLeft: '8px',
-                    fontSize: '14px',
+                    marginLeft: isMobile ? '4px' : '8px',
+                    fontSize: isMobile ? '12px' : '14px',
                     fontWeight: 600,
                     color: '#00c8ff',
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px',
+                    display: isMobile ? 'none' : 'inline',
                   }}
                 >
                   {isMenuOpen ? '閉じる' : 'メニュー'}
                 </span>
               </div>
             </div>
+            )}
 
             {/* EUROPAテキスト（ホームへのリンク） */}
             <Link
@@ -122,11 +141,12 @@ const Header = () => {
               style={{
                 textDecoration: 'none',
               }}
+              aria-label="ホームページに戻る"
             >
               <span
                 style={{
                   color: '#00c8ff',
-                  fontSize: '20px',
+                  fontSize: variant === 'minimal' ? '18px' : '20px',
                   fontWeight: 700,
                   letterSpacing: '0.5px',
                 }}
@@ -143,10 +163,13 @@ const Header = () => {
           <nav
             style={{
               display: 'flex',
-              gap: '16px',
+              gap: isMobile ? '8px' : '16px',
               alignItems: 'center',
-              marginLeft: '32px',
+              marginLeft: isMobile ? '16px' : '32px',
+              flexWrap: isMobile ? 'wrap' : 'nowrap',
             }}
+            role="navigation"
+            aria-label="メインナビゲーション"
           >
             {/* 認証リンク or ユーザー名 */}
             {(() => {
@@ -186,11 +209,18 @@ const Header = () => {
                         alignItems: 'center',
                         gap: '4px',
                       }}
+                      aria-label="マイページに移動"
                     >
                       <Icons.Register size={18} /> マイページ
                     </Link>
                     <button
-                      onClick={logout}
+                      onClick={() => {
+                        try {
+                          logout();
+                        } catch (error) {
+                          console.error('ログアウトエラー:', error);
+                        }
+                      }}
                       style={{
                         color: '#8CB4FF',
                         background: 'none',
@@ -202,6 +232,7 @@ const Header = () => {
                         alignItems: 'center',
                         gap: '4px',
                       }}
+                      aria-label="ログアウト"
                     >
                       <Icons.Logout size={18} /> ログアウト
                     </button>
@@ -222,6 +253,7 @@ const Header = () => {
                       gap: '4px',
                       transition: 'color 0.2s',
                     }}
+                    aria-label="ログインページに移動"
                   >
                     <Icons.Login size={18} /> ログイン
                   </Link>
@@ -240,6 +272,7 @@ const Header = () => {
                       alignItems: 'center',
                       gap: '4px',
                     }}
+                    aria-label="新規登録ページに移動"
                   >
                     <Icons.Register size={18} /> 新規登録
                   </Link>
@@ -251,7 +284,9 @@ const Header = () => {
       </header>
 
       {/* サイドメニュー */}
-      <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      {showMenu && (
+        <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      )}
     </>
   );
 };

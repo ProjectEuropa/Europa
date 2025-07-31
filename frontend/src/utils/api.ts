@@ -7,8 +7,26 @@ export const apiRequest = async (
   endpoint: string,
   options: RequestInit = {}
 ) => {
-  const token =
-    typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  let token = null;
+  
+  if (typeof window !== 'undefined') {
+    // まずlocalStorageの'token'キーを確認
+    token = localStorage.getItem('token');
+    
+    // なければZustandのpersistストレージを確認
+    if (!token) {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (authStorage) {
+        try {
+          const parsed = JSON.parse(authStorage);
+          token = parsed.state?.token || null;
+        } catch (e) {
+          console.warn('Failed to parse auth-storage:', e);
+        }
+      }
+    }
+  }
+  
   let baseHeaders: Record<string, string> = {};
 
   // 既存のヘッダーを処理
@@ -356,20 +374,36 @@ export const fetchEvents = async () => {
 
 // マイページ：チームファイル取得API
 export const fetchMyTeamFiles = async () => {
-  const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
-  if (!res.ok) throw new Error('チームデータ取得失敗');
-  const data = await res.json();
-  // 返却形式: { files: [...] }
-  return data.files;
+  try {
+    const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`チームデータ取得失敗 (${res.status}): ${errorText}`);
+    }
+    
+    const data = await res.json();
+    return data.files || [];
+  } catch (error) {
+    throw error;
+  }
 };
 
 // マイページ：マッチファイル取得API
 export const fetchMyMatchFiles = async () => {
-  const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
-  if (!res.ok) throw new Error('マッチデータ取得失敗');
-  const data = await res.json();
-  // 返却形式: { files: [...] }
-  return data.files;
+  try {
+    const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`マッチデータ取得失敗 (${res.status}): ${errorText}`);
+    }
+    
+    const data = await res.json();
+    return data.files || [];
+  } catch (error) {
+    throw error;
+  }
 };
 
 // マイページ：イベント削除API
