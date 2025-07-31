@@ -82,7 +82,13 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
+        // APIのlogout関数を呼び出してlocalStorageからトークンを削除
         authApi.logout();
+
+        // 念のため、直接localStorageからも削除
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('token');
+        }
 
         set({
           user: null,
@@ -90,6 +96,11 @@ export const useAuthStore = create<AuthStore>()(
           isAuthenticated: false,
           loading: false,
         });
+
+        // ログアウト後にホームページにリダイレクト
+        if (typeof window !== 'undefined') {
+          window.location.href = '/';
+        }
       },
 
       fetchUser: async () => {
