@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 import { usePasswordReset } from '@/hooks/usePasswordReset';
 
@@ -25,7 +25,9 @@ describe('ForgotPasswordForm', () => {
       render(<ForgotPasswordForm />);
 
       expect(screen.getByLabelText('メールアドレス*')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'リセットリンクを送信' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'リセットリンクを送信' })
+      ).toBeInTheDocument();
       expect(screen.getByText('ログインページに戻る')).toBeInTheDocument();
     });
 
@@ -41,11 +43,15 @@ describe('ForgotPasswordForm', () => {
       const user = userEvent.setup();
       render(<ForgotPasswordForm />);
 
-      const submitButton = screen.getByRole('button', { name: 'リセットリンクを送信' });
+      const submitButton = screen.getByRole('button', {
+        name: 'リセットリンクを送信',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('メールアドレスを入力してください')).toBeInTheDocument();
+        expect(
+          screen.getByText('メールアドレスを入力してください')
+        ).toBeInTheDocument();
       });
       expect(mockSendResetLink).not.toHaveBeenCalled();
     });
@@ -58,11 +64,15 @@ describe('ForgotPasswordForm', () => {
       const emailInput = screen.getByLabelText('メールアドレス*');
       await user.type(emailInput, 'invalid-email');
 
-      const submitButton = screen.getByRole('button', { name: 'リセットリンクを送信' });
+      const submitButton = screen.getByRole('button', {
+        name: 'リセットリンクを送信',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('有効なメールアドレスを入力してください')).toBeInTheDocument();
+        expect(
+          screen.getByText('有効なメールアドレスを入力してください')
+        ).toBeInTheDocument();
       });
       expect(mockSendResetLink).not.toHaveBeenCalled();
     });
@@ -78,7 +88,9 @@ describe('ForgotPasswordForm', () => {
       const emailInput = screen.getByLabelText('メールアドレス*');
       await user.type(emailInput, 'test@example.com');
 
-      const submitButton = screen.getByRole('button', { name: 'リセットリンクを送信' });
+      const submitButton = screen.getByRole('button', {
+        name: 'リセットリンクを送信',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -97,12 +109,20 @@ describe('ForgotPasswordForm', () => {
       const emailInput = screen.getByLabelText('メールアドレス*');
       await user.type(emailInput, 'test@example.com');
 
-      const submitButton = screen.getByRole('button', { name: 'リセットリンクを送信' });
+      const submitButton = screen.getByRole('button', {
+        name: 'リセットリンクを送信',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('リセット用のメールを送信しました！')).toBeInTheDocument();
-        expect(screen.getByText(/test@example.com 宛にパスワードリセット用のリンクを送信しました/)).toBeInTheDocument();
+        expect(
+          screen.getByText('リセット用のメールを送信しました！')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /test@example.com 宛にパスワードリセット用のリンクを送信しました/
+          )
+        ).toBeInTheDocument();
       });
     });
 
@@ -131,7 +151,9 @@ describe('ForgotPasswordForm', () => {
       const emailInput = screen.getByLabelText('メールアドレス*');
       await user.type(emailInput, 'test@example.com');
 
-      const submitButton = screen.getByRole('button', { name: 'リセットリンクを送信' });
+      const submitButton = screen.getByRole('button', {
+        name: 'リセットリンクを送信',
+      });
       await user.click(submitButton);
 
       await waitFor(() => {

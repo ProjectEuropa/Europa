@@ -54,16 +54,16 @@ export const toast = {
   },
   custom: (data: ToastType) => {
     import('sonner').then(({ toast }) => {
-      toast.custom((t) => (
+      toast.custom(t => (
         <div
           className={`${
             data.type === 'success'
               ? 'bg-green-900 border-green-700'
               : data.type === 'error'
-              ? 'bg-red-900 border-red-700'
-              : data.type === 'warning'
-              ? 'bg-yellow-900 border-yellow-700'
-              : 'bg-blue-900 border-blue-700'
+                ? 'bg-red-900 border-red-700'
+                : data.type === 'warning'
+                  ? 'bg-yellow-900 border-yellow-700'
+                  : 'bg-blue-900 border-blue-700'
           } p-4 rounded-md border shadow-lg`}
         >
           <div className="flex items-center gap-2">

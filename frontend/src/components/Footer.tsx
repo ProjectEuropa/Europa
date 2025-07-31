@@ -3,14 +3,25 @@
 import React from 'react';
 import Icons from '@/components/Icons';
 
-const Footer = () => {
+interface FooterProps {
+  className?: string;
+  variant?: 'default' | 'minimal';
+}
+
+const Footer: React.FC<FooterProps> = ({ 
+  className = '', 
+  variant = 'default' 
+}) => {
   return (
     <footer
+      className={className}
       style={{
         background: '#0a0e1a',
         borderTop: '1px solid #07324a',
-        padding: '48px 0 32px 0',
+        padding: variant === 'minimal' ? '32px 0 24px 0' : '48px 0 32px 0',
       }}
+      role="contentinfo"
+      aria-label="サイトフッター"
     >
       <div
         style={{
@@ -25,7 +36,7 @@ const Footer = () => {
         }}
       >
         {/* 左カラム：ロゴ・説明 */}
-        <div>
+        <div role="region" aria-label="サイト情報">
           <div
             style={{
               display: 'flex',
@@ -56,7 +67,7 @@ const Footer = () => {
         </div>
 
         {/* 機能 */}
-        <div>
+        <nav role="navigation" aria-label="機能メニュー">
           <div
             style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
           >
@@ -106,10 +117,10 @@ const Footer = () => {
               </a>
             </li>
           </ul>
-        </div>
+        </nav>
 
         {/* アカウント */}
-        <div>
+        <nav role="navigation" aria-label="アカウントメニュー">
           <div
             style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
           >
@@ -135,10 +146,10 @@ const Footer = () => {
               </a>
             </li>
           </ul>
-        </div>
+        </nav>
 
         {/* 問い合わせ・法的情報 */}
-        <div>
+        <nav role="navigation" aria-label="サポートメニュー">
           <div
             style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
           >
@@ -190,7 +201,7 @@ const Footer = () => {
               </a>
             </li>
           </ul>
-        </div>
+        </nav>
       </div>
     </footer>
   );

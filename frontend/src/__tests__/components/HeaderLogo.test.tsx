@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import HeaderLogo from '@/components/HeaderLogo';
 
 // Iconsコンポーネントのモック
@@ -30,7 +30,12 @@ describe('HeaderLogo', () => {
     const title = screen.getByText('EUROPA');
 
     expect(title).toBeInTheDocument();
-    expect(title).toHaveClass('text-2xl', 'font-bold', 'text-white', 'leading-tight');
+    expect(title).toHaveClass(
+      'text-2xl',
+      'font-bold',
+      'text-white',
+      'leading-tight'
+    );
   });
 
   it('should display subtitle in Japanese', () => {
@@ -41,7 +46,9 @@ describe('HeaderLogo', () => {
   });
 
   it('should have proper layout structure', () => {
-    const container = screen.getByText('カルネージハート EXA').closest('.flex.flex-col');
+    const container = screen
+      .getByText('カルネージハート EXA')
+      .closest('.flex.flex-col');
 
     expect(container).toHaveClass('flex', 'flex-col');
   });
@@ -61,7 +68,9 @@ describe('HeaderLogo', () => {
 
   describe('Styling', () => {
     it('should apply correct CSS classes to main container', () => {
-      const mainContainer = screen.getByText('EUROPA').closest('.flex.flex-col');
+      const mainContainer = screen
+        .getByText('EUROPA')
+        .closest('.flex.flex-col');
 
       expect(mainContainer).toBeInTheDocument();
     });
@@ -75,7 +84,12 @@ describe('HeaderLogo', () => {
     it('should apply correct CSS classes to title text', () => {
       const title = screen.getByText('EUROPA');
 
-      expect(title).toHaveClass('text-2xl', 'font-bold', 'text-white', 'leading-tight');
+      expect(title).toHaveClass(
+        'text-2xl',
+        'font-bold',
+        'text-white',
+        'leading-tight'
+      );
     });
 
     it('should apply correct CSS classes to subtitle', () => {

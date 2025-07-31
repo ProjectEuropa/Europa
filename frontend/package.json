@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev -p 3002 --turbopack",
     "build": "next build",
@@ -61,6 +62,7 @@
     "@eslint/eslintrc": "^3",
     "@next/bundle-analyzer": "^15.3.1",
     "@playwright/test": "^1.54.1",
+    "@tanstack/react-query-devtools": "^5.83.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",

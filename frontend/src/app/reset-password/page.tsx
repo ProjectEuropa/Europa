@@ -2,10 +2,10 @@
 
 import { useSearchParams } from 'next/navigation';
 import type React from 'react';
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { PasswordResetForm } from '@/components/auth/PasswordResetForm';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { PasswordResetForm } from '@/components/auth/PasswordResetForm';
 
 // クライアントコンポーネントを分離
 const ResetPasswordFormWrapper = () => {

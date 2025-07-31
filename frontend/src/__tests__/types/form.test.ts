@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type {
-  FormState,
-  ValidationError,
-  FormFieldProps,
-  SelectOption,
-  FileInputProps,
   DateInputProps,
+  FileInputProps,
+  FormFieldProps,
+  FormState,
+  SelectOption,
+  ValidationError,
 } from '@/types/form';
 
 describe('Form Types', () => {
@@ -77,7 +77,10 @@ describe('Form Types', () => {
 
     it('should work with different field names and messages', () => {
       const errors: ValidationError[] = [
-        { field: 'password', message: 'Password must be at least 8 characters' },
+        {
+          field: 'password',
+          message: 'Password must be at least 8 characters',
+        },
         { field: 'confirmPassword', message: 'Passwords do not match' },
       ];
 

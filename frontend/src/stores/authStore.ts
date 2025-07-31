@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User, LoginCredentials, RegisterCredentials } from '@/types/user';
 import { authApi } from '@/lib/api/auth';
+import type { LoginCredentials, RegisterCredentials, User } from '@/types/user';
 
 interface AuthState {
   user: User | null;
   token: string | null;
   loading: boolean;
   isAuthenticated: boolean;
+  hasHydrated: boolean;
 }
 
 interface AuthActions {
@@ -18,6 +19,7 @@ interface AuthActions {
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
   setLoading: (loading: boolean) => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -30,6 +32,7 @@ export const useAuthStore = create<AuthStore>()(
       token: null,
       loading: false,
       isAuthenticated: false,
+      hasHydrated: false,
 
       // Actions
       login: async (credentials: LoginCredentials) => {
@@ -37,6 +40,11 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const data = await authApi.login(credentials);
           const { token, user } = data;
+
+          // localStorageにもトークンを保存（api.tsとの互換性のため）
+          if (typeof window !== 'undefined' && token) {
+            localStorage.setItem('token', token);
+          }
 
           set({
             user,
@@ -56,6 +64,11 @@ export const useAuthStore = create<AuthStore>()(
           const data = await authApi.register(credentials);
           const { token, user } = data;
 
+          // localStorageにもトークンを保存（api.tsとの互換性のため）
+          if (typeof window !== 'undefined' && token) {
+            localStorage.setItem('token', token);
+          }
+
           set({
             user,
             token,
@@ -69,7 +82,13 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
+        // APIのlogout関数を呼び出してlocalStorageからトークンを削除
         authApi.logout();
+
+        // 念のため、直接localStorageからも削除
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('token');
+        }
 
         set({
           user: null,
@@ -77,6 +96,11 @@ export const useAuthStore = create<AuthStore>()(
           isAuthenticated: false,
           loading: false,
         });
+
+        // ログアウト後にホームページにリダイレクト
+        if (typeof window !== 'undefined') {
+          window.location.href = '/';
+        }
       },
 
       fetchUser: async () => {
@@ -120,13 +144,26 @@ export const useAuthStore = create<AuthStore>()(
       setLoading: (loading: boolean) => {
         set({ loading });
       },
+
+      setHasHydrated: (hasHydrated: boolean) => {
+        set({ hasHydrated });
+      },
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({
+      partialize: state => ({
         token: state.token,
         user: state.user,
+        isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          if (state.token && state.user && !state.isAuthenticated) {
+            state.isAuthenticated = true;
+          }
+          state.hasHydrated = true;
+        }
+      },
     }
   )
 );

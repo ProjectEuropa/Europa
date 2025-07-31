@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '@/lib/api/client';
 
 // APIクライアントをモック
@@ -11,32 +11,43 @@ vi.mock('@/lib/api/client', () => ({
 
 // 仮想的な検索API
 const searchApi = {
-  async searchFiles(query: string, filters?: {
-    type?: string;
-    dateFrom?: string;
-    dateTo?: string;
-    size?: { min?: number; max?: number };
-  }) {
+  async searchFiles(
+    query: string,
+    filters?: {
+      type?: string;
+      dateFrom?: string;
+      dateTo?: string;
+      size?: { min?: number; max?: number };
+    }
+  ) {
     const params = new URLSearchParams();
     params.append('q', query);
 
     if (filters?.type) params.append('type', filters.type);
     if (filters?.dateFrom) params.append('date_from', filters.dateFrom);
     if (filters?.dateTo) params.append('date_to', filters.dateTo);
-    if (filters?.size?.min) params.append('size_min', filters.size.min.toString());
-    if (filters?.size?.max) params.append('size_max', filters.size.max.toString());
+    if (filters?.size?.min)
+      params.append('size_min', filters.size.min.toString());
+    if (filters?.size?.max)
+      params.append('size_max', filters.size.max.toString());
 
-    const response = await apiClient.get(`/api/v1/search/files?${params.toString()}`);
+    const response = await apiClient.get(
+      `/api/v1/search/files?${params.toString()}`
+    );
     return response.data;
   },
 
   async searchUsers(query: string, limit = 10) {
-    const response = await apiClient.get(`/api/v1/search/users?q=${encodeURIComponent(query)}&limit=${limit}`);
+    const response = await apiClient.get(
+      `/api/v1/search/users?q=${encodeURIComponent(query)}&limit=${limit}`
+    );
     return response.data;
   },
 
   async getSearchSuggestions(query: string) {
-    const response = await apiClient.get(`/api/v1/search/suggestions?q=${encodeURIComponent(query)}`);
+    const response = await apiClient.get(
+      `/api/v1/search/suggestions?q=${encodeURIComponent(query)}`
+    );
     return response.data;
   },
 
@@ -70,7 +81,11 @@ describe('searchApi', () => {
         data: {
           files: [
             { id: 1, name: 'test.pdf', type: 'application/pdf' },
-            { id: 2, name: 'document.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
+            {
+              id: 2,
+              name: 'document.docx',
+              type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            },
           ],
           total: 2,
         },
@@ -80,7 +95,9 @@ describe('searchApi', () => {
 
       const result = await searchApi.searchFiles('test document');
 
-      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/search/files?q=test+document');
+      expect(apiClient.get).toHaveBeenCalledWith(
+        '/api/v1/search/files?q=test+document'
+      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -129,7 +146,9 @@ describe('searchApi', () => {
       const error = new Error('Search service unavailable');
       vi.mocked(apiClient.get).mockRejectedValueOnce(error);
 
-      await expect(searchApi.searchFiles('test')).rejects.toThrow('Search service unavailable');
+      await expect(searchApi.searchFiles('test')).rejects.toThrow(
+        'Search service unavailable'
+      );
     });
   });
 
@@ -148,7 +167,9 @@ describe('searchApi', () => {
 
       const result = await searchApi.searchUsers('john');
 
-      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/search/users?q=john&limit=10');
+      expect(apiClient.get).toHaveBeenCalledWith(
+        '/api/v1/search/users?q=john&limit=10'
+      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -161,7 +182,9 @@ describe('searchApi', () => {
 
       await searchApi.searchUsers('test', 5);
 
-      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/search/users?q=test&limit=5');
+      expect(apiClient.get).toHaveBeenCalledWith(
+        '/api/v1/search/users?q=test&limit=5'
+      );
     });
 
     it('should handle special characters in query', async () => {
@@ -173,7 +196,9 @@ describe('searchApi', () => {
 
       await searchApi.searchUsers('user@domain.com');
 
-      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/search/users?q=user%40domain.com&limit=10');
+      expect(apiClient.get).toHaveBeenCalledWith(
+        '/api/v1/search/users?q=user%40domain.com&limit=10'
+      );
     });
   });
 
@@ -189,7 +214,9 @@ describe('searchApi', () => {
 
       const result = await searchApi.getSearchSuggestions('test');
 
-      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/search/suggestions?q=test');
+      expect(apiClient.get).toHaveBeenCalledWith(
+        '/api/v1/search/suggestions?q=test'
+      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -247,8 +274,17 @@ describe('searchApi', () => {
       const mockResponse = {
         data: {
           searches: [
-            { id: 1, query: 'important documents', createdAt: '2024-01-01T00:00:00Z' },
-            { id: 2, query: 'images', filters: { type: 'image' }, createdAt: '2024-01-02T00:00:00Z' },
+            {
+              id: 1,
+              query: 'important documents',
+              createdAt: '2024-01-01T00:00:00Z',
+            },
+            {
+              id: 2,
+              query: 'images',
+              filters: { type: 'image' },
+              createdAt: '2024-01-02T00:00:00Z',
+            },
           ],
         },
       };
@@ -284,7 +320,9 @@ describe('searchApi', () => {
 
       const result = await searchApi.deleteSavedSearch(1);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/search/saved/1/delete');
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/v1/search/saved/1/delete'
+      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -292,7 +330,9 @@ describe('searchApi', () => {
       const error = new Error('Search not found');
       vi.mocked(apiClient.post).mockRejectedValueOnce(error);
 
-      await expect(searchApi.deleteSavedSearch(999)).rejects.toThrow('Search not found');
+      await expect(searchApi.deleteSavedSearch(999)).rejects.toThrow(
+        'Search not found'
+      );
     });
   });
 });

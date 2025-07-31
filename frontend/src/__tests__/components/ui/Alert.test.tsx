@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it } from 'vitest';
 
 // 仮想的なAlertコンポーネント
 interface AlertProps {
@@ -10,11 +10,17 @@ interface AlertProps {
   onClose?: () => void;
 }
 
-const Alert = ({ children, variant = 'default', className = '', onClose }: AlertProps) => {
+const Alert = ({
+  children,
+  variant = 'default',
+  className = '',
+  onClose,
+}: AlertProps) => {
   const baseClasses = 'relative w-full rounded-lg border p-4';
   const variantClasses = {
     default: 'bg-background text-foreground border-border',
-    destructive: 'border-destructive/50 text-destructive dark:border-destructive',
+    destructive:
+      'border-destructive/50 text-destructive dark:border-destructive',
     warning: 'border-yellow-500/50 text-yellow-600 dark:border-yellow-500',
     success: 'border-green-500/50 text-green-600 dark:border-green-500',
   };
@@ -37,16 +43,26 @@ const Alert = ({ children, variant = 'default', className = '', onClose }: Alert
   );
 };
 
-const AlertTitle = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
+const AlertTitle = ({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
   <h5 className={`mb-1 font-medium leading-none tracking-tight ${className}`}>
     {children}
   </h5>
 );
 
-const AlertDescription = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-  <div className={`text-sm [&_p]:leading-relaxed ${className}`}>
-    {children}
-  </div>
+const AlertDescription = ({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div className={`text-sm [&_p]:leading-relaxed ${className}`}>{children}</div>
 );
 
 describe('Alert Components', () => {
@@ -64,7 +80,11 @@ describe('Alert Components', () => {
     it('should apply default variant classes', () => {
       render(<Alert>Default alert</Alert>);
       const alert = screen.getByRole('alert');
-      expect(alert).toHaveClass('bg-background', 'text-foreground', 'border-border');
+      expect(alert).toHaveClass(
+        'bg-background',
+        'text-foreground',
+        'border-border'
+      );
     });
 
     it('should apply destructive variant classes', () => {
@@ -120,7 +140,13 @@ describe('Alert Components', () => {
     it('should apply base classes', () => {
       render(<Alert>Base alert</Alert>);
       const alert = screen.getByRole('alert');
-      expect(alert).toHaveClass('relative', 'w-full', 'rounded-lg', 'border', 'p-4');
+      expect(alert).toHaveClass(
+        'relative',
+        'w-full',
+        'rounded-lg',
+        'border',
+        'p-4'
+      );
     });
   });
 
@@ -128,7 +154,12 @@ describe('Alert Components', () => {
     it('should render title with correct classes', () => {
       render(<AlertTitle>Alert Title</AlertTitle>);
       const title = screen.getByText('Alert Title');
-      expect(title).toHaveClass('mb-1', 'font-medium', 'leading-none', 'tracking-tight');
+      expect(title).toHaveClass(
+        'mb-1',
+        'font-medium',
+        'leading-none',
+        'tracking-tight'
+      );
     });
 
     it('should apply custom className', () => {
@@ -152,7 +183,11 @@ describe('Alert Components', () => {
     });
 
     it('should apply custom className', () => {
-      render(<AlertDescription className="custom-desc">Custom Description</AlertDescription>);
+      render(
+        <AlertDescription className="custom-desc">
+          Custom Description
+        </AlertDescription>
+      );
       const description = screen.getByText('Custom Description');
       expect(description).toHaveClass('custom-desc');
     });
@@ -181,12 +216,16 @@ describe('Alert Components', () => {
       render(
         <Alert variant="warning">
           <AlertTitle>Warning Title</AlertTitle>
-          <AlertDescription>This is a warning message with details.</AlertDescription>
+          <AlertDescription>
+            This is a warning message with details.
+          </AlertDescription>
         </Alert>
       );
 
       expect(screen.getByText('Warning Title')).toBeInTheDocument();
-      expect(screen.getByText('This is a warning message with details.')).toBeInTheDocument();
+      expect(
+        screen.getByText('This is a warning message with details.')
+      ).toBeInTheDocument();
 
       const alert = screen.getByRole('alert');
       expect(alert).toHaveClass('border-yellow-500/50', 'text-yellow-600');
@@ -204,7 +243,9 @@ describe('Alert Components', () => {
       );
 
       expect(screen.getByText('Success!')).toBeInTheDocument();
-      expect(screen.getByText('Operation completed successfully.')).toBeInTheDocument();
+      expect(
+        screen.getByText('Operation completed successfully.')
+      ).toBeInTheDocument();
 
       const closeButton = screen.getByRole('button', { name: 'Close alert' });
       await user.click(closeButton);

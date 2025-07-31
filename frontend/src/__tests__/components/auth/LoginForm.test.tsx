@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
@@ -44,7 +44,9 @@ describe('LoginForm', () => {
 
       expect(screen.getByLabelText(/メールアドレス/)).toBeInTheDocument();
       expect(screen.getByLabelText('パスワード*')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'ログイン' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'ログイン' })
+      ).toBeInTheDocument();
     });
 
     it('should render required indicators', () => {
@@ -126,7 +128,7 @@ describe('LoginForm', () => {
     it('should show loading state during submission', async () => {
       const user = userEvent.setup();
       let resolveLogin: () => void;
-      const loginPromise = new Promise<void>((resolve) => {
+      const loginPromise = new Promise<void>(resolve => {
         resolveLogin = resolve;
       });
       mockLogin.mockReturnValue(loginPromise);
@@ -183,7 +185,7 @@ describe('LoginForm', () => {
         status: 401,
         message: 'Unauthorized',
         name: 'ApiError',
-        data: { message: 'Unauthorized' }
+        data: { message: 'Unauthorized' },
       };
       mockLogin.mockRejectedValue(error);
 
@@ -198,7 +200,11 @@ describe('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getAllByText('メールアドレスまたはパスワードが正しくありません。')).toHaveLength(2);
+        expect(
+          screen.getAllByText(
+            'メールアドレスまたはパスワードが正しくありません。'
+          )
+        ).toHaveLength(2);
       });
     });
 
@@ -232,8 +238,12 @@ describe('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText('有効なメールアドレスを入力してください。')).toBeInTheDocument();
-        expect(screen.getByText('パスワードは6文字以上で入力してください。')).toBeInTheDocument();
+        expect(
+          screen.getByText('有効なメールアドレスを入力してください。')
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('パスワードは6文字以上で入力してください。')
+        ).toBeInTheDocument();
       });
     });
 
