@@ -1,7 +1,7 @@
 'use client';
 
+import Link from 'next/link';
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import Icons from '@/components/Icons';
 
 interface FooterProps {
@@ -13,11 +13,6 @@ const Footer: React.FC<FooterProps> = ({
   className = '', 
   variant = 'default' 
 }) => {
-  const router = useRouter();
-
-  const handleNavigate = (path: string) => {
-    router.push(path);
-  };
   return (
     <footer
       className={className}
@@ -83,94 +78,59 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <button
-                onClick={() => handleNavigate('/search/team')}
+              <Link
+                href="/search/team"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 チームデータ検索
-              </button>
+              </Link>
             </li>
             <li>
-              <button
-                onClick={() => handleNavigate('/search/match')}
+              <Link
+                href="/search/match"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 マッチデータ検索
-              </button>
+              </Link>
             </li>
             <li>
-              <button
-                onClick={() => handleNavigate('/sumdownload/team')}
+              <Link
+                href="/sumdownload/team"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 チームデータ一括DL
-              </button>
+              </Link>
             </li>
             <li>
-              <button
-                onClick={() => handleNavigate('/sumdownload/match')}
+              <Link
+                href="/sumdownload/match"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 マッチデータ一括DL
-              </button>
+              </Link>
             </li>
             <li>
-              <button
-                onClick={() => handleNavigate('/info')}
+              <Link
+                href="/info"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 Information
-              </button>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -186,40 +146,26 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <button
-                onClick={() => handleNavigate('/login')}
+              <Link
+                href="/login"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 ログイン
-              </button>
+              </Link>
             </li>
             <li>
-              <button
-                onClick={() => handleNavigate('/register')}
+              <Link
+                href="/register"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 新規登録
-              </button>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -235,22 +181,15 @@ const Footer: React.FC<FooterProps> = ({
             style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
           >
             <li>
-              <button
-                onClick={() => handleNavigate('/about')}
+              <Link
+                href="/about"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 私たちについて
-              </button>
+              </Link>
             </li>
             <li>
               <a
@@ -263,58 +202,37 @@ const Footer: React.FC<FooterProps> = ({
               </a>
             </li>
             <li>
-              <button
-                onClick={() => handleNavigate('/privacy-policy')}
+              <Link
+                href="/privacy-policy"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 プライバシーポリシー
-              </button>
+              </Link>
             </li>
             <li>
-              <button
-                onClick={() => handleNavigate('/terms-of-service')}
+              <Link
+                href="/terms-of-service"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 利用規約
-              </button>
+              </Link>
             </li>
             <li>
-              <button
-                onClick={() => handleNavigate('/faq')}
+              <Link
+                href="/faq"
                 style={{ 
                   color: '#b0c4d8', 
-                  textDecoration: 'none',
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                  fontSize: 'inherit',
-                  fontFamily: 'inherit',
-                  textAlign: 'left'
+                  textDecoration: 'none'
                 }}
               >
                 よくある質問
-              </button>
+              </Link>
             </li>
           </ul>
         </nav>

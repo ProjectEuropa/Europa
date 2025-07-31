@@ -13,7 +13,8 @@
       "Bash(npm run build:*)",
       "Bash(npm test)",
       "Bash(npm run dev:*)",
-      "Bash(php artisan route:list:*)"
+      "Bash(php artisan route:list:*)",
+      "Bash(npm test:*)"
     ],
     "deny": []
   }
