@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Toaster, toast } from '@/components/ui/toast';
 
 // sonnerのモック
@@ -48,7 +48,10 @@ describe('toast utilities', () => {
       toast.success('Success message');
     });
 
-    expect(mockToast.toast.success).toHaveBeenCalledWith('Success message', undefined);
+    expect(mockToast.toast.success).toHaveBeenCalledWith(
+      'Success message',
+      undefined
+    );
   });
 
   it('should call error toast', async () => {
@@ -58,7 +61,10 @@ describe('toast utilities', () => {
       toast.error('Error message');
     });
 
-    expect(mockToast.toast.error).toHaveBeenCalledWith('Error message', undefined);
+    expect(mockToast.toast.error).toHaveBeenCalledWith(
+      'Error message',
+      undefined
+    );
   });
 
   it('should call warning toast', async () => {
@@ -68,7 +74,10 @@ describe('toast utilities', () => {
       toast.warning('Warning message');
     });
 
-    expect(mockToast.toast.warning).toHaveBeenCalledWith('Warning message', undefined);
+    expect(mockToast.toast.warning).toHaveBeenCalledWith(
+      'Warning message',
+      undefined
+    );
   });
 
   it('should call info toast', async () => {
@@ -78,7 +87,10 @@ describe('toast utilities', () => {
       toast.info('Info message');
     });
 
-    expect(mockToast.toast.info).toHaveBeenCalledWith('Info message', undefined);
+    expect(mockToast.toast.info).toHaveBeenCalledWith(
+      'Info message',
+      undefined
+    );
   });
 
   it('should call custom toast with options', async () => {
@@ -89,6 +101,9 @@ describe('toast utilities', () => {
       toast.success('Success message', customOptions);
     });
 
-    expect(mockToast.toast.success).toHaveBeenCalledWith('Success message', customOptions);
+    expect(mockToast.toast.success).toHaveBeenCalledWith(
+      'Success message',
+      customOptions
+    );
   });
 });

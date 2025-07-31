@@ -1,6 +1,11 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Skeleton, TextSkeleton, CardSkeleton, TableRowSkeleton } from '@/components/ui/skeleton';
+import { describe, expect, it } from 'vitest';
+import {
+  CardSkeleton,
+  Skeleton,
+  TableRowSkeleton,
+  TextSkeleton,
+} from '@/components/ui/skeleton';
 
 describe('Skeleton Components', () => {
   describe('Skeleton', () => {
@@ -13,7 +18,11 @@ describe('Skeleton Components', () => {
     it('should apply default classes', () => {
       render(<Skeleton data-testid="skeleton" />);
       const skeleton = screen.getByTestId('skeleton');
-      expect(skeleton).toHaveClass('animate-pulse', 'rounded', 'bg-gray-700/30');
+      expect(skeleton).toHaveClass(
+        'animate-pulse',
+        'rounded',
+        'bg-gray-700/30'
+      );
     });
 
     it('should apply custom className', () => {
@@ -56,7 +65,9 @@ describe('Skeleton Components', () => {
     });
 
     it('should apply custom className', () => {
-      render(<TextSkeleton data-testid="text-skeleton" className="custom-class" />);
+      render(
+        <TextSkeleton data-testid="text-skeleton" className="custom-class" />
+      );
       const container = screen.getByTestId('text-skeleton');
       expect(container).toHaveClass('custom-class');
     });
@@ -73,7 +84,13 @@ describe('Skeleton Components', () => {
     it('should render card skeleton structure', () => {
       render(<CardSkeleton data-testid="card-skeleton" />);
       const cardContainer = screen.getByTestId('card-skeleton');
-      expect(cardContainer).toHaveClass('border', 'border-gray-700', 'rounded-xl', 'p-6', 'space-y-4');
+      expect(cardContainer).toHaveClass(
+        'border',
+        'border-gray-700',
+        'rounded-xl',
+        'p-6',
+        'space-y-4'
+      );
     });
 
     it('should contain header, content, and footer skeletons', () => {
@@ -99,7 +116,12 @@ describe('Skeleton Components', () => {
     it('should apply flex layout classes', () => {
       const { container } = render(<TableRowSkeleton />);
       const rowContainer = container.firstChild;
-      expect(rowContainer).toHaveClass('flex', 'items-center', 'space-x-4', 'py-3');
+      expect(rowContainer).toHaveClass(
+        'flex',
+        'items-center',
+        'space-x-4',
+        'py-3'
+      );
     });
 
     it('should apply different widths to columns', () => {

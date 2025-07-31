@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { usePasswordReset } from '@/hooks/usePasswordReset';
-import { authApi } from '@/lib/api/auth';
 import { useToast } from '@/hooks/useToast';
+import { authApi } from '@/lib/api/auth';
 
 // モック
 vi.mock('@/lib/api/auth');
@@ -32,14 +32,19 @@ describe('usePasswordReset', () => {
 
       let response: any;
       await act(async () => {
-        response = await result.current.sendResetLink({ email: 'test@example.com' });
+        response = await result.current.sendResetLink({
+          email: 'test@example.com',
+        });
       });
 
-      expect(authApi.sendPasswordResetLink).toHaveBeenCalledWith({ email: 'test@example.com' });
+      expect(authApi.sendPasswordResetLink).toHaveBeenCalledWith({
+        email: 'test@example.com',
+      });
       expect(mockToast).toHaveBeenCalledWith({
         type: 'success',
         title: 'リセット用メール送信完了',
-        message: 'test@example.com 宛にパスワードリセット用のリンクを送信しました。',
+        message:
+          'test@example.com 宛にパスワードリセット用のリンクを送信しました。',
       });
       expect(response).toEqual({ success: true });
     });
@@ -52,7 +57,9 @@ describe('usePasswordReset', () => {
 
       let response: any;
       await act(async () => {
-        response = await result.current.sendResetLink({ email: 'test@example.com' });
+        response = await result.current.sendResetLink({
+          email: 'test@example.com',
+        });
       });
 
       expect(mockToast).toHaveBeenCalledWith({
@@ -67,31 +74,41 @@ describe('usePasswordReset', () => {
   describe('checkToken', () => {
     it('should return valid token result', async () => {
       const mockResponse = { valid: true };
-      vi.mocked(authApi.checkResetPasswordToken).mockResolvedValue(mockResponse);
+      vi.mocked(authApi.checkResetPasswordToken).mockResolvedValue(
+        mockResponse
+      );
 
       const { result } = renderHook(() => usePasswordReset());
 
       let response: any;
       await act(async () => {
-        response = await result.current.checkToken({ token: 'valid-token', email: 'test@example.com' });
+        response = await result.current.checkToken({
+          token: 'valid-token',
+          email: 'test@example.com',
+        });
       });
 
       expect(authApi.checkResetPasswordToken).toHaveBeenCalledWith({
         token: 'valid-token',
-        email: 'test@example.com'
+        email: 'test@example.com',
       });
       expect(response).toEqual({ isValid: true, message: undefined });
     });
 
     it('should handle invalid token', async () => {
       const mockResponse = { valid: false, message: 'Invalid token' };
-      vi.mocked(authApi.checkResetPasswordToken).mockResolvedValue(mockResponse);
+      vi.mocked(authApi.checkResetPasswordToken).mockResolvedValue(
+        mockResponse
+      );
 
       const { result } = renderHook(() => usePasswordReset());
 
       let response: any;
       await act(async () => {
-        response = await result.current.checkToken({ token: 'invalid-token', email: 'test@example.com' });
+        response = await result.current.checkToken({
+          token: 'invalid-token',
+          email: 'test@example.com',
+        });
       });
 
       expect(response).toEqual({ isValid: false, message: 'Invalid token' });
@@ -121,7 +138,8 @@ describe('usePasswordReset', () => {
       expect(mockToast).toHaveBeenCalledWith({
         type: 'success',
         title: 'パスワード変更完了',
-        message: 'パスワードが正常に変更されました。新しいパスワードでログインできます。',
+        message:
+          'パスワードが正常に変更されました。新しいパスワードでログインできます。',
       });
       expect(response).toEqual({ success: true });
     });

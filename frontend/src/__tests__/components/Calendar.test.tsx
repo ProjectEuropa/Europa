@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Calendar from '@/components/Calendar';
 
 describe('Calendar', () => {
@@ -38,13 +38,17 @@ describe('Calendar', () => {
 
   describe('Size Variants', () => {
     it('should render small size calendar', () => {
-      const { container } = render(<Calendar size="small" initialDate={testDate} />);
+      const { container } = render(
+        <Calendar size="small" initialDate={testDate} />
+      );
 
       expect(container.firstChild).toBeInTheDocument();
     });
 
     it('should render large size calendar', () => {
-      const { container } = render(<Calendar size="large" initialDate={testDate} />);
+      const { container } = render(
+        <Calendar size="large" initialDate={testDate} />
+      );
 
       expect(container.firstChild).toBeInTheDocument();
     });
@@ -162,7 +166,9 @@ describe('Calendar', () => {
 
   describe('Error Handling', () => {
     it('should handle empty events array', () => {
-      expect(() => render(<Calendar initialDate={testDate} events={[]} />)).not.toThrow();
+      expect(() =>
+        render(<Calendar initialDate={testDate} events={[]} />)
+      ).not.toThrow();
     });
 
     it('should render without crashing', () => {

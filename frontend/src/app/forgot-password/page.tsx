@@ -1,12 +1,11 @@
 'use client';
 
 import type React from 'react';
+import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
-import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm';
 
 const ForgotPasswordPage: React.FC = () => {
-
   return (
     <div
       style={{

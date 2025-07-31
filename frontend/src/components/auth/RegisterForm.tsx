@@ -1,13 +1,13 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
-import { Eye, EyeOff } from 'lucide-react';
 
 import { processApiError, setFormErrors } from '@/utils/apiErrorHandler';
 
@@ -28,11 +28,9 @@ const registerSchema = z
       .min(1, 'パスワードを入力してください')
       .min(6, 'パスワードは6文字以上で入力してください')
       .max(100, 'パスワードは100文字以内で入力してください'),
-    passwordConfirmation: z
-      .string()
-      .min(1, 'パスワード確認を入力してください'),
+    passwordConfirmation: z.string().min(1, 'パスワード確認を入力してください'),
   })
-  .refine((data) => data.password === data.passwordConfirmation, {
+  .refine(data => data.password === data.passwordConfirmation, {
     message: 'パスワードが一致しません',
     path: ['passwordConfirmation'],
   });
@@ -44,10 +42,14 @@ interface RegisterFormProps {
   redirectTo?: string;
 }
 
-export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterFormProps) {
+export function RegisterForm({
+  onSuccess,
+  redirectTo = '/mypage',
+}: RegisterFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] =
+    useState(false);
   const { register: registerUser } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
@@ -83,7 +85,10 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
       // 統一されたエラーハンドリングを使用
       const processedError = processApiError(error);
 
-      if (processedError.isValidationError && Object.keys(processedError.fieldErrors).length > 0) {
+      if (
+        processedError.isValidationError &&
+        Object.keys(processedError.fieldErrors).length > 0
+      ) {
         // バリデーションエラーの場合、フィールドごとにエラーを設定
         setFormErrors(setError, processedError.fieldErrors);
       } else {
@@ -100,7 +105,10 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+    >
       {/* 名前フィールド */}
       <div>
         <label
@@ -200,7 +208,9 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
               padding: '12px',
               paddingRight: '48px',
               borderRadius: '6px',
-              border: errors.password ? '1px solid #ef4444' : '1px solid #374151',
+              border: errors.password
+                ? '1px solid #ef4444'
+                : '1px solid #374151',
               backgroundColor: '#1f2937',
               color: '#f9fafb',
               fontSize: '1rem',
@@ -258,7 +268,9 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
               padding: '12px',
               paddingRight: '48px',
               borderRadius: '6px',
-              border: errors.passwordConfirmation ? '1px solid #ef4444' : '1px solid #374151',
+              border: errors.passwordConfirmation
+                ? '1px solid #ef4444'
+                : '1px solid #374151',
               backgroundColor: '#1f2937',
               color: '#f9fafb',
               fontSize: '1rem',
@@ -267,7 +279,9 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
           />
           <button
             type="button"
-            onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+            onClick={() =>
+              setShowPasswordConfirmation(!showPasswordConfirmation)
+            }
             style={{
               position: 'absolute',
               right: '12px',
@@ -281,7 +295,11 @@ export function RegisterForm({ onSuccess, redirectTo = '/mypage' }: RegisterForm
               padding: '4px',
             }}
           >
-            {showPasswordConfirmation ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showPasswordConfirmation ? (
+              <EyeOff size={20} />
+            ) : (
+              <Eye size={20} />
+            )}
           </button>
         </div>
         {errors.passwordConfirmation && (

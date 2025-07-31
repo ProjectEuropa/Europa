@@ -1,25 +1,32 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type {
-  ButtonVariant,
-  ButtonSize,
   ButtonProps,
-  ModalProps,
-  ToastType,
+  ButtonSize,
+  ButtonVariant,
   LoadingProps,
-  SkeletonProps,
+  ModalProps,
   PaginationProps,
+  SkeletonProps,
   TabItem,
   TabsProps,
+  ToastType,
 } from '@/types/ui';
 
 describe('UI Types', () => {
   describe('ButtonVariant', () => {
     it('should accept valid button variants', () => {
-      const variants: ButtonVariant[] = ['primary', 'secondary', 'danger', 'ghost'];
+      const variants: ButtonVariant[] = [
+        'primary',
+        'secondary',
+        'danger',
+        'ghost',
+      ];
 
       variants.forEach(variant => {
         const buttonVariant: ButtonVariant = variant;
-        expect(['primary', 'secondary', 'danger', 'ghost']).toContain(buttonVariant);
+        expect(['primary', 'secondary', 'danger', 'ghost']).toContain(
+          buttonVariant
+        );
       });
     });
   });
@@ -119,7 +126,12 @@ describe('UI Types', () => {
     });
 
     it('should work with different toast types', () => {
-      const toastTypes: ToastType['type'][] = ['success', 'error', 'warning', 'info'];
+      const toastTypes: ToastType['type'][] = [
+        'success',
+        'error',
+        'warning',
+        'info',
+      ];
 
       toastTypes.forEach(type => {
         const toast: ToastType = {

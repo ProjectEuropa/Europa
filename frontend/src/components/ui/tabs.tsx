@@ -23,7 +23,7 @@ export function Tabs({ items, defaultActiveId, onTabChange }: TabsProps) {
     <div className="w-full">
       <div className="border-b border-gray-700">
         <div className="flex overflow-x-auto">
-          {items.map((item) => (
+          {items.map(item => (
             <button
               key={item.id}
               onClick={() => !item.disabled && handleTabChange(item.id)}
@@ -47,7 +47,7 @@ export function Tabs({ items, defaultActiveId, onTabChange }: TabsProps) {
         </div>
       </div>
       <div className="mt-4">
-        {items.map((item) => (
+        {items.map(item => (
           <div
             key={item.id}
             role="tabpanel"

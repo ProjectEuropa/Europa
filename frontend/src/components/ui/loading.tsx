@@ -5,7 +5,11 @@ import type { LoadingProps } from '@/types/ui';
 /**
  * ローディングインジケーターコンポーネント
  */
-export function Loading({ size = 'md', color = '#00c8ff', text }: LoadingProps) {
+export function Loading({
+  size = 'md',
+  color = '#00c8ff',
+  text,
+}: LoadingProps) {
   const sizeMap = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
@@ -13,7 +17,10 @@ export function Loading({ size = 'md', color = '#00c8ff', text }: LoadingProps) 
   };
 
   return (
-    <div className="flex flex-col items-center justify-center" data-testid="loading">
+    <div
+      className="flex flex-col items-center justify-center"
+      data-testid="loading"
+    >
       <div
         className={cn('animate-spin', sizeMap[size])}
         role="status"
@@ -40,9 +47,7 @@ export function Loading({ size = 'md', color = '#00c8ff', text }: LoadingProps) 
           ></path>
         </svg>
       </div>
-      {text && (
-        <span className="mt-2 text-sm text-gray-300">{text}</span>
-      )}
+      {text && <span className="mt-2 text-sm text-gray-300">{text}</span>}
     </div>
   );
 }

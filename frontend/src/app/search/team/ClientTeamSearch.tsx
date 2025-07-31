@@ -1,16 +1,16 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { SearchForm } from '@/components/search/SearchForm';
 import { SearchResults } from '@/components/search/SearchResults';
 import { useTeamSearch } from '@/hooks/useSearch';
-import { tryDownloadTeamFile } from '@/utils/api';
+import type { MatchFile, TeamFile } from '@/types/file';
 import type { SearchParams } from '@/types/search';
-import type { TeamFile, MatchFile } from '@/types/file';
+import { tryDownloadTeamFile } from '@/utils/api';
 
 export default function ClientTeamSearch() {
   const router = useRouter();
@@ -62,7 +62,9 @@ export default function ClientTeamSearch() {
     tryDownloadTeamFile(file.id)
       .then(result => {
         if (!result.success) {
-          toast.error(result.error || 'ダウンロードに失敗しました', { duration: 4000 });
+          toast.error(result.error || 'ダウンロードに失敗しました', {
+            duration: 4000,
+          });
         }
       })
       .catch(() => {
@@ -71,14 +73,17 @@ export default function ClientTeamSearch() {
   }, []);
 
   // ページ変更処理
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
 
-    // URLを更新
-    const urlParams = new URLSearchParams(searchParams.toString());
-    urlParams.set('page', page.toString());
-    router.push(`?${urlParams.toString()}`);
-  }, [searchParams, router]);
+      // URLを更新
+      const urlParams = new URLSearchParams(searchParams.toString());
+      urlParams.set('page', page.toString());
+      router.push(`?${urlParams.toString()}`);
+    },
+    [searchParams, router]
+  );
 
   // 検索処理
   const handleSearch = useCallback((params: SearchParams) => {
@@ -144,12 +149,14 @@ export default function ClientTeamSearch() {
         {/* 検索結果 */}
         <SearchResults
           results={searchResult?.data || []}
-          meta={searchResult?.meta || {
-            currentPage: 1,
-            lastPage: 1,
-            perPage: 10,
-            total: 0,
-          }}
+          meta={
+            searchResult?.meta || {
+              currentPage: 1,
+              lastPage: 1,
+              perPage: 10,
+              total: 0,
+            }
+          }
           loading={isLoading}
           error={isError ? 'チーム検索に失敗しました' : null}
           onPageChange={handlePageChange}

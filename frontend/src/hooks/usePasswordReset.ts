@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { authApi } from '@/lib/api/auth';
 import { useToast } from '@/hooks/useToast';
-import { processApiError } from '@/utils/apiErrorHandler';
+import { authApi } from '@/lib/api/auth';
 import type {
-  PasswordResetRequest,
   PasswordResetData,
-  PasswordResetTokenCheck
+  PasswordResetRequest,
+  PasswordResetTokenCheck,
 } from '@/types/user';
+import { processApiError } from '@/utils/apiErrorHandler';
 
 export const usePasswordReset = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +33,9 @@ export const usePasswordReset = () => {
         });
         return { success: true };
       } else {
-        const errorMessage = result.error || 'メールの送信に失敗しました。メールアドレスを確認してください。';
+        const errorMessage =
+          result.error ||
+          'メールの送信に失敗しました。メールアドレスを確認してください。';
         toast({
           type: 'error',
           title: 'メール送信エラー',
@@ -66,7 +68,9 @@ export const usePasswordReset = () => {
       const processedError = processApiError(error);
       return {
         isValid: false,
-        message: processedError.message || '無効なリセットリンクです。パスワードリセットを再度リクエストしてください。',
+        message:
+          processedError.message ||
+          '無効なリセットリンクです。パスワードリセットを再度リクエストしてください。',
       };
     }
   };
@@ -80,11 +84,14 @@ export const usePasswordReset = () => {
         toast({
           type: 'success',
           title: 'パスワード変更完了',
-          message: 'パスワードが正常に変更されました。新しいパスワードでログインできます。',
+          message:
+            'パスワードが正常に変更されました。新しいパスワードでログインできます。',
         });
         return { success: true };
       } else {
-        const errorMessage = result.error || 'パスワードのリセットに失敗しました。もう一度お試しください。';
+        const errorMessage =
+          result.error ||
+          'パスワードのリセットに失敗しました。もう一度お試しください。';
         toast({
           type: 'error',
           title: 'パスワードリセットエラー',

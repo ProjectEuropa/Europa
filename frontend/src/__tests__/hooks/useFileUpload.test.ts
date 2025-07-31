@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { vi } from 'vitest';
 import { useFileUpload } from '@/hooks/useFileUpload';
 
@@ -12,6 +12,7 @@ vi.mock('@/lib/api/files', () => ({
 
 // モック関数の参照を取得
 import { filesApi } from '@/lib/api/files';
+
 const mockUploadTeamFile = vi.mocked(filesApi.uploadTeamFile);
 const mockUploadMatchFile = vi.mocked(filesApi.uploadMatchFile);
 

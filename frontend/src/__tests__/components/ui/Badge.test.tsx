@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 
 // 仮想的なBadgeコンポーネント
 interface BadgeProps {
@@ -9,7 +9,13 @@ interface BadgeProps {
   className?: string;
 }
 
-const Badge = ({ children, variant = 'default', size = 'md', className = '', ...props }: BadgeProps & React.HTMLAttributes<HTMLSpanElement>) => {
+const Badge = ({
+  children,
+  variant = 'default',
+  size = 'md',
+  className = '',
+  ...props
+}: BadgeProps & React.HTMLAttributes<HTMLSpanElement>) => {
   const baseClasses = 'inline-flex items-center rounded-full font-medium';
   const variantClasses = {
     default: 'bg-primary text-primary-foreground',
@@ -59,7 +65,12 @@ describe('Badge', () => {
   it('should apply outline variant classes', () => {
     render(<Badge variant="outline">Outline Badge</Badge>);
     const badge = screen.getByText('Outline Badge');
-    expect(badge).toHaveClass('border', 'border-input', 'bg-background', 'text-foreground');
+    expect(badge).toHaveClass(
+      'border',
+      'border-input',
+      'bg-background',
+      'text-foreground'
+    );
   });
 
   it('should apply default size classes', () => {
@@ -89,7 +100,12 @@ describe('Badge', () => {
   it('should apply base classes', () => {
     render(<Badge>Base Badge</Badge>);
     const badge = screen.getByText('Base Badge');
-    expect(badge).toHaveClass('inline-flex', 'items-center', 'rounded-full', 'font-medium');
+    expect(badge).toHaveClass(
+      'inline-flex',
+      'items-center',
+      'rounded-full',
+      'font-medium'
+    );
   });
 
   it('should render with different content types', () => {
@@ -104,9 +120,19 @@ describe('Badge', () => {
   });
 
   it('should combine variant and size classes correctly', () => {
-    render(<Badge variant="destructive" size="lg">Large Destructive</Badge>);
+    render(
+      <Badge variant="destructive" size="lg">
+        Large Destructive
+      </Badge>
+    );
     const badge = screen.getByText('Large Destructive');
-    expect(badge).toHaveClass('bg-destructive', 'text-destructive-foreground', 'px-3', 'py-1', 'text-base');
+    expect(badge).toHaveClass(
+      'bg-destructive',
+      'text-destructive-foreground',
+      'px-3',
+      'py-1',
+      'text-base'
+    );
   });
 
   it('should handle empty children', () => {

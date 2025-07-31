@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -46,7 +46,12 @@ describe('AuthGuard', () => {
   describe('Require Auth (default)', () => {
     it('should render children when authenticated', () => {
       vi.mocked(useAuth).mockReturnValue({
-        user: { id: '1', name: 'Test User', email: 'test@example.com', createdAt: '2024-01-01' },
+        user: {
+          id: '1',
+          name: 'Test User',
+          email: 'test@example.com',
+          createdAt: '2024-01-01',
+        },
         token: 'mock-token',
         loading: false,
         isAuthenticated: true,
@@ -140,7 +145,12 @@ describe('AuthGuard', () => {
 
     it('should redirect to mypage when authenticated', () => {
       vi.mocked(useAuth).mockReturnValue({
-        user: { id: '1', name: 'Test User', email: 'test@example.com', createdAt: '2024-01-01' },
+        user: {
+          id: '1',
+          name: 'Test User',
+          email: 'test@example.com',
+          createdAt: '2024-01-01',
+        },
         token: 'mock-token',
         loading: false,
         isAuthenticated: true,
@@ -215,7 +225,12 @@ describe('AuthGuard', () => {
 
       // 認証状態に変更
       vi.mocked(useAuth).mockReturnValue({
-        user: { id: '1', name: 'Test User', email: 'test@example.com', createdAt: '2024-01-01' },
+        user: {
+          id: '1',
+          name: 'Test User',
+          email: 'test@example.com',
+          createdAt: '2024-01-01',
+        },
         token: 'mock-token',
         loading: false,
         isAuthenticated: true,

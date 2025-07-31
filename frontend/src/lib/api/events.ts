@@ -2,15 +2,15 @@
  * イベント関連のAPI関数
  */
 
-import { apiClient } from './client';
 import type {
   Event,
-  EventFormData,
-  EventResponse,
   EventDeleteResponse,
+  EventFormData,
   EventRegistrationData,
+  EventResponse,
   MyEventsResponse,
 } from '@/types/event';
+import { apiClient } from './client';
 
 export const eventsApi = {
   async registerEvent(formData: EventFormData): Promise<Event> {
@@ -23,7 +23,10 @@ export const eventsApi = {
       eventType: formData.type,
     };
 
-    const response = await apiClient.post<Event>('/api/v1/eventNotice', registrationData);
+    const response = await apiClient.post<Event>(
+      '/api/v1/eventNotice',
+      registrationData
+    );
     return response.data;
   },
 
@@ -33,7 +36,9 @@ export const eventsApi = {
   },
 
   async fetchMyEvents(): Promise<Event[]> {
-    const response = await apiClient.get<MyEventsResponse>('/api/v1/mypage/events');
+    const response = await apiClient.get<MyEventsResponse>(
+      '/api/v1/mypage/events'
+    );
 
     // スネークケース→キャメルケース変換
     return (response.data.events ?? []).map((event: any) => {
@@ -49,7 +54,7 @@ export const eventsApi = {
         registeredDate: event.created_at ? event.created_at.slice(0, 10) : '',
         createdAt: event.created_at ?? '',
         updatedAt: event.updated_at ?? '',
-        isActive: event.is_active ?? true
+        isActive: event.is_active ?? true,
       };
 
       return transformedEvent;
@@ -57,7 +62,10 @@ export const eventsApi = {
   },
 
   async deleteMyEvent(id: string | number): Promise<EventDeleteResponse> {
-    const response = await apiClient.post<EventDeleteResponse>('/api/v1/delete/usersRegisteredCloumn', { id });
+    const response = await apiClient.post<EventDeleteResponse>(
+      '/api/v1/delete/usersRegisteredCloumn',
+      { id }
+    );
 
     if (!response.data.deleted) {
       throw new Error(response.data.error || '削除に失敗しました');

@@ -2,19 +2,23 @@
  * ファイル関連のAPI関数
  */
 
-import { apiClient } from './client';
 import type {
-  TeamFile,
-  MatchFile,
-  FileUploadOptions,
-  FileUploadResponse,
   FileDeleteRequest,
   FileDeleteResponse,
   FileDownloadResult,
+  FileUploadOptions,
+  FileUploadResponse,
+  MatchFile,
   MyFilesResponse,
   SumDownloadRequest,
+  TeamFile,
 } from '@/types/file';
-import type { SearchParams, TeamSearchResult, MatchSearchResult } from '@/types/search';
+import type {
+  MatchSearchResult,
+  SearchParams,
+  TeamSearchResult,
+} from '@/types/search';
+import { apiClient } from './client';
 
 export const filesApi = {
   // 検索関連
@@ -156,19 +160,26 @@ export const filesApi = {
     isAuthenticated: boolean,
     options?: FileUploadOptions
   ): Promise<FileUploadResponse> {
-    const endpoint = isAuthenticated ? '/api/v1/team/upload' : '/api/v1/team/simpleupload';
+    const endpoint = isAuthenticated
+      ? '/api/v1/team/upload'
+      : '/api/v1/team/simpleupload';
     const formData = new FormData();
 
     formData.append('teamFile', file);
     if (options?.ownerName) formData.append('teamOwnerName', options.ownerName);
     if (options?.comment) formData.append('teamComment', options.comment);
-    if (options?.deletePassword) formData.append('teamDeletePassWord', options.deletePassword);
-    if (options?.downloadDate) formData.append('teamDownloadableAt', options.downloadDate);
+    if (options?.deletePassword)
+      formData.append('teamDeletePassWord', options.deletePassword);
+    if (options?.downloadDate)
+      formData.append('teamDownloadableAt', options.downloadDate);
     if (options?.tags && Array.isArray(options.tags)) {
       formData.append('teamSearchTags', options.tags.join(','));
     }
 
-    const response = await apiClient.upload<FileUploadResponse>(endpoint, formData);
+    const response = await apiClient.upload<FileUploadResponse>(
+      endpoint,
+      formData
+    );
     return response.data;
   },
 
@@ -177,19 +188,27 @@ export const filesApi = {
     isAuthenticated: boolean,
     options?: FileUploadOptions
   ): Promise<FileUploadResponse> {
-    const endpoint = isAuthenticated ? '/api/v1/match/upload' : '/api/v1/match/simpleupload';
+    const endpoint = isAuthenticated
+      ? '/api/v1/match/upload'
+      : '/api/v1/match/simpleupload';
     const formData = new FormData();
 
     formData.append('matchFile', file);
-    if (options?.ownerName) formData.append('matchOwnerName', options.ownerName);
+    if (options?.ownerName)
+      formData.append('matchOwnerName', options.ownerName);
     if (options?.comment) formData.append('matchComment', options.comment);
-    if (options?.deletePassword) formData.append('matchDeletePassWord', options.deletePassword);
-    if (options?.downloadDate) formData.append('matchDownloadableAt', options.downloadDate);
+    if (options?.deletePassword)
+      formData.append('matchDeletePassWord', options.deletePassword);
+    if (options?.downloadDate)
+      formData.append('matchDownloadableAt', options.downloadDate);
     if (options?.tags && Array.isArray(options.tags)) {
       formData.append('matchSearchTags', options.tags.join(','));
     }
 
-    const response = await apiClient.upload<FileUploadResponse>(endpoint, formData);
+    const response = await apiClient.upload<FileUploadResponse>(
+      endpoint,
+      formData
+    );
     return response.data;
   },
 
@@ -220,7 +239,10 @@ export const filesApi = {
 
       if (contentType.includes('application/json')) {
         const data = await res.json();
-        return { success: false, error: data.error || 'ダウンロードできません' };
+        return {
+          success: false,
+          error: data.error || 'ダウンロードできません',
+        };
       }
 
       window.open(url, '_blank');
@@ -231,15 +253,18 @@ export const filesApi = {
   },
 
   async sumDownload(request: SumDownloadRequest): Promise<void> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/sumDownload`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify(request),
-      credentials: 'include',
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/sumDownload`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(request),
+        credentials: 'include',
+      }
+    );
 
     if (!response.ok) throw new Error('ダウンロード失敗');
 
@@ -258,27 +283,39 @@ export const filesApi = {
   },
 
   // 削除関連
-  async deleteSearchFile(request: FileDeleteRequest): Promise<FileDeleteResponse> {
-    const response = await apiClient.post<FileDeleteResponse>('/api/v1/delete/searchFile', {
-      id: request.id,
-      deletePassword: request.deletePassword || '',
-    });
+  async deleteSearchFile(
+    request: FileDeleteRequest
+  ): Promise<FileDeleteResponse> {
+    const response = await apiClient.post<FileDeleteResponse>(
+      '/api/v1/delete/searchFile',
+      {
+        id: request.id,
+        deletePassword: request.deletePassword || '',
+      }
+    );
     return response.data;
   },
 
   async deleteMyFile(id: string | number): Promise<FileDeleteResponse> {
-    const response = await apiClient.post<FileDeleteResponse>('/api/v1/delete/myFile', { id });
+    const response = await apiClient.post<FileDeleteResponse>(
+      '/api/v1/delete/myFile',
+      { id }
+    );
     return response.data;
   },
 
   // マイページ関連
   async fetchMyTeamFiles(): Promise<TeamFile[]> {
-    const response = await apiClient.get<MyFilesResponse>('/api/v1/mypage/team');
+    const response = await apiClient.get<MyFilesResponse>(
+      '/api/v1/mypage/team'
+    );
     return response.data.files as TeamFile[];
   },
 
   async fetchMyMatchFiles(): Promise<MatchFile[]> {
-    const response = await apiClient.get<MyFilesResponse>('/api/v1/mypage/match');
+    const response = await apiClient.get<MyFilesResponse>(
+      '/api/v1/mypage/match'
+    );
     return response.data.files as MatchFile[];
   },
 };

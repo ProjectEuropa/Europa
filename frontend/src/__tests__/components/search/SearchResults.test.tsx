@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SearchResults } from '@/components/search/SearchResults';
-import type { TeamFile, MatchFile } from '@/types/file';
+import type { MatchFile, TeamFile } from '@/types/file';
 import type { PaginationMeta } from '@/types/search';
 
 // useDeleteFileフックをモック
@@ -15,14 +15,13 @@ vi.mock('@/hooks/useSearch', () => ({
 
 // DeleteModalをモック
 vi.mock('@/components/DeleteModal', () => ({
-  DeleteModal: ({ open, onDelete, fileName }: any) => (
+  DeleteModal: ({ open, onDelete, fileName }: any) =>
     open ? (
       <div data-testid="delete-modal">
         <p>Delete {fileName}?</p>
         <button onClick={() => onDelete('password123')}>Confirm Delete</button>
       </div>
-    ) : null
-  ),
+    ) : null,
 }));
 
 // toastをモック
@@ -144,8 +143,12 @@ describe('SearchResults', () => {
         />
       );
 
-      expect(screen.getByText('検索結果が見つかりませんでした')).toBeInTheDocument();
-      expect(screen.getByText('別のキーワードで検索してみてください')).toBeInTheDocument();
+      expect(
+        screen.getByText('検索結果が見つかりませんでした')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('別のキーワードで検索してみてください')
+      ).toBeInTheDocument();
     });
   });
 
@@ -242,7 +245,9 @@ describe('SearchResults', () => {
         />
       );
 
-      const downloadButton = screen.getByLabelText('test-team.okeをダウンロード');
+      const downloadButton = screen.getByLabelText(
+        'test-team.okeをダウンロード'
+      );
       await user.click(downloadButton);
 
       // 処理されたデータが渡されることを確認
@@ -400,7 +405,9 @@ describe('SearchResults', () => {
         />
       );
 
-      expect(screen.getByLabelText('test-team.okeをダウンロード')).toBeInTheDocument();
+      expect(
+        screen.getByLabelText('test-team.okeをダウンロード')
+      ).toBeInTheDocument();
       expect(screen.getByTestId('delete-button-1')).toBeInTheDocument();
     });
 
@@ -417,7 +424,9 @@ describe('SearchResults', () => {
 
       // Tabキーでボタンにフォーカス
       await user.tab();
-      const downloadButton = screen.getByLabelText('test-team.okeをダウンロード');
+      const downloadButton = screen.getByLabelText(
+        'test-team.okeをダウンロード'
+      );
       expect(downloadButton).toHaveFocus();
 
       // Enterキーで実行
@@ -467,8 +476,6 @@ describe('SearchResults', () => {
       perPage: 10,
       total: 2,
     };
-
-
 
     it('should show delete button only for upload_type="2" (簡易アップロード)', () => {
       const fileWithSimpleUpload: TeamFile = {

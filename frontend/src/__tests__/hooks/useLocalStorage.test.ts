@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // 仮想的なuseLocalStorageフック
 const useLocalStorage = <T>(key: string, initialValue: T) => {
@@ -15,7 +15,8 @@ const useLocalStorage = <T>(key: string, initialValue: T) => {
 
   const setValue = (value: T | ((val: T) => T)) => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      const valueToStore =
+        value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
@@ -56,7 +57,9 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // console.error をモック
-const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+const mockConsoleError = vi
+  .spyOn(console, 'error')
+  .mockImplementation(() => {});
 
 describe('useLocalStorage', () => {
   beforeEach(() => {
@@ -71,16 +74,21 @@ describe('useLocalStorage', () => {
       } else {
         if (state === undefined) state = initializer;
       }
-      return [state, (newState: any) => {
-        state = typeof newState === 'function' ? newState(state) : newState;
-      }];
+      return [
+        state,
+        (newState: any) => {
+          state = typeof newState === 'function' ? newState(state) : newState;
+        },
+      ];
     });
   });
 
   it('should return initial value when localStorage is empty', () => {
     mockLocalStorage.getItem.mockReturnValue(null);
 
-    const { result } = renderHook(() => useLocalStorage('test-key', 'initial-value'));
+    const { result } = renderHook(() =>
+      useLocalStorage('test-key', 'initial-value')
+    );
 
     expect(result.current[0]).toBe('initial-value');
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('test-key');
@@ -89,7 +97,9 @@ describe('useLocalStorage', () => {
   it('should return stored value from localStorage', () => {
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify('stored-value'));
 
-    const { result } = renderHook(() => useLocalStorage('test-key', 'initial-value'));
+    const { result } = renderHook(() =>
+      useLocalStorage('test-key', 'initial-value')
+    );
 
     expect(result.current[0]).toBe('stored-value');
     expect(mockLocalStorage.getItem).toHaveBeenCalledWith('test-key');
@@ -99,7 +109,9 @@ describe('useLocalStorage', () => {
     const storedObject = { name: 'John', age: 30 };
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify(storedObject));
 
-    const { result } = renderHook(() => useLocalStorage('user', { name: '', age: 0 }));
+    const { result } = renderHook(() =>
+      useLocalStorage('user', { name: '', age: 0 })
+    );
 
     expect(result.current[0]).toEqual(storedObject);
   });
@@ -122,7 +134,10 @@ describe('useLocalStorage', () => {
       result.current[1]('new-value');
     });
 
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('test-key', JSON.stringify('new-value'));
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+      'test-key',
+      JSON.stringify('new-value')
+    );
   });
 
   it('should handle function updates', () => {
@@ -134,7 +149,10 @@ describe('useLocalStorage', () => {
       result.current[1]((prev: number) => prev + 1);
     });
 
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('counter', JSON.stringify(6));
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+      'counter',
+      JSON.stringify(6)
+    );
   });
 
   it('should remove value from localStorage', () => {
@@ -154,7 +172,9 @@ describe('useLocalStorage', () => {
       throw new Error('localStorage error');
     });
 
-    const { result } = renderHook(() => useLocalStorage('test-key', 'fallback'));
+    const { result } = renderHook(() =>
+      useLocalStorage('test-key', 'fallback')
+    );
 
     expect(result.current[0]).toBe('fallback');
     expect(mockConsoleError).toHaveBeenCalledWith(
@@ -202,7 +222,9 @@ describe('useLocalStorage', () => {
   it('should handle malformed JSON in localStorage', () => {
     mockLocalStorage.getItem.mockReturnValue('invalid-json');
 
-    const { result } = renderHook(() => useLocalStorage('test-key', 'fallback'));
+    const { result } = renderHook(() =>
+      useLocalStorage('test-key', 'fallback')
+    );
 
     expect(result.current[0]).toBe('fallback');
     expect(mockConsoleError).toHaveBeenCalledWith(
@@ -222,7 +244,10 @@ describe('useLocalStorage', () => {
       result.current[1](false);
     });
 
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('boolean-key', JSON.stringify(false));
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+      'boolean-key',
+      JSON.stringify(false)
+    );
   });
 
   it('should work with number values', () => {
@@ -236,7 +261,10 @@ describe('useLocalStorage', () => {
       result.current[1](100);
     });
 
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('number-key', JSON.stringify(100));
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+      'number-key',
+      JSON.stringify(100)
+    );
   });
 
   it('should handle null values', () => {
