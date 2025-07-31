@@ -9,8 +9,6 @@ const RegisteredEventsSection: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDetails, setModalDetails] = useState('');
-  const [_selectedEvent, setSelectedEvent] = useState<MyPageEvent | null>(null);
-
   const { data: events = [], isLoading, error } = useMyEvents();
   const deleteEventMutation = useDeleteEvent();
 
@@ -24,17 +22,6 @@ const RegisteredEventsSection: React.FC = () => {
       .includes(searchQuery.toLowerCase());
     return matchesSearch;
   });
-
-  const _handleDetailsClick = (event: MyPageEvent) => {
-    setSelectedEvent(event);
-    setModalDetails(event.details);
-    setModalOpen(true);
-  };
-
-  const _formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    return dateString.slice(0, 10).replace(/-/g, '/');
-  };
 
   if (isLoading) {
     return (
