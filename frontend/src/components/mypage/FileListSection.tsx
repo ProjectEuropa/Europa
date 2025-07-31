@@ -9,6 +9,7 @@ import {
   useMyTeamFiles,
 } from '@/hooks/api/useMyPage';
 import type { MyPageFile } from '@/types/user';
+import { useAuthStore } from '@/stores/authStore';
 
 interface FileListSectionProps {
   type: 'team' | 'match';
@@ -25,6 +26,10 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
     return window.innerWidth < 768;
   });
 
+  // 認証状態を確認
+  const { user, token, isAuthenticated } = useAuthStore();
+  console.log('Auth state:', { user: !!user, token: !!token, isAuthenticated });
+
   // 条件付きでフックを使用
   const teamQuery = useMyTeamFiles();
   const matchQuery = useMyMatchFiles();
@@ -33,6 +38,26 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
   const isTeam = type === 'team';
   const query = isTeam ? teamQuery : matchQuery;
   const { data: files = [], isLoading, error } = query;
+
+  // 認証されていない場合の早期リターン
+  if (!isAuthenticated || !user) {
+    return (
+      <div
+        style={{
+          background: '#0A1022',
+          borderRadius: '12px',
+          padding: '24px',
+          border: '1px solid #1E3A5F',
+          marginBottom: '24px',
+          textAlign: 'center',
+        }}
+      >
+        <p style={{ color: '#ff6b6b', margin: 0 }}>
+          {isTeam ? 'チーム' : 'マッチ'}データを表示するにはログインが必要です
+        </p>
+      </div>
+    );
+  }
 
   // レスポンシブ対応
   useEffect(() => {
@@ -103,6 +128,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
   }
 
   if (error) {
+    console.error(`${isTeam ? 'Team' : 'Match'} files error:`, error);
     return (
       <div
         style={{
@@ -113,9 +139,24 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
           marginBottom: '24px',
         }}
       >
-        <p style={{ color: '#ff6b6b', margin: 0 }}>
+        <p style={{ color: '#ff6b6b', margin: 0, marginBottom: '12px' }}>
           {isTeam ? 'チーム' : 'マッチ'}データの読み込みに失敗しました
         </p>
+        <details style={{ color: '#b0c4d8', fontSize: '0.9rem' }}>
+          <summary style={{ cursor: 'pointer', marginBottom: '8px' }}>
+            エラー詳細を表示
+          </summary>
+          <pre style={{ 
+            background: '#0F1A2E', 
+            padding: '8px', 
+            borderRadius: '4px',
+            overflow: 'auto',
+            fontSize: '0.8rem',
+            whiteSpace: 'pre-wrap'
+          }}>
+            {error instanceof Error ? error.message : String(error)}
+          </pre>
+        </details>
       </div>
     );
   }

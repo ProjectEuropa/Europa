@@ -398,40 +398,79 @@ describe('storage utilities', () => {
   });
 
   describe('getSize', () => {
+    beforeEach(() => {
+      // 各テスト前にストレージモックをクリア
+      Object.keys(mockLocalStorage).forEach(key => {
+        if (!['getItem', 'setItem', 'removeItem', 'clear', 'hasOwnProperty'].includes(key)) {
+          delete mockLocalStorage[key];
+        }
+      });
+      Object.keys(mockSessionStorage).forEach(key => {
+        if (!['getItem', 'setItem', 'removeItem', 'clear', 'hasOwnProperty'].includes(key)) {
+          delete mockSessionStorage[key];
+        }
+      });
+    });
+
     it('should calculate local storage size', () => {
-      mockLocalStorage.hasOwnProperty.mockImplementation(
-        key => key === 'test-key'
-      );
-      Object.defineProperty(mockLocalStorage, 'test-key', {
-        value: 'test-value',
-        enumerable: true,
+      // 新しいクリーンなモックストレージオブジェクトを作成
+      const cleanLocalStorage = {
+        'test-key': 'test-value'
+      };
+      Object.defineProperty(window, 'localStorage', {
+        value: cleanLocalStorage,
+        writable: true,
       });
 
       const result = storage.getSize('local');
 
       expect(result).toBe('test-key'.length + 'test-value'.length);
+      
+      // 元のモックを復元
+      Object.defineProperty(window, 'localStorage', {
+        value: mockLocalStorage,
+        writable: true,
+      });
     });
 
     it('should calculate session storage size', () => {
-      mockSessionStorage.hasOwnProperty.mockImplementation(
-        key => key === 'session-key'
-      );
-      Object.defineProperty(mockSessionStorage, 'session-key', {
-        value: 'session-value',
-        enumerable: true,
+      // 新しいクリーンなモックストレージオブジェクトを作成
+      const cleanSessionStorage = {
+        'session-key': 'session-value'
+      };
+      Object.defineProperty(window, 'sessionStorage', {
+        value: cleanSessionStorage,
+        writable: true,
       });
 
       const result = storage.getSize('session');
 
       expect(result).toBe('session-key'.length + 'session-value'.length);
+      
+      // 元のモックを復元
+      Object.defineProperty(window, 'sessionStorage', {
+        value: mockSessionStorage,
+        writable: true,
+      });
     });
 
     it('should default to local storage', () => {
-      mockLocalStorage.hasOwnProperty.mockImplementation(() => false);
+      // 空のストレージ
+      const emptyStorage = {};
+      Object.defineProperty(window, 'localStorage', {
+        value: emptyStorage,
+        writable: true,
+      });
 
       const result = storage.getSize();
 
       expect(result).toBe(0);
+      
+      // 元のモックを復元
+      Object.defineProperty(window, 'localStorage', {
+        value: mockLocalStorage,
+        writable: true,
+      });
     });
   });
 

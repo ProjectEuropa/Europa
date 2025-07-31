@@ -68,64 +68,94 @@ export const useUpdateProfile = () => {
 
 // チームファイル取得
 export const useMyTeamFiles = () => {
+  const user = useAuthStore((state) => state.user);
+  
   return useQuery({
-    queryKey: ['mypage', 'teams'],
+    queryKey: ['mypage', 'teams', user?.id],
     queryFn: async (): Promise<MyPageFile[]> => {
-      const data = await fetchMyTeamFiles();
-      return data.map((item: any) => ({
-        id: item.id,
-        name: item.name ?? item.file_name ?? '',
-        uploadDate: item.uploadDate ?? item.created_at ?? '',
-        downloadableAt: item.downloadableAt ?? item.downloadable_at ?? '',
-        comment: item.comment ?? item.file_comment ?? '',
-        type: 'team' as const,
-      }));
+      try {
+        console.log('Fetching team files...');
+        const data = await fetchMyTeamFiles();
+        console.log('Team files response:', data);
+        return data.map((item: any) => ({
+          id: String(item.id),
+          name: item.file_name ?? item.name ?? '',
+          uploadDate: item.created_at ?? item.uploadDate ?? '',
+          downloadableAt: item.downloadable_at ?? item.downloadableAt ?? '',
+          comment: item.file_comment ?? item.comment ?? '',
+          type: 'team' as const,
+        }));
+      } catch (error) {
+        console.error('Team files fetch error:', error);
+        throw error;
+      }
     },
+    enabled: !!user, // ユーザーが認証されている場合のみクエリを実行
     staleTime: 1000 * 60 * 5, // 5分間キャッシュ
   });
 };
 
 // マッチファイル取得
 export const useMyMatchFiles = () => {
+  const user = useAuthStore((state) => state.user);
+  
   return useQuery({
-    queryKey: ['mypage', 'matches'],
+    queryKey: ['mypage', 'matches', user?.id],
     queryFn: async (): Promise<MyPageFile[]> => {
-      const data = await fetchMyMatchFiles();
-      return data.map((item: any) => ({
-        id: item.id,
-        name: item.name ?? item.file_name ?? '',
-        uploadDate: item.uploadDate ?? item.created_at ?? '',
-        downloadableAt: item.downloadableAt ?? item.downloadable_at ?? '',
-        comment: item.comment ?? item.file_comment ?? '',
-        type: 'match' as const,
-      }));
+      try {
+        console.log('Fetching match files...');
+        const data = await fetchMyMatchFiles();
+        console.log('Match files response:', data);
+        return data.map((item: any) => ({
+          id: String(item.id),
+          name: item.file_name ?? item.name ?? '',
+          uploadDate: item.created_at ?? item.uploadDate ?? '',
+          downloadableAt: item.downloadable_at ?? item.downloadableAt ?? '',
+          comment: item.file_comment ?? item.comment ?? '',
+          type: 'match' as const,
+        }));
+      } catch (error) {
+        console.error('Match files fetch error:', error);
+        throw error;
+      }
     },
+    enabled: !!user, // ユーザーが認証されている場合のみクエリを実行
     staleTime: 1000 * 60 * 5, // 5分間キャッシュ
   });
 };
 
 // イベント取得
 export const useMyEvents = () => {
+  const user = useAuthStore((state) => state.user);
+  
   return useQuery({
-    queryKey: ['mypage', 'events'],
+    queryKey: ['mypage', 'events', user?.id],
     queryFn: async (): Promise<MyPageEvent[]> => {
-      const data = await fetchMyEvents();
-      return data.map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        details: item.details,
-        url: item.url,
-        deadline: item.deadline,
-        endDisplayDate: item.endDisplayDate,
-        type:
-          item.type === '大会'
-            ? 'tournament'
-            : item.type === '告知'
-              ? 'announcement'
-              : 'other',
-        registeredDate: item.registeredDate,
-      }));
+      try {
+        console.log('Fetching events...');
+        const data = await fetchMyEvents();
+        console.log('Events response:', data);
+        return data.map((item: any) => ({
+          id: String(item.id),
+          name: item.name || item.event_name || '',
+          details: item.details || item.event_details || '',
+          url: item.url || item.event_reference_url || '',
+          deadline: item.deadline || item.event_closing_day || '',
+          endDisplayDate: item.endDisplayDate || item.event_displaying_day || '',
+          type:
+            item.type === '大会' || item.event_type === '大会'
+              ? 'tournament'
+              : item.type === '告知' || item.event_type === '告知'
+                ? 'announcement'
+                : 'other',
+          registeredDate: item.registeredDate || item.created_at?.slice(0, 10) || '',
+        }));
+      } catch (error) {
+        console.error('Events fetch error:', error);
+        throw error;
+      }
     },
+    enabled: !!user, // ユーザーが認証されている場合のみクエリを実行
     staleTime: 1000 * 60 * 5, // 5分間キャッシュ
   });
 };

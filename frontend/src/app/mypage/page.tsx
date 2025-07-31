@@ -8,14 +8,30 @@ import { useAuth } from '@/hooks/useAuth';
 const MyPageAuthGuard: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, hasHydrated } = useAuth();
   const router = useRouter();
+  
   useEffect(() => {
-    if (!loading && !user) {
+    if (hasHydrated && !loading && !user) {
       router.replace('/login');
     }
-  }, [user, loading, router]);
-  if (loading) return <div>Loading...</div>;
+  }, [user, loading, hasHydrated, router]);
+  
+  // Zustand初期化完了まで待機
+  if (!hasHydrated || loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        color: '#b0c4d8'
+      }}>
+        Loading...
+      </div>
+    );
+  }
+  
   if (!user) return null; // 未認証時は描画しない
   return <>{children}</>;
 };
