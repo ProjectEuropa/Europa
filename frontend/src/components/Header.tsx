@@ -214,9 +214,9 @@ const Header: React.FC<HeaderProps> = ({
                       <Icons.Register size={18} /> マイページ
                     </Link>
                     <button
-                      onClick={async () => {
+                      onClick={() => {
                         try {
-                          await logout();
+                          logout();
                         } catch (error) {
                           console.error('ログアウトエラー:', error);
                         }

@@ -223,9 +223,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, className = '' }) 
                 width: '100%',
                 textAlign: 'left',
               }}
-              onClick={async () => {
+              onClick={() => {
                 try {
-                  await logout();
+                  logout();
                   onClose(); // メニューを閉じる
                 } catch (error) {
                   console.error('ログアウトエラー:', error);
