@@ -10,9 +10,9 @@ updates:
       timezone: "Asia/Tokyo"
     open-pull-requests-limit: 10
     reviewers:
-      - "ProjectEuropa" # Replace with actual GitHub username
+      - "m2"
     assignees:
-      - "ProjectEuropa" # Replace with actual GitHub username
+      - "m2"
     commit-message:
       prefix: "frontend"
       include: "scope"
@@ -49,9 +49,9 @@ updates:
       timezone: "Asia/Tokyo"
     open-pull-requests-limit: 5
     reviewers:
-      - "masato"
+      - "m2"
     assignees:
-      - "masato"
+      - "m2"
     commit-message:
       prefix: "backend"
       include: "scope"
@@ -66,9 +66,9 @@ updates:
       timezone: "Asia/Tokyo"
     open-pull-requests-limit: 5
     reviewers:
-      - "masato"
+      - "m2"
     assignees:
-      - "masato"
+      - "m2"
     commit-message:
       prefix: "ci"
       include: "scope"
