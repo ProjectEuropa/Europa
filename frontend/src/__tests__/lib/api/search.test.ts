@@ -51,7 +51,7 @@ const searchApi = {
     return response.data;
   },
 
-  async saveSearch(query: string, filters?: any) {
+  async saveSearch(query: string, filters?: Record<string, unknown>) {
     const response = await apiClient.post('/api/v1/search/save', {
       query,
       filters,

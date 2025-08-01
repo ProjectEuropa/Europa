@@ -153,8 +153,8 @@ export async function mockRegisterFailure(page: Page, errors: Record<string, str
  * フォームにログイン情報を入力
  */
 export async function fillLoginForm(page: Page, email: string, password: string) {
-  await page.getByLabel(/メールアドレス/).fill(email);
-  await page.getByLabel(/パスワード/).fill(password);
+  await page.locator('input#email').fill(email);
+  await page.locator('input#password').fill(password);
 }
 
 /**
@@ -164,8 +164,8 @@ export async function fillRegisterForm(page: Page, user: TestUser & { passwordCo
   await page.getByLabel(/名前/).fill(user.name);
   await page.getByLabel(/メールアドレス/).fill(user.email);
   if (user.password) {
-    await page.getByLabel('パスワード', { exact: true }).fill(user.password);
-    await page.getByLabel(/パスワード確認/).fill(user.passwordConfirmation || user.password);
+    await page.locator('input#password').fill(user.password);
+    await page.locator('input#passwordConfirmation').fill(user.passwordConfirmation || user.password);
   }
 }
 

@@ -25,6 +25,7 @@ describe('LoginForm', () => {
       token: null,
       loading: false,
       isAuthenticated: false,
+      hasHydrated: true,
       register: vi.fn(),
       logout: vi.fn(),
       fetchUser: vi.fn(),
@@ -127,7 +128,7 @@ describe('LoginForm', () => {
 
     it('should show loading state during submission', async () => {
       const user = userEvent.setup();
-      let resolveLogin: () => void;
+      let resolveLogin: (() => void) | undefined;
       const loginPromise = new Promise<void>(resolve => {
         resolveLogin = resolve;
       });

@@ -71,6 +71,7 @@ export const useUpdateProfile = () => {
 // チームファイル取得
 export const useMyTeamFiles = () => {
   const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
 
   return useQuery({
     queryKey: ['mypage', 'teams', user?.id],
@@ -85,8 +86,15 @@ export const useMyTeamFiles = () => {
           comment: item.file_comment ?? item.comment ?? '',
           type: 'team' as const,
         }));
-      } catch (error) {
-        console.error('Team files fetch error:', error);
+      } catch (error: any) {
+        // 401エラーの場合は自動ログアウト
+        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+          console.warn('Authentication failed, logging out user');
+          logout(() => {
+            window.location.href = '/login';
+          });
+          return [];
+        }
         throw error;
       }
     },
@@ -98,6 +106,7 @@ export const useMyTeamFiles = () => {
 // マッチファイル取得
 export const useMyMatchFiles = () => {
   const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
 
   return useQuery({
     queryKey: ['mypage', 'matches', user?.id],
@@ -112,8 +121,14 @@ export const useMyMatchFiles = () => {
           comment: item.file_comment ?? item.comment ?? '',
           type: 'match' as const,
         }));
-      } catch (error) {
-        console.error('Match files fetch error:', error);
+      } catch (error: any) {
+      // 401エラーの場合は自動ログアウト
+        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+          logout(() => {
+            window.location.href = '/login';
+          });
+          return [];
+        }
         throw error;
       }
     },
@@ -125,6 +140,7 @@ export const useMyMatchFiles = () => {
 // イベント取得
 export const useMyEvents = () => {
   const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
 
   return useQuery({
     queryKey: ['mypage', 'events', user?.id],
@@ -148,8 +164,15 @@ export const useMyEvents = () => {
           registeredDate:
             item.registeredDate || item.created_at?.slice(0, 10) || '',
         }));
-      } catch (error) {
-        console.error('Events fetch error:', error);
+      } catch (error: any) {
+        // 401エラーの場合は自動ログアウト
+        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+          logout(() => {
+            window.location.href = '/login';
+          });
+          return [];
+        }
+
         throw error;
       }
     },

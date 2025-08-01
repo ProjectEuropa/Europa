@@ -72,11 +72,10 @@ function translateErrorMessage(message: string): string {
 }
 
 /**
- * APIエラーを統一的に処理する関数
+ * デフォルトエラー情報を取得
  */
-export function processApiError(error: unknown): ProcessedError {
-  // デフォルトのエラー情報
-  const defaultError: ProcessedError = {
+function getDefaultError(): ProcessedError {
+  return {
     message:
       '予期しないエラーが発生しました。しばらくしてから再試行してください。',
     fieldErrors: {},
@@ -85,9 +84,150 @@ export function processApiError(error: unknown): ProcessedError {
     isServerError: false,
     isAuthError: false,
   };
+}
+
+/**
+ * バリデーションエラー（422）を処理
+ */
+function handleValidationError(apiError: ApiErrorClass): ProcessedError {
+  const hasErrors = apiError.errors || apiError.data?.errors;
+
+  if (!hasErrors) {
+    return getDefaultError();
+  }
+
+  const fieldErrors: Record<string, string> = {};
+  const errors = apiError.errors || apiError.data?.errors || {};
+
+  Object.entries(errors).forEach(([field, messages]) => {
+    if (Array.isArray(messages) && messages.length > 0) {
+      const translatedMessage = translateErrorMessage(messages[0]);
+      fieldErrors[field] = translatedMessage;
+    }
+  });
+
+  const message =
+    apiError.data?.message || apiError.message || 'The given data was invalid.';
+  const translatedMessage = translateErrorMessage(message);
+
+  return {
+    message: translatedMessage,
+    fieldErrors,
+    isValidationError: true,
+    isNetworkError: false,
+    isServerError: false,
+    isAuthError: false,
+  };
+}
+
+/**
+ * HTTPステータスエラーを処理
+ */
+function handleStatusError(status: number): ProcessedError {
+  const defaultError = getDefaultError();
+
+  if (status === 401) {
+    return {
+      ...defaultError,
+      message: 'メールアドレスまたはパスワードが正しくありません。',
+      isAuthError: true,
+    };
+  }
+
+  if (status === 403) {
+    return {
+      ...defaultError,
+      message: 'アクセスが拒否されました。',
+    };
+  }
+
+  if (status === 404) {
+    return {
+      ...defaultError,
+      message: '要求されたリソースが見つかりません。',
+    };
+  }
+
+  if (status === 429) {
+    return {
+      ...defaultError,
+      message: 'リクエストが多すぎます。しばらく待ってから再試行してください。',
+    };
+  }
+
+  if (status >= 500) {
+    return {
+      ...defaultError,
+      message:
+        'サーバーで問題が発生しました。しばらくしてから再試行してください。',
+      isServerError: true,
+    };
+  }
+
+  return defaultError;
+}
+
+/**
+ * APIエラーオブジェクトを処理
+ */
+function handleApiError(error: ApiErrorClass): ProcessedError {
+  const status = error.status || 0;
+  const defaultError = getDefaultError();
+
+  if (status === 422) {
+    return handleValidationError(error);
+  }
+
+  const statusError = handleStatusError(status);
+  if (statusError.message !== getDefaultError().message) {
+    return statusError;
+  }
+
+  const message =
+    error.data?.message || error.message || `エラーが発生しました（${status}）`;
+
+  return {
+    ...defaultError,
+    message: translateErrorMessage(message),
+  };
+}
+
+/**
+ * 一般的なエラーオブジェクトからメッセージを抽出
+ */
+function extractErrorMessage(error: unknown): string {
+  const defaultMessage = getDefaultError().message;
+
+  if (typeof error === 'object' && error && 'message' in error) {
+    return String(error.message);
+  }
+
+  if (
+    typeof error === 'object' &&
+    error &&
+    'data' in error &&
+    typeof error.data === 'object' &&
+    error.data &&
+    'message' in error.data
+  ) {
+    return String(error.data.message);
+  }
+
+  return defaultMessage;
+}
+
+/**
+ * APIエラーを統一的に処理する関数
+ */
+export function processApiError(error: unknown): ProcessedError {
+  const defaultError = getDefaultError();
 
   // ネットワークエラーやその他の非APIエラーの場合
-  if (!error || (typeof error !== 'object') || (!('status' in error) && !('name' in error))) {
+  if (
+    !error ||
+    typeof error !== 'object' ||
+    (!('status' in error) && !('name' in error))
+  ) {
     return {
       ...defaultError,
       message: '接続に問題があります。しばらくしてから再試行してください。',
@@ -96,115 +236,25 @@ export function processApiError(error: unknown): ProcessedError {
   }
 
   // ApiErrorClassのインスタンスの場合
-  if (('name' in error && error.name === 'ApiError') || error instanceof Error) {
-    const apiError = error as ApiErrorClass;
-    const status = apiError.status || 0;
-
-    // バリデーションエラー（422）の処理
-    if (status === 422) {
-      const hasErrors = apiError.errors || apiError.data?.errors;
-
-      if (hasErrors) {
-        const fieldErrors: Record<string, string> = {};
-        const errors = apiError.errors || apiError.data?.errors || {};
-
-        // Laravel形式のエラーレスポンス処理
-        Object.entries(errors).forEach(([field, messages]) => {
-          if (Array.isArray(messages) && messages.length > 0) {
-            const translatedMessage = translateErrorMessage(messages[0]);
-            fieldErrors[field] = translatedMessage;
-          }
-        });
-
-        const message =
-          apiError.data?.message ||
-          apiError.message ||
-          'The given data was invalid.';
-        const translatedMessage = translateErrorMessage(message);
-
-        const result = {
-          message: translatedMessage,
-          fieldErrors,
-          isValidationError: true,
-          isNetworkError: false,
-          isServerError: false,
-          isAuthError: false,
-        };
-
-        return result;
-      } else {
-      }
-    }
-
-    // 認証エラー（401）の処理
-    if (status === 401) {
-      return {
-        ...defaultError,
-        message: 'メールアドレスまたはパスワードが正しくありません。',
-        isAuthError: true,
-      };
-    }
-
-    // 権限エラー（403）の処理
-    if (status === 403) {
-      return {
-        ...defaultError,
-        message: 'アクセスが拒否されました。',
-      };
-    }
-
-    // 見つからないエラー（404）の処理
-    if (status === 404) {
-      return {
-        ...defaultError,
-        message: '要求されたリソースが見つかりません。',
-      };
-    }
-
-    // レート制限エラー（429）の処理
-    if (status === 429) {
-      return {
-        ...defaultError,
-        message:
-          'リクエストが多すぎます。しばらく待ってから再試行してください。',
-      };
-    }
-
-    // サーバーエラー（500系）の処理
-    if (status >= 500) {
-      return {
-        ...defaultError,
-        message:
-          'サーバーで問題が発生しました。しばらくしてから再試行してください。',
-        isServerError: true,
-      };
-    }
-
-    // その他のAPIエラー
-    const message =
-      apiError.data?.message ||
-      apiError.message ||
-      `エラーが発生しました（${status}）`;
-    return {
-      ...defaultError,
-      message: translateErrorMessage(message),
-    };
+  if (
+    ('name' in error && error.name === 'ApiError') ||
+    error instanceof Error
+  ) {
+    return handleApiError(error as ApiErrorClass);
   }
 
   // その他のエラー
-  const message = (typeof error === 'object' && error && 'message' in error ? error.message : null) || 
-                 (typeof error === 'object' && error && 'data' in error && typeof error.data === 'object' && error.data && 'message' in error.data ? error.data.message : null) || 
-                 defaultError.message;
+  const message = extractErrorMessage(error);
   return {
     ...defaultError,
-    message: translateErrorMessage(String(message)),
+    message: translateErrorMessage(message),
   };
 }
 
 /**
  * フォームエラーを設定するヘルパー関数
  */
-export function setFormErrors<T extends Record<string, unknown>>(
+export function setFormErrors<_T extends Record<string, unknown>>(
   setError: (name: string, error: { message: string }) => void,
   fieldErrors: Record<string, string>
 ): void {

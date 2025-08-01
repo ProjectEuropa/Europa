@@ -25,12 +25,12 @@ describe('dateFormatters', () => {
     });
 
     it('null値の場合は「未設定」を返す', () => {
-      const result = formatDownloadDateTime(null as any);
+      const result = formatDownloadDateTime(null as never);
       expect(result).toBe('未設定');
     });
 
     it('undefined値の場合は「未設定」を返す', () => {
-      const result = formatDownloadDateTime(undefined as any);
+      const result = formatDownloadDateTime(undefined as never);
       expect(result).toBe('未設定');
     });
 
@@ -73,7 +73,7 @@ describe('dateFormatters', () => {
       const originalDate = global.Date;
       global.Date = vi.fn(() => {
         throw new Error('Date constructor error');
-      }) as any;
+      }) as never;
 
       const result = formatDownloadDateTime('2023-01-01T00:00:00Z');
 
@@ -122,12 +122,12 @@ describe('dateFormatters', () => {
     });
 
     it('null値の場合は「-」を返す', () => {
-      const result = formatUploadDateTime(null as any);
+      const result = formatUploadDateTime(null as never);
       expect(result).toBe('-');
     });
 
     it('undefined値の場合は「-」を返す', () => {
-      const result = formatUploadDateTime(undefined as any);
+      const result = formatUploadDateTime(undefined as never);
       expect(result).toBe('-');
     });
 
@@ -170,7 +170,7 @@ describe('dateFormatters', () => {
       const originalDate = global.Date;
       global.Date = vi.fn(() => {
         throw new Error('Date constructor error');
-      }) as any;
+      }) as never;
 
       const result = formatUploadDateTime('2023-01-01T00:00:00Z');
 
@@ -201,6 +201,25 @@ describe('dateFormatters', () => {
   });
 
   describe('両関数の一貫性', () => {
+    // ヘルパー関数：テスト入力に対する期待値をチェック
+    const checkConsistency = (input: unknown) => {
+      const downloadResult = formatDownloadDateTime(input as never);
+      const uploadResult = formatUploadDateTime(input as never);
+
+      if (input === '' || input === null || input === undefined) {
+        // null/undefined の場合は異なる結果を期待
+        expect(downloadResult).toBe('未設定');
+        expect(uploadResult).toBe('-');
+      } else if (input === 'invalid-date') {
+        // 無効な日時の場合は両方とも「日時解析エラー」
+        expect(downloadResult).toBe('日時解析エラー');
+        expect(uploadResult).toBe('日時解析エラー');
+      } else {
+        // 有効な日時の場合は同じフォーマット結果
+        expect(downloadResult).toBe(uploadResult);
+      }
+    };
+
     it('同じ入力に対して同じフォーマット結果を返す（空文字列以外）', () => {
       const testInputs = [
         '2023-01-01T00:00:00Z',
@@ -210,25 +229,7 @@ describe('dateFormatters', () => {
         undefined,
       ];
 
-      testInputs.forEach(input => {
-        const downloadResult = formatDownloadDateTime(input as any);
-        const uploadResult = formatUploadDateTime(input as any);
-
-        if (input === '' || input === null || input === undefined) {
-          // 空文字列の場合のみ異なる結果を期待
-          if (input === '' || input === null || input === undefined) {
-            expect(downloadResult).toBe('未設定');
-            expect(uploadResult).toBe('-');
-          }
-        } else if (input === 'invalid-date') {
-          // 無効な日時の場合は両方とも「日時解析エラー」
-          expect(downloadResult).toBe('日時解析エラー');
-          expect(uploadResult).toBe('日時解析エラー');
-        } else {
-          // 有効な日時の場合は同じフォーマット結果
-          expect(downloadResult).toBe(uploadResult);
-        }
-      });
+      testInputs.forEach(checkConsistency);
     });
   });
 
@@ -287,7 +288,7 @@ describe('dateFormatters', () => {
       const originalDate = global.Date;
       global.Date = vi.fn(() => {
         throw new Error('Unexpected error');
-      }) as any;
+      }) as never;
 
       formatDownloadDateTime('2023-01-01T00:00:00Z');
       expect(consoleErrorSpy).toHaveBeenCalledWith(

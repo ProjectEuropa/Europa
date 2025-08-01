@@ -76,7 +76,7 @@ describe('useLocalStorage', () => {
       }
       return [
         state,
-        (newState: any) => {
+        (newState: unknown) => {
           state = typeof newState === 'function' ? newState(state) : newState;
         },
       ];

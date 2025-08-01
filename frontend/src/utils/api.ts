@@ -52,9 +52,10 @@ export const apiRequest = async (
   if (!headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
   }
-
   // トークンベースの認証
-  if (token) headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   // Basic認証（特定の環境のみ）
   if (
@@ -367,7 +368,22 @@ export const registerEvent = async (formData: {
 export const fetchEvents = async () => {
   const res = await apiRequest('/api/v1/event', { method: 'GET' });
   if (!res.ok) throw new Error('取得に失敗しました');
-  return res.json(); // { data: [...] }
+  const response = await res.json();
+  // スネークケース→キャメルケース変換
+  return {
+    data: (response.data ?? []).map((event: any) => ({
+      id: String(event.id),
+      name: event.event_name ?? '',
+      details: event.event_details ?? '',
+      url: event.event_reference_url ?? '',
+      deadline: event.event_closing_day ?? '',
+      endDisplayDate: event.event_displaying_day ?? '',
+      type: event.event_type ?? '',
+      createdAt: event.created_at,
+      updatedAt: event.updated_at,
+      isActive: event.is_active,
+    }))
+  };
 };
 
 // マイページ：チームファイル取得API
