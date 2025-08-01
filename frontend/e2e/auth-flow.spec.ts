@@ -173,9 +173,7 @@ test.describe('Authentication Flow', () => {
       await page.getByRole('button', { name: /アカウント作成/ }).click();
 
       // Wait for form submission and check if button shows loading state
-      await expect(page.getByRole('button', { name: /登録中/ })).toBeVisible({ timeout: 2000 }).catch(() => {
-        console.log('No loading state found, form might not be submitting');
-      });
+      await expect(page.getByRole('button', { name: /登録中/ })).toBeVisible({ timeout: 2000 });
       
       // 成功後のリダイレクトを確認
       await expect(page).toHaveURL('/', { timeout: 5000 });

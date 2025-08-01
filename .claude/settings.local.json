@@ -35,7 +35,8 @@
       "Bash(composer show:*)",
       "mcp__serena__insert_before_symbol",
       "mcp__serena__get_symbols_overview",
-      "mcp__serena__switch_modes"
+      "mcp__serena__switch_modes",
+      "mcp__serena__think_about_collected_information"
     ],
     "deny": []
   }
