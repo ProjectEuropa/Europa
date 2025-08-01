@@ -401,12 +401,28 @@ describe('storage utilities', () => {
     beforeEach(() => {
       // 各テスト前にストレージモックをクリア
       Object.keys(mockLocalStorage).forEach(key => {
-        if (!['getItem', 'setItem', 'removeItem', 'clear', 'hasOwnProperty'].includes(key)) {
+        if (
+          ![
+            'getItem',
+            'setItem',
+            'removeItem',
+            'clear',
+            'hasOwnProperty',
+          ].includes(key)
+        ) {
           delete mockLocalStorage[key];
         }
       });
       Object.keys(mockSessionStorage).forEach(key => {
-        if (!['getItem', 'setItem', 'removeItem', 'clear', 'hasOwnProperty'].includes(key)) {
+        if (
+          ![
+            'getItem',
+            'setItem',
+            'removeItem',
+            'clear',
+            'hasOwnProperty',
+          ].includes(key)
+        ) {
           delete mockSessionStorage[key];
         }
       });
@@ -415,7 +431,7 @@ describe('storage utilities', () => {
     it('should calculate local storage size', () => {
       // 新しいクリーンなモックストレージオブジェクトを作成
       const cleanLocalStorage = {
-        'test-key': 'test-value'
+        'test-key': 'test-value',
       };
       Object.defineProperty(window, 'localStorage', {
         value: cleanLocalStorage,
@@ -425,7 +441,7 @@ describe('storage utilities', () => {
       const result = storage.getSize('local');
 
       expect(result).toBe('test-key'.length + 'test-value'.length);
-      
+
       // 元のモックを復元
       Object.defineProperty(window, 'localStorage', {
         value: mockLocalStorage,
@@ -436,7 +452,7 @@ describe('storage utilities', () => {
     it('should calculate session storage size', () => {
       // 新しいクリーンなモックストレージオブジェクトを作成
       const cleanSessionStorage = {
-        'session-key': 'session-value'
+        'session-key': 'session-value',
       };
       Object.defineProperty(window, 'sessionStorage', {
         value: cleanSessionStorage,
@@ -446,7 +462,7 @@ describe('storage utilities', () => {
       const result = storage.getSize('session');
 
       expect(result).toBe('session-key'.length + 'session-value'.length);
-      
+
       // 元のモックを復元
       Object.defineProperty(window, 'sessionStorage', {
         value: mockSessionStorage,
@@ -465,7 +481,7 @@ describe('storage utilities', () => {
       const result = storage.getSize();
 
       expect(result).toBe(0);
-      
+
       // 元のモックを復元
       Object.defineProperty(window, 'localStorage', {
         value: mockLocalStorage,

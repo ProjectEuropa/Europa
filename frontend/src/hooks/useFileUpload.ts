@@ -20,7 +20,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     status: 'idle',
   });
 
-  const updateProgress = useCallback(
+  const _updateProgress = useCallback(
     (progress: number) => {
       setUploadProgress(prev => ({
         ...prev,

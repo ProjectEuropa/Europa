@@ -243,13 +243,13 @@ describe('Icons', () => {
     it('should accept custom size for all icons', () => {
       const customSize = 48;
       const icons = [
-        <Icons.Logo size={customSize} />,
-        <Icons.TeamSearch size={customSize} />,
-        <Icons.Upload size={customSize} />,
-        <Icons.Menu size={customSize} />,
+        <Icons.Logo key="logo" size={customSize} />,
+        <Icons.TeamSearch key="teamsearch" size={customSize} />,
+        <Icons.Upload key="upload" size={customSize} />,
+        <Icons.Menu key="menu" size={customSize} />,
       ];
 
-      icons.forEach((icon, index) => {
+      icons.forEach((icon, _index) => {
         const { container } = render(icon);
         const svg = container.querySelector('svg');
         expect(svg).toHaveAttribute('width', customSize.toString());
@@ -260,10 +260,10 @@ describe('Icons', () => {
     it('should accept custom color for all icons', () => {
       const customColor = '#ff5500';
       const icons = [
-        <Icons.TeamSearch color={customColor} />,
-        <Icons.Upload color={customColor} />,
-        <Icons.Login color={customColor} />,
-        <Icons.Menu color={customColor} />,
+        <Icons.TeamSearch key="teamsearch" color={customColor} />,
+        <Icons.Upload key="upload" color={customColor} />,
+        <Icons.Login key="login" color={customColor} />,
+        <Icons.Menu key="menu" color={customColor} />,
       ];
 
       icons.forEach(icon => {

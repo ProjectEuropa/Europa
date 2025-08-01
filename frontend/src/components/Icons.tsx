@@ -1,5 +1,3 @@
-import React from 'react';
-
 // SVGアイコンコンポーネント
 const Icons = {
   // ロゴ

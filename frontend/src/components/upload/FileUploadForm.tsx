@@ -60,16 +60,6 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     setFormData(prev => ({ ...prev, ...updates }));
   }, []);
 
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files.length > 0) {
-        const file = e.target.files[0];
-        validateAndSetFile(file);
-      }
-    },
-    []
-  );
-
   const validateAndSetFile = useCallback(
     (file: File) => {
       // ファイル拡張子チェック
@@ -92,6 +82,16 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
       });
     },
     [maxFileSize]
+  );
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        const file = e.target.files[0];
+        validateAndSetFile(file);
+      }
+    },
+    [validateAndSetFile]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {

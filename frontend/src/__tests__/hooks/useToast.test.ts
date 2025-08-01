@@ -145,9 +145,9 @@ describe('useToast', () => {
       });
     });
 
-    expect(id!).toBeDefined();
-    expect(typeof id!).toBe('string');
-    expect(id!.length).toBeGreaterThan(0);
+    expect(id).toBeDefined();
+    expect(typeof id).toBe('string');
+    expect(id?.length).toBeGreaterThan(0);
   });
 
   it('should call custom toast for unknown type', async () => {
@@ -156,7 +156,7 @@ describe('useToast', () => {
 
     act(() => {
       result.current.toast({
-        type: 'unknown' as any,
+        type: 'unknown' as 'success' | 'error' | 'warning' | 'info',
         title: 'Unknown',
         message: 'Unknown type',
       });

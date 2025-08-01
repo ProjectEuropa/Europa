@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import type { TabItem, TabsProps } from '@/types/ui';
+import type { TabsProps } from '@/types/ui';
 
 /**
  * タブコンポーネント

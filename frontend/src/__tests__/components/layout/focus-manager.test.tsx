@@ -1,13 +1,12 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { 
-  FocusTrap, 
-  SkipLink, 
+import { fireEvent, render, renderHook, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  FocusTrap,
   LiveRegion,
+  SkipLink,
   useFocusManagement,
-  useKeyboardNavigation 
+  useKeyboardNavigation,
 } from '@/components/layout/focus-manager';
-import { renderHook } from '@testing-library/react';
 
 describe('Focus Management Components', () => {
   beforeEach(() => {
@@ -18,23 +17,27 @@ describe('Focus Management Components', () => {
     it('should render children', () => {
       render(
         <FocusTrap>
-          <button>Test Button</button>
+          <button type="button">Test Button</button>
         </FocusTrap>
       );
 
-      expect(screen.getByRole('button', { name: 'Test Button' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Test Button' })
+      ).toBeInTheDocument();
     });
 
     it('should trap focus when active', () => {
       render(
         <FocusTrap active={true}>
-          <button>First Button</button>
-          <button>Second Button</button>
+          <button type="button">First Button</button>
+          <button type="button">Second Button</button>
         </FocusTrap>
       );
 
       const firstButton = screen.getByRole('button', { name: 'First Button' });
-      const secondButton = screen.getByRole('button', { name: 'Second Button' });
+      const secondButton = screen.getByRole('button', {
+        name: 'Second Button',
+      });
 
       expect(firstButton).toBeInTheDocument();
       expect(secondButton).toBeInTheDocument();
@@ -43,60 +46,54 @@ describe('Focus Management Components', () => {
     it('should not trap focus when inactive', () => {
       render(
         <FocusTrap active={false}>
-          <button>Test Button</button>
+          <button type="button">Test Button</button>
         </FocusTrap>
       );
 
-      expect(screen.getByRole('button', { name: 'Test Button' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Test Button' })
+      ).toBeInTheDocument();
     });
   });
 
   describe('SkipLink', () => {
     it('should render skip link with correct href', () => {
-      render(
-        <SkipLink href="#main-content">
-          Skip to main content
-        </SkipLink>
-      );
+      render(<SkipLink href="#main-content">Skip to main content</SkipLink>);
 
-      const skipLink = screen.getByRole('link', { name: 'Skip to main content' });
+      const skipLink = screen.getByRole('link', {
+        name: 'Skip to main content',
+      });
       expect(skipLink).toHaveAttribute('href', '#main-content');
     });
 
     it('should be positioned off-screen by default', () => {
-      render(
-        <SkipLink href="#main-content">
-          Skip to main content
-        </SkipLink>
-      );
+      render(<SkipLink href="#main-content">Skip to main content</SkipLink>);
 
-      const skipLink = screen.getByRole('link', { name: 'Skip to main content' });
+      const skipLink = screen.getByRole('link', {
+        name: 'Skip to main content',
+      });
       expect(skipLink.style.left).toBe('-9999px');
     });
 
     it('should become visible on focus', () => {
-      render(
-        <SkipLink href="#main-content">
-          Skip to main content
-        </SkipLink>
-      );
+      render(<SkipLink href="#main-content">Skip to main content</SkipLink>);
 
-      const skipLink = screen.getByRole('link', { name: 'Skip to main content' });
-      
+      const skipLink = screen.getByRole('link', {
+        name: 'Skip to main content',
+      });
+
       fireEvent.focus(skipLink);
       expect(skipLink.style.left).toBe('8px');
       expect(skipLink.style.top).toBe('8px');
     });
 
     it('should hide on blur', () => {
-      render(
-        <SkipLink href="#main-content">
-          Skip to main content
-        </SkipLink>
-      );
+      render(<SkipLink href="#main-content">Skip to main content</SkipLink>);
 
-      const skipLink = screen.getByRole('link', { name: 'Skip to main content' });
-      
+      const skipLink = screen.getByRole('link', {
+        name: 'Skip to main content',
+      });
+
       fireEvent.focus(skipLink);
       fireEvent.blur(skipLink);
       expect(skipLink.style.left).toBe('-9999px');
@@ -117,11 +114,7 @@ describe('Focus Management Components', () => {
     });
 
     it('should be visually hidden', () => {
-      render(
-        <LiveRegion>
-          Status update
-        </LiveRegion>
-      );
+      render(<LiveRegion>Status update</LiveRegion>);
 
       const liveRegion = screen.getByText('Status update');
       expect(liveRegion.style.position).toBe('absolute');
@@ -129,11 +122,7 @@ describe('Focus Management Components', () => {
     });
 
     it('should use default politeness level', () => {
-      render(
-        <LiveRegion>
-          Status update
-        </LiveRegion>
-      );
+      render(<LiveRegion>Status update</LiveRegion>);
 
       const liveRegion = screen.getByText('Status update');
       expect(liveRegion).toHaveAttribute('aria-live', 'polite');
@@ -176,10 +165,12 @@ describe('Focus Management Components', () => {
 
       const onActivate = vi.fn();
 
-      renderHook(() => useKeyboardNavigation(mockItems, {
-        onActivate,
-        orientation: 'vertical',
-      }));
+      renderHook(() =>
+        useKeyboardNavigation(mockItems, {
+          onActivate,
+          orientation: 'vertical',
+        })
+      );
 
       // Test would require more complex setup to simulate keyboard events
       expect(onActivate).not.toHaveBeenCalled();

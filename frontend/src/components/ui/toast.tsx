@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Toaster as SonnerToaster } from 'sonner';
 import type { ToastType } from '@/types/ui';
 
@@ -54,7 +53,7 @@ export const toast = {
   },
   custom: (data: ToastType) => {
     import('sonner').then(({ toast }) => {
-      toast.custom(t => (
+      toast.custom(_t => (
         <div
           className={`${
             data.type === 'success'

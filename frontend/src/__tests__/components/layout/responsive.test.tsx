@@ -1,16 +1,15 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { 
-  ResponsiveContainer, 
-  ResponsiveGrid, 
+import { render, renderHook, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
   ShowOn,
   useBreakpoint,
-  useMediaQuery 
+  useMediaQuery,
 } from '@/components/layout/responsive';
-import { renderHook, act } from '@testing-library/react';
 
 // モックのwindowオブジェクト
-const mockWindow = {
+const _mockWindow = {
   innerWidth: 1024,
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),

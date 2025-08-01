@@ -20,8 +20,13 @@
     "test:coverage:ui": "vitest --ui --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "preinstall": "npx npm-force-resolutions",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --noEmit",
+    "analyze": "ANALYZE=true npm run build",
+    "clean": "rm -rf .next out node_modules/.cache",
+    "ci": "npm run test:run && npm run build"
   },
   "overrides": {
     "undici": "^6.0.0",
@@ -86,8 +91,15 @@
     "node": "22.15.1"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json}": [
-      "biome check --write"
+    "*.{js,jsx,ts,tsx}": [
+      "biome check --write --no-errors-on-unmatched",
+      "vitest related --run --reporter=verbose"
+    ],
+    "*.{json,md}": [
+      "biome format --write --no-errors-on-unmatched"
+    ],
+    "*.{css,scss}": [
+      "biome format --write --no-errors-on-unmatched"
     ]
   }
 }

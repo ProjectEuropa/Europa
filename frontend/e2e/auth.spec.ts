@@ -23,7 +23,7 @@ test.describe('Basic Authentication Pages', () => {
     await expect(page.locator('input#name')).toBeVisible();
     await expect(page.locator('input#email')).toBeVisible();
     await expect(page.locator('input#password')).toBeVisible();
-    await expect(page.locator('input#confirmPassword')).toBeVisible();
+    await expect(page.locator('input#passwordConfirmation')).toBeVisible();
     await expect(page.getByRole('button', { name: /アカウント作成/ })).toBeVisible();
   });
 

@@ -1,0 +1,74 @@
+version: 2
+updates:
+  # Frontend dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "m2"
+    assignees:
+      - "m2"
+    commit-message:
+      prefix: "frontend"
+      include: "scope"
+    groups:
+      production-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@types/*"
+          - "@vitest/*"
+          - "@playwright/*"
+          - "@testing-library/*"
+          - "vitest"
+          - "playwright"
+      development-dependencies:
+        patterns:
+          - "@types/*"
+          - "@vitest/*"
+          - "@playwright/*"
+          - "@testing-library/*"
+          - "vitest"
+          - "playwright"
+          - "@biomejs/*"
+          - "husky"
+          - "lint-staged"
+
+  # Backend dependencies
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "m2"
+    assignees:
+      - "m2"
+    commit-message:
+      prefix: "backend"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "m2"
+    assignees:
+      - "m2"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

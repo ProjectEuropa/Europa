@@ -81,7 +81,7 @@ describe('eventSchema', () => {
     });
 
     it('should accept undefined URL', () => {
-      const { url, ...dataWithoutUrl } = validEventData;
+      const { url: _url, ...dataWithoutUrl } = validEventData;
       const result = eventSchema.safeParse(dataWithoutUrl);
       expect(result.success).toBe(true);
     });
@@ -157,7 +157,7 @@ describe('eventSchema', () => {
     });
 
     it('should reject invalid event type', () => {
-      const data = { ...validEventData, type: 'invalid' as any };
+      const data = { ...validEventData, type: 'invalid' as never };
       const result = eventSchema.safeParse(data);
       expect(result.success).toBe(false);
     });
@@ -179,7 +179,7 @@ describe('eventSchema', () => {
         url: 'invalid-url',
         deadline: 'invalid-date',
         endDisplayDate: 'invalid-date',
-        type: 'invalid' as any,
+        type: 'invalid' as never,
       };
 
       const result = eventSchema.safeParse(invalidData);

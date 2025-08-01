@@ -35,7 +35,10 @@ export default function Icon() {
         viewBox="0 0 180 180"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-label="Europa Project Logo"
       >
+        <title>Europa Project Logo</title>
         <path
           d="M45 45H135M45 90H112.5M45 135H135"
           stroke="white"

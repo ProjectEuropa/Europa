@@ -343,7 +343,7 @@ describe('helpers', () => {
     });
 
     it('should reject passwords that are too long', () => {
-      const longPassword = 'A1' + 'a'.repeat(127); // 129 characters
+      const longPassword = `A1${'a'.repeat(127)}`; // 129 characters
       expect(helpers.isValidPassword(longPassword)).toBe(false);
     });
   });

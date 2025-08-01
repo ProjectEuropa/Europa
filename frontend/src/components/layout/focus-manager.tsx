@@ -44,7 +44,7 @@ export function useFocusManagement() {
     };
 
     container.addEventListener('keydown', handleKeyDown);
-    
+
     // 最初の要素にフォーカス
     firstElement?.focus();
 
@@ -69,11 +69,11 @@ interface FocusTrapProps {
   className?: string;
 }
 
-export function FocusTrap({ 
-  children, 
-  active = true, 
+export function FocusTrap({
+  children,
+  active = true,
   restoreFocus = true,
-  className = '' 
+  className = '',
 }: FocusTrapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
@@ -92,7 +92,7 @@ export function FocusTrap({
 
     return () => {
       cleanup();
-      
+
       // フォーカスを元の要素に戻す
       if (restoreFocus && previousActiveElementRef.current) {
         previousActiveElementRef.current.focus();
@@ -135,11 +135,11 @@ export function SkipLink({ href, children, className = '' }: SkipLinkProps) {
         border: '2px solid #00c8ff',
         transition: 'left 0.3s',
       }}
-      onFocus={(e) => {
+      onFocus={e => {
         e.currentTarget.style.left = '8px';
         e.currentTarget.style.top = '8px';
       }}
-      onBlur={(e) => {
+      onBlur={e => {
         e.currentTarget.style.left = '-9999px';
       }}
     >
@@ -158,11 +158,11 @@ interface LiveRegionProps {
   className?: string;
 }
 
-export function LiveRegion({ 
-  children, 
-  politeness = 'polite', 
+export function LiveRegion({
+  children,
+  politeness = 'polite',
   atomic = false,
-  className = '' 
+  className = '',
 }: LiveRegionProps) {
   return (
     <div
@@ -207,9 +207,9 @@ export function useFocusVisible() {
         outline: none;
       }
     `;
-    
+
     document.head.appendChild(style);
-    
+
     return () => {
       document.head.removeChild(style);
     };
@@ -228,10 +228,12 @@ export function useKeyboardNavigation(
   } = {}
 ) {
   const { loop = true, orientation = 'vertical', onActivate } = options;
-  
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const currentIndex = items.findIndex(item => item === document.activeElement);
+      const currentIndex = items.findIndex(
+        item => item === document.activeElement
+      );
       if (currentIndex === -1) return;
 
       let nextIndex = currentIndex;
@@ -239,11 +241,17 @@ export function useKeyboardNavigation(
       switch (event.key) {
         case orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp':
           event.preventDefault();
-          nextIndex = currentIndex > 0 ? currentIndex - 1 : (loop ? items.length - 1 : 0);
+          nextIndex =
+            currentIndex > 0 ? currentIndex - 1 : loop ? items.length - 1 : 0;
           break;
         case orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown':
           event.preventDefault();
-          nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : (loop ? 0 : items.length - 1);
+          nextIndex =
+            currentIndex < items.length - 1
+              ? currentIndex + 1
+              : loop
+                ? 0
+                : items.length - 1;
           break;
         case 'Home':
           event.preventDefault();

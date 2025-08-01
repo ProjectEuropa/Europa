@@ -85,7 +85,7 @@ describe('authStore', () => {
     });
 
     it('should set loading state during login', async () => {
-      let resolveLogin: (value: any) => void;
+      let resolveLogin: (value: unknown) => void;
       const loginPromise = new Promise(resolve => {
         resolveLogin = resolve;
       });
@@ -102,7 +102,7 @@ describe('authStore', () => {
       expect(useAuthStore.getState().loading).toBe(true);
 
       // ログインを完了
-      resolveLogin!({ token: mockToken, user: mockUser });
+      resolveLogin?.({ token: mockToken, user: mockUser });
       await loginCall;
 
       expect(useAuthStore.getState().loading).toBe(false);

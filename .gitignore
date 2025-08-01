@@ -29,3 +29,5 @@ frontend/playwright/.cache/
 frontend/coverage/
 
 /.serena/cache
+
+/.claude/*

@@ -6,9 +6,10 @@ import Calendar from '@/components/Calendar';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { fetchEvents } from '@/utils/api';
+import type { Event } from '@/types/event';
 
 const InformationPage: React.FC = () => {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -105,10 +106,10 @@ const InformationPage: React.FC = () => {
                 <Calendar
                   initialDate={new Date()}
                   events={events.map(ev => ({
-                    date: ev.event_closing_day,
-                    title: ev.event_name,
-                    details: ev.event_details,
-                    url: ev.event_reference_url,
+                    date: ev.deadline,
+                    title: ev.name,
+                    details: ev.details,
+                    url: ev.url,
                   }))}
                 />
               </div>
@@ -180,8 +181,8 @@ const InformationPage: React.FC = () => {
                           flexShrink: 0,
                         }}
                       >
-                        {ev.event_closing_day
-                          ? new Date(ev.event_closing_day).toLocaleDateString(
+                        {ev.deadline
+                          ? new Date(ev.deadline).toLocaleDateString(
                               'ja-JP',
                               {
                                 month: 'numeric',
@@ -200,15 +201,15 @@ const InformationPage: React.FC = () => {
                         <div
                           style={{ fontWeight: 'bold', marginBottom: '2px' }}
                         >
-                          {ev.event_name}
+                          {ev.name}
                         </div>
                         <div style={{ fontSize: '0.95em', color: '#b0c4d8' }}>
-                          {ev.event_details}
+                          {ev.details}
                         </div>
-                        {ev.event_reference_url && (
+                        {ev.url && (
                           <div style={{ marginTop: '2px' }}>
                             <a
-                              href={ev.event_reference_url}
+                              href={ev.url}
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{
@@ -230,8 +231,8 @@ const InformationPage: React.FC = () => {
                           flexShrink: 0,
                         }}
                       >
-                        {ev.event_closing_day
-                          ? new Date(ev.event_closing_day).toLocaleTimeString(
+                        {ev.deadline
+                          ? new Date(ev.deadline).toLocaleTimeString(
                               'ja-JP',
                               { hour: '2-digit', minute: '2-digit' }
                             )

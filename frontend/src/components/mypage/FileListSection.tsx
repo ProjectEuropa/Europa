@@ -2,15 +2,18 @@
 
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import {
   useDeleteFile,
   useMyMatchFiles,
   useMyTeamFiles,
 } from '@/hooks/api/useMyPage';
-import type { MyPageFile } from '@/types/user';
 import { useAuthStore } from '@/stores/authStore';
-import { formatDownloadDateTime, formatUploadDateTime, getAccessibilityDateInfo } from '@/utils/dateFormatters';
+import type { MyPageFile } from '@/types/user';
+import {
+  formatDownloadDateTime,
+  formatUploadDateTime,
+  getAccessibilityDateInfo,
+} from '@/utils/dateFormatters';
 
 interface FileListSectionProps {
   type: 'team' | 'match';
@@ -96,9 +99,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
     }
   };
 
-
-
-  const formatFileSize = (size?: number) => {
+  const _formatFileSize = (size?: number) => {
     if (!size) return '';
     if (size < 1024) return `${size}B`;
     if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)}KB`;
@@ -143,14 +144,16 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
           <summary style={{ cursor: 'pointer', marginBottom: '8px' }}>
             エラー詳細を表示
           </summary>
-          <pre style={{
-            background: '#0F1A2E',
-            padding: '8px',
-            borderRadius: '4px',
-            overflow: 'auto',
-            fontSize: '0.8rem',
-            whiteSpace: 'pre-wrap'
-          }}>
+          <pre
+            style={{
+              background: '#0F1A2E',
+              padding: '8px',
+              borderRadius: '4px',
+              overflow: 'auto',
+              fontSize: '0.8rem',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
             {error instanceof Error ? error.message : String(error)}
           </pre>
         </details>
@@ -257,17 +260,21 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
           >
             <table
               style={{ width: '100%', borderCollapse: 'collapse' }}
-              role="table"
               aria-label={`${isTeam ? 'チーム' : 'マッチ'}ファイル一覧テーブル`}
             >
-              <caption style={{
-                position: 'absolute',
-                left: '-10000px',
-                width: '1px',
-                height: '1px',
-                overflow: 'hidden'
-              }}>
-                {isTeam ? 'アップロードしたチームファイル' : 'アップロードしたマッチファイル'}の一覧。
+              <caption
+                style={{
+                  position: 'absolute',
+                  left: '-10000px',
+                  width: '1px',
+                  height: '1px',
+                  overflow: 'hidden',
+                }}
+              >
+                {isTeam
+                  ? 'アップロードしたチームファイル'
+                  : 'アップロードしたマッチファイル'}
+                の一覧。
                 ファイル名、アップロード日時、ダウンロード日時、操作ボタンが表示されています。
               </caption>
               <thead>
@@ -329,9 +336,19 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
               <tbody>
                 {filteredFiles.map(file => {
                   const uploadFormatted = formatUploadDateTime(file.uploadDate);
-                  const downloadFormatted = formatDownloadDateTime(file.downloadableAt ?? null);
-                  const uploadAccessibility = getAccessibilityDateInfo(file.uploadDate, uploadFormatted, 'upload');
-                  const downloadAccessibility = getAccessibilityDateInfo(file.downloadableAt ?? null, downloadFormatted, 'download');
+                  const downloadFormatted = formatDownloadDateTime(
+                    file.downloadableAt ?? null
+                  );
+                  const uploadAccessibility = getAccessibilityDateInfo(
+                    file.uploadDate,
+                    uploadFormatted,
+                    'upload'
+                  );
+                  const downloadAccessibility = getAccessibilityDateInfo(
+                    file.downloadableAt ?? null,
+                    downloadFormatted,
+                    'download'
+                  );
 
                   return (
                     <tr
@@ -367,81 +384,89 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                           textAlign: 'center',
                         }}
                       >
-                      <div
-                        style={{
-                          display: 'flex',
-                          gap: '8px',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {file.comment && (
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '8px',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {file.comment && (
+                            <button
+                              onClick={() => handleCommentClick(file)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  handleCommentClick(file);
+                                }
+                              }}
+                              aria-label={`${file.name}のコメントを表示`}
+                              title={`${file.name}のコメントを表示します`}
+                              tabIndex={0}
+                              style={{
+                                background: 'transparent',
+                                border: '1px solid #8CB4FF',
+                                borderRadius: '4px',
+                                color: '#8CB4FF',
+                                padding: '4px 8px',
+                                fontSize: '0.8rem',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              コメント
+                            </button>
+                          )}
                           <button
-                            onClick={() => handleCommentClick(file)}
-                            onKeyDown={(e) => {
+                            onClick={() => handleDelete(file.id)}
+                            onKeyDown={e => {
                               if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
-                                handleCommentClick(file);
+                                handleDelete(file.id);
                               }
                             }}
-                            aria-label={`${file.name}のコメントを表示`}
-                            title={`${file.name}のコメントを表示します`}
+                            disabled={deleteFileMutation.isPending}
+                            aria-label={`${file.name}を削除`}
+                            aria-describedby={
+                              deleteFileMutation.isPending
+                                ? `delete-status-${file.id}`
+                                : undefined
+                            }
+                            title={
+                              deleteFileMutation.isPending
+                                ? '削除処理中です'
+                                : `${file.name}を削除します`
+                            }
                             tabIndex={0}
                             style={{
                               background: 'transparent',
-                              border: '1px solid #8CB4FF',
+                              border: '1px solid #ff6b6b',
                               borderRadius: '4px',
-                              color: '#8CB4FF',
+                              color: '#ff6b6b',
                               padding: '4px 8px',
                               fontSize: '0.8rem',
-                              cursor: 'pointer',
+                              cursor: deleteFileMutation.isPending
+                                ? 'not-allowed'
+                                : 'pointer',
+                              opacity: deleteFileMutation.isPending ? 0.5 : 1,
                             }}
                           >
-                            コメント
+                            削除
                           </button>
-                        )}
-                        <button
-                          onClick={() => handleDelete(file.id)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              handleDelete(file.id);
-                            }
-                          }}
-                          disabled={deleteFileMutation.isPending}
-                          aria-label={`${file.name}を削除`}
-                          aria-describedby={deleteFileMutation.isPending ? `delete-status-${file.id}` : undefined}
-                          title={deleteFileMutation.isPending ? '削除処理中です' : `${file.name}を削除します`}
-                          tabIndex={0}
-                          style={{
-                            background: 'transparent',
-                            border: '1px solid #ff6b6b',
-                            borderRadius: '4px',
-                            color: '#ff6b6b',
-                            padding: '4px 8px',
-                            fontSize: '0.8rem',
-                            cursor: deleteFileMutation.isPending
-                              ? 'not-allowed'
-                              : 'pointer',
-                            opacity: deleteFileMutation.isPending ? 0.5 : 1,
-                          }}
-                        >
-                          削除
-                        </button>
-                        {deleteFileMutation.isPending && (
-                          <span
-                            id={`delete-status-${file.id}`}
-                            style={{
-                              position: 'absolute',
-                              left: '-10000px',
-                              width: '1px',
-                              height: '1px',
-                              overflow: 'hidden',
-                            }}
-                          >
-                            削除処理中です
-                          </span>
-                        )}
-                      </div>
+                          {deleteFileMutation.isPending && (
+                            <span
+                              id={`delete-status-${file.id}`}
+                              style={{
+                                position: 'absolute',
+                                left: '-10000px',
+                                width: '1px',
+                                height: '1px',
+                                overflow: 'hidden',
+                              }}
+                            >
+                              削除処理中です
+                            </span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -486,7 +511,9 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
                     marginBottom: '12px',
                   }}
                 >
-                  <span>アップロード: {formatUploadDateTime(file.uploadDate)}</span>
+                  <span>
+                    アップロード: {formatUploadDateTime(file.uploadDate)}
+                  </span>
                   <span>
                     公開: {formatDownloadDateTime(file.downloadableAt ?? null)}
                   </span>

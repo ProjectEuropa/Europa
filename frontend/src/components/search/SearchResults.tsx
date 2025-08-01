@@ -55,7 +55,7 @@ export const SearchResults = memo<SearchResultsProps>(
       }
 
       const date = new Date(dateValue);
-      if (isNaN(date.getTime())) return '無効な日付';
+      if (Number.isNaN(date.getTime())) return '無効な日付';
 
       return date.toLocaleString('ja-JP');
     };
@@ -73,7 +73,7 @@ export const SearchResults = memo<SearchResultsProps>(
           result.searchTag4,
         ].filter(Boolean),
       }));
-    }, [results]);
+    }, [results, formatDate]);
 
     // 削除処理
     const handleDeleteClick = (file: TeamFile | MatchFile) => {
@@ -340,15 +340,14 @@ export const SearchResults = memo<SearchResultsProps>(
                     wordBreak: 'break-all',
                   }}
                 >
-                  {result.comment &&
-                    result.comment
-                      .split(/\r?\n/)
-                      .map((line: string, idx: number, arr: string[]) => (
-                        <span key={idx}>
-                          {line}
-                          {idx < arr.length - 1 && <br />}
-                        </span>
-                      ))}
+                  {result.comment
+                    ?.split(/\r?\n/)
+                    .map((line: string, idx: number, arr: string[]) => (
+                      <span key={idx}>
+                        {line}
+                        {idx < arr.length - 1 && <br />}
+                      </span>
+                    ))}
                   <div style={{ marginTop: 4 }}>
                     {result.tags.map((tag, i) => (
                       <span

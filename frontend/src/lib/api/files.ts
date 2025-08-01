@@ -247,7 +247,7 @@ export const filesApi = {
 
       window.open(url, '_blank');
       return { success: true };
-    } catch (e) {
+    } catch (_e) {
       return { success: false, error: 'ダウンロード通信エラー' };
     }
   },

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import type { ModalProps } from '@/types/ui';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './dialog';

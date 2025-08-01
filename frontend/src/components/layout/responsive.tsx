@@ -50,7 +50,10 @@ export function useBreakpoint() {
     windowWidth,
     isMobile: currentBreakpoint === 'sm',
     isTablet: currentBreakpoint === 'md',
-    isDesktop: currentBreakpoint === 'lg' || currentBreakpoint === 'xl' || currentBreakpoint === '2xl',
+    isDesktop:
+      currentBreakpoint === 'lg' ||
+      currentBreakpoint === 'xl' ||
+      currentBreakpoint === '2xl',
   };
 }
 
@@ -61,8 +64,10 @@ export function useMediaQuery(breakpoint: Breakpoint) {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia(`(min-width: ${breakpoints[breakpoint]}px)`);
-    
+    const mediaQuery = window.matchMedia(
+      `(min-width: ${breakpoints[breakpoint]}px)`
+    );
+
     const handleChange = (e: MediaQueryListEvent) => {
       setMatches(e.matches);
     };
@@ -199,9 +204,13 @@ interface ShowOnProps {
   direction?: 'up' | 'down' | 'only';
 }
 
-export function ShowOn({ children, breakpoint, direction = 'up' }: ShowOnProps) {
+export function ShowOn({
+  children,
+  breakpoint,
+  direction = 'up',
+}: ShowOnProps) {
   const { currentBreakpoint, windowWidth } = useBreakpoint();
-  
+
   const shouldShow = () => {
     const currentWidth = windowWidth;
     const targetWidth = breakpoints[breakpoint];

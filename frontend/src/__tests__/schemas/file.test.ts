@@ -28,8 +28,11 @@ const FileSearchSchema = z.object({
   limit: z.number().positive().max(100).default(20),
 });
 
+// biome-ignore lint/correctness/noUnusedVariables: Used for type testing
 type File = z.infer<typeof FileSchema>;
+// biome-ignore lint/correctness/noUnusedVariables: Used for type testing
 type FileUpload = z.infer<typeof FileUploadSchema>;
+// biome-ignore lint/correctness/noUnusedVariables: Used for type testing
 type FileSearch = z.infer<typeof FileSearchSchema>;
 
 describe('File Schemas', () => {

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
+import type React from 'react';
 import Icons from '@/components/Icons';
 
 interface FooterProps {
@@ -9,9 +9,9 @@ interface FooterProps {
   variant?: 'default' | 'minimal';
 }
 
-const Footer: React.FC<FooterProps> = ({ 
-  className = '', 
-  variant = 'default' 
+const Footer: React.FC<FooterProps> = ({
+  className = '',
+  variant = 'default',
 }) => {
   return (
     <footer
@@ -68,7 +68,7 @@ const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* 機能 */}
-        <nav role="navigation" aria-label="機能メニュー">
+        <nav aria-label="機能メニュー">
           <div
             style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
           >
@@ -80,9 +80,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/search/team"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 チームデータ検索
@@ -91,9 +91,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/search/match"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 マッチデータ検索
@@ -102,9 +102,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/sumdownload/team"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 チームデータ一括DL
@@ -113,9 +113,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/sumdownload/match"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 マッチデータ一括DL
@@ -124,9 +124,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/info"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 Information
@@ -136,7 +136,7 @@ const Footer: React.FC<FooterProps> = ({
         </nav>
 
         {/* アカウント */}
-        <nav role="navigation" aria-label="アカウントメニュー">
+        <nav aria-label="アカウントメニュー">
           <div
             style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
           >
@@ -148,9 +148,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/login"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 ログイン
@@ -159,9 +159,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/register"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 新規登録
@@ -171,7 +171,7 @@ const Footer: React.FC<FooterProps> = ({
         </nav>
 
         {/* 問い合わせ・法的情報 */}
-        <nav role="navigation" aria-label="サポートメニュー">
+        <nav aria-label="サポートメニュー">
           <div
             style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
           >
@@ -183,9 +183,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/about"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 私たちについて
@@ -204,9 +204,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/privacy-policy"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 プライバシーポリシー
@@ -215,9 +215,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/terms-of-service"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 利用規約
@@ -226,9 +226,9 @@ const Footer: React.FC<FooterProps> = ({
             <li>
               <Link
                 href="/faq"
-                style={{ 
-                  color: '#b0c4d8', 
-                  textDecoration: 'none'
+                style={{
+                  color: '#b0c4d8',
+                  textDecoration: 'none',
                 }}
               >
                 よくある質問

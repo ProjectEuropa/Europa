@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SearchResults } from '@/components/search/SearchResults';
@@ -15,11 +15,21 @@ vi.mock('@/hooks/useSearch', () => ({
 
 // DeleteModalをモック
 vi.mock('@/components/DeleteModal', () => ({
-  DeleteModal: ({ open, onDelete, fileName }: any) =>
+  DeleteModal: ({
+    open,
+    onDelete,
+    fileName,
+  }: {
+    open: boolean;
+    onDelete: (password: string) => void;
+    fileName: string;
+  }) =>
     open ? (
       <div data-testid="delete-modal">
         <p>Delete {fileName}?</p>
-        <button onClick={() => onDelete('password123')}>Confirm Delete</button>
+        <button type="button" onClick={() => onDelete('password123')}>
+          Confirm Delete
+        </button>
       </div>
     ) : null,
 }));

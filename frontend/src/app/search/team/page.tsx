@@ -1,11 +1,6 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
-import TeamCards, { TeamData } from '@/components/search/TeamCards';
-import { searchTeams } from '@/utils/api';
+import { Suspense } from 'react';
 import ClientTeamSearch from './ClientTeamSearch';
 
 export default function TeamSearchPage() {

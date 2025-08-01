@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/stores/authStore';
 import type {
   MyPageEvent,
   MyPageFile,
@@ -13,12 +14,11 @@ import {
   fetchMyTeamFiles,
   updateUserName,
 } from '@/utils/api';
-import { useAuthStore } from '@/stores/authStore';
 
 // プロフィール取得
 export const useProfile = () => {
   // authStoreからユーザー情報を直接取得
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
 
   // ユーザーが存在しない場合のエラー処理
   if (!user) {
@@ -70,7 +70,8 @@ export const useUpdateProfile = () => {
 
 // チームファイル取得
 export const useMyTeamFiles = () => {
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
 
   return useQuery({
     queryKey: ['mypage', 'teams', user?.id],
@@ -85,8 +86,15 @@ export const useMyTeamFiles = () => {
           comment: item.file_comment ?? item.comment ?? '',
           type: 'team' as const,
         }));
-      } catch (error) {
-        console.error('Team files fetch error:', error);
+      } catch (error: any) {
+        // 401エラーの場合は自動ログアウト
+        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+          console.warn('Authentication failed, logging out user');
+          logout(() => {
+            window.location.href = '/login';
+          });
+          return [];
+        }
         throw error;
       }
     },
@@ -97,7 +105,8 @@ export const useMyTeamFiles = () => {
 
 // マッチファイル取得
 export const useMyMatchFiles = () => {
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
 
   return useQuery({
     queryKey: ['mypage', 'matches', user?.id],
@@ -112,8 +121,14 @@ export const useMyMatchFiles = () => {
           comment: item.file_comment ?? item.comment ?? '',
           type: 'match' as const,
         }));
-      } catch (error) {
-        console.error('Match files fetch error:', error);
+      } catch (error: any) {
+      // 401エラーの場合は自動ログアウト
+        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+          logout(() => {
+            window.location.href = '/login';
+          });
+          return [];
+        }
         throw error;
       }
     },
@@ -124,7 +139,8 @@ export const useMyMatchFiles = () => {
 
 // イベント取得
 export const useMyEvents = () => {
-  const user = useAuthStore((state) => state.user);
+  const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
 
   return useQuery({
     queryKey: ['mypage', 'events', user?.id],
@@ -137,17 +153,26 @@ export const useMyEvents = () => {
           details: item.details || item.event_details || '',
           url: item.url || item.event_reference_url || '',
           deadline: item.deadline || item.event_closing_day || '',
-          endDisplayDate: item.endDisplayDate || item.event_displaying_day || '',
+          endDisplayDate:
+            item.endDisplayDate || item.event_displaying_day || '',
           type:
             item.type === '大会' || item.event_type === '大会'
               ? 'tournament'
               : item.type === '告知' || item.event_type === '告知'
                 ? 'announcement'
                 : 'other',
-          registeredDate: item.registeredDate || item.created_at?.slice(0, 10) || '',
+          registeredDate:
+            item.registeredDate || item.created_at?.slice(0, 10) || '',
         }));
-      } catch (error) {
-        console.error('Events fetch error:', error);
+      } catch (error: any) {
+        // 401エラーの場合は自動ログアウト
+        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+          logout(() => {
+            window.location.href = '/login';
+          });
+          return [];
+        }
+
         throw error;
       }
     },

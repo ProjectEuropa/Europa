@@ -308,7 +308,9 @@ describe('DeleteModal', () => {
         cancelable: true,
       });
 
-      fireEvent(form!, submitEvent);
+      if (form) {
+        fireEvent(form, submitEvent);
+      }
 
       expect(submitEvent.defaultPrevented).toBe(true);
     });

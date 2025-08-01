@@ -21,7 +21,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
   // エンコードされたURL、タイトル、説明
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
-  const encodedDescription = encodeURIComponent(description);
+  const _encodedDescription = encodeURIComponent(description);
 
   // 各SNSのシェアURL
   const twitterUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
