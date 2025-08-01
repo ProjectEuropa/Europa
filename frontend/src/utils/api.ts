@@ -52,9 +52,10 @@ export const apiRequest = async (
   if (!headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
   }
-
   // トークンベースの認証
-  if (token) headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   // Basic認証（特定の環境のみ）
   if (

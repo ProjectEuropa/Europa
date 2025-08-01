@@ -145,8 +145,8 @@ describe('useToast', () => {
       });
     });
 
-    expect(id!).toBeDefined();
-    expect(typeof id!).toBe('string');
+    expect(id).toBeDefined();
+    expect(typeof id).toBe('string');
     expect(id?.length).toBeGreaterThan(0);
   });
 

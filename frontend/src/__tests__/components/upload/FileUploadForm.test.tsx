@@ -11,6 +11,7 @@ vi.mock('sonner', () => ({
   },
 }));
 
+// biome-ignore lint/correctness/noUnusedVariables: Used for type testing
 interface FileUploadOptions {
   ownerName: string;
   comment: string;

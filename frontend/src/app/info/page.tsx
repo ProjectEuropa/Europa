@@ -6,9 +6,10 @@ import Calendar from '@/components/Calendar';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { fetchEvents } from '@/utils/api';
+import type { Event } from '@/types/event';
 
 const InformationPage: React.FC = () => {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

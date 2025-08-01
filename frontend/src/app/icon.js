@@ -36,7 +36,10 @@ export default function Icon() {
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-label="Europa Project Favicon"
       >
+        <title>Europa Project Favicon</title>
         <path
           d="M8 8H24M8 16H20M8 24H24"
           stroke="white"

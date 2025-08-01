@@ -2,7 +2,7 @@
  * フォーム関連の型定義
  */
 
-export interface FormState<T = any> {
+export interface FormState<T = unknown> {
   data: T;
   errors: Record<string, string>;
   isSubmitting: boolean;

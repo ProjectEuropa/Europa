@@ -91,9 +91,10 @@ export default function ExternalLinksPage() {
             </p>
 
             <div style={{ display: 'grid', gap: '24px' }}>
-              {links.map((link, index) => (
+              {links.map((link) => (
                 <div
-                  key={index}
+                  key={link.url}
+                  role="article"
                   style={{
                     background: '#071527',
                     borderRadius: '8px',
@@ -165,7 +166,10 @@ export default function ExternalLinksPage() {
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg"
+                      role="img"
+                      aria-label="外部リンクアイコン"
                     >
+                      <title>外部リンクアイコン</title>
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
