@@ -368,7 +368,7 @@ describe('useMyPage hooks', () => {
           url: 'https://example.com',
           deadline: '2023-12-31',
           endDisplayDate: '2023-12-25',
-          type: '大会',
+          type: 'tournament',
           registeredDate: '2023-01-01',
         },
         {
@@ -378,7 +378,7 @@ describe('useMyPage hooks', () => {
           url: 'https://example2.com',
           deadline: '2023-11-30',
           endDisplayDate: '2023-11-25',
-          type: '告知',
+          type: 'announcement',
           registeredDate: '2023-01-02',
         },
       ]);
@@ -407,7 +407,7 @@ describe('useMyPage hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data?.[0]?.type).toBe('その他');
+      expect(result.current.data?.[0]?.type).toBe('other');
     });
   });
 

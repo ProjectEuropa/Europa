@@ -4,7 +4,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { eventSchema, type EventFormData } from '@/schemas/event';
+import { 
+  eventSchema, 
+  type EventFormData, 
+  EVENT_TYPES, 
+  EVENT_TYPE_OPTIONS,
+  getEventTypeDisplay 
+} from '@/schemas/event';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
 import Calendar from '@/components/Calendar';
 import EventConfirmDialog from './EventConfirmDialog';
@@ -36,7 +42,7 @@ export default function EventRegistrationForm({
       url: '',
       deadline: '',
       endDisplayDate: '',
-      type: '大会',
+      type: 'tournament',
     },
   });
 
@@ -539,9 +545,11 @@ export default function EventRegistrationForm({
                 backgroundSize: '16px',
               }}
             >
-              <option value="大会">大会</option>
-              <option value="告知">告知</option>
-              <option value="その他">その他</option>
+              {EVENT_TYPE_OPTIONS.map((type) => (
+                <option key={type} value={type}>
+                  {getEventTypeDisplay(type)}
+                </option>
+              ))}
             </select>
             {errors.type && (
               <p

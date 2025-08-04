@@ -1,4 +1,5 @@
 import type { EventFormData } from '@/schemas/event';
+import { getEventTypeDisplay } from '@/schemas/event';
 
 interface EventConfirmDialogProps {
   isOpen: boolean;
@@ -17,11 +18,6 @@ export default function EventConfirmDialog({
 }: EventConfirmDialogProps) {
   if (!isOpen) return null;
 
-  const eventTypeLabels = {
-    '大会': '大会',
-    '告知': '告知',
-    'その他': 'その他',
-  } as const;
 
   return (
     <div
@@ -91,7 +87,7 @@ export default function EventConfirmDialog({
               イベントタイプ:
             </span>
             <span style={{ color: '#ffffff' }}>
-              {eventTypeLabels[data.type]}
+              {getEventTypeDisplay(data.type)}
             </span>
           </div>
 

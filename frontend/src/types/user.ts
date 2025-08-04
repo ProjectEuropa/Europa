@@ -3,6 +3,7 @@
  */
 
 import type { DateString, ID } from './utils';
+import type { EventType } from '@/schemas/event';
 
 export interface User {
   id: ID;
@@ -103,7 +104,7 @@ export interface MyPageEvent {
   url: string;
   deadline: string;
   endDisplayDate: string;
-  type: '大会' | '告知' | 'その他';
+  type: EventType;
   registeredDate: string;
 }
 

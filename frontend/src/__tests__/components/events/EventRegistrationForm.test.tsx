@@ -141,7 +141,7 @@ describe('EventRegistrationForm', () => {
         url: 'https://example.com',
         deadline: '2024-12-31',
         endDisplayDate: '2025-01-31',
-        type: '大会',
+        type: 'tournament',
       });
     });
   });

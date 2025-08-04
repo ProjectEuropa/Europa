@@ -8,7 +8,7 @@ describe('eventSchema', () => {
     url: 'https://example.com',
     deadline: '2024-12-31',
     endDisplayDate: '2025-01-15',
-    type: '大会',
+    type: 'tournament',
   };
 
   describe('name validation', () => {
@@ -147,7 +147,7 @@ describe('eventSchema', () => {
 
   describe('type validation', () => {
     it('should accept valid event types', () => {
-      const types = ['大会', '告知', 'その他'] as const;
+      const types = ['tournament', 'announcement', 'other'] as const;
 
       types.forEach(type => {
         const data = { ...validEventData, type };
