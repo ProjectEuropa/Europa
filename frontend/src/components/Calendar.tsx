@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 
 interface CalendarEvent {
   date: string; // ISO形式
@@ -22,7 +23,7 @@ const Calendar: React.FC<CalendarProps> = ({
   onSelect,
   size = 'large',
   showTimeSelect = false,
-  events = []
+  events = [],
 }) => {
   const [modalEvent, setModalEvent] = useState<CalendarEvent | null>(null);
 
@@ -41,7 +42,7 @@ const Calendar: React.FC<CalendarProps> = ({
     weekday: size === 'small' ? '1.2rem' : '1.5rem',
     day: size === 'small' ? '1.2rem' : '1.5rem',
     button: size === 'small' ? '1rem' : '1.3rem',
-    timeSelect: size === 'small' ? '0.9rem' : '1.1rem'
+    timeSelect: size === 'small' ? '0.9rem' : '1.1rem',
   };
 
   // パディングを計算
@@ -49,7 +50,7 @@ const Calendar: React.FC<CalendarProps> = ({
     container: size === 'small' ? '20px' : '30px',
     cell: size === 'small' ? '10px' : '15px',
     button: size === 'small' ? '10px 15px' : '12px 25px',
-    timeSelect: size === 'small' ? '8px' : '10px'
+    timeSelect: size === 'small' ? '8px' : '10px',
   };
 
   // 間隔を計算
@@ -67,14 +68,18 @@ const Calendar: React.FC<CalendarProps> = ({
   const goToPreviousMonth = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+    );
   };
 
   // 次月へ移動
   const goToNextMonth = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+    );
   };
 
   // 今日へ移動
@@ -125,7 +130,6 @@ const Calendar: React.FC<CalendarProps> = ({
       }
     }
   };
-
 
   // 時間選択ハンドラー
   const handleHourChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -198,7 +202,7 @@ const Calendar: React.FC<CalendarProps> = ({
         date: day,
         isCurrentMonth: false,
         isToday: isSameDay(day, new Date()),
-        isSelected: selectedDate ? isSameDay(day, selectedDate) : false
+        isSelected: selectedDate ? isSameDay(day, selectedDate) : false,
       });
     }
 
@@ -209,7 +213,7 @@ const Calendar: React.FC<CalendarProps> = ({
         date: day,
         isCurrentMonth: true,
         isToday: isSameDay(day, new Date()),
-        isSelected: selectedDate ? isSameDay(day, selectedDate) : false
+        isSelected: selectedDate ? isSameDay(day, selectedDate) : false,
       });
     }
 
@@ -221,7 +225,7 @@ const Calendar: React.FC<CalendarProps> = ({
         date: day,
         isCurrentMonth: false,
         isToday: isSameDay(day, new Date()),
-        isSelected: selectedDate ? isSameDay(day, selectedDate) : false
+        isSelected: selectedDate ? isSameDay(day, selectedDate) : false,
       });
     }
 
@@ -247,17 +251,19 @@ const Calendar: React.FC<CalendarProps> = ({
         padding: padding.container,
         color: 'white',
         width: '100%',
-        margin: '0 auto'
+        margin: '0 auto',
       }}
       onClick={handleCalendarClick}
     >
       {/* ヘッダー部分 */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: padding.container
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: padding.container,
+        }}
+      >
         <button
           onClick={goToPreviousMonth}
           style={{
@@ -269,19 +275,33 @@ const Calendar: React.FC<CalendarProps> = ({
             borderRadius: '8px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
-          <svg width={size === 'small' ? "24" : "30"} height={size === 'small' ? "24" : "30"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18L9 12L15 6" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg
+            width={size === 'small' ? '24' : '30'}
+            height={size === 'small' ? '24' : '30'}
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15 18L9 12L15 6"
+              stroke="#00c8ff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
 
-        <div style={{
-          fontSize: fontSize.yearMonth,
-          fontWeight: 'bold',
-          color: '#00c8ff'
-        }}>
+        <div
+          style={{
+            fontSize: fontSize.yearMonth,
+            fontWeight: 'bold',
+            color: '#00c8ff',
+          }}
+        >
           {formatYearMonth(currentDate)}
         </div>
 
@@ -296,21 +316,35 @@ const Calendar: React.FC<CalendarProps> = ({
             borderRadius: '8px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
-          <svg width={size === 'small' ? "24" : "30"} height={size === 'small' ? "24" : "30"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 6L15 12L9 18" stroke="#00c8ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg
+            width={size === 'small' ? '24' : '30'}
+            height={size === 'small' ? '24' : '30'}
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 6L15 12L9 18"
+              stroke="#00c8ff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
       </div>
 
       {/* 今日ボタン */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        marginBottom: padding.container
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: padding.container,
+        }}
+      >
         <button
           onClick={goToToday}
           style={{
@@ -321,7 +355,7 @@ const Calendar: React.FC<CalendarProps> = ({
             padding: padding.button,
             cursor: 'pointer',
             fontSize: fontSize.button,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         >
           今日
@@ -330,25 +364,31 @@ const Calendar: React.FC<CalendarProps> = ({
 
       {/* 時間選択 */}
       {showTimeSelect && (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '10px',
-          marginBottom: padding.container,
-          padding: padding.timeSelect,
-          background: 'rgba(0, 200, 255, 0.05)',
-          borderRadius: '8px',
-          border: '1px solid #1E3A5F'
-        }}>
-          <div style={{
+        <div
+          style={{
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             gap: '10px',
-            width: '100%',
-            justifyContent: 'center'
-          }}>
-            <div style={{ fontSize: fontSize.timeSelect, color: '#00c8ff' }}>時間:</div>
+            marginBottom: padding.container,
+            padding: padding.timeSelect,
+            background: 'rgba(0, 200, 255, 0.05)',
+            borderRadius: '8px',
+            border: '1px solid #1E3A5F',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              width: '100%',
+              justifyContent: 'center',
+            }}
+          >
+            <div style={{ fontSize: fontSize.timeSelect, color: '#00c8ff' }}>
+              時間:
+            </div>
             <select
               value={selectedHour}
               onChange={handleHourChange}
@@ -359,7 +399,7 @@ const Calendar: React.FC<CalendarProps> = ({
                 borderRadius: '4px',
                 padding: '4px 8px',
                 fontSize: fontSize.timeSelect,
-                cursor: 'pointer'
+                cursor: 'pointer',
               }}
             >
               {Array.from({ length: 24 }, (_, i) => (
@@ -379,7 +419,7 @@ const Calendar: React.FC<CalendarProps> = ({
                 borderRadius: '4px',
                 padding: '4px 8px',
                 fontSize: fontSize.timeSelect,
-                cursor: 'pointer'
+                cursor: 'pointer',
               }}
             >
               {Array.from({ length: 60 }, (_, i) => (
@@ -405,7 +445,7 @@ const Calendar: React.FC<CalendarProps> = ({
               marginTop: '10px',
               width: '100%',
               maxWidth: '200px',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
             }}
           >
             時間を設定して閉じる
@@ -414,13 +454,15 @@ const Calendar: React.FC<CalendarProps> = ({
       )}
 
       {/* 曜日表示 */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(7, 1fr)',
-        gap: gap,
-        marginBottom: gap,
-        textAlign: 'center'
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gap: gap,
+          marginBottom: gap,
+          textAlign: 'center',
+        }}
+      >
         {weekdays.map((day, index) => (
           <div
             key={index}
@@ -428,7 +470,8 @@ const Calendar: React.FC<CalendarProps> = ({
               padding: size === 'small' ? '10px' : '15px',
               fontWeight: 'bold',
               fontSize: fontSize.weekday,
-              color: index === 0 ? '#ff6b6b' : index === 6 ? '#00c8ff' : '#b0c4d8'
+              color:
+                index === 0 ? '#ff6b6b' : index === 6 ? '#00c8ff' : '#b0c4d8',
             }}
           >
             {day}
@@ -437,158 +480,207 @@ const Calendar: React.FC<CalendarProps> = ({
       </div>
 
       {/* 日付表示 */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(7, 1fr)',
-        gap: gap
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gap: gap,
+        }}
+      >
         {days.map((day, index) => {
-  // イベント該当日かどうか判定
-  const hasEvent = events.some(ev => {
-    const evDate = new Date(ev.date);
-    return (
-      evDate.getFullYear() === day.date.getFullYear() &&
-      evDate.getMonth() === day.date.getMonth() &&
-      evDate.getDate() === day.date.getDate()
-    );
-  });
-  return (
-    <div
-      key={index}
-      onClick={(e) => handleDateClick(day.date, e)}
-      style={{
-        padding: padding.cell,
-        textAlign: 'center',
-        cursor: 'pointer',
-        position: 'relative',
-        background: day.isSelected ? 'rgba(0, 200, 255, 0.15)' : 'transparent',
-        borderRadius: '8px',
-        color: !day.isCurrentMonth ? '#4A6FA5' :
-               day.date.getDay() === 0 ? '#ff6b6b' :
-               day.date.getDay() === 6 ? '#00c8ff' : '#fff',
-        height: cellHeight,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      <div style={{
-        fontSize: fontSize.day,
-        fontWeight: day.isToday ? 'bold' : 'normal'
-      }}>
-        {day.date.getDate()}
+          // イベント該当日かどうか判定
+          const hasEvent = events.some(ev => {
+            const evDate = new Date(ev.date);
+            return (
+              evDate.getFullYear() === day.date.getFullYear() &&
+              evDate.getMonth() === day.date.getMonth() &&
+              evDate.getDate() === day.date.getDate()
+            );
+          });
+          return (
+            <div
+              key={index}
+              onClick={e => handleDateClick(day.date, e)}
+              style={{
+                padding: padding.cell,
+                textAlign: 'center',
+                cursor: 'pointer',
+                position: 'relative',
+                background: day.isSelected
+                  ? 'rgba(0, 200, 255, 0.15)'
+                  : 'transparent',
+                borderRadius: '8px',
+                color: !day.isCurrentMonth
+                  ? '#4A6FA5'
+                  : day.date.getDay() === 0
+                    ? '#ff6b6b'
+                    : day.date.getDay() === 6
+                      ? '#00c8ff'
+                      : '#fff',
+                height: cellHeight,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: fontSize.day,
+                  fontWeight: day.isToday ? 'bold' : 'normal',
+                }}
+              >
+                {day.date.getDate()}
+              </div>
+              {/* イベントがある日に印を表示 */}
+              {hasEvent && (
+                <div
+                  style={{
+                    marginTop: '4px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '2px',
+                  }}
+                >
+                  {/* カレンダーアイコン */}
+                  <span
+                    style={{
+                      fontSize: size === 'small' ? '1.1em' : '1.35em',
+                      color: '#3B82F6',
+                      lineHeight: 1,
+                    }}
+                  >
+                    📅
+                  </span>
+                  {/* EVENTラベル */}
+                  <span
+                    style={{
+                      background:
+                        'linear-gradient(90deg, #3B82F6 60%, #8CB4FF 100%)',
+                      color: '#fff',
+                      fontSize: size === 'small' ? '0.65em' : '0.8em',
+                      padding: '1px 6px',
+                      borderRadius: '6px',
+                      fontWeight: 600,
+                      letterSpacing: '0.04em',
+                      boxShadow: '0 1px 4px #0003',
+                      marginTop: '2px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    EVENT
+                  </span>
+                </div>
+              )}
+              {/* 今日の日付に青い丸を表示 */}
+              {day.isToday && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: size === 'small' ? '8px' : '10px',
+                    right: size === 'small' ? '8px' : '10px',
+                    width: size === 'small' ? '8px' : '12px',
+                    height: size === 'small' ? '8px' : '12px',
+                    borderRadius: '50%',
+                    background: '#00c8ff',
+                  }}
+                ></div>
+              )}
+              {/* 選択された日付に青い枠線を表示 */}
+              {day.isSelected && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    border:
+                      size === 'small'
+                        ? '2px solid #00c8ff'
+                        : '3px solid #00c8ff',
+                    borderRadius: '8px',
+                    pointerEvents: 'none',
+                  }}
+                ></div>
+              )}
+            </div>
+          );
+        })}
       </div>
-      {/* イベントがある日に印を表示 */}
-      {hasEvent && (
-        <div style={{
-          marginTop: '4px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '2px'
-        }}>
-          {/* カレンダーアイコン */}
-          <span style={{ fontSize: size === 'small' ? '1.1em' : '1.35em', color: '#3B82F6', lineHeight: 1 }}>
-            📅
-          </span>
-          {/* EVENTラベル */}
-          <span style={{
-            background: 'linear-gradient(90deg, #3B82F6 60%, #8CB4FF 100%)',
-            color: '#fff',
-            fontSize: size === 'small' ? '0.65em' : '0.8em',
-            padding: '1px 6px',
-            borderRadius: '6px',
-            fontWeight: 600,
-            letterSpacing: '0.04em',
-            boxShadow: '0 1px 4px #0003',
-            marginTop: '2px',
-            whiteSpace: 'nowrap'
-          }}>
-            EVENT
-          </span>
+      {/* イベント詳細モーダル */}
+      {modalEvent && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onClick={() => setModalEvent(null)}
+        >
+          <div
+            style={{
+              background: '#0A1022',
+              borderRadius: '16px',
+              padding: '32px',
+              minWidth: '320px',
+              maxWidth: '90vw',
+              border: '2px solid #1E3A5F',
+              color: '#fff',
+              boxShadow: '0 4px 24px 0 #000a',
+              position: 'relative',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              style={{
+                position: 'absolute',
+                top: 12,
+                right: 12,
+                background: 'none',
+                border: 'none',
+                color: '#8CB4FF',
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+              }}
+              onClick={() => setModalEvent(null)}
+            >
+              ×
+            </button>
+            <h3
+              style={{
+                color: '#8CB4FF',
+                fontSize: '1.3rem',
+                marginBottom: '12px',
+              }}
+            >
+              {modalEvent.title || 'イベント詳細'}
+            </h3>
+            <div style={{ marginBottom: '8px' }}>{modalEvent.details}</div>
+            {modalEvent.url && (
+              <div style={{ marginTop: '8px' }}>
+                <a
+                  href={modalEvent.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#3B82F6', textDecoration: 'underline' }}
+                >
+                  参考リンクを開く
+                </a>
+              </div>
+            )}
+          </div>
         </div>
-      )}
-      {/* 今日の日付に青い丸を表示 */}
-      {day.isToday && (
-        <div style={{
-          position: 'absolute',
-          top: size === 'small' ? '8px' : '10px',
-          right: size === 'small' ? '8px' : '10px',
-          width: size === 'small' ? '8px' : '12px',
-          height: size === 'small' ? '8px' : '12px',
-          borderRadius: '50%',
-          background: '#00c8ff'
-        }}></div>
-      )}
-      {/* 選択された日付に青い枠線を表示 */}
-      {day.isSelected && (
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          border: size === 'small' ? '2px solid #00c8ff' : '3px solid #00c8ff',
-          borderRadius: '8px',
-          pointerEvents: 'none'
-        }}></div>
       )}
     </div>
-  );
-})}
-
-      </div>
-    {/* イベント詳細モーダル */}
-    {modalEvent && (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        background: 'rgba(0,0,0,0.5)',
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }} onClick={() => setModalEvent(null)}>
-        <div style={{
-          background: '#0A1022',
-          borderRadius: '16px',
-          padding: '32px',
-          minWidth: '320px',
-          maxWidth: '90vw',
-          border: '2px solid #1E3A5F',
-          color: '#fff',
-          boxShadow: '0 4px 24px 0 #000a',
-          position: 'relative',
-        }} onClick={e => e.stopPropagation()}>
-          <button style={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            background: 'none',
-            border: 'none',
-            color: '#8CB4FF',
-            fontSize: '1.5rem',
-            cursor: 'pointer',
-          }} onClick={() => setModalEvent(null)}>
-            ×
-          </button>
-          <h3 style={{ color: '#8CB4FF', fontSize: '1.3rem', marginBottom: '12px' }}>{modalEvent.title || 'イベント詳細'}</h3>
-          <div style={{ marginBottom: '8px' }}>{modalEvent.details}</div>
-          {modalEvent.url && (
-            <div style={{ marginTop: '8px' }}>
-              <a href={modalEvent.url} target="_blank" rel="noopener noreferrer" style={{ color: '#3B82F6', textDecoration: 'underline' }}>
-                参考リンクを開く
-              </a>
-            </div>
-          )}
-        </div>
-      </div>
-    )}
-  </div>
   );
 };
 

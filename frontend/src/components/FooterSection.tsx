@@ -10,11 +10,13 @@ const FooterSection = ({ title, links }: FooterSectionProps) => (
       {links.map((item, i) => (
         <li key={i}>
           <a
-            href={item.href || "#"}
+            href={item.href || '#'}
             className="text-white hover:text-[#00c8ff] transition-colors duration-200 text-sm"
           >
             {item.jp}
-            {item.en && <span className="ml-2 text-xs text-gray-400">({item.en})</span>}
+            {item.en && (
+              <span className="ml-2 text-xs text-gray-400">({item.en})</span>
+            )}
           </a>
         </li>
       ))}
