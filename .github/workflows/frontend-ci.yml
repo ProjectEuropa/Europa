@@ -168,48 +168,39 @@ jobs:
           retention-days: 1
           compression-level: 9
 
-  # Bundle analysis job (only for PRs, highly optimized)
+  # Bundle analysis job (only for PRs, optimized to use existing build)
   build-analysis:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [setup, build]
+    timeout-minutes: 3
+    needs: [build]
     if: github.event_name == 'pull_request'
     defaults:
       run:
         working-directory: ./frontend
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            frontend/package.json
-            frontend/package-lock.json
-            frontend/next.config.js
-            frontend/tsconfig.json
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Restore dependencies
-        uses: actions/cache@v4
-        with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
-
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: frontend-build-${{ github.sha }}
           path: frontend/
 
-      - name: Analyze bundle (if analyze script exists)
+      - name: Analyze build output
         run: |
-          if npm run | grep -q "analyze"; then
-            npm run analyze
+          echo "📊 Analyzing Next.js build output..."
+          if [ -f ".next/static/chunks/_buildManifest.js" ]; then
+            echo "✅ Build manifest found"
+            ls -la .next/static/chunks/ | head -10
           else
-            echo "No analyze script found, skipping bundle analysis"
+            echo "⚠️ Build manifest not found"
+          fi
+          
+          if [ -d ".next/static" ]; then
+            echo "📦 Static assets:"
+            du -sh .next/static/* 2>/dev/null || echo "No static assets found"
+          fi
+          
+          if [ -f ".next/BUILD_ID" ]; then
+            echo "🔖 Build ID: $(cat .next/BUILD_ID)"
           fi
 
       - name: Comment bundle analysis
@@ -220,16 +211,38 @@ jobs:
             const fs = require('fs');
             const path = require('path');
             
-            let message = '📊 Bundle analysis completed.\n\n';
+            let message = '📊 Bundle Analysis Results\n\n';
             
-            // Try to read Next.js build output
             try {
-              const buildOutput = fs.readFileSync('./frontend/.next/build-manifest.json', 'utf8');
-              const manifest = JSON.parse(buildOutput);
-              message += 'Build artifacts generated successfully.';
+              // Check if build artifacts exist
+              const buildExists = fs.existsSync('./frontend/.next');
+              const staticExists = fs.existsSync('./frontend/.next/static');
+              
+              if (buildExists) {
+                message += '✅ Build artifacts are present\n';
+                
+                if (staticExists) {
+                  const staticFiles = fs.readdirSync('./frontend/.next/static');
+                  message += `📦 Static assets: ${staticFiles.length} directories\n`;
+                } else {
+                  message += '⚠️ No static assets found\n';
+                }
+                
+                // Try to get build ID
+                try {
+                  const buildId = fs.readFileSync('./frontend/.next/BUILD_ID', 'utf8').trim();
+                  message += `🔖 Build ID: \`${buildId}\`\n`;
+                } catch (e) {
+                  message += '⚠️ Build ID not found\n';
+                }
+              } else {
+                message += '❌ Build artifacts not found\n';
+              }
             } catch (error) {
-              message += 'Build analysis data not available.';
+              message += `❌ Analysis failed: ${error.message}\n`;
             }
+            
+            message += '\n*Analysis completed using pre-built artifacts*';
             
             github.rest.issues.createComment({
               issue_number: context.issue.number,
