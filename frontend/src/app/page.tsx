@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import HeroSection from '../components/HeroSection';
+import { useState } from 'react';
+import DownloadSection from '../components/DownloadSection';
 import FeaturesSection from '../components/FeaturesSection';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import HeroSection from '../components/HeroSection';
+import JoinNetworkSection from '../components/JoinNetworkSection';
 import SearchSection from '../components/SearchSection';
 import UploadSection from '../components/UploadSection';
-import DownloadSection from '../components/DownloadSection';
-import JoinNetworkSection from '../components/JoinNetworkSection';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,7 +26,10 @@ export default function Home() {
         <FeaturesSection />
 
         {/* 検索セクション */}
-        <SearchSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <SearchSection
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
 
         {/* アップロードセクション */}
         <UploadSection />

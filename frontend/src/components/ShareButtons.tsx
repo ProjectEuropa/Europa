@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import Icons from './Icons';
 
 interface ShareButtonsProps {
@@ -16,12 +16,12 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
   description = '',
   className = '',
   iconSize = 24,
-  iconColor = '#00c8ff'
+  iconColor = '#00c8ff',
 }) => {
   // エンコードされたURL、タイトル、説明
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
-  const encodedDescription = encodeURIComponent(description);
+  const _encodedDescription = encodeURIComponent(description);
 
   // 各SNSのシェアURL
   const twitterUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
@@ -42,7 +42,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
       >
         <Icons.Twitter size={iconSize} color={iconColor} />
       </button>
-      
+
       <button
         onClick={() => handleShare(facebookUrl)}
         className="transition-transform hover:scale-110 focus:outline-none"
@@ -50,7 +50,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
       >
         <Icons.Facebook size={iconSize} color={iconColor} />
       </button>
-      
+
       <button
         onClick={() => handleShare(linkedInUrl)}
         className="transition-transform hover:scale-110 focus:outline-none"
@@ -58,15 +58,17 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
       >
         <Icons.LinkedIn size={iconSize} color={iconColor} />
       </button>
-      
+
       <button
         onClick={() => {
           if (navigator.share) {
-            navigator.share({
-              title,
-              text: description,
-              url
-            }).catch(console.error);
+            navigator
+              .share({
+                title,
+                text: description,
+                url,
+              })
+              .catch(console.error);
           }
         }}
         className="transition-transform hover:scale-110 focus:outline-none"
