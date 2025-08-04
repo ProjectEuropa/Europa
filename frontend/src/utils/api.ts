@@ -8,11 +8,11 @@ export const apiRequest = async (
   options: RequestInit = {}
 ) => {
   let token = null;
-  
+
   if (typeof window !== 'undefined') {
     // まずlocalStorageの'token'キーを確認
     token = localStorage.getItem('token');
-    
+
     // なければZustandのpersistストレージを確認
     if (!token) {
       const authStorage = localStorage.getItem('auth-storage');
@@ -26,7 +26,7 @@ export const apiRequest = async (
       }
     }
   }
-  
+
   let baseHeaders: Record<string, string> = {};
 
   // 既存のヘッダーを処理
@@ -52,9 +52,10 @@ export const apiRequest = async (
   if (!headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
   }
-
   // トークンベースの認証
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
 
   // Basic認証（特定の環境のみ）
   if (
@@ -63,8 +64,7 @@ export const apiRequest = async (
     BASIC_AUTH_PASSWORD &&
     !endpoint.startsWith('/api/')
   ) {
-    headers['Authorization'] =
-      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
   }
 
   try {
@@ -141,7 +141,7 @@ export const tryDownloadTeamFile = async (
     }
     window.open(url, '_blank');
     return { success: true };
-  } catch (e) {
+  } catch (_e) {
     return { success: false, error: 'ダウンロード通信エラー' };
   }
 };
@@ -256,9 +256,9 @@ export const uploadTeamFile = async (
     typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const headers: Record<string, string> = {};
   // トークン認証
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token) headers.Authorization = `Bearer ${token}`;
   // APIリクエストとして認識させる
-  headers['Accept'] = 'application/json';
+  headers.Accept = 'application/json';
   // Basic認証（特定環境のみ）
   if (
     API_BASE_URL.includes('stg.project-europa.work') &&
@@ -266,8 +266,7 @@ export const uploadTeamFile = async (
     BASIC_AUTH_PASSWORD &&
     !endpoint.startsWith('/api/')
   ) {
-    headers['Authorization'] =
-      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
   }
 
   try {
@@ -369,41 +368,48 @@ export const registerEvent = async (formData: {
 export const fetchEvents = async () => {
   const res = await apiRequest('/api/v1/event', { method: 'GET' });
   if (!res.ok) throw new Error('取得に失敗しました');
-  return res.json(); // { data: [...] }
+  const response = await res.json();
+  // スネークケース→キャメルケース変換
+  return {
+    data: (response.data ?? []).map((event: any) => ({
+      id: String(event.id),
+      name: event.event_name ?? '',
+      details: event.event_details ?? '',
+      url: event.event_reference_url ?? '',
+      deadline: event.event_closing_day ?? '',
+      endDisplayDate: event.event_displaying_day ?? '',
+      type: event.event_type ?? '',
+      createdAt: event.created_at,
+      updatedAt: event.updated_at,
+      isActive: event.is_active,
+    }))
+  };
 };
 
 // マイページ：チームファイル取得API
 export const fetchMyTeamFiles = async () => {
-  try {
-    const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
-    
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`チームデータ取得失敗 (${res.status}): ${errorText}`);
-    }
-    
-    const data = await res.json();
-    return data.files || [];
-  } catch (error) {
-    throw error;
+  const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`チームデータ取得失敗 (${res.status}): ${errorText}`);
   }
+
+  const data = await res.json();
+  return data.files || [];
 };
 
 // マイページ：マッチファイル取得API
 export const fetchMyMatchFiles = async () => {
-  try {
-    const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
-    
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`マッチデータ取得失敗 (${res.status}): ${errorText}`);
-    }
-    
-    const data = await res.json();
-    return data.files || [];
-  } catch (error) {
-    throw error;
+  const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`マッチデータ取得失敗 (${res.status}): ${errorText}`);
   }
+
+  const data = await res.json();
+  return data.files || [];
 };
 
 // マイページ：イベント削除API
@@ -534,16 +540,15 @@ export const uploadMatchFile = async (
   const token =
     typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const headers: Record<string, string> = {};
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  headers['Accept'] = 'application/json';
+  if (token) headers.Authorization = `Bearer ${token}`;
+  headers.Accept = 'application/json';
   if (
     API_BASE_URL.includes('stg.project-europa.work') &&
     BASIC_AUTH_USER &&
     BASIC_AUTH_PASSWORD &&
     !endpoint.startsWith('/api/')
   ) {
-    headers['Authorization'] =
-      'Basic ' + btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`);
+    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
   }
 
   try {

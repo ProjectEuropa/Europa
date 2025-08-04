@@ -2,7 +2,6 @@
 
 import type React from 'react';
 import { useCallback, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Icons } from '@/icons';
 import { cn } from '@/lib/utils';
@@ -43,7 +42,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         const acceptedExtensions = accept
           .split(',')
           .map(ext => ext.trim().toLowerCase());
-        const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+        const fileExtension = `.${file.name.split('.').pop()?.toLowerCase()}`;
 
         if (!acceptedExtensions.includes(fileExtension)) {
           return `対応形式（${accept}）のファイルをアップロードしてください`;
@@ -128,7 +127,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
 
       onFileSelect(file);
     },
-    [disabled, validateFile, onFileSelect]
+    [disabled, validateFile, onFileSelect, onError]
   );
 
   const handleFileInputChange = useCallback(

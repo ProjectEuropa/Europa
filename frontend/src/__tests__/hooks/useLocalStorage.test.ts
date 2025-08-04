@@ -67,8 +67,8 @@ describe('useLocalStorage', () => {
     mockConsoleError.mockClear();
 
     // useState のモック実装
-    let state: any;
-    React.useState.mockImplementation((initializer: any) => {
+    let state: unknown;
+    React.useState.mockImplementation((initializer: unknown) => {
       if (typeof initializer === 'function') {
         if (state === undefined) state = initializer();
       } else {
@@ -76,7 +76,7 @@ describe('useLocalStorage', () => {
       }
       return [
         state,
-        (newState: any) => {
+        (newState: unknown) => {
           state = typeof newState === 'function' ? newState(state) : newState;
         },
       ];

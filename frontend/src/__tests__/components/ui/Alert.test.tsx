@@ -32,6 +32,7 @@ const Alert = ({
       {children}
       {onClose && (
         <button
+          type="button"
           onClick={onClose}
           className="absolute right-2 top-2 rounded-sm opacity-70 hover:opacity-100"
           aria-label="Close alert"

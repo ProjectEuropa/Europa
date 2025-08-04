@@ -11,7 +11,8 @@ vi.mock('sonner', () => ({
   },
 }));
 
-export interface FileUploadOptions {
+// biome-ignore lint/correctness/noUnusedVariables: Used for type testing
+interface FileUploadOptions {
   ownerName: string;
   comment: string;
   tags: string[];
@@ -179,7 +180,7 @@ describe('FileUploadForm', () => {
   });
 
   it('should handle file selection', async () => {
-    const user = userEvent.setup();
+    const _user = userEvent.setup();
     render(<FileUploadForm {...defaultProps} />);
 
     const file = new File(['test content'], 'test.che', {
@@ -190,11 +191,13 @@ describe('FileUploadForm', () => {
       .closest('div');
 
     // ファイルをドロップ
-    fireEvent.drop(dropZone!, {
-      dataTransfer: {
-        files: [file],
-      },
-    });
+    if (dropZone) {
+      fireEvent.drop(dropZone, {
+        dataTransfer: {
+          files: [file],
+        },
+      });
+    }
 
     await waitFor(() => {
       expect(screen.getByText('test.che')).toBeInTheDocument();
@@ -210,11 +213,13 @@ describe('FileUploadForm', () => {
       .closest('div');
 
     // 無効なファイルをドロップ
-    fireEvent.drop(dropZone!, {
-      dataTransfer: {
-        files: [file],
-      },
-    });
+    if (dropZone) {
+      fireEvent.drop(dropZone, {
+        dataTransfer: {
+          files: [file],
+        },
+      });
+    }
 
     // ファイルが選択されない
     expect(screen.queryByText('test.txt')).not.toBeInTheDocument();
@@ -231,11 +236,13 @@ describe('FileUploadForm', () => {
       .getByText('CHEファイルをドラッグ&ドロップ')
       .closest('div');
 
-    fireEvent.drop(dropZone!, {
-      dataTransfer: {
-        files: [file],
-      },
-    });
+    if (dropZone) {
+      fireEvent.drop(dropZone, {
+        dataTransfer: {
+          files: [file],
+        },
+      });
+    }
 
     // ファイルが選択されない
     expect(screen.queryByText('test.che')).not.toBeInTheDocument();
@@ -256,9 +263,11 @@ describe('FileUploadForm', () => {
     const dropZone = screen
       .getByText('CHEファイルをドラッグ&ドロップ')
       .closest('div');
-    fireEvent.drop(dropZone!, {
-      dataTransfer: { files: [file] },
-    });
+    if (dropZone) {
+      fireEvent.drop(dropZone, {
+        dataTransfer: { files: [file] },
+      });
+    }
 
     await waitFor(() => {
       expect(screen.getByText('test.che')).toBeInTheDocument();
@@ -287,9 +296,11 @@ describe('FileUploadForm', () => {
     const dropZone = screen
       .getByText('CHEファイルをドラッグ&ドロップ')
       .closest('div');
-    fireEvent.drop(dropZone!, {
-      dataTransfer: { files: [file] },
-    });
+    if (dropZone) {
+      fireEvent.drop(dropZone, {
+        dataTransfer: { files: [file] },
+      });
+    }
 
     await waitFor(() => {
       expect(screen.getByText('test.che')).toBeInTheDocument();

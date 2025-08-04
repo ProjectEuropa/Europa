@@ -156,10 +156,10 @@ export class ApiClient {
 
   private getToken(): string | null {
     if (typeof window === 'undefined') return null;
-    
+
     // まずlocalStorageの'token'キーを確認
     let token = localStorage.getItem('token');
-    
+
     // なければZustandのpersistストレージを確認
     if (!token) {
       const authStorage = localStorage.getItem('auth-storage');
@@ -172,7 +172,7 @@ export class ApiClient {
         }
       }
     }
-    
+
     return token;
   }
 
@@ -211,8 +211,7 @@ export class ApiClient {
       basicAuthPassword &&
       !endpoint.startsWith('/api/')
     ) {
-      headers['Authorization'] =
-        'Basic ' + btoa(`${basicAuthUser}:${basicAuthPassword}`);
+      headers.Authorization = `Basic ${btoa(`${basicAuthUser}:${basicAuthPassword}`)}`;
     }
   }
 }

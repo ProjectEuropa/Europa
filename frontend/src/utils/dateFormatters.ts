@@ -125,7 +125,7 @@ export const formatDownloadDateTime = (dateString: string | null): string => {
   if (!dateString || dateString.trim() === '') {
     return '未設定';
   }
-  
+
   const validationError = validateDateString(dateString);
   if (validationError?.type === DateFormatErrorType.EMPTY_STRING) {
     return '未設定';
@@ -141,7 +141,7 @@ export const formatDownloadDateTime = (dateString: string | null): string => {
     const date = new Date(dateString);
 
     // 日時パースに失敗した場合
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       const parseError: DateFormatError = {
         type: DateFormatErrorType.PARSE_ERROR,
         originalValue: dateString,
@@ -164,7 +164,8 @@ export const formatDownloadDateTime = (dateString: string | null): string => {
     const unknownError: DateFormatError = {
       type: DateFormatErrorType.UNKNOWN_ERROR,
       originalValue: dateString,
-      message: error instanceof Error ? error.message : 'Unknown error occurred',
+      message:
+        error instanceof Error ? error.message : 'Unknown error occurred',
     };
     logDateFormatError(unknownError, 'formatDownloadDateTime');
     return '日時処理エラー';
@@ -193,7 +194,7 @@ export const formatUploadDateTime = (dateString: string): string => {
     const date = new Date(dateString);
 
     // 日時パースに失敗した場合
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       const parseError: DateFormatError = {
         type: DateFormatErrorType.PARSE_ERROR,
         originalValue: dateString,
@@ -216,7 +217,8 @@ export const formatUploadDateTime = (dateString: string): string => {
     const unknownError: DateFormatError = {
       type: DateFormatErrorType.UNKNOWN_ERROR,
       originalValue: dateString,
-      message: error instanceof Error ? error.message : 'Unknown error occurred',
+      message:
+        error instanceof Error ? error.message : 'Unknown error occurred',
     };
     logDateFormatError(unknownError, 'formatUploadDateTime');
     return '日時処理エラー';

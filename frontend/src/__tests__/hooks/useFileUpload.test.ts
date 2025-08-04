@@ -89,7 +89,7 @@ describe('useFileUpload', () => {
     await act(async () => {
       try {
         await result.current.uploadTeamFile(file, false, options);
-      } catch (e) {
+      } catch (_e) {
         // エラーは期待される
       }
     });

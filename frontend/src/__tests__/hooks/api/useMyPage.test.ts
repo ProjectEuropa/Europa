@@ -54,7 +54,12 @@ const createWrapper = () => {
 };
 
 describe('useMyPage hooks', () => {
-  let mockUser: any;
+  let mockUser: {
+    id: number;
+    name: string;
+    email: string;
+    createdAt: string;
+  };
 
   beforeEach(() => {
     mockUser = {
@@ -74,7 +79,7 @@ describe('useMyPage hooks', () => {
   describe('useProfile', () => {
     it('ユーザー情報からプロフィールデータを正しく変換する', async () => {
       // 認証状態をモック
-      vi.mocked(authStore.useAuthStore).mockImplementation((selector) => {
+      vi.mocked(authStore.useAuthStore).mockImplementation(selector => {
         const state = {
           user: {
             id: '1',
@@ -108,7 +113,7 @@ describe('useMyPage hooks', () => {
     });
 
     it('ユーザーが存在しない場合はエラーを返す', async () => {
-      vi.mocked(authStore.useAuthStore).mockImplementation((selector) => {
+      vi.mocked(authStore.useAuthStore).mockImplementation(selector => {
         const state = {
           user: null,
           token: null,
@@ -133,7 +138,7 @@ describe('useMyPage hooks', () => {
     });
 
     it('日付が存在しない場合は空文字を返す', async () => {
-      vi.mocked(authStore.useAuthStore).mockImplementation((selector) => {
+      vi.mocked(authStore.useAuthStore).mockImplementation(selector => {
         const state = {
           user: {
             id: '1',
@@ -161,7 +166,7 @@ describe('useMyPage hooks', () => {
     });
 
     it('プロフィールデータが正しく取得できる', async () => {
-      vi.mocked(authStore.useAuthStore).mockImplementation((selector) => {
+      vi.mocked(authStore.useAuthStore).mockImplementation(selector => {
         const state = {
           user: {
             id: '1',

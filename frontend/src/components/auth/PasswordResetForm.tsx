@@ -67,7 +67,7 @@ export function PasswordResetForm({
         '無効なリセットリンクです。パスワードリセットを再度リクエストしてください。'
       );
     }
-  }, [token, email, isSuccess]); // checkTokenを依存配列から削除
+  }, [token, email, isSuccess, checkToken]); // checkTokenを依存配列から削除
 
   const onSubmit = async (data: PasswordResetFormData) => {
     const result = await resetPassword(data);

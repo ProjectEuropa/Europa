@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
 const MyPageAuthGuard: React.FC<{ children: React.ReactNode }> = ({
@@ -10,28 +10,30 @@ const MyPageAuthGuard: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user, loading, hasHydrated } = useAuth();
   const router = useRouter();
-  
+
   useEffect(() => {
     if (hasHydrated && !loading && !user) {
       router.replace('/login');
     }
   }, [user, loading, hasHydrated, router]);
-  
+
   // Zustand初期化完了まで待機
   if (!hasHydrated || loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        color: '#b0c4d8'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          color: '#b0c4d8',
+        }}
+      >
         Loading...
       </div>
     );
   }
-  
+
   if (!user) return null; // 未認証時は描画しない
   return <>{children}</>;
 };

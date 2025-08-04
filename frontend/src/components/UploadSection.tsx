@@ -17,7 +17,7 @@ const UploadSection: React.FC = () => {
     e.preventDefault();
     setIsDragging(false);
     // ファイルのドロップ処理をここに実装
-    const files = e.dataTransfer.files;
+    const _files = e.dataTransfer.files;
   };
 
   return (

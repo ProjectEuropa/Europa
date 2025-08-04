@@ -1,8 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { type ReactNode } from 'react';
-import { toast } from 'sonner';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ProfileSection from '@/components/mypage/ProfileSection';
 import * as useMyPageHooks from '@/hooks/api/useMyPage';
@@ -54,10 +53,10 @@ describe('ProfileSection', () => {
       error: null,
       isError: false,
       isSuccess: true,
-    } as any);
+    });
 
     vi.mocked(useMyPageHooks.useUpdateProfile).mockReturnValue(
-      mockUpdateProfile as any
+      mockUpdateProfile
     );
   });
 
@@ -165,7 +164,7 @@ describe('ProfileSection', () => {
         error: null,
         isError: false,
         isSuccess: false,
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });
@@ -180,7 +179,7 @@ describe('ProfileSection', () => {
       vi.mocked(useMyPageHooks.useUpdateProfile).mockReturnValue({
         ...mockUpdateProfile,
         isPending: true,
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });
@@ -202,7 +201,7 @@ describe('ProfileSection', () => {
         error: new Error('取得エラー'),
         isError: true,
         isSuccess: false,
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });
@@ -219,7 +218,7 @@ describe('ProfileSection', () => {
         error: null,
         isError: false,
         isSuccess: true,
-      } as any);
+      });
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });

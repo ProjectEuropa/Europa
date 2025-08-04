@@ -26,6 +26,7 @@ describe('RegisterForm', () => {
       token: null,
       loading: false,
       isAuthenticated: false,
+      hasHydrated: true,
       login: vi.fn(),
       logout: vi.fn(),
       fetchUser: vi.fn(),
@@ -162,7 +163,7 @@ describe('RegisterForm', () => {
 
   it('should show loading state during form submission', async () => {
     const user = userEvent.setup();
-    let resolveRegister: () => void;
+    let resolveRegister: (() => void) | undefined;
     const registerPromise = new Promise<void>(resolve => {
       resolveRegister = resolve;
     });
@@ -195,7 +196,7 @@ describe('RegisterForm', () => {
     });
 
     // 登録完了
-    resolveRegister!();
+    resolveRegister?.();
     await registerPromise;
 
     // 元の状態に戻ることを確認

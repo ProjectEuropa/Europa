@@ -48,7 +48,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
   const [teamData, setTeamData] = useState<TeamData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
-  const [total, setTotal] = useState(0);
+  const [_total, setTotal] = useState(0);
   const pageSize = 50;
   // 検索実行（ページ指定）
   const handleSearch = async (keyword: string, page: number = 1) => {
@@ -72,7 +72,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
       setLastPage(result.last_page || 1);
       setTotal(result.total || 0);
       setSelectAll(false);
-    } catch (e) {
+    } catch (_e) {
       setTeamData([]);
       setSelectAll(false);
     }
@@ -81,7 +81,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
   // 初回マウント時に即検索
   React.useEffect(() => {
     handleSearch('', 1);
-  }, []);
+  }, [handleSearch]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -118,7 +118,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
     setIsDownloading(true);
     try {
       await sumDownload(selectedTeams.map(team => Number(team.id)));
-    } catch (e: any) {
+    } catch (_e: any) {
       alert('ダウンロードに失敗しました');
     } finally {
       setIsDownloading(false);
@@ -706,24 +706,22 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
                     ダウンロード中...
                   </>
                 ) : (
-                  <>
-                    <svg
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                      }}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                      <polyline points="7 10 12 15 17 10"></polyline>
-                      <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                  </>
+                  <svg
+                    style={{
+                      width: '20px',
+                      height: '20px',
+                    }}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
                 )}
               </button>
             </div>

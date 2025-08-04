@@ -30,7 +30,7 @@ describe('usePasswordReset', () => {
 
       const { result } = renderHook(() => usePasswordReset());
 
-      let response: any;
+      let response: unknown;
       await act(async () => {
         response = await result.current.sendResetLink({
           email: 'test@example.com',
@@ -55,7 +55,7 @@ describe('usePasswordReset', () => {
 
       const { result } = renderHook(() => usePasswordReset());
 
-      let response: any;
+      let response: unknown;
       await act(async () => {
         response = await result.current.sendResetLink({
           email: 'test@example.com',
@@ -80,7 +80,7 @@ describe('usePasswordReset', () => {
 
       const { result } = renderHook(() => usePasswordReset());
 
-      let response: any;
+      let response: unknown;
       await act(async () => {
         response = await result.current.checkToken({
           token: 'valid-token',
@@ -103,7 +103,7 @@ describe('usePasswordReset', () => {
 
       const { result } = renderHook(() => usePasswordReset());
 
-      let response: any;
+      let response: unknown;
       await act(async () => {
         response = await result.current.checkToken({
           token: 'invalid-token',
@@ -129,7 +129,7 @@ describe('usePasswordReset', () => {
         passwordConfirmation: 'newpassword123',
       };
 
-      let response: any;
+      let response: unknown;
       await act(async () => {
         response = await result.current.resetPassword(resetData);
       });
@@ -157,7 +157,7 @@ describe('usePasswordReset', () => {
         passwordConfirmation: 'newpassword123',
       };
 
-      let response: any;
+      let response: unknown;
       await act(async () => {
         response = await result.current.resetPassword(resetData);
       });
@@ -173,7 +173,7 @@ describe('usePasswordReset', () => {
 
   describe('loading state', () => {
     it('should manage loading state correctly', async () => {
-      let resolvePromise: (value: any) => void;
+      let resolvePromise: (value: unknown) => void;
       const mockPromise = new Promise(resolve => {
         resolvePromise = resolve;
       });
@@ -191,7 +191,7 @@ describe('usePasswordReset', () => {
       expect(result.current.isLoading).toBe(true);
 
       await act(async () => {
-        resolvePromise!({ status: 'success' }); // errorプロパティがない場合は成功
+        resolvePromise?.({ status: 'success' }); // errorプロパティがない場合は成功
         await mockPromise;
       });
 

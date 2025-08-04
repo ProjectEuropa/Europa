@@ -45,8 +45,8 @@ describe('snakeToCamel', () => {
   });
 
   it('should handle null and undefined values', () => {
-    expect(snakeToCamel(null as any)).toBeNull();
-    expect(snakeToCamel(undefined as any)).toBeUndefined();
+    expect(snakeToCamel(null as never)).toBeNull();
+    expect(snakeToCamel(undefined as never)).toBeUndefined();
   });
 });
 

@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // エラーログを出力
     console.error('Error caught by boundary:', error, errorInfo);
     // ここで外部のエラー報告サービスにエラーを送信することも可能
@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<
     }
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // カスタムフォールバックがあればそれを使用
       if (this.props.fallback) {
