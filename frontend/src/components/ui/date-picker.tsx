@@ -15,7 +15,10 @@ interface DatePickerProps {
 }
 
 export const DateTimePicker = forwardRef<HTMLInputElement, DatePickerProps>(
-  ({ value, onChange, placeholder = 'YYYY-MM-DD', className, disabled }, ref) => {
+  (
+    { value, onChange, placeholder = 'YYYY-MM-DD', className, disabled },
+    ref
+  ) => {
     const [showCalendar, setShowCalendar] = useState(false);
 
     // 日付をYYYY-MM-DD形式に変換
@@ -39,7 +42,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DatePickerProps>(
 
     const handleCalendarClick = () => {
       if (disabled) return;
-      
+
       // HTML5 date inputのネイティブピッカーを開く
       const input = ref as React.RefObject<HTMLInputElement>;
       if (input?.current) {

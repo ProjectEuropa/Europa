@@ -27,7 +27,6 @@ export const apiRequest = async (
     }
   }
 
-
   let baseHeaders: Record<string, string> = {};
 
   // 既存のヘッダーを処理
@@ -393,7 +392,7 @@ export const fetchEvents = async () => {
       createdAt: event.created_at,
       updatedAt: event.updated_at,
       isActive: event.is_active,
-    }))
+    })),
   };
 };
 

@@ -1,4 +1,4 @@
-import { type EventFormData } from '@/schemas/event';
+import type { EventFormData } from '@/schemas/event';
 
 interface EventConfirmDialogProps {
   isOpen: boolean;
@@ -13,14 +13,14 @@ export default function EventConfirmDialog({
   onClose,
   onConfirm,
   data,
-  isLoading = false
+  isLoading = false,
 }: EventConfirmDialogProps) {
   if (!isOpen) return null;
 
   const eventTypeLabels = {
     tournament: '大会',
     announcement: '告知',
-    other: 'その他'
+    other: 'その他',
   };
 
   return (
@@ -50,7 +50,7 @@ export default function EventConfirmDialog({
           maxHeight: '80vh',
           overflow: 'auto',
         }}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         <h2
           style={{
@@ -66,21 +66,44 @@ export default function EventConfirmDialog({
 
         <div style={{ marginBottom: '20px' }}>
           <div style={{ marginBottom: '12px' }}>
-            <span style={{ color: '#00c8ff', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+            <span
+              style={{
+                color: '#00c8ff',
+                fontWeight: 'bold',
+                display: 'block',
+                marginBottom: '4px',
+              }}
+            >
               イベント名:
             </span>
             <span style={{ color: '#ffffff' }}>{data.name}</span>
           </div>
 
           <div style={{ marginBottom: '12px' }}>
-            <span style={{ color: '#00c8ff', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+            <span
+              style={{
+                color: '#00c8ff',
+                fontWeight: 'bold',
+                display: 'block',
+                marginBottom: '4px',
+              }}
+            >
               イベントタイプ:
             </span>
-            <span style={{ color: '#ffffff' }}>{eventTypeLabels[data.type]}</span>
+            <span style={{ color: '#ffffff' }}>
+              {eventTypeLabels[data.type]}
+            </span>
           </div>
 
           <div style={{ marginBottom: '12px' }}>
-            <span style={{ color: '#00c8ff', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+            <span
+              style={{
+                color: '#00c8ff',
+                fontWeight: 'bold',
+                display: 'block',
+                marginBottom: '4px',
+              }}
+            >
               詳細:
             </span>
             <div
@@ -100,22 +123,45 @@ export default function EventConfirmDialog({
 
           {data.url && (
             <div style={{ marginBottom: '12px' }}>
-              <span style={{ color: '#00c8ff', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+              <span
+                style={{
+                  color: '#00c8ff',
+                  fontWeight: 'bold',
+                  display: 'block',
+                  marginBottom: '4px',
+                }}
+              >
                 URL:
               </span>
-              <span style={{ color: '#ffffff', wordBreak: 'break-all' }}>{data.url}</span>
+              <span style={{ color: '#ffffff', wordBreak: 'break-all' }}>
+                {data.url}
+              </span>
             </div>
           )}
 
           <div style={{ marginBottom: '12px' }}>
-            <span style={{ color: '#00c8ff', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+            <span
+              style={{
+                color: '#00c8ff',
+                fontWeight: 'bold',
+                display: 'block',
+                marginBottom: '4px',
+              }}
+            >
               申込締切日:
             </span>
             <span style={{ color: '#ffffff' }}>{data.deadline}</span>
           </div>
 
           <div style={{ marginBottom: '12px' }}>
-            <span style={{ color: '#00c8ff', fontWeight: 'bold', display: 'block', marginBottom: '4px' }}>
+            <span
+              style={{
+                color: '#00c8ff',
+                fontWeight: 'bold',
+                display: 'block',
+                marginBottom: '4px',
+              }}
+            >
               表示終了日:
             </span>
             <span style={{ color: '#ffffff' }}>{data.endDisplayDate}</span>

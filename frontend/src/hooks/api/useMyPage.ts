@@ -88,7 +88,11 @@ export const useMyTeamFiles = () => {
         }));
       } catch (error: any) {
         // 401エラーの場合は自動ログアウト
-        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+        if (
+          error.status === 401 ||
+          error.message?.includes('Unauthorized') ||
+          error.message?.includes('Unauthenticated')
+        ) {
           console.warn('Authentication failed, logging out user');
           logout(() => {
             window.location.href = '/login';
@@ -122,8 +126,12 @@ export const useMyMatchFiles = () => {
           type: 'match' as const,
         }));
       } catch (error: any) {
-      // 401エラーの場合は自動ログアウト
-        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+        // 401エラーの場合は自動ログアウト
+        if (
+          error.status === 401 ||
+          error.message?.includes('Unauthorized') ||
+          error.message?.includes('Unauthenticated')
+        ) {
           logout(() => {
             window.location.href = '/login';
           });
@@ -166,7 +174,11 @@ export const useMyEvents = () => {
         }));
       } catch (error: any) {
         // 401エラーの場合は自動ログアウト
-        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+        if (
+          error.status === 401 ||
+          error.message?.includes('Unauthorized') ||
+          error.message?.includes('Unauthenticated')
+        ) {
           logout(() => {
             window.location.href = '/login';
           });

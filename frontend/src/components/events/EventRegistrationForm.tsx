@@ -13,13 +13,22 @@ interface EventRegistrationFormProps {
   onSuccess?: () => void;
 }
 
-export default function EventRegistrationForm({ onSuccess }: EventRegistrationFormProps) {
+export default function EventRegistrationForm({
+  onSuccess,
+}: EventRegistrationFormProps) {
   const [showDeadlineCalendar, setShowDeadlineCalendar] = useState(false);
   const [showEndDateCalendar, setShowEndDateCalendar] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [formData, setFormData] = useState<EventFormData | null>(null);
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<EventFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+  } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
       name: '',
@@ -39,7 +48,7 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
       setShowEndDateCalendar(false);
       onSuccess?.();
     },
-    onError: (error) => {
+    onError: error => {
       toast.error(error.message || '登録に失敗しました');
     },
   });
@@ -80,8 +89,6 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
     setValue('endDisplayDate', formatDate(date));
     setShowEndDateCalendar(false);
   };
-
-
 
   return (
     <div
@@ -150,7 +157,13 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
               }}
             />
             {errors.name && (
-              <p style={{ color: '#ff4d4d', fontSize: '0.875rem', marginTop: '4px' }}>
+              <p
+                style={{
+                  color: '#ff4d4d',
+                  fontSize: '0.875rem',
+                  marginTop: '4px',
+                }}
+              >
                 {errors.name.message}
               </p>
             )}
@@ -186,7 +199,13 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
               }}
             />
             {errors.details && (
-              <p style={{ color: '#ff4d4d', fontSize: '0.875rem', marginTop: '4px' }}>
+              <p
+                style={{
+                  color: '#ff4d4d',
+                  fontSize: '0.875rem',
+                  marginTop: '4px',
+                }}
+              >
                 {errors.details.message}
               </p>
             )}
@@ -221,7 +240,13 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
               }}
             />
             {errors.url && (
-              <p style={{ color: '#ff4d4d', fontSize: '0.875rem', marginTop: '4px' }}>
+              <p
+                style={{
+                  color: '#ff4d4d',
+                  fontSize: '0.875rem',
+                  marginTop: '4px',
+                }}
+              >
                 {errors.url.message}
               </p>
             )}
@@ -280,7 +305,14 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <rect
+                      x="3"
+                      y="4"
+                      width="18"
+                      height="18"
+                      rx="2"
+                      ry="2"
+                    ></rect>
                     <line x1="16" y1="2" x2="16" y2="6"></line>
                     <line x1="8" y1="2" x2="8" y2="6"></line>
                     <line x1="3" y1="10" x2="21" y2="10"></line>
@@ -336,7 +368,13 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
               )}
             </div>
             {errors.deadline && (
-              <p style={{ color: '#ff4d4d', fontSize: '0.875rem', marginTop: '4px' }}>
+              <p
+                style={{
+                  color: '#ff4d4d',
+                  fontSize: '0.875rem',
+                  marginTop: '4px',
+                }}
+              >
                 {errors.deadline.message}
               </p>
             )}
@@ -395,7 +433,14 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <rect
+                      x="3"
+                      y="4"
+                      width="18"
+                      height="18"
+                      rx="2"
+                      ry="2"
+                    ></rect>
                     <line x1="16" y1="2" x2="16" y2="6"></line>
                     <line x1="8" y1="2" x2="8" y2="6"></line>
                     <line x1="3" y1="10" x2="21" y2="10"></line>
@@ -451,7 +496,13 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
               )}
             </div>
             {errors.endDisplayDate && (
-              <p style={{ color: '#ff4d4d', fontSize: '0.875rem', marginTop: '4px' }}>
+              <p
+                style={{
+                  color: '#ff4d4d',
+                  fontSize: '0.875rem',
+                  marginTop: '4px',
+                }}
+              >
                 {errors.endDisplayDate.message}
               </p>
             )}
@@ -493,7 +544,13 @@ export default function EventRegistrationForm({ onSuccess }: EventRegistrationFo
               <option value="その他">その他</option>
             </select>
             {errors.type && (
-              <p style={{ color: '#ff4d4d', fontSize: '0.875rem', marginTop: '4px' }}>
+              <p
+                style={{
+                  color: '#ff4d4d',
+                  fontSize: '0.875rem',
+                  marginTop: '4px',
+                }}
+              >
                 {errors.type.message}
               </p>
             )}

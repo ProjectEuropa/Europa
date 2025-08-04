@@ -91,7 +91,7 @@ export default function ExternalLinksPage() {
             </p>
 
             <div style={{ display: 'grid', gap: '24px' }}>
-              {links.map((link) => (
+              {links.map(link => (
                 <div
                   key={link.url}
                   role="article"

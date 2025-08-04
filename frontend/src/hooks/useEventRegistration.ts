@@ -18,11 +18,11 @@ export const useEventRegistration = (options?: UseEventRegistrationOptions) => {
 
   return useMutation({
     mutationFn: (data: EventFormData) => eventsApi.registerEvent(data),
-    onSuccess: (data) => {
+    onSuccess: data => {
       // イベント一覧のキャッシュを無効化
       queryClient.invalidateQueries({ queryKey: ['events'] });
       queryClient.invalidateQueries({ queryKey: ['my-events'] });
-      
+
       options?.onSuccess?.();
     },
     onError: (error: Error) => {
@@ -44,6 +44,6 @@ export const useEventRegistration = (options?: UseEventRegistrationOptions) => {
       // サーバーエラーは最大2回リトライ
       return failureCount < 2;
     },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };

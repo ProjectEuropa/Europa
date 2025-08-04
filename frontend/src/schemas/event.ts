@@ -19,7 +19,7 @@ export const eventSchema = z.object({
   url: z
     .string()
     .optional()
-    .refine((val) => !val || z.string().url().safeParse(val).success, {
+    .refine(val => !val || z.string().url().safeParse(val).success, {
       message: '有効なURLを入力してください',
     }),
   deadline: z

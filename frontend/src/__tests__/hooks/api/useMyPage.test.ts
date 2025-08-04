@@ -85,7 +85,7 @@ describe('useMyPage hooks', () => {
             id: '1',
             name: 'テストユーザー',
             email: 'test@example.com',
-            createdAt: '2023-01-01T00:00:00Z',
+            created_at: '2023-01-01T00:00:00Z', // プロパティ名を修正
           },
           token: 'mock-token',
           isAuthenticated: true,
@@ -95,6 +95,9 @@ describe('useMyPage hooks', () => {
           logout: vi.fn(),
           fetchUser: vi.fn(),
           setUser: vi.fn(),
+          setToken: vi.fn(),
+          setLoading: vi.fn(),
+          setHasHydrated: vi.fn(),
           hasHydrated: true,
         };
         return selector ? selector(state) : state;
@@ -124,6 +127,9 @@ describe('useMyPage hooks', () => {
           logout: vi.fn(),
           fetchUser: vi.fn(),
           setUser: vi.fn(),
+          setToken: vi.fn(),
+          setLoading: vi.fn(),
+          setHasHydrated: vi.fn(),
           hasHydrated: true,
         };
         return selector ? selector(state) : state;
@@ -144,7 +150,7 @@ describe('useMyPage hooks', () => {
             id: '1',
             name: 'テストユーザー',
             email: 'test@example.com',
-            createdAt: undefined,
+            // created_atプロパティを設定しない
           },
           token: 'mock-token',
           isAuthenticated: true,
@@ -154,6 +160,9 @@ describe('useMyPage hooks', () => {
           logout: vi.fn(),
           fetchUser: vi.fn(),
           setUser: vi.fn(),
+          setToken: vi.fn(),
+          setLoading: vi.fn(),
+          setHasHydrated: vi.fn(),
           hasHydrated: true,
         };
         return selector ? selector(state) : state;
@@ -172,7 +181,7 @@ describe('useMyPage hooks', () => {
             id: '1',
             name: 'テストユーザー',
             email: 'test@example.com',
-            createdAt: '2023-01-01T00:00:00Z',
+            created_at: '2023-01-01T00:00:00Z', // プロパティ名を修正
           },
           token: 'mock-token',
           isAuthenticated: true,
@@ -182,6 +191,9 @@ describe('useMyPage hooks', () => {
           logout: vi.fn(),
           fetchUser: vi.fn(),
           setUser: vi.fn(),
+          setToken: vi.fn(),
+          setLoading: vi.fn(),
+          setHasHydrated: vi.fn(),
           hasHydrated: true,
         };
         return selector ? selector(state) : state;
@@ -356,7 +368,7 @@ describe('useMyPage hooks', () => {
           url: 'https://example.com',
           deadline: '2023-12-31',
           endDisplayDate: '2023-12-25',
-          type: 'tournament',
+          type: '大会',
           registeredDate: '2023-01-01',
         },
         {
@@ -366,13 +378,13 @@ describe('useMyPage hooks', () => {
           url: 'https://example2.com',
           deadline: '2023-11-30',
           endDisplayDate: '2023-11-25',
-          type: 'announcement',
+          type: '告知',
           registeredDate: '2023-01-02',
         },
       ]);
     });
 
-    it('未知のイベントタイプはotherに変換される', async () => {
+    it('未知のイベントタイプはその他に変換される', async () => {
       const mockApiResponse = [
         {
           id: '1',
@@ -395,7 +407,7 @@ describe('useMyPage hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data?.[0]?.type).toBe('other');
+      expect(result.current.data?.[0]?.type).toBe('その他');
     });
   });
 

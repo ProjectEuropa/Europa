@@ -52,18 +52,24 @@ describe('EventRegistrationForm', () => {
     expect(screen.getByLabelText(/イベント受付締切日/)).toBeInTheDocument();
     expect(screen.getByLabelText(/イベント表示最終日/)).toBeInTheDocument();
     expect(screen.getByLabelText(/イベント種別/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /イベントを登録する/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /イベントを登録する/ })
+    ).toBeInTheDocument();
   });
 
   it('shows validation errors for required fields', async () => {
     const user = userEvent.setup();
     render(<EventRegistrationForm />, { wrapper: createWrapper() });
 
-    const submitButton = screen.getByRole('button', { name: /イベントを登録する/ });
+    const submitButton = screen.getByRole('button', {
+      name: /イベントを登録する/,
+    });
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('イベント名を入力してください')).toBeInTheDocument();
+      expect(
+        screen.getByText('イベント名を入力してください')
+      ).toBeInTheDocument();
       expect(screen.getByText('詳細を入力してください')).toBeInTheDocument();
     });
   });
@@ -74,31 +80,43 @@ describe('EventRegistrationForm', () => {
 
     // フォームに入力
     await user.type(screen.getByLabelText(/イベント名/), 'テストイベント');
-    await user.type(screen.getByLabelText(/イベント詳細情報/), 'テストイベントの詳細です');
-    await user.type(screen.getByLabelText(/イベント詳細URL/), 'https://example.com');
-    
+    await user.type(
+      screen.getByLabelText(/イベント詳細情報/),
+      'テストイベントの詳細です'
+    );
+    await user.type(
+      screen.getByLabelText(/イベント詳細URL/),
+      'https://example.com'
+    );
+
     // 日付フィールドへの入力（readonlyを一時的に解除してから入力）
     const deadlineInput = screen.getByLabelText(/イベント受付締切日/);
     const endDateInput = screen.getByLabelText(/イベント表示最終日/);
-    
+
     // readOnly属性を削除してから入力
     deadlineInput.removeAttribute('readonly');
     endDateInput.removeAttribute('readonly');
-    
+
     await user.clear(deadlineInput);
     await user.type(deadlineInput, '2024-12-31');
     await user.clear(endDateInput);
     await user.type(endDateInput, '2025-01-31');
 
     // 送信ボタンクリック（確認ダイアログが表示される）
-    await user.click(screen.getByRole('button', { name: /イベントを登録する/ }));
+    await user.click(
+      screen.getByRole('button', { name: /イベントを登録する/ })
+    );
 
     // まずはバリデーションエラーがないか確認
     await waitFor(
       () => {
         // バリデーションエラーがないことを確認
-        expect(screen.queryByText('イベント名を入力してください')).not.toBeInTheDocument();
-        expect(screen.queryByText('詳細を入力してください')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('イベント名を入力してください')
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('詳細を入力してください')
+        ).not.toBeInTheDocument();
       },
       { timeout: 3000 }
     );
@@ -134,8 +152,10 @@ describe('EventRegistrationForm', () => {
 
     const urlInput = screen.getByLabelText(/イベント詳細URL/);
     await user.type(urlInput, 'invalid-url');
-    
-    const submitButton = screen.getByRole('button', { name: /イベントを登録する/ });
+
+    const submitButton = screen.getByRole('button', {
+      name: /イベントを登録する/,
+    });
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -152,12 +172,16 @@ describe('EventRegistrationForm', () => {
     // 101文字のイベント名（制限は100文字）
     const longName = 'a'.repeat(101);
     await user.type(screen.getByLabelText(/イベント名/), longName);
-    
-    const submitButton = screen.getByRole('button', { name: /イベントを登録する/ });
+
+    const submitButton = screen.getByRole('button', {
+      name: /イベントを登録する/,
+    });
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('イベント名は100文字以内で入力してください')).toBeInTheDocument();
+      expect(
+        screen.getByText('イベント名は100文字以内で入力してください')
+      ).toBeInTheDocument();
     });
   });
 
@@ -167,23 +191,28 @@ describe('EventRegistrationForm', () => {
 
     // フォームに入力
     await user.type(screen.getByLabelText(/イベント名/), 'テストイベント');
-    await user.type(screen.getByLabelText(/イベント詳細情報/), 'テストイベントの詳細です');
-    
+    await user.type(
+      screen.getByLabelText(/イベント詳細情報/),
+      'テストイベントの詳細です'
+    );
+
     // 日付フィールドへの入力（readonlyを一時的に解除してから入力）
     const deadlineInput = screen.getByLabelText(/イベント受付締切日/);
     const endDateInput = screen.getByLabelText(/イベント表示最終日/);
-    
+
     // readOnly属性を削除してから入力
     deadlineInput.removeAttribute('readonly');
     endDateInput.removeAttribute('readonly');
-    
+
     await user.clear(deadlineInput);
     await user.type(deadlineInput, '2024-12-31');
     await user.clear(endDateInput);
     await user.type(endDateInput, '2025-01-31');
 
     // 送信ボタンクリック（確認ダイアログが表示される）
-    await user.click(screen.getByRole('button', { name: /イベントを登録する/ }));
+    await user.click(
+      screen.getByRole('button', { name: /イベントを登録する/ })
+    );
 
     // 確認ダイアログが表示されることを確認
     await waitFor(() => {
@@ -195,7 +224,9 @@ describe('EventRegistrationForm', () => {
 
     // 確認ダイアログが閉じられることを確認
     await waitFor(() => {
-      expect(screen.queryByText('イベント登録内容の確認')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('イベント登録内容の確認')
+      ).not.toBeInTheDocument();
     });
 
     // registerEventが呼ばれていないことを確認
