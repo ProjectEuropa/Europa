@@ -12,14 +12,14 @@ on:
       - 'frontend/**'
       - '.github/workflows/frontend-ci.yml'
 
-defaults:
-  run:
-    working-directory: ./frontend
-
 jobs:
   test:
     timeout-minutes: 10
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./frontend
 
     strategy:
       matrix:
@@ -71,6 +71,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test]
     if: github.event_name == 'pull_request'
+
+    defaults:
+      run:
+        working-directory: ./frontend
 
     steps:
       - name: Checkout code
