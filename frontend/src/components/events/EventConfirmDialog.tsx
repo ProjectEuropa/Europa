@@ -18,10 +18,10 @@ export default function EventConfirmDialog({
   if (!isOpen) return null;
 
   const eventTypeLabels = {
-    tournament: '大会',
-    announcement: '告知',
-    other: 'その他',
-  };
+    '大会': '大会',
+    '告知': '告知',
+    'その他': 'その他',
+  } as const;
 
   return (
     <div
