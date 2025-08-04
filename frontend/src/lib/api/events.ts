@@ -17,7 +17,7 @@ export const eventsApi = {
     const registrationData: EventRegistrationData = {
       eventName: formData.name,
       eventDetails: formData.details,
-      eventReferenceUrl: formData.url,
+      eventReferenceUrl: formData.url || undefined,
       eventClosingDay: formData.deadline,
       eventDisplayingDay: formData.endDisplayDate,
       eventType: formData.type,

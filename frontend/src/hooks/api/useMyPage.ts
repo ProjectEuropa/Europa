@@ -33,8 +33,8 @@ export const useProfile = () => {
   const profileData: ProfileData = {
     name: user.name,
     email: user.email,
-    joinDate: user.createdAt
-      ? user.createdAt.slice(0, 10).replace(/-/g, '/')
+    joinDate: (user as any).created_at
+      ? (user as any).created_at.slice(0, 10).replace(/-/g, '/')
       : '',
   };
 
@@ -157,10 +157,10 @@ export const useMyEvents = () => {
             item.endDisplayDate || item.event_displaying_day || '',
           type:
             item.type === '大会' || item.event_type === '大会'
-              ? 'tournament'
+              ? '大会'
               : item.type === '告知' || item.event_type === '告知'
-                ? 'announcement'
-                : 'other',
+                ? '告知'
+                : 'その他',
           registeredDate:
             item.registeredDate || item.created_at?.slice(0, 10) || '',
         }));

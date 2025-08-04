@@ -18,16 +18,17 @@ export const eventSchema = z.object({
     .max(1000, '詳細は1000文字以内で入力してください'),
   url: z
     .string()
-    .url('有効なURLを入力してください')
-    .or(z.literal(''))
-    .optional(),
+    .optional()
+    .refine((val) => !val || z.string().url().safeParse(val).success, {
+      message: '有効なURLを入力してください',
+    }),
   deadline: z
     .string()
     .regex(dateRegex, '日付はYYYY-MM-DD形式で入力してください'),
   endDisplayDate: z
     .string()
     .regex(dateRegex, '日付はYYYY-MM-DD形式で入力してください'),
-  type: z.enum(['tournament', 'community', 'update', 'other'] as const),
+  type: z.enum(['大会', '告知', 'その他'] as const),
 });
 
 // 型推論

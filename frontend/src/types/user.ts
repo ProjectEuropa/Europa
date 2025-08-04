@@ -103,7 +103,7 @@ export interface MyPageEvent {
   url: string;
   deadline: string;
   endDisplayDate: string;
-  type: 'tournament' | 'announcement' | 'other';
+  type: '大会' | '告知' | 'その他';
   registeredDate: string;
 }
 

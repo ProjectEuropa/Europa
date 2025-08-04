@@ -159,11 +159,17 @@ export const useAuthStore = create<AuthStore>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-      onRehydrateStorage: () => state => {
+      onRehydrateStorage: () => (state) => {
         if (state) {
+          // トークンとユーザー情報がある場合は認証済みに設定
           if (state.token && state.user && !state.isAuthenticated) {
             state.isAuthenticated = true;
           }
+          // localStorageにもトークンを同期（api.tsとの互換性のため）
+          if (typeof window !== 'undefined' && state.token) {
+            localStorage.setItem('token', state.token);
+          }
+          // ハイドレーション完了をマーク
           state.hasHydrated = true;
         }
       },
