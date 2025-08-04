@@ -52,7 +52,7 @@ export const eventsApi = {
         endDisplayDate: event.event_displaying_day ?? '',
         type: (event.event_type as Event['type']) ?? 'other',
         registeredDate: event.created_at ? event.created_at.slice(0, 10) : '',
-        createdAt: event.created_at ?? '',
+        created_at: event.created_at ?? '',
         updatedAt: event.updated_at ?? '',
         isActive: event.is_active ?? true,
       };

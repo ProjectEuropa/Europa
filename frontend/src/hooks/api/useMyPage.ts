@@ -34,8 +34,8 @@ export const useProfile = () => {
   const profileData: ProfileData = {
     name: user.name,
     email: user.email,
-    joinDate: (user as any).created_at
-      ? (user as any).created_at.slice(0, 10).replace(/-/g, '/')
+    joinDate: user.created_at
+      ? user.created_at.slice(0, 10).replace(/-/g, '/')
       : '',
   };
 

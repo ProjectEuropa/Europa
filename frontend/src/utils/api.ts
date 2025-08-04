@@ -389,7 +389,7 @@ export const fetchEvents = async () => {
       deadline: event.event_closing_day ?? '',
       endDisplayDate: event.event_displaying_day ?? '',
       type: event.event_type ?? '',
-      createdAt: event.created_at,
+      created_at: event.created_at,
       updatedAt: event.updated_at,
       isActive: event.is_active,
     })),

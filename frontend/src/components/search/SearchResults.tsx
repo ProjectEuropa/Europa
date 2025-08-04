@@ -64,7 +64,7 @@ export const SearchResults = memo<SearchResultsProps>(
     const processedResults = useMemo(() => {
       return results.map(result => ({
         ...result,
-        formattedCreatedAt: formatDate(result.createdAt),
+        formattedCreatedAt: formatDate(result.created_at),
         formattedDownloadableAt: formatDate(result.downloadableAt, true),
         tags: [
           result.searchTag1,

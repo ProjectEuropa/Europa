@@ -58,7 +58,7 @@ describe('useMyPage hooks', () => {
     id: number;
     name: string;
     email: string;
-    createdAt: string;
+    created_at: string;
   };
 
   beforeEach(() => {
@@ -66,7 +66,7 @@ describe('useMyPage hooks', () => {
       id: 1,
       name: 'テストユーザー',
       email: 'test@example.com',
-      createdAt: '2023-01-01T00:00:00Z',
+      created_at: '2023-01-01T00:00:00Z',
     };
 
     vi.mocked(authStore.useAuthStore).mockReturnValue(mockUser);

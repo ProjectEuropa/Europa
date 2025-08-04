@@ -9,8 +9,8 @@ export interface User {
   id: ID;
   name: string;
   email: string;
-  createdAt: DateString;
-  updatedAt?: DateString;
+  created_at: DateString;
+  updated_at?: DateString;
   lastLoginAt?: DateString;
   role?: UserRole;
   preferences?: UserPreferences;

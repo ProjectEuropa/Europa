@@ -14,7 +14,7 @@ export interface Event {
   endDisplayDate: DateString;
   type: EventType;
   registeredDate?: DateString;
-  createdAt?: DateString;
+  created_at?: DateString;
   updatedAt?: DateString;
   isActive?: boolean;
 }
