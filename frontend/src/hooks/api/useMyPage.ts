@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/authStore';
+import { getEventTypeFromDisplay, type EventType } from '@/schemas/event';
 import type {
   MyPageEvent,
   MyPageFile,
@@ -33,8 +34,8 @@ export const useProfile = () => {
   const profileData: ProfileData = {
     name: user.name,
     email: user.email,
-    joinDate: user.createdAt
-      ? user.createdAt.slice(0, 10).replace(/-/g, '/')
+    joinDate: user.created_at
+      ? user.created_at.slice(0, 10).replace(/-/g, '/')
       : '',
   };
 
@@ -88,7 +89,11 @@ export const useMyTeamFiles = () => {
         }));
       } catch (error: any) {
         // 401エラーの場合は自動ログアウト
-        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+        if (
+          error.status === 401 ||
+          error.message?.includes('Unauthorized') ||
+          error.message?.includes('Unauthenticated')
+        ) {
           console.warn('Authentication failed, logging out user');
           logout(() => {
             window.location.href = '/login';
@@ -122,8 +127,12 @@ export const useMyMatchFiles = () => {
           type: 'match' as const,
         }));
       } catch (error: any) {
-      // 401エラーの場合は自動ログアウト
-        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+        // 401エラーの場合は自動ログアウト
+        if (
+          error.status === 401 ||
+          error.message?.includes('Unauthorized') ||
+          error.message?.includes('Unauthenticated')
+        ) {
           logout(() => {
             window.location.href = '/login';
           });
@@ -147,26 +156,39 @@ export const useMyEvents = () => {
     queryFn: async (): Promise<MyPageEvent[]> => {
       try {
         const data = await fetchMyEvents();
-        return data.map((item: any) => ({
-          id: String(item.id),
-          name: item.name || item.event_name || '',
-          details: item.details || item.event_details || '',
-          url: item.url || item.event_reference_url || '',
-          deadline: item.deadline || item.event_closing_day || '',
-          endDisplayDate:
-            item.endDisplayDate || item.event_displaying_day || '',
-          type:
-            item.type === '大会' || item.event_type === '大会'
-              ? 'tournament'
-              : item.type === '告知' || item.event_type === '告知'
-                ? 'announcement'
-                : 'other',
-          registeredDate:
-            item.registeredDate || item.created_at?.slice(0, 10) || '',
-        }));
+        return data.map((item: any) => {
+          // APIから返される日本語の値を内部値に変換
+          let eventType: EventType = 'other';
+          const typeValue = item.type || item.event_type || '';
+          
+          if (typeValue === '大会' || typeValue === 'tournament') {
+            eventType = 'tournament';
+          } else if (typeValue === '告知' || typeValue === 'announcement') {
+            eventType = 'announcement';
+          } else {
+            eventType = 'other';
+          }
+
+          return {
+            id: String(item.id),
+            name: item.name || item.event_name || '',
+            details: item.details || item.event_details || '',
+            url: item.url || item.event_reference_url || '',
+            deadline: item.deadline || item.event_closing_day || '',
+            endDisplayDate:
+              item.endDisplayDate || item.event_displaying_day || '',
+            type: eventType,
+            registeredDate:
+              item.registeredDate || item.created_at?.slice(0, 10) || '',
+          };
+        });
       } catch (error: any) {
         // 401エラーの場合は自動ログアウト
-        if (error.status === 401 || error.message?.includes('Unauthorized') || error.message?.includes('Unauthenticated')) {
+        if (
+          error.status === 401 ||
+          error.message?.includes('Unauthorized') ||
+          error.message?.includes('Unauthenticated')
+        ) {
           logout(() => {
             window.location.href = '/login';
           });

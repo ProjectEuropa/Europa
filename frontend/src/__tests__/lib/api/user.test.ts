@@ -51,7 +51,7 @@ describe('userApi', () => {
         id: 1,
         name: 'Test User',
         email: 'test@example.com',
-        createdAt: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
       };
 
@@ -82,7 +82,7 @@ describe('userApi', () => {
         id: 1,
         name: 'Updated Name',
         email: 'test@example.com',
-        createdAt: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-02T00:00:00Z',
       };
 
@@ -119,7 +119,7 @@ describe('userApi', () => {
         id: userId,
         name: 'Other User',
         email: 'other@example.com',
-        createdAt: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
       };
 

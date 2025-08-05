@@ -213,7 +213,7 @@ describe('authApi', () => {
         id: 1,
         name: 'Test User',
         email: 'test@example.com',
-        createdAt: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
       };
 
       vi.mocked(apiClient.get).mockResolvedValueOnce(mockUser);
@@ -229,7 +229,7 @@ describe('authApi', () => {
         id: 1,
         name: 'Test User',
         email: 'test@example.com',
-        createdAt: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
       };
 
       const mockResponse = { data: mockUser };

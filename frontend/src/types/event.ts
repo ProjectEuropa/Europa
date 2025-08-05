@@ -3,6 +3,7 @@
  */
 
 import type { DateString, ID } from './utils';
+import type { EventType } from '@/schemas/event';
 
 export interface Event {
   id: ID;
@@ -13,12 +14,12 @@ export interface Event {
   endDisplayDate: DateString;
   type: EventType;
   registeredDate?: DateString;
-  createdAt?: DateString;
+  created_at?: DateString;
   updatedAt?: DateString;
   isActive?: boolean;
 }
 
-export type EventType = 'tournament' | 'community' | 'update' | 'other';
+export type { EventType } from '@/schemas/event';
 
 export interface EventFormData {
   name: string;

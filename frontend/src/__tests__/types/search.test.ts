@@ -93,14 +93,14 @@ describe('Search Types', () => {
     it('should accept valid SortField values', () => {
       const sortFields: SortField[] = [
         'name',
-        'createdAt',
+        'created_at',
         'downloadableAt',
         'ownerName',
       ];
 
       sortFields.forEach(field => {
         const sortBy: SortField = field;
-        expect(['name', 'createdAt', 'downloadableAt', 'ownerName']).toContain(
+        expect(['name', 'created_at', 'downloadableAt', 'ownerName']).toContain(
           sortBy
         );
       });
@@ -134,7 +134,7 @@ describe('Search Types', () => {
           ownerName: 'testuser',
           comment: 'Test comment',
           downloadableAt: '2024-01-01T00:00:00Z',
-          createdAt: '2024-01-01T00:00:00Z',
+          created_at: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-01T00:00:00Z',
           searchTag1: 'tag1',
           searchTag2: 'tag2',
@@ -186,7 +186,7 @@ describe('Search Types', () => {
         ownerName: 'teamowner',
         comment: 'Team file comment',
         downloadableAt: '2024-01-01T00:00:00Z',
-        createdAt: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         searchTag1: 'team',
         searchTag2: null,
@@ -215,7 +215,7 @@ describe('Search Types', () => {
         ownerName: 'matchowner',
         comment: 'Match file comment',
         downloadableAt: '2024-01-01T00:00:00Z',
-        createdAt: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         searchTag1: 'match',
         searchTag2: null,

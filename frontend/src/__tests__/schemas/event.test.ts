@@ -147,7 +147,7 @@ describe('eventSchema', () => {
 
   describe('type validation', () => {
     it('should accept valid event types', () => {
-      const types = ['tournament', 'community', 'update', 'other'] as const;
+      const types = ['tournament', 'announcement', 'other'] as const;
 
       types.forEach(type => {
         const data = { ...validEventData, type };

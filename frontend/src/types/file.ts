@@ -25,8 +25,8 @@ export interface BaseFile {
   name: string;
   ownerName: string;
   comment: string;
-  downloadableAt: DateString;
   createdAt: DateString;
+  downloadableAt: DateString;
   updatedAt?: DateString;
   searchTag1?: string | null;
   searchTag2?: string | null;

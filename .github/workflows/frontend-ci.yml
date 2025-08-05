@@ -12,70 +12,30 @@ on:
       - 'frontend/**'
       - '.github/workflows/frontend-ci.yml'
 
+# Concurrency: cancel running workflows on new pushes to the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  # Performance optimizations
+  NODE_OPTIONS: '--max-old-space-size=4096'
+  CI: true
+  NEXT_TELEMETRY_DISABLED: 1
+  # Cache optimization
+  HUSKY: 0
+
 jobs:
-  test:
-    timeout-minutes: 10
+  # Job for dependency installation and caching
+  setup:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     defaults:
       run:
         working-directory: ./frontend
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: './frontend/package-lock.json'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run unit tests
-        run: npm run test:run
-
-      - name: Run unit tests with coverage
-        run: npm run test:coverage
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
-        with:
-          directory: ./frontend/coverage
-          flags: frontend
-          name: frontend-coverage
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Build application
-        run: npm run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build-${{ matrix.node-version }}
-          path: |
-            frontend/out/
-            frontend/.next/
-          retention-days: 1
-
-  build-analysis:
-    timeout-minutes: 10
-    runs-on: ubuntu-latest
-    needs: [test]
-    if: github.event_name == 'pull_request'
-
-    defaults:
-      run:
-        working-directory: ./frontend
-
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -83,59 +43,239 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: './frontend/package-lock.json'
 
-      - name: Install dependencies
-        run: npm ci
+      # Cache node_modules separately for sharing across jobs
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
-      - name: Build with bundle analysis
-        run: npm run analyze
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+
+  # Optimized test job
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    needs: [setup]
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
+
+      # Vitest cache with more aggressive caching
+      - name: Cache Vitest
+        uses: actions/cache@v4
+        with:
+          path: |
+            frontend/node_modules/.vitest
+            frontend/coverage
+          key: ${{ runner.os }}-vitest-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/**/*.test.*', 'frontend/**/*.spec.*', 'frontend/src/**/*.{ts,tsx,js,jsx}') }}
+          restore-keys: |
+            ${{ runner.os }}-vitest-${{ hashFiles('frontend/package-lock.json') }}-
+            ${{ runner.os }}-vitest-
+
+      - name: Run tests with coverage
+        run: npm run test:coverage -- --reporter=verbose --reporter=github-actions
+        env:
+          # Vitest optimizations
+          VITEST_MIN_THREADS: 2
+          VITEST_MAX_THREADS: 4
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: success() || failure()
+        with:
+          directory: ./frontend/coverage
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  # Optimized build job
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    needs: [setup, test]
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
+
+      # More comprehensive Next.js caching
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: |
+            frontend/.next/cache
+            frontend/.next/standalone
+            frontend/.next/static
+            frontend/.next/server
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/**/*.{js,jsx,ts,tsx,md,mdx}', 'frontend/public/**/*') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
+
+      - name: Build application
+        run: npm run build
+        env:
+          # Build optimizations
+          NEXT_WEBPACK_USEPOLLING: false
+          NEXT_BUILD_CACHE: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-${{ github.sha }}
+          path: |
+            frontend/out/
+            frontend/.next/
+          retention-days: 1
+          compression-level: 9
+
+  # Bundle analysis job (only for PRs, optimized to use existing build)
+  build-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build-${{ github.sha }}
+          path: frontend/
+
+      - name: Analyze build output
+        run: |
+          echo "📊 Analyzing Next.js build output..."
+          if [ -f ".next/static/chunks/_buildManifest.js" ]; then
+            echo "✅ Build manifest found"
+            ls -la .next/static/chunks/ | head -10
+          else
+            echo "⚠️ Build manifest not found"
+          fi
+          
+          if [ -d ".next/static" ]; then
+            echo "📦 Static assets:"
+            du -sh .next/static/* 2>/dev/null || echo "No static assets found"
+          fi
+          
+          if [ -f ".next/BUILD_ID" ]; then
+            echo "🔖 Build ID: $(cat .next/BUILD_ID)"
+          fi
 
       - name: Comment bundle analysis
         uses: actions/github-script@v7
+        if: always()
         with:
           script: |
             const fs = require('fs');
             const path = require('path');
-
-            // Bundle analysis results would be processed here
-            // This is a placeholder for bundle size analysis
-
+            
+            let message = '📊 Bundle Analysis Results\n\n';
+            
+            try {
+              // Check if build artifacts exist
+              const buildExists = fs.existsSync('./frontend/.next');
+              const staticExists = fs.existsSync('./frontend/.next/static');
+              
+              if (buildExists) {
+                message += '✅ Build artifacts are present\n';
+                
+                if (staticExists) {
+                  const staticFiles = fs.readdirSync('./frontend/.next/static');
+                  message += `📦 Static assets: ${staticFiles.length} directories\n`;
+                } else {
+                  message += '⚠️ No static assets found\n';
+                }
+                
+                // Try to get build ID
+                try {
+                  const buildId = fs.readFileSync('./frontend/.next/BUILD_ID', 'utf8').trim();
+                  message += `🔖 Build ID: \`${buildId}\`\n`;
+                } catch (e) {
+                  message += '⚠️ Build ID not found\n';
+                }
+              } else {
+                message += '❌ Build artifacts not found\n';
+              }
+            } catch (error) {
+              message += `❌ Analysis failed: ${error.message}\n`;
+            }
+            
+            message += '\n*Analysis completed using pre-built artifacts*';
+            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📊 Bundle analysis completed. Check artifacts for detailed results.'
+              body: message
             });
 
+  # Simplified notification job
   notify:
-    timeout-minutes: 5
     runs-on: ubuntu-latest
-    needs: [test, build-analysis]
-    if: always()
-
+    timeout-minutes: 2
+    needs: [test, build]
+    if: always() && (needs.test.result == 'failure' || needs.build.result == 'failure')
     steps:
-      - name: Determine overall status
+      - name: Determine status
         id: status
         run: |
-          if [[ "${{ needs.test.result }}" == "success" ]]; then
-            echo "status=success" >> $GITHUB_OUTPUT
-          elif [[ "${{ needs.test.result }}" == "failure" ]]; then
+          if [[ "${{ needs.test.result }}" == "failure" || "${{ needs.build.result }}" == "failure" ]]; then
             echo "status=failure" >> $GITHUB_OUTPUT
           else
-            echo "status=cancelled" >> $GITHUB_OUTPUT
+            echo "status=success" >> $GITHUB_OUTPUT
           fi
 
-      - name: Notify Slack
+      - name: Notify on failure
         uses: 8398a7/action-slack@v3
+        if: steps.status.outputs.status == 'failure'
         with:
-          status: ${{ steps.status.outputs.status }}
-          fields: repo,message,author,job,ref,workflow
+          status: failure
+          fields: repo,message,author,job,ref
           text: |
-            Frontend CI Pipeline Status: ${{ steps.status.outputs.status }}
-            Test Status: ${{ needs.test.result }}
+            🚨 Frontend CI Pipeline Failed
+            Test: ${{ needs.test.result }}
+            Build: ${{ needs.build.result }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-        if: env.SLACK_WEBHOOK_URL != ''

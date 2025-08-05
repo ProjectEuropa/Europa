@@ -27,7 +27,7 @@ export interface DateRange {
   end: DateString;
 }
 
-export type SortField = 'name' | 'createdAt' | 'downloadableAt' | 'ownerName';
+export type SortField = 'name' | 'created_at' | 'downloadableAt' | 'ownerName';
 export type SortOrder = 'asc' | 'desc';
 export type FileType = 'team' | 'match' | 'all';
 
