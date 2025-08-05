@@ -52,19 +52,29 @@ export const apiRequest = async (
   if (!headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
   }
-  // トークンベースの認証
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
-  // Basic認証（特定の環境のみ）
+  // 認証ヘッダーの設定
   if (
     API_BASE_URL.includes('stg.project-europa.work') &&
     BASIC_AUTH_USER &&
-    BASIC_AUTH_PASSWORD &&
-    !endpoint.startsWith('/api/')
+    BASIC_AUTH_PASSWORD
   ) {
-    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
+    // ステージング環境の認証処理
+    if (endpoint.startsWith('/api/')) {
+      if (token) {
+        // APIエンドポイント + トークンありの場合：Bearerトークンのみを使用
+        headers.Authorization = `Bearer ${token}`;
+        headers['X-Requested-With'] = 'XMLHttpRequest';
+      } else {
+        // APIエンドポイント + トークンなしの場合：Basic認証を使用
+        headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
+      }
+    } else {
+      // 非APIエンドポイントの場合：Basic認証を使用
+      headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
+    }
+  } else if (token) {
+    // 通常環境でトークンベースの認証
+    headers.Authorization = `Bearer ${token}`;
   }
 
   try {
@@ -379,22 +389,20 @@ export const fetchEvents = async () => {
       deadline: event.event_closing_day ?? '',
       endDisplayDate: event.event_displaying_day ?? '',
       type: event.event_type ?? '',
-      createdAt: event.created_at,
+      created_at: event.created_at,
       updatedAt: event.updated_at,
       isActive: event.is_active,
-    }))
+    })),
   };
 };
 
 // マイページ：チームファイル取得API
 export const fetchMyTeamFiles = async () => {
   const res = await apiRequest('/api/v1/mypage/team', { method: 'GET' });
-
   if (!res.ok) {
     const errorText = await res.text();
     throw new Error(`チームデータ取得失敗 (${res.status}): ${errorText}`);
   }
-
   const data = await res.json();
   return data.files || [];
 };
@@ -402,12 +410,10 @@ export const fetchMyTeamFiles = async () => {
 // マイページ：マッチファイル取得API
 export const fetchMyMatchFiles = async () => {
   const res = await apiRequest('/api/v1/mypage/match', { method: 'GET' });
-
   if (!res.ok) {
     const errorText = await res.text();
     throw new Error(`マッチデータ取得失敗 (${res.status}): ${errorText}`);
   }
-
   const data = await res.json();
   return data.files || [];
 };

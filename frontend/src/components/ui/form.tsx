@@ -1,208 +1,179 @@
 'use client';
 
-import React from 'react';
+import * as React from 'react';
+import type * as LabelPrimitive from '@radix-ui/react-label';
+import { Slot } from '@radix-ui/react-slot';
+import {
+  Controller,
+  type ControllerProps,
+  type FieldPath,
+  type FieldValues,
+  FormProvider,
+  useFormContext,
+} from 'react-hook-form';
+
 import { cn } from '@/lib/utils';
-import type {
-  DateInputProps,
-  FileInputProps,
-  FormFieldProps,
-  SelectOption,
-} from '@/types/form';
-import { Input } from './input';
+import { Label } from '@/components/ui/label';
 
-/**
- * フォームフィールドコンポーネント
- */
-export function FormField({
-  name,
-  label,
-  placeholder,
-  required,
-  disabled,
-  error,
-  children,
-  className,
-}: FormFieldProps & { children: React.ReactNode; className?: string }) {
-  const id = `field-${name}`;
+const Form = FormProvider;
 
-  return (
-    <div className={cn('mb-4', className)}>
-      <label
-        htmlFor={id}
-        className={cn(
-          'block text-sm font-medium mb-1',
-          error ? 'text-red-400' : 'text-gray-200'
-        )}
-      >
-        {label}
-        {required && <span className="text-red-400 ml-1">*</span>}
-      </label>
-
-      {React.cloneElement(children as React.ReactElement<any>, {
-        id,
-        name,
-        placeholder,
-        required,
-        disabled,
-        'aria-invalid': error ? 'true' : 'false',
-        'aria-describedby': error ? `${id}-error` : undefined,
-      })}
-
-      {error && (
-        <p id={`${id}-error`} className="mt-1 text-sm text-red-400">
-          {error}
-        </p>
-      )}
-    </div>
-  );
+interface FormFieldContextValue<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> {
+  name: TName;
 }
 
-/**
- * テキスト入力フィールド
- */
-export function TextField(props: FormFieldProps) {
-  return (
-    <FormField {...props}>
-      <Input
-        type="text"
-        className={cn(
-          'w-full',
-          props.error && 'border-red-500 focus:border-red-500'
-        )}
-      />
-    </FormField>
-  );
-}
+const FormFieldContext = React.createContext<FormFieldContextValue>(
+  {} as FormFieldContextValue
+);
 
-/**
- * パスワード入力フィールド
- */
-export function PasswordField(props: FormFieldProps) {
-  return (
-    <FormField {...props}>
-      <Input
-        type="password"
-        className={cn(
-          'w-full',
-          props.error && 'border-red-500 focus:border-red-500'
-        )}
-      />
-    </FormField>
-  );
-}
-
-/**
- * メール入力フィールド
- */
-export function EmailField(props: FormFieldProps) {
-  return (
-    <FormField {...props}>
-      <Input
-        type="email"
-        className={cn(
-          'w-full',
-          props.error && 'border-red-500 focus:border-red-500'
-        )}
-      />
-    </FormField>
-  );
-}
-
-/**
- * テキストエリアフィールド
- */
-export function TextareaField(props: FormFieldProps) {
-  const _id = `field-${props.name}`;
-
-  return (
-    <FormField {...props}>
-      <textarea
-        className={cn(
-          'w-full min-h-[100px] rounded-md border border-gray-700 bg-transparent px-3 py-2 text-sm shadow-xs',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50',
-          props.error && 'border-red-500 focus:border-red-500'
-        )}
-      />
-    </FormField>
-  );
-}
-
-/**
- * ファイル入力フィールド
- */
-export function FileField({
-  accept,
-  multiple,
-  maxSize,
+const FormField = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
   ...props
-}: FileInputProps) {
-  const _id = `field-${props.name}`;
-
+}: ControllerProps<TFieldValues, TName>) => {
   return (
-    <FormField {...props}>
-      <Input
-        type="file"
-        accept={accept}
-        multiple={multiple}
-        className={cn(
-          'w-full',
-          props.error && 'border-red-500 focus:border-red-500'
-        )}
-      />
-    </FormField>
+    <FormFieldContext.Provider value={{ name: props.name }}>
+      <Controller {...props} />
+    </FormFieldContext.Provider>
   );
+};
+
+const useFormField = () => {
+  const fieldContext = React.useContext(FormFieldContext);
+  const itemContext = React.useContext(FormItemContext);
+  const { getFieldState, formState } = useFormContext();
+
+  const fieldState = getFieldState(fieldContext.name, formState);
+
+  if (!fieldContext) {
+    throw new Error('useFormField should be used within <FormField>');
+  }
+
+  const { id } = itemContext;
+
+  return {
+    id,
+    name: fieldContext.name,
+    formItemId: `${id}-form-item`,
+    formDescriptionId: `${id}-form-item-description`,
+    formMessageId: `${id}-form-item-message`,
+    ...fieldState,
+  };
+};
+
+interface FormItemContextValue {
+  id: string;
 }
 
-/**
- * 日付入力フィールド
- */
-export function DateField({ min, max, ...props }: DateInputProps) {
-  const _id = `field-${props.name}`;
+const FormItemContext = React.createContext<FormItemContextValue>(
+  {} as FormItemContextValue
+);
+
+const FormItem = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const id = React.useId();
 
   return (
-    <FormField {...props}>
-      <Input
-        type="date"
-        min={min}
-        max={max}
-        className={cn(
-          'w-full',
-          props.error && 'border-red-500 focus:border-red-500'
-        )}
-      />
-    </FormField>
+    <FormItemContext.Provider value={{ id }}>
+      <div ref={ref} className={cn('space-y-2', className)} {...props} />
+    </FormItemContext.Provider>
   );
-}
+});
+FormItem.displayName = 'FormItem';
 
-/**
- * セレクトフィールド
- */
-export function SelectField({
-  options,
-  ...props
-}: FormFieldProps & { options: SelectOption[] }) {
-  const _id = `field-${props.name}`;
+const FormLabel = React.forwardRef<
+  React.ElementRef<typeof LabelPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+>(({ className, ...props }, ref) => {
+  const { error, formItemId } = useFormField();
 
   return (
-    <FormField {...props}>
-      <select
-        className={cn(
-          'w-full rounded-md border border-gray-700 bg-transparent px-3 py-2 text-sm shadow-xs',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50',
-          props.error && 'border-red-500 focus:border-red-500'
-        )}
-      >
-        <option value="">選択してください</option>
-        {options.map(option => (
-          <option
-            key={option.value}
-            value={option.value}
-            disabled={option.disabled}
-          >
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </FormField>
+    <Label
+      ref={ref}
+      className={cn(error && 'text-destructive', className)}
+      htmlFor={formItemId}
+      {...props}
+    />
   );
-}
+});
+FormLabel.displayName = 'FormLabel';
+
+const FormControl = React.forwardRef<
+  React.ElementRef<typeof Slot>,
+  React.ComponentPropsWithoutRef<typeof Slot>
+>(({ ...props }, ref) => {
+  const { error, formItemId, formDescriptionId, formMessageId } =
+    useFormField();
+
+  return (
+    <Slot
+      ref={ref}
+      id={formItemId}
+      aria-describedby={
+        !error
+          ? `${formDescriptionId}`
+          : `${formDescriptionId} ${formMessageId}`
+      }
+      aria-invalid={!!error}
+      {...props}
+    />
+  );
+});
+FormControl.displayName = 'FormControl';
+
+const FormDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => {
+  const { formDescriptionId } = useFormField();
+
+  return (
+    <p
+      ref={ref}
+      id={formDescriptionId}
+      className={cn('text-sm text-muted-foreground', className)}
+      {...props}
+    />
+  );
+});
+FormDescription.displayName = 'FormDescription';
+
+const FormMessage = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, children, ...props }, ref) => {
+  const { error, formMessageId } = useFormField();
+  const body = error ? String(error?.message) : children;
+
+  if (!body) {
+    return null;
+  }
+
+  return (
+    <p
+      ref={ref}
+      id={formMessageId}
+      className={cn('text-sm font-medium text-destructive', className)}
+      {...props}
+    >
+      {body}
+    </p>
+  );
+});
+FormMessage.displayName = 'FormMessage';
+
+export {
+  useFormField,
+  Form,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormMessage,
+};

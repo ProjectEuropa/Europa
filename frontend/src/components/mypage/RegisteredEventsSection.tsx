@@ -3,6 +3,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { useDeleteEvent, useMyEvents } from '@/hooks/api/useMyPage';
+import { getEventTypeDisplay } from '@/schemas/event';
 import type { MyPageEvent } from '@/types/user';
 
 const RegisteredEventsSection: React.FC = () => {
@@ -229,7 +230,7 @@ const RegisteredEventsSection: React.FC = () => {
                       color: '#b0c4d8',
                     }}
                   >
-                    {event.type}
+                    {getEventTypeDisplay(event.type)}
                   </td>
                   <td
                     style={{

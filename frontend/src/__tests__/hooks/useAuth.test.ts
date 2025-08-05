@@ -75,7 +75,7 @@ describe('useAuth', () => {
         id: '1',
         name: 'Test User',
         email: 'test@example.com',
-        createdAt: '2024-01-01',
+        created_at: '2024-01-01',
       },
     });
 
@@ -97,7 +97,7 @@ describe('useAuth', () => {
         id: '1',
         name: 'Test User',
         email: 'test@example.com',
-        createdAt: '2024-01-01',
+        created_at: '2024-01-01',
       },
       token: 'mock-token',
       isAuthenticated: true,
@@ -110,7 +110,7 @@ describe('useAuth', () => {
       id: '1',
       name: 'Test User',
       email: 'test@example.com',
-      createdAt: '2024-01-01',
+      created_at: '2024-01-01',
     });
   });
 
@@ -160,7 +160,7 @@ describe('useAuth', () => {
       id: '1',
       name: 'Test User',
       email: 'test@example.com',
-      createdAt: '2024-01-01',
+      created_at: '2024-01-01',
     };
 
     act(() => {

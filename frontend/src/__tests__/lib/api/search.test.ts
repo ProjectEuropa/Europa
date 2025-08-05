@@ -277,7 +277,7 @@ describe('searchApi', () => {
             {
               id: 1,
               query: 'important documents',
-              createdAt: '2024-01-01T00:00:00Z',
+              created_at: '2024-01-01T00:00:00Z',
             },
             {
               id: 2,

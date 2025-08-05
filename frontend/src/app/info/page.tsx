@@ -182,14 +182,11 @@ const InformationPage: React.FC = () => {
                         }}
                       >
                         {ev.deadline
-                          ? new Date(ev.deadline).toLocaleDateString(
-                              'ja-JP',
-                              {
-                                month: 'numeric',
-                                day: 'numeric',
-                                year: 'numeric',
-                              }
-                            )
+                          ? new Date(ev.deadline).toLocaleDateString('ja-JP', {
+                              month: 'numeric',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })
                           : ''}
                       </div>
                       <div
@@ -232,10 +229,10 @@ const InformationPage: React.FC = () => {
                         }}
                       >
                         {ev.deadline
-                          ? new Date(ev.deadline).toLocaleTimeString(
-                              'ja-JP',
-                              { hour: '2-digit', minute: '2-digit' }
-                            )
+                          ? new Date(ev.deadline).toLocaleTimeString('ja-JP', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
                           : ''}
                         まで
                       </div>

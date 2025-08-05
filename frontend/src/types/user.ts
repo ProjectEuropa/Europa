@@ -3,13 +3,14 @@
  */
 
 import type { DateString, ID } from './utils';
+import type { EventType } from '@/schemas/event';
 
 export interface User {
   id: ID;
   name: string;
   email: string;
-  createdAt: DateString;
-  updatedAt?: DateString;
+  created_at: DateString;
+  updated_at?: DateString;
   lastLoginAt?: DateString;
   role?: UserRole;
   preferences?: UserPreferences;
@@ -103,7 +104,7 @@ export interface MyPageEvent {
   url: string;
   deadline: string;
   endDisplayDate: string;
-  type: 'tournament' | 'announcement' | 'other';
+  type: EventType;
   registeredDate: string;
 }
 

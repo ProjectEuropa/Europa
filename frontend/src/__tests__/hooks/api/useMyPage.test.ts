@@ -58,7 +58,7 @@ describe('useMyPage hooks', () => {
     id: number;
     name: string;
     email: string;
-    createdAt: string;
+    created_at: string;
   };
 
   beforeEach(() => {
@@ -66,7 +66,7 @@ describe('useMyPage hooks', () => {
       id: 1,
       name: 'テストユーザー',
       email: 'test@example.com',
-      createdAt: '2023-01-01T00:00:00Z',
+      created_at: '2023-01-01T00:00:00Z',
     };
 
     vi.mocked(authStore.useAuthStore).mockReturnValue(mockUser);
@@ -85,7 +85,7 @@ describe('useMyPage hooks', () => {
             id: '1',
             name: 'テストユーザー',
             email: 'test@example.com',
-            createdAt: '2023-01-01T00:00:00Z',
+            created_at: '2023-01-01T00:00:00Z', // プロパティ名を修正
           },
           token: 'mock-token',
           isAuthenticated: true,
@@ -95,6 +95,9 @@ describe('useMyPage hooks', () => {
           logout: vi.fn(),
           fetchUser: vi.fn(),
           setUser: vi.fn(),
+          setToken: vi.fn(),
+          setLoading: vi.fn(),
+          setHasHydrated: vi.fn(),
           hasHydrated: true,
         };
         return selector ? selector(state) : state;
@@ -124,6 +127,9 @@ describe('useMyPage hooks', () => {
           logout: vi.fn(),
           fetchUser: vi.fn(),
           setUser: vi.fn(),
+          setToken: vi.fn(),
+          setLoading: vi.fn(),
+          setHasHydrated: vi.fn(),
           hasHydrated: true,
         };
         return selector ? selector(state) : state;
@@ -144,7 +150,7 @@ describe('useMyPage hooks', () => {
             id: '1',
             name: 'テストユーザー',
             email: 'test@example.com',
-            createdAt: undefined,
+            // created_atプロパティを設定しない
           },
           token: 'mock-token',
           isAuthenticated: true,
@@ -154,6 +160,9 @@ describe('useMyPage hooks', () => {
           logout: vi.fn(),
           fetchUser: vi.fn(),
           setUser: vi.fn(),
+          setToken: vi.fn(),
+          setLoading: vi.fn(),
+          setHasHydrated: vi.fn(),
           hasHydrated: true,
         };
         return selector ? selector(state) : state;
@@ -172,7 +181,7 @@ describe('useMyPage hooks', () => {
             id: '1',
             name: 'テストユーザー',
             email: 'test@example.com',
-            createdAt: '2023-01-01T00:00:00Z',
+            created_at: '2023-01-01T00:00:00Z', // プロパティ名を修正
           },
           token: 'mock-token',
           isAuthenticated: true,
@@ -182,6 +191,9 @@ describe('useMyPage hooks', () => {
           logout: vi.fn(),
           fetchUser: vi.fn(),
           setUser: vi.fn(),
+          setToken: vi.fn(),
+          setLoading: vi.fn(),
+          setHasHydrated: vi.fn(),
           hasHydrated: true,
         };
         return selector ? selector(state) : state;
@@ -372,7 +384,7 @@ describe('useMyPage hooks', () => {
       ]);
     });
 
-    it('未知のイベントタイプはotherに変換される', async () => {
+    it('未知のイベントタイプはその他に変換される', async () => {
       const mockApiResponse = [
         {
           id: '1',
