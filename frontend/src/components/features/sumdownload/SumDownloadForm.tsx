@@ -36,7 +36,7 @@ export const SumDownloadForm = ({
   });
 
   const onSubmit = (data: SumDownloadSearchFormData) => {
-    onSearch(data.query);
+    onSearch(data.query.trim());
   };
 
   const placeholderText =
