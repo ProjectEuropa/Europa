@@ -833,7 +833,19 @@ export const sumDownload = async (checkedIds: number[]): Promise<void> => {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${Date.now()}_bulk_download.zip`;
+
+  // Content-Dispositionヘッダーからファイル名を取得
+  const disposition = response.headers.get('content-disposition');
+  let filename = `${Date.now()}_bulk_download.zip`; // フォールバック用のファイル名
+
+  if (disposition) {
+    const filenameMatch = /filename=\"?([^\"]+)\"?/.exec(disposition);
+    if (filenameMatch && filenameMatch[1]) {
+      filename = decodeURIComponent(filenameMatch[1]);
+    }
+  }
+
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   window.URL.revokeObjectURL(url);
