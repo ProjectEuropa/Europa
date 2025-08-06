@@ -53,7 +53,7 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
           }}
         >
           {/* ヘッダー */}
-          <div style={{ marginBottom: '32px' }}>
+          <div style={{ marginBottom: '32px', textAlign: 'center' }}>
             <h1
               style={{
                 color: '#00c8ff',
@@ -76,12 +76,14 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
           </div>
 
           {/* 検索フォーム */}
-          <SumDownloadForm
-            searchType="match"
-            onSearch={handleSearch}
-            loading={isSearchLoading}
-            initialQuery={searchQuery}
-          />
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+            <SumDownloadForm
+              searchType="match"
+              onSearch={handleSearch}
+              loading={isSearchLoading}
+              initialQuery={searchQuery}
+            />
+          </div>
 
           {/* エラー表示 */}
           {searchError && (
@@ -136,6 +138,8 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
             isDownloading={isDownloading}
             maxSelectionCount={50}
           />
+
+
 
           {/* データテーブル */}
           <SumDownloadTable

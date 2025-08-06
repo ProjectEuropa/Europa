@@ -43,14 +43,21 @@ export const SumDownloadForm = ({
     searchType === 'team' ? 'チーム名で検索' : 'マッチ名で検索';
 
   return (
-    <div style={{ display: 'flex', marginBottom: '24px', alignItems: 'center' }}>
+    <div style={{
+      width: '100%',
+      maxWidth: '800px',
+      position: 'relative',
+    }}>
       <form
         onSubmit={handleSubmit(onSubmit)}
         style={{
           display: 'flex',
-          flex: 1,
+          alignItems: 'center',
+          background: '#111A2E',
+          borderRadius: '9999px',
+          border: '1px solid #1E3A5F',
+          overflow: 'hidden',
           position: 'relative',
-          marginRight: '16px',
         }}
       >
         <input
@@ -60,20 +67,26 @@ export const SumDownloadForm = ({
           disabled={loading}
           style={{
             width: '100%',
-            padding: '12px 20px',
-            paddingRight: '60px',
-            borderRadius: '50px',
+            padding: '14px 24px',
+            paddingRight: '50px',
+            background: 'transparent',
             border: 'none',
-            background: '#020824',
-            color: '#fff',
-            fontSize: '1rem',
             outline: 'none',
-            boxShadow: 'inset 0 0 0 2px #1E3A5F',
+            color: '#fff',
+            fontSize: '1.1rem',
           }}
           aria-label="検索ワード"
         />
         {errors.query && (
-          <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '4px' }}>
+          <p style={{ 
+            color: '#ef4444', 
+            fontSize: '0.875rem', 
+            position: 'absolute',
+            top: '100%',
+            left: '24px',
+            marginTop: '4px',
+            whiteSpace: 'nowrap'
+          }}>
             {errors.query.message}
           </p>
         )}
@@ -82,7 +95,7 @@ export const SumDownloadForm = ({
           disabled={loading}
           style={{
             position: 'absolute',
-            right: 4,
+            right: 8,
             top: '50%',
             transform: 'translateY(-50%)',
             background: '#3B82F6',
@@ -97,8 +110,8 @@ export const SumDownloadForm = ({
             alignItems: 'center',
             zIndex: 1,
           }}
-          aria-label="検索実行"
-        >
+        aria-label="検索実行"
+      >
           <Search style={{ width: '18px', height: '18px' }} />
         </button>
       </form>

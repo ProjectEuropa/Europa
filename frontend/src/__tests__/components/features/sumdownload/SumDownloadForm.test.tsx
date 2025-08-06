@@ -199,11 +199,11 @@ describe('SumDownloadForm', () => {
 
     const input = screen.getByPlaceholderText('チーム名で検索');
     
-    // インラインスタイルが適用されていることを確認
+    // 新しいスタイルが適用されていることを確認
     expect(input).toHaveStyle({
-      background: '#020824',
+      background: 'transparent',
       color: '#fff',
-      borderRadius: '50px',
+      fontSize: '1.1rem',
     });
   });
 });
