@@ -1,12 +1,12 @@
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import EventRegistrationForm from '@/components/events/EventRegistrationForm';
 import EventRegistrationNotice from '@/components/events/EventRegistrationNotice';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import { useAuth } from '@/hooks/useAuth';
 
 const EventPage: React.FC = () => {
   const { user, loading, hasHydrated } = useAuth();

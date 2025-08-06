@@ -4,15 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { 
-  eventSchema, 
-  type EventFormData, 
-  EVENT_TYPES, 
-  EVENT_TYPE_OPTIONS,
-  getEventTypeDisplay 
-} from '@/schemas/event';
-import { useEventRegistration } from '@/hooks/useEventRegistration';
 import Calendar from '@/components/Calendar';
+import { useEventRegistration } from '@/hooks/useEventRegistration';
+import {
+  EVENT_TYPE_OPTIONS,
+  EVENT_TYPES,
+  type EventFormData,
+  eventSchema,
+  getEventTypeDisplay,
+} from '@/schemas/event';
 import EventConfirmDialog from './EventConfirmDialog';
 
 interface EventRegistrationFormProps {
@@ -545,7 +545,7 @@ export default function EventRegistrationForm({
                 backgroundSize: '16px',
               }}
             >
-              {EVENT_TYPE_OPTIONS.map((type) => (
+              {EVENT_TYPE_OPTIONS.map(type => (
                 <option key={type} value={type}>
                   {getEventTypeDisplay(type)}
                 </option>

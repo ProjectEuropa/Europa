@@ -2,9 +2,9 @@
  * グローバルエラーハンドリング用のカスタムフック
  */
 
+import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 
 interface ApiError extends Error {
   status?: number;

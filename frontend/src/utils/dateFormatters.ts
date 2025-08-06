@@ -226,3 +226,15 @@ export const formatUploadDateTime = (dateString: string): string => {
     return '日時処理エラー';
   }
 };
+
+/**
+ * 汎用的な日時フォーマット関数
+ * @param dateString - ISO 8601形式の日時文字列
+ * @returns フォーマットされた日時文字列（YYYY/MM/DD HH:mm形式）
+ */
+export const formatDate = (dateString: string | null): string => {
+  if (!dateString) {
+    return '未設定';
+  }
+  return formatDownloadDateTime(dateString);
+};

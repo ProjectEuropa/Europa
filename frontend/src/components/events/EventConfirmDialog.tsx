@@ -18,7 +18,6 @@ export default function EventConfirmDialog({
 }: EventConfirmDialogProps) {
   if (!isOpen) return null;
 
-
   return (
     <div
       style={{
