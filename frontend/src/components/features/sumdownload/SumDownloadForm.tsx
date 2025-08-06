@@ -78,7 +78,15 @@ export const SumDownloadForm = ({
           aria-label="検索ワード"
         />
         {errors.query && (
-          <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '4px' }}>
+          <p style={{ 
+            color: '#ef4444', 
+            fontSize: '0.875rem', 
+            position: 'absolute',
+            top: '100%',
+            left: '24px',
+            marginTop: '4px',
+            whiteSpace: 'nowrap'
+          }}>
             {errors.query.message}
           </p>
         )}
@@ -107,16 +115,6 @@ export const SumDownloadForm = ({
           <Search style={{ width: '18px', height: '18px' }} />
         </button>
       </form>
-      {errors.query && (
-        <p style={{ 
-          color: '#ef4444', 
-          fontSize: '0.875rem', 
-          marginTop: '8px',
-          marginLeft: '24px',
-        }}>
-          {errors.query.message}
-        </p>
-      )}
     </div>
   );
 };
