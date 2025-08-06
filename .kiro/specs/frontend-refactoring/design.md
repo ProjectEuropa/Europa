@@ -740,7 +740,7 @@ export const useSumDownload = (searchType: 'team' | 'match') => {
   const [currentPage, setCurrentPage] = useState(1);
   
   // 検索クエリ
-  const searchQuery = searchType === 'team' 
+  const searchResult = searchType === 'team' 
     ? useSumDLTeamSearch({ keyword: searchQuery, page: currentPage })
     : useSumDLMatchSearch({ keyword: searchQuery, page: currentPage });
   
