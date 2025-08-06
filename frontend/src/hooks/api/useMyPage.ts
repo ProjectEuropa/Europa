@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { type EventType, getEventTypeFromDisplay } from '@/schemas/event';
 import { useAuthStore } from '@/stores/authStore';
-import { getEventTypeFromDisplay, type EventType } from '@/schemas/event';
 import type {
   MyPageEvent,
   MyPageFile,
@@ -160,7 +160,7 @@ export const useMyEvents = () => {
           // APIから返される日本語の値を内部値に変換
           let eventType: EventType = 'other';
           const typeValue = item.type || item.event_type || '';
-          
+
           if (typeValue === '大会' || typeValue === 'tournament') {
             eventType = 'tournament';
           } else if (typeValue === '告知' || typeValue === 'announcement') {

@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import Calendar from '@/components/Calendar';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { fetchEvents } from '@/utils/api';
 import type { Event } from '@/types/event';
+import { fetchEvents } from '@/utils/api';
 
 const InformationPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);

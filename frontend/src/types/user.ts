@@ -2,8 +2,8 @@
  * ユーザー関連の型定義
  */
 
-import type { DateString, ID } from './utils';
 import type { EventType } from '@/schemas/event';
+import type { DateString, ID } from './utils';
 
 export interface User {
   id: ID;
