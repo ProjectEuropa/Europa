@@ -31,3 +31,8 @@ frontend/coverage/
 /.serena/cache
 
 /.claude/*
+
+/data
+
+.kiro/settings
+.kiro/memories

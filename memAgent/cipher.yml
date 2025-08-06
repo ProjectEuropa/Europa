@@ -1,0 +1,35 @@
+llm:
+  provider: ollama
+  model: hf.co/mmnga/cyberagent-DeepSeek-R1-Distill-Qwen-14B-Japanese-gguf:latest
+  maxIterations: 50
+  baseURL: http://localhost:11434/v1
+
+embedding:
+  provider: ollama
+  model: nomic-embed-text
+
+# System Prompt
+systemPrompt: 'あなたは記憶機能を持つ有用なAIアシスタントです。日本語で正確に応答してください。'
+
+# Memory Configuration with PostgreSQL
+memory:
+  enabled: true
+
+# MCP Servers (optional - can be empty)
+mcpServers:
+  filesystem:
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - '@modelcontextprotocol/server-filesystem'
+      - .
+
+sessions:
+  maxSessions: 50
+  sessionTTL: 14400000
+
+agentCard:
+  name: "YoseMovie Coding Assistant"
+  description: "Advanced coding assistant with persistent memory"
+  version: "1.0.0"
