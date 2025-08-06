@@ -42,6 +42,17 @@ const mockMatchData: SumDownloadItem[] = [
   },
 ];
 
+const mockDataWithEmptyDownloadableAt: SumDownloadItem[] = [
+  {
+    id: 4,
+    file_name: 'テストファイル（即座DL可能）',
+    upload_owner_name: 'オーナー4',
+    created_at: '2024-01-04T10:00:00Z',
+    file_comment: '即座にダウンロード可能なファイル',
+    downloadable_at: '',
+  },
+];
+
 describe('SumDownloadTable', () => {
   const mockOnSelectionChange = vi.fn();
 
@@ -182,6 +193,20 @@ describe('SumDownloadTable', () => {
       expect(screen.getByText('タグA')).toBeInTheDocument();
       // nullのタグは表示されない
       expect(screen.queryByText('null')).not.toBeInTheDocument();
+    });
+
+    it('displays "即座にダウンロード可能" when downloadable_at is null', () => {
+      render(
+        <SumDownloadTable
+          data={mockDataWithEmptyDownloadableAt}
+          selectedIds={[]}
+          onSelectionChange={mockOnSelectionChange}
+          loading={false}
+          searchType="team"
+        />
+      );
+
+      expect(screen.getByText('即座にダウンロード可能')).toBeInTheDocument();
     });
   });
 

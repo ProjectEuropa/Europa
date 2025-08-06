@@ -1,13 +1,21 @@
 import React from 'react';
 import { formatDate } from '@/utils/dateFormatters';
 
+// 一括ダウンロード用の日付フォーマット関数
+const formatDownloadableDate = (dateString?: string | null): string => {
+  if (!dateString || dateString.trim() === '') {
+    return '即座にダウンロード可能';
+  }
+  return formatDate(dateString);
+};
+
 export interface SumDownloadItem {
   id: number;
   file_name: string;
   upload_owner_name: string;
   created_at: string;
   file_comment: string;
-  downloadable_at: string;
+  downloadable_at?: string | null;
   search_tag1?: string;
   search_tag2?: string;
   search_tag3?: string;
@@ -200,7 +208,7 @@ export const SumDownloadTable = ({
                 {formatDate(item.created_at)}
               </td>
               <td style={{ padding: '12px 16px', color: '#b0c4d8' }}>
-                {formatDate(item.downloadable_at)}
+                {formatDownloadableDate(item.downloadable_at)}
               </td>
               <td style={{ padding: '12px 16px', color: '#b0c4d8' }}>
                 <div>
