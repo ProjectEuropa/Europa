@@ -80,6 +80,11 @@ interface ButtonProps {
   - `EventList`
   - `EventForm`
   - `EventCalendar`
+- **sumdownload/**: 一括ダウンロード機能コンポーネント
+  - `SumDownloadForm`
+  - `SumDownloadTable`
+  - `SumDownloadPagination`
+  - `SumDownloadProgress`
 
 #### 3. レイアウトコンポーネント (`components/layout/`)
 - **Header**: ナビゲーションヘッダー
@@ -209,6 +214,25 @@ export interface TeamFile {
   tags: string[];
   downloadableAt: string;
   createdAt: string;
+}
+
+export interface MatchFile {
+  id: number;
+  name: string;
+  ownerName: string;
+  comment: string;
+  tags: string[];
+  downloadableAt: string;
+  createdAt: string;
+}
+
+export interface SumDownloadRequest {
+  checkedId: number[];
+}
+
+export interface SumDownloadFormData {
+  searchQuery: string;
+  selectedItems: number[];
 }
 
 // types/api.ts
@@ -587,6 +611,253 @@ export const useKeyboardNavigation = (items: HTMLElement[]) => {
     "*.{js,jsx,ts,tsx,json}": ["biome check --write"]
   }
 }
+```
+
+## 一括ダウンロード機能の設計
+
+### コンポーネント構成
+
+#### SumDownloadForm
+検索とフィルタリング機能を提供するコンポーネント
+
+```typescript
+// components/features/sumdownload/SumDownloadForm.tsx
+interface SumDownloadFormProps {
+  searchType: 'team' | 'match';
+  onSearch: (query: string) => void;
+  loading?: boolean;
+}
+
+const SumDownloadForm = ({ searchType, onSearch, loading }: SumDownloadFormProps) => {
+  const { register, handleSubmit } = useForm<{ query: string }>({
+    resolver: zodResolver(sumDownloadSearchSchema),
+  });
+  
+  const onSubmit = (data: { query: string }) => {
+    onSearch(data.query);
+  };
+  
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Input
+        {...register('query')}
+        placeholder={`${searchType === 'team' ? 'チーム名' : 'マッチ名'}で検索`}
+        disabled={loading}
+      />
+      <Button type="submit" loading={loading}>
+        検索
+      </Button>
+    </form>
+  );
+};
+```
+
+#### SumDownloadTable
+データ一覧とチェックボックス選択機能を提供するコンポーネント
+
+```typescript
+// components/features/sumdownload/SumDownloadTable.tsx
+interface SumDownloadTableProps {
+  data: (TeamFile | MatchFile)[];
+  selectedIds: number[];
+  onSelectionChange: (ids: number[]) => void;
+  loading?: boolean;
+}
+
+const SumDownloadTable = ({ data, selectedIds, onSelectionChange, loading }: SumDownloadTableProps) => {
+  const handleSelectAll = (checked: boolean) => {
+    onSelectionChange(checked ? data.map(item => item.id) : []);
+  };
+  
+  const handleSelectItem = (id: number, checked: boolean) => {
+    if (checked) {
+      onSelectionChange([...selectedIds, id]);
+    } else {
+      onSelectionChange(selectedIds.filter(selectedId => selectedId !== id));
+    }
+  };
+  
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>
+            <Checkbox
+              checked={selectedIds.length === data.length && data.length > 0}
+              onCheckedChange={handleSelectAll}
+              disabled={loading}
+            />
+          </TableHead>
+          <TableHead>ファイル名</TableHead>
+          <TableHead>オーナー</TableHead>
+          <TableHead>アップロード日</TableHead>
+          <TableHead>ダウンロード可能日</TableHead>
+          <TableHead>コメント</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.map((item) => (
+          <TableRow key={item.id}>
+            <TableCell>
+              <Checkbox
+                checked={selectedIds.includes(item.id)}
+                onCheckedChange={(checked) => handleSelectItem(item.id, checked)}
+                disabled={loading}
+              />
+            </TableCell>
+            <TableCell>{item.name}</TableCell>
+            <TableCell>{item.ownerName}</TableCell>
+            <TableCell>{formatDate(item.createdAt)}</TableCell>
+            <TableCell>{formatDate(item.downloadableAt)}</TableCell>
+            <TableCell>
+              <div>{item.comment}</div>
+              <div className="flex gap-1 mt-1">
+                {item.tags.map((tag, index) => (
+                  <Badge key={index} variant="secondary">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
+```
+
+### カスタムフック
+
+#### useSumDownload
+一括ダウンロード機能の状態管理とAPI呼び出しを管理
+
+```typescript
+// hooks/useSumDownload.ts
+export const useSumDownload = (searchType: 'team' | 'match') => {
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // 検索クエリ
+  const searchQuery = searchType === 'team' 
+    ? useSumDLTeamSearch({ keyword: searchQuery, page: currentPage })
+    : useSumDLMatchSearch({ keyword: searchQuery, page: currentPage });
+  
+  // ダウンロードミューテーション
+  const downloadMutation = useMutation({
+    mutationFn: (ids: number[]) => sumDownload(ids),
+    onSuccess: () => {
+      toast.success('ダウンロードが開始されました');
+      setSelectedIds([]);
+    },
+    onError: (error) => {
+      toast.error('ダウンロードに失敗しました');
+      console.error('Download error:', error);
+    },
+  });
+  
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+    setSelectedIds([]);
+  };
+  
+  const handleDownload = () => {
+    if (selectedIds.length === 0) {
+      toast.error('ダウンロードするアイテムを選択してください');
+      return;
+    }
+    downloadMutation.mutate(selectedIds);
+  };
+  
+  return {
+    data: searchQuery.data?.data || [],
+    loading: searchQuery.isLoading,
+    error: searchQuery.error,
+    selectedIds,
+    setSelectedIds,
+    currentPage,
+    setCurrentPage,
+    totalPages: searchQuery.data?.lastPage || 1,
+    handleSearch,
+    handleDownload,
+    isDownloading: downloadMutation.isPending,
+  };
+};
+```
+
+### API関数の改善
+
+```typescript
+// lib/api/sumdownload.ts
+export const sumDLSearchTeam = async (
+  keyword: string, 
+  page: number = 1
+): Promise<PaginatedResponse<TeamFile>> => {
+  const response = await apiClient.get<PaginatedResponse<TeamFile>>(
+    `/api/v1/search/team/sumdownload?keyword=${encodeURIComponent(keyword)}&page=${page}`
+  );
+  return response.data;
+};
+
+export const sumDLSearchMatch = async (
+  keyword: string, 
+  page: number = 1
+): Promise<PaginatedResponse<MatchFile>> => {
+  const response = await apiClient.get<PaginatedResponse<MatchFile>>(
+    `/api/v1/search/match/sumdownload?keyword=${encodeURIComponent(keyword)}&page=${page}`
+  );
+  return response.data;
+};
+
+export const sumDownload = async (checkedIds: number[]): Promise<void> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/sumDownload`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify({ checkedId: checkedIds }),
+    }
+  );
+  
+  if (!response.ok) {
+    throw new Error('ダウンロードに失敗しました');
+  }
+  
+  // ZIPファイルのダウンロード処理
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${Date.now()}_bulk_download.zip`;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+};
+```
+
+### バリデーションスキーマ
+
+```typescript
+// schemas/sumdownload.ts
+export const sumDownloadSearchSchema = z.object({
+  query: z.string().min(0).max(100),
+});
+
+export const sumDownloadSchema = z.object({
+  checkedId: z
+    .array(z.number())
+    .min(1, '少なくとも1つのアイテムを選択してください')
+    .max(50, '一度に選択できるアイテムは50個までです'),
+});
+
+export type SumDownloadSearchFormData = z.infer<typeof sumDownloadSearchSchema>;
+export type SumDownloadFormData = z.infer<typeof sumDownloadSchema>;
 ```
 
 この設計により、保守性、拡張性、パフォーマンス、アクセシビリティ、開発者体験のすべてが向上したフロントエンドアプリケーションを構築できます。
