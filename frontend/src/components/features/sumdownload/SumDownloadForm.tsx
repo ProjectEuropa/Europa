@@ -60,6 +60,7 @@ export const SumDownloadForm = ({
           border: '1px solid #1E3A5F',
           overflow: 'hidden',
           position: 'relative',
+          height: '52px',
         }}
       >
         <input
@@ -69,7 +70,8 @@ export const SumDownloadForm = ({
           disabled={loading}
           style={{
             width: '100%',
-            padding: '14px 24px',
+            height: '100%',
+            padding: '0 24px',
             paddingRight: '50px',
             background: 'transparent',
             border: 'none',
