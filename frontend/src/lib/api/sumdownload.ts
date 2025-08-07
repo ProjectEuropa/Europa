@@ -83,9 +83,11 @@ const performBrowserDownload = (blob: Blob, filename: string): (() => void) => {
   a.click();
 
   const cleanup = () => {
-    window.URL.revokeObjectURL(url);
-    if (a.parentNode) {
-      a.parentNode.removeChild(a);
+    if (typeof window !== 'undefined') {
+      window.URL.revokeObjectURL(url);
+      if (a.parentNode) {
+        a.parentNode.removeChild(a);
+      }
     }
   };
 
