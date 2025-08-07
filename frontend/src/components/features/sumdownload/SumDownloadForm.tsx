@@ -43,11 +43,13 @@ export const SumDownloadForm = ({
     searchType === 'team' ? 'チーム名で検索' : 'マッチ名で検索';
 
   return (
-    <div style={{
-      width: '100%',
-      maxWidth: '800px',
-      position: 'relative',
-    }}>
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '800px',
+        position: 'relative',
+      }}
+    >
       <form
         onSubmit={handleSubmit(onSubmit)}
         style={{
@@ -78,15 +80,17 @@ export const SumDownloadForm = ({
           aria-label="検索ワード"
         />
         {errors.query && (
-          <p style={{ 
-            color: '#ef4444', 
-            fontSize: '0.875rem', 
-            position: 'absolute',
-            top: '100%',
-            left: '24px',
-            marginTop: '4px',
-            whiteSpace: 'nowrap'
-          }}>
+          <p
+            style={{
+              color: '#ef4444',
+              fontSize: '0.875rem',
+              position: 'absolute',
+              top: '100%',
+              left: '24px',
+              marginTop: '4px',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {errors.query.message}
           </p>
         )}
@@ -110,8 +114,8 @@ export const SumDownloadForm = ({
             alignItems: 'center',
             zIndex: 1,
           }}
-        aria-label="検索実行"
-      >
+          aria-label="検索実行"
+        >
           <Search style={{ width: '18px', height: '18px' }} />
         </button>
       </form>

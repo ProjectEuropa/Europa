@@ -42,15 +42,15 @@ const mockToast = vi.mocked(toast);
 const createTestWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: { 
-        retry: false, 
+      queries: {
+        retry: false,
         gcTime: 0,
-        staleTime: 0
+        staleTime: 0,
       },
       mutations: { retry: false },
     },
   });
-  
+
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
@@ -92,7 +92,7 @@ const mockSearchResponse = {
 describe('useSumDownloadManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // デフォルトのAPI応答をモック
     sumDLSearchTeam.mockResolvedValue(mockSearchResponse);
     sumDLSearchMatch.mockResolvedValue(mockSearchResponse);
@@ -119,7 +119,11 @@ describe('useSumDownloadManager', () => {
 
     it('should initialize with initial query', () => {
       const { result } = renderHook(
-        () => useSumDownloadManager({ searchType: 'team', initialQuery: 'initial' }),
+        () =>
+          useSumDownloadManager({
+            searchType: 'team',
+            initialQuery: 'initial',
+          }),
         { wrapper: createTestWrapper() }
       );
 
@@ -207,7 +211,7 @@ describe('useSumDownloadManager', () => {
 
       // ページ変更後の状態確認（フックの内部状態はすぐに反映される）
       expect(result.current.selectedIds).toEqual([]); // ページ変更時に選択がクリアされる
-      
+
       // APIが新しいページで呼び出されることを確認
       await waitFor(() => {
         expect(sumDLSearchTeam).toHaveBeenCalledWith('', 2);
@@ -278,7 +282,9 @@ describe('useSumDownloadManager', () => {
         result.current.handleDownload();
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith('ダウンロードするアイテムを選択してください');
+      expect(mockToast.error).toHaveBeenCalledWith(
+        'ダウンロードするアイテムを選択してください'
+      );
       expect(sumDownload).not.toHaveBeenCalled();
     });
 
@@ -290,7 +296,7 @@ describe('useSumDownloadManager', () => {
 
       // 51個のアイテムを選択
       const tooManyIds = Array.from({ length: 51 }, (_, i) => i + 1);
-      
+
       act(() => {
         result.current.handleSelectionChange(tooManyIds);
       });
@@ -299,7 +305,9 @@ describe('useSumDownloadManager', () => {
         result.current.handleDownload();
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith('一度に選択できるアイテムは50個までです');
+      expect(mockToast.error).toHaveBeenCalledWith(
+        '一度に選択できるアイテムは50個までです'
+      );
       expect(sumDownload).not.toHaveBeenCalled();
     });
 
@@ -330,7 +338,7 @@ describe('useSumDownloadManager', () => {
       await waitFor(() => {
         expect(sumDownload).toHaveBeenCalledWith([1, 2, 3]);
       });
-      
+
       // ダウンロード成功後、選択がクリアされることを確認
       await waitFor(() => {
         expect(result.current.selectedIds).toEqual([]);
@@ -339,7 +347,9 @@ describe('useSumDownloadManager', () => {
 
     it('should handle download loading state', async () => {
       // ダウンロード処理を遅延させる
-      sumDownload.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
+      sumDownload.mockImplementation(
+        () => new Promise(resolve => setTimeout(resolve, 100))
+      );
 
       const { result } = renderHook(
         () => useSumDownloadManager({ searchType: 'team' }),
@@ -383,7 +393,7 @@ describe('useSumDownloadManager', () => {
 
       // 初期状態でロード中であることを確認
       expect(result.current.isSearchLoading).toBe(true);
-      
+
       // 検索エラーが発生してもフックが正常に機能することを確認
       await waitFor(() => {
         expect(result.current.isSearchLoading).toBe(false);

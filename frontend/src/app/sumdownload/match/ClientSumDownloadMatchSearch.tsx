@@ -76,7 +76,13 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
           </div>
 
           {/* 検索フォーム */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: '32px',
+            }}
+          >
             <SumDownloadForm
               searchType="match"
               onSearch={handleSearch}
@@ -138,8 +144,6 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
             isDownloading={isDownloading}
             maxSelectionCount={50}
           />
-
-
 
           {/* データテーブル */}
           <SumDownloadTable

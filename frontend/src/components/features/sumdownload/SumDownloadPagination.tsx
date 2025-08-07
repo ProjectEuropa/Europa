@@ -102,10 +102,12 @@ export const SumDownloadPagination = ({
           padding: '8px 18px',
           borderRadius: 6,
           border: 'none',
-          background: currentPage === lastPage || loading ? '#1E3A5F' : '#3B82F6',
+          background:
+            currentPage === lastPage || loading ? '#1E3A5F' : '#3B82F6',
           color: currentPage === lastPage || loading ? '#8CB4FF' : '#fff',
           fontWeight: 'bold',
-          cursor: currentPage === lastPage || loading ? 'not-allowed' : 'pointer',
+          cursor:
+            currentPage === lastPage || loading ? 'not-allowed' : 'pointer',
           fontSize: '1rem',
           marginLeft: 8,
           display: 'flex',

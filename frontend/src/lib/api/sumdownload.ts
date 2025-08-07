@@ -122,7 +122,9 @@ export const sumDownload = async (checkedIds: number[]): Promise<void> => {
     // クリーンアップ
     setTimeout(() => {
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      if (a.parentNode) {
+        a.parentNode.removeChild(a);
+      }
     }, 100);
   } catch (error) {
     if (error instanceof Error) {

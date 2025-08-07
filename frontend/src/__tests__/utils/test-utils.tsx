@@ -25,13 +25,14 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 
 export function renderWithProviders(
   ui: React.ReactElement,
-  { queryClient = createTestQueryClient(), ...renderOptions }: CustomRenderOptions = {}
+  {
+    queryClient = createTestQueryClient(),
+    ...renderOptions
+  }: CustomRenderOptions = {}
 ) {
   function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
   }
 

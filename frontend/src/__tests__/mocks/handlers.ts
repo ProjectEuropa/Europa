@@ -103,13 +103,19 @@ export const handlers = [
   // 一括ダウンロード実行
   http.post(`${API_BASE_URL}/api/v1/sumdownload`, async ({ request }) => {
     const body = (await request.json()) as { file_ids: number[] };
-    
+
     if (body.file_ids.length === 0) {
-      return HttpResponse.json({ error: 'ファイルが選択されていません' }, { status: 400 });
+      return HttpResponse.json(
+        { error: 'ファイルが選択されていません' },
+        { status: 400 }
+      );
     }
 
     if (body.file_ids.length > 50) {
-      return HttpResponse.json({ error: '選択できるファイル数は最大50件です' }, { status: 400 });
+      return HttpResponse.json(
+        { error: '選択できるファイル数は最大50件です' },
+        { status: 400 }
+      );
     }
 
     // ダウンロード成功をシミュレート

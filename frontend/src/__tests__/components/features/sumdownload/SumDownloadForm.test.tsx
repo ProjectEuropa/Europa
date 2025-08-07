@@ -10,7 +10,7 @@ vi.mock('lucide-react', () => ({
 
 describe('SumDownloadForm', () => {
   const mockOnSearch = vi.fn();
-  
+
   beforeEach(() => {
     mockOnSearch.mockClear();
   });
@@ -88,7 +88,7 @@ describe('SumDownloadForm', () => {
 
   it('calls onSearch with correct query when form is submitted', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <SumDownloadForm
         searchType="team"
@@ -110,7 +110,7 @@ describe('SumDownloadForm', () => {
 
   it('calls onSearch when Enter key is pressed', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <SumDownloadForm
         searchType="team"
@@ -145,7 +145,7 @@ describe('SumDownloadForm', () => {
 
   it('trims whitespace from search query', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <SumDownloadForm
         searchType="team"
@@ -167,7 +167,7 @@ describe('SumDownloadForm', () => {
 
   it('validates query submission', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <SumDownloadForm
         searchType="team"
@@ -198,7 +198,7 @@ describe('SumDownloadForm', () => {
     );
 
     const input = screen.getByPlaceholderText('チーム名で検索');
-    
+
     // 新しいスタイルが適用されていることを確認
     expect(input).toHaveStyle({
       background: 'transparent',
