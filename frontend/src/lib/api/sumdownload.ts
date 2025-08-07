@@ -67,7 +67,39 @@ export const sumDLSearchMatch = async (
 /**
  * 一括ダウンロード実行API
  */
-export const sumDownload = async (checkedIds: number[]): Promise<void> => {
+// ブラウザ環境でのダウンロード処理をラップする関数
+const performBrowserDownload = (blob: Blob, filename: string): (() => void) => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    // テスト環境やSSR環境では何もしない
+    return () => {};
+  }
+
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.style.display = 'none';
+  document.documentElement.appendChild(a);
+  a.click();
+
+  const cleanup = () => {
+    window.URL.revokeObjectURL(url);
+    if (a.parentNode) {
+      a.parentNode.removeChild(a);
+    }
+  };
+
+  // 100ms後に自動クリーンアップ
+  const timeoutId = setTimeout(cleanup, 100);
+
+  // 手動クリーンアップ関数を返す
+  return () => {
+    clearTimeout(timeoutId);
+    cleanup();
+  };
+};
+
+export const sumDownload = async (checkedIds: number[]): Promise<() => void> => {
   if (checkedIds.length === 0) {
     throw new Error('ダウンロードするファイルを選択してください');
   }
@@ -92,9 +124,6 @@ export const sumDownload = async (checkedIds: number[]): Promise<void> => {
 
     // ZIPファイルのダウンロード処理
     const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
 
     // Content-Dispositionヘッダーからファイル名を取得
     const disposition = response.headers.get('content-disposition');
@@ -115,17 +144,7 @@ export const sumDownload = async (checkedIds: number[]): Promise<void> => {
       }
     }
 
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-
-    // クリーンアップ
-    setTimeout(() => {
-      window.URL.revokeObjectURL(url);
-      if (a.parentNode) {
-        a.parentNode.removeChild(a);
-      }
-    }, 100);
+    return performBrowserDownload(blob, filename);
   } catch (error) {
     if (error instanceof Error) {
       throw error;
