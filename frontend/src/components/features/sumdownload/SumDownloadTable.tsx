@@ -62,7 +62,14 @@ export const SumDownloadTable = ({
     ].filter(Boolean);
 
     return (
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '4px',
+          marginTop: '4px',
+        }}
+      >
         {tags.map((tag, index) => (
           <span
             key={index}
@@ -95,7 +102,14 @@ export const SumDownloadTable = ({
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '32px 0' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '32px 0',
+        }}
+      >
         <svg
           style={{
             width: '24px',
@@ -133,15 +147,31 @@ export const SumDownloadTable = ({
   }
 
   return (
-    <div style={{ border: '1px solid #1E3A5F', borderRadius: '8px', overflow: 'hidden' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', background: '#020824' }}>
+    <div
+      style={{
+        border: '1px solid #1E3A5F',
+        borderRadius: '8px',
+        overflow: 'hidden',
+      }}
+    >
+      <table
+        style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          background: '#020824',
+        }}
+      >
         <thead>
-          <tr style={{ background: '#1E3A5F', borderBottom: '1px solid #2D4A6B' }}>
-            <th style={{ width: '50px', padding: '12px 16px', textAlign: 'left' }}>
+          <tr
+            style={{ background: '#1E3A5F', borderBottom: '1px solid #2D4A6B' }}
+          >
+            <th
+              style={{ width: '50px', padding: '12px 16px', textAlign: 'left' }}
+            >
               <input
                 type="checkbox"
                 checked={isAllSelected}
-                onChange={(e) => handleSelectAll(e.target.checked)}
+                onChange={e => handleSelectAll(e.target.checked)}
                 disabled={loading}
                 aria-label="すべて選択"
                 style={{
@@ -150,26 +180,61 @@ export const SumDownloadTable = ({
                   accentColor: '#00c8ff',
                   cursor: loading ? 'not-allowed' : 'pointer',
                 }}
-                ref={(el) => {
+                ref={el => {
                   if (el && isIndeterminate) {
                     el.indeterminate = true;
                   }
                 }}
               />
             </th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', color: '#fff', fontWeight: '600' }}>
+            <th
+              style={{
+                padding: '12px 16px',
+                textAlign: 'left',
+                color: '#fff',
+                fontWeight: '600',
+              }}
+            >
               {searchType === 'team' ? 'チーム名' : 'マッチ名'}
             </th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', color: '#fff', fontWeight: '600' }}>
+            <th
+              style={{
+                padding: '12px 16px',
+                textAlign: 'left',
+                color: '#fff',
+                fontWeight: '600',
+              }}
+            >
               オーナー
             </th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', color: '#fff', fontWeight: '600' }}>
+            <th
+              style={{
+                padding: '12px 16px',
+                textAlign: 'left',
+                color: '#fff',
+                fontWeight: '600',
+              }}
+            >
               アップロード日
             </th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', color: '#fff', fontWeight: '600' }}>
+            <th
+              style={{
+                padding: '12px 16px',
+                textAlign: 'left',
+                color: '#fff',
+                fontWeight: '600',
+              }}
+            >
               ダウンロード可能日
             </th>
-            <th style={{ padding: '12px 16px', textAlign: 'left', color: '#fff', fontWeight: '600' }}>
+            <th
+              style={{
+                padding: '12px 16px',
+                textAlign: 'left',
+                color: '#fff',
+                fontWeight: '600',
+              }}
+            >
               コメント・タグ
             </th>
           </tr>
@@ -179,7 +244,9 @@ export const SumDownloadTable = ({
             <tr
               key={item.id}
               style={{
-                background: selectedIds.includes(item.id) ? '#0A1A2A' : 'transparent',
+                background: selectedIds.includes(item.id)
+                  ? '#0A1A2A'
+                  : 'transparent',
                 borderBottom: '1px solid #1E3A5F',
               }}
             >
@@ -187,7 +254,7 @@ export const SumDownloadTable = ({
                 <input
                   type="checkbox"
                   checked={selectedIds.includes(item.id)}
-                  onChange={(e) => handleSelectItem(item.id, e.target.checked)}
+                  onChange={e => handleSelectItem(item.id, e.target.checked)}
                   disabled={loading}
                   aria-label={`${item.file_name}を選択`}
                   style={{
@@ -198,7 +265,13 @@ export const SumDownloadTable = ({
                   }}
                 />
               </td>
-              <td style={{ padding: '12px 16px', color: '#fff', fontWeight: '500' }}>
+              <td
+                style={{
+                  padding: '12px 16px',
+                  color: '#fff',
+                  fontWeight: '500',
+                }}
+              >
                 {item.file_name}
               </td>
               <td style={{ padding: '12px 16px', color: '#b0c4d8' }}>

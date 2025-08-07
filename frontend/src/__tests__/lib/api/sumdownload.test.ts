@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { sumDLSearchTeam, sumDLSearchMatch, sumDownload } from '@/lib/api/sumdownload';
+import {
+  sumDLSearchTeam,
+  sumDLSearchMatch,
+  sumDownload,
+} from '@/lib/api/sumdownload';
 
 // apiRequestをモック
 vi.mock('@/utils/api', () => ({
@@ -108,28 +112,38 @@ describe('sumdownload API', () => {
         download: '',
         click: vi.fn(),
       };
-      
+
       vi.spyOn(document, 'createElement').mockReturnValue(mockElement as any);
-      vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockElement as any);
-      vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockElement as any);
+      vi.spyOn(document.body, 'appendChild').mockImplementation(
+        () => mockElement as any
+      );
+      vi.spyOn(document.body, 'removeChild').mockImplementation(
+        () => mockElement as any
+      );
     });
 
     it('should handle empty file ids', async () => {
-      await expect(sumDownload([])).rejects.toThrow('ダウンロードするファイルを選択してください');
+      await expect(sumDownload([])).rejects.toThrow(
+        'ダウンロードするファイルを選択してください'
+      );
     });
 
     it('should handle too many file ids', async () => {
       const tooManyIds = Array.from({ length: 51 }, (_, i) => i + 1);
-      await expect(sumDownload(tooManyIds)).rejects.toThrow('一度に選択できるファイルは50個までです');
+      await expect(sumDownload(tooManyIds)).rejects.toThrow(
+        '一度に選択できるファイルは50個までです'
+      );
     });
 
     it('should successfully download files', async () => {
-      const mockBlob = new Blob(['test file content'], { type: 'application/zip' });
+      const mockBlob = new Blob(['test file content'], {
+        type: 'application/zip',
+      });
       const mockResponse = {
         ok: true,
         blob: () => Promise.resolve(mockBlob),
         headers: {
-          get: vi.fn((header) => {
+          get: vi.fn(header => {
             if (header === 'content-disposition') {
               return 'attachment; filename="test_files.zip"';
             }

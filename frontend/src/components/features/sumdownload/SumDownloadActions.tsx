@@ -49,10 +49,7 @@ export const SumDownloadActions = ({
           borderRadius: '24px',
           fontSize: '1rem',
           fontWeight: 'bold',
-          cursor:
-            isDisabled || isOverLimit
-              ? 'not-allowed'
-              : 'pointer',
+          cursor: isDisabled || isOverLimit ? 'not-allowed' : 'pointer',
           opacity: isDisabled || isOverLimit ? 0.7 : 1,
           display: 'flex',
           alignItems: 'center',
@@ -62,7 +59,10 @@ export const SumDownloadActions = ({
       >
         {isDownloading ? (
           <>
-            <Loader2 style={{ width: '20px', height: '20px' }} className="animate-spin" />
+            <Loader2
+              style={{ width: '20px', height: '20px' }}
+              className="animate-spin"
+            />
             ダウンロード中...
           </>
         ) : (

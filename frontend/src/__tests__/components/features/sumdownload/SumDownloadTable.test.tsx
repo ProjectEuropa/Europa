@@ -1,7 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
-import { SumDownloadTable, type SumDownloadItem } from '@/components/features/sumdownload/SumDownloadTable';
+import {
+  SumDownloadTable,
+  type SumDownloadItem,
+} from '@/components/features/sumdownload/SumDownloadTable';
 
 // モックデータ
 const mockTeamData: SumDownloadItem[] = [
@@ -90,7 +93,9 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      expect(screen.getByText('チームデータが見つかりませんでした')).toBeInTheDocument();
+      expect(
+        screen.getByText('チームデータが見つかりませんでした')
+      ).toBeInTheDocument();
     });
 
     it('displays empty message for match search', () => {
@@ -104,7 +109,9 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      expect(screen.getByText('マッチデータが見つかりませんでした')).toBeInTheDocument();
+      expect(
+        screen.getByText('マッチデータが見つかりませんでした')
+      ).toBeInTheDocument();
     });
   });
 
@@ -229,7 +236,7 @@ describe('SumDownloadTable', () => {
 
     it('calls onSelectionChange when individual item is selected', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <SumDownloadTable
           data={mockTeamData}
@@ -248,7 +255,7 @@ describe('SumDownloadTable', () => {
 
     it('calls onSelectionChange when individual item is deselected', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <SumDownloadTable
           data={mockTeamData}
@@ -267,7 +274,7 @@ describe('SumDownloadTable', () => {
 
     it('calls onSelectionChange when select all is clicked', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <SumDownloadTable
           data={mockTeamData}
@@ -286,7 +293,7 @@ describe('SumDownloadTable', () => {
 
     it('calls onSelectionChange when select all is unchecked', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <SumDownloadTable
           data={mockTeamData}
@@ -347,7 +354,9 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      const selectAllCheckbox = screen.getByLabelText('すべて選択') as HTMLInputElement;
+      const selectAllCheckbox = screen.getByLabelText(
+        'すべて選択'
+      ) as HTMLInputElement;
       expect(selectAllCheckbox.indeterminate).toBe(true);
     });
 
@@ -382,10 +391,10 @@ describe('SumDownloadTable', () => {
       // 選択された行のスタイルを確認
       const rows = screen.getAllByRole('row');
       const dataRows = rows.slice(1); // ヘッダー行を除く
-      
+
       // 1番目の行（選択済み）
       expect(dataRows[0]).toHaveStyle({ background: '#0A1A2A' });
-      
+
       // 2番目の行（未選択）
       expect(dataRows[1]).toHaveStyle({ background: 'transparent' });
     });
