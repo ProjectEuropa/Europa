@@ -83,11 +83,17 @@ const performBrowserDownload = (blob: Blob, filename: string): (() => void) => {
   a.click();
 
   const cleanup = () => {
-    if (typeof window !== 'undefined' && window.URL) {
-      window.URL.revokeObjectURL(url);
-    }
-    if (a.parentNode) {
-      a.parentNode.removeChild(a);
+    try {
+      if (typeof window !== 'undefined' && window.URL) {
+        window.URL.revokeObjectURL(url);
+      }
+      if (a.parentNode) {
+        a.parentNode.removeChild(a);
+      }
+    } catch (error) {
+      // DOMクリーンアップ中のエラーは、特にテスト環境で発生する可能性があるため、
+      // キャッチしてコンソールに出力するに留め、アプリケーションをクラッシュさせない。
+      console.error('Error during download cleanup:', error);
     }
   };
 
