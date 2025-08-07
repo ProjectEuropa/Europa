@@ -78,7 +78,8 @@ const performBrowserDownload = (blob: Blob, filename: string): (() => void) => {
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
-  document.body.appendChild(a);
+  a.style.display = 'none';
+  document.documentElement.appendChild(a);
   a.click();
 
   const cleanup = () => {
