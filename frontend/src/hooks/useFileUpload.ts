@@ -81,7 +81,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         throw error;
       }
     },
-    [onSuccess, onError, onProgress, queryClient]
+    [onSuccess, onError, queryClient]
   );
 
   const uploadTeamFile = useCallback(
