@@ -21,7 +21,6 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
-    "preinstall": "npx npm-force-resolutions",
     "prepare": "husky",
     "type-check": "tsc --noEmit",
     "analyze": "ANALYZE=true npm run build",
