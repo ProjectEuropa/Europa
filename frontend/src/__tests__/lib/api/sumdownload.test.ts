@@ -114,7 +114,7 @@ describe('sumdownload API', () => {
         style: {
           display: '',
         },
-        parentNode: document.body,
+        parentNode: document.documentElement,
       };
 
       vi.spyOn(document, 'createElement').mockReturnValue(mockElement as any);
