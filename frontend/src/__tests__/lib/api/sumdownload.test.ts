@@ -111,6 +111,10 @@ describe('sumdownload API', () => {
         href: '',
         download: '',
         click: vi.fn(),
+        style: {
+          display: '',
+        },
+        parentNode: document.documentElement,
       };
 
       vi.spyOn(document, 'createElement').mockReturnValue(mockElement as any);
@@ -118,6 +122,9 @@ describe('sumdownload API', () => {
         () => mockElement as any
       );
       vi.spyOn(document.body, 'removeChild').mockImplementation(
+        () => mockElement as any
+      );
+      vi.spyOn(document.documentElement, 'appendChild').mockImplementation(
         () => mockElement as any
       );
     });
@@ -167,7 +174,7 @@ describe('sumdownload API', () => {
       // ダウンロード処理が実行されることを確認
       expect(window.URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
       expect(document.createElement).toHaveBeenCalledWith('a');
-      expect(document.body.appendChild).toHaveBeenCalled();
+      expect(document.documentElement.appendChild).toHaveBeenCalled();
     });
 
     it('should handle download API errors', async () => {

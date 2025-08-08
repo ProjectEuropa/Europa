@@ -58,7 +58,6 @@ export const SumDownloadForm = ({
           background: '#111A2E',
           borderRadius: '9999px',
           border: '1px solid #1E3A5F',
-          overflow: 'hidden',
           position: 'relative',
         }}
       >
@@ -70,7 +69,7 @@ export const SumDownloadForm = ({
           style={{
             width: '100%',
             padding: '14px 24px',
-            paddingRight: '50px',
+            paddingRight: '60px',
             background: 'transparent',
             border: 'none',
             outline: 'none',
@@ -99,7 +98,7 @@ export const SumDownloadForm = ({
           disabled={loading}
           style={{
             position: 'absolute',
-            right: 8,
+            right: 0,
             top: '50%',
             transform: 'translateY(-50%)',
             background: '#3B82F6',
@@ -107,8 +106,8 @@ export const SumDownloadForm = ({
             border: 'none',
             borderRadius: '50%',
             cursor: loading ? 'not-allowed' : 'pointer',
-            height: 40,
-            width: 40,
+            height: 48,
+            width: 48,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
