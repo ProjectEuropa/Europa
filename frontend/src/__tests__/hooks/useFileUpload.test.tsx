@@ -1,4 +1,6 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { vi } from 'vitest';
 import { useFileUpload } from '@/hooks/useFileUpload';
 
@@ -16,13 +18,18 @@ import { filesApi } from '@/lib/api/files';
 const mockUploadTeamFile = vi.mocked(filesApi.uploadTeamFile);
 const mockUploadMatchFile = vi.mocked(filesApi.uploadMatchFile);
 
+const queryClient = new QueryClient();
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
+
 describe('useFileUpload', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should initialize with idle status', () => {
-    const { result } = renderHook(() => useFileUpload());
+    const { result } = renderHook(() => useFileUpload(), { wrapper });
 
     expect(result.current.uploadProgress).toEqual({
       progress: 0,
@@ -36,8 +43,9 @@ describe('useFileUpload', () => {
 
     mockUploadTeamFile.mockResolvedValue({ success: true });
 
-    const { result } = renderHook(() =>
-      useFileUpload({ onSuccess: mockOnSuccess })
+    const { result } = renderHook(
+      () => useFileUpload({ onSuccess: mockOnSuccess }),
+      { wrapper }
     );
 
     const file = new File(['test'], 'test.che');
@@ -57,8 +65,9 @@ describe('useFileUpload', () => {
 
     mockUploadMatchFile.mockResolvedValue({ success: true });
 
-    const { result } = renderHook(() =>
-      useFileUpload({ onSuccess: mockOnSuccess })
+    const { result } = renderHook(
+      () => useFileUpload({ onSuccess: mockOnSuccess }),
+      { wrapper }
     );
 
     const file = new File(['test'], 'test.che');
@@ -79,8 +88,9 @@ describe('useFileUpload', () => {
 
     mockUploadTeamFile.mockRejectedValue(error);
 
-    const { result } = renderHook(() =>
-      useFileUpload({ onError: mockOnError })
+    const { result } = renderHook(
+      () => useFileUpload({ onError: mockOnError }),
+      { wrapper }
     );
 
     const file = new File(['test'], 'test.che');
@@ -100,7 +110,7 @@ describe('useFileUpload', () => {
   });
 
   it('should reset upload state', () => {
-    const { result } = renderHook(() => useFileUpload());
+    const { result } = renderHook(() => useFileUpload(), { wrapper });
 
     // リセット
     act(() => {
@@ -117,7 +127,7 @@ describe('useFileUpload', () => {
   it('should not call callbacks when not provided', async () => {
     mockUploadTeamFile.mockResolvedValue({ success: true });
 
-    const { result } = renderHook(() => useFileUpload());
+    const { result } = renderHook(() => useFileUpload(), { wrapper });
 
     const file = new File(['test'], 'test.che');
     const options = { ownerName: 'test', comment: '', tags: [] };
