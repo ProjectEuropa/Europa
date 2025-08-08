@@ -21,7 +21,6 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
-    "preinstall": "npx npm-force-resolutions",
     "prepare": "husky",
     "type-check": "tsc --noEmit",
     "analyze": "ANALYZE=true npm run build",
@@ -65,6 +64,7 @@
     "zustand": "^5.0.6"
   },
   "devDependencies": {
+    "wrangler": "^4.28.1",
     "@biomejs/biome": "^2.1.2",
     "@cloudflare/next-on-pages": "^1.13.12",
     "@eslint/eslintrc": "^3",
