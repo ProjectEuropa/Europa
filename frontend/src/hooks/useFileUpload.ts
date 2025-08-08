@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { filesApi } from '@/lib/api/files';
 import type { FileUploadOptions } from '@/types/file';
@@ -15,6 +16,7 @@ export interface UseFileUploadOptions {
 }
 
 export const useFileUpload = (options: UseFileUploadOptions = {}) => {
+  const queryClient = useQueryClient();
   const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
     progress: 0,
     status: 'idle',
@@ -61,6 +63,9 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
 
         clearInterval(progressInterval);
         setUploadProgress({ progress: 100, status: 'success' });
+        queryClient.invalidateQueries({
+          queryKey: ['search'],
+        });
         options.onSuccess?.();
 
         return result;
@@ -108,6 +113,9 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
 
         clearInterval(progressInterval);
         setUploadProgress({ progress: 100, status: 'success' });
+        queryClient.invalidateQueries({
+          queryKey: ['search'],
+        });
         options.onSuccess?.();
 
         return result;
