@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { filesApi } from '@/lib/api/files';
-import type { FileUploadOptions } from '@/types/file';
+import type { FileUploadOptions, FileUploadResponse } from '@/types/file';
 
 export interface UploadProgress {
   progress: number;
@@ -43,7 +43,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         file: File,
         isAuthenticated: boolean,
         uploadOptions: FileUploadOptions
-      ) => Promise<any>,
+      ) => Promise<FileUploadResponse>,
       queryKeyToInvalidate: readonly string[]
     ) => {
       try {
