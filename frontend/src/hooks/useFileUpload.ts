@@ -16,6 +16,7 @@ export interface UseFileUploadOptions {
 }
 
 export const useFileUpload = (options: UseFileUploadOptions = {}) => {
+  const { onSuccess, onError, onProgress } = options;
   const queryClient = useQueryClient();
   const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
     progress: 0,
@@ -29,9 +30,9 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         progress,
         status: 'uploading',
       }));
-      options.onProgress?.(progress);
+      onProgress?.(progress);
     },
-    [options]
+    [onProgress]
   );
 
   const _uploadFile = useCallback(
@@ -65,7 +66,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         clearInterval(progressInterval);
         setUploadProgress({ progress: 100, status: 'success' });
         queryClient.invalidateQueries({ queryKey: queryKeyToInvalidate });
-        options.onSuccess?.();
+        onSuccess?.();
         return result;
       } catch (error) {
         setUploadProgress({
@@ -76,11 +77,11 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
               ? error.message
               : 'アップロードに失敗しました',
         });
-        options.onError?.(error);
+        onError?.(error);
         throw error;
       }
     },
-    [options, queryClient]
+    [onSuccess, onError, queryClient]
   );
 
   const uploadTeamFile = useCallback(
