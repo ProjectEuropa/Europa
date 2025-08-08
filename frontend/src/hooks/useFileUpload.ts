@@ -34,17 +34,22 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     [options]
   );
 
-  const uploadTeamFile = useCallback(
+  const _uploadFile = useCallback(
     async (
       file: File,
       isAuthenticated: boolean,
-      uploadOptions: FileUploadOptions
+      uploadOptions: FileUploadOptions,
+      uploadApiFn: (
+        file: File,
+        isAuthenticated: boolean,
+        uploadOptions: FileUploadOptions
+      ) => Promise<any>,
+      queryKeyToInvalidate: readonly string[]
     ) => {
       try {
         setUploadProgress({ progress: 0, status: 'uploading' });
 
         // プログレス更新のシミュレーション
-        // 実際のAPIでプログレス情報が取得できる場合は、そちらを使用
         const progressInterval = setInterval(() => {
           setUploadProgress(prev => {
             if (prev.progress >= 90) {
@@ -55,19 +60,12 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
           });
         }, 200);
 
-        const result = await filesApi.uploadTeamFile(
-          file,
-          isAuthenticated,
-          uploadOptions
-        );
+        const result = await uploadApiFn(file, isAuthenticated, uploadOptions);
 
         clearInterval(progressInterval);
         setUploadProgress({ progress: 100, status: 'success' });
-        queryClient.invalidateQueries({
-          queryKey: ['search'],
-        });
+        queryClient.invalidateQueries({ queryKey: queryKeyToInvalidate });
         options.onSuccess?.();
-
         return result;
       } catch (error) {
         setUploadProgress({
@@ -82,57 +80,39 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         throw error;
       }
     },
-    [options]
+    [options, queryClient]
+  );
+
+  const uploadTeamFile = useCallback(
+    (
+      file: File,
+      isAuthenticated: boolean,
+      uploadOptions: FileUploadOptions
+    ) =>
+      _uploadFile(
+        file,
+        isAuthenticated,
+        uploadOptions,
+        filesApi.uploadTeamFile,
+        ['search', 'teams']
+      ),
+    [_uploadFile]
   );
 
   const uploadMatchFile = useCallback(
-    async (
+    (
       file: File,
       isAuthenticated: boolean,
       uploadOptions: FileUploadOptions
-    ) => {
-      try {
-        setUploadProgress({ progress: 0, status: 'uploading' });
-
-        // プログレス更新のシミュレーション
-        const progressInterval = setInterval(() => {
-          setUploadProgress(prev => {
-            if (prev.progress >= 90) {
-              clearInterval(progressInterval);
-              return prev;
-            }
-            return { ...prev, progress: prev.progress + 10 };
-          });
-        }, 200);
-
-        const result = await filesApi.uploadMatchFile(
-          file,
-          isAuthenticated,
-          uploadOptions
-        );
-
-        clearInterval(progressInterval);
-        setUploadProgress({ progress: 100, status: 'success' });
-        queryClient.invalidateQueries({
-          queryKey: ['search'],
-        });
-        options.onSuccess?.();
-
-        return result;
-      } catch (error) {
-        setUploadProgress({
-          progress: 0,
-          status: 'error',
-          error:
-            error instanceof Error
-              ? error.message
-              : 'アップロードに失敗しました',
-        });
-        options.onError?.(error);
-        throw error;
-      }
-    },
-    [options]
+    ) =>
+      _uploadFile(
+        file,
+        isAuthenticated,
+        uploadOptions,
+        filesApi.uploadMatchFile,
+        ['search', 'matches']
+      ),
+    [_uploadFile]
   );
 
   const resetUpload = useCallback(() => {
