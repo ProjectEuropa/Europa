@@ -37,50 +37,27 @@ class LoginController extends Controller
 
         $user = Auth::user();
         
-        // Check if this is a stateful request (SPA mode)
-        if ($request->ajax() && $request->expectsJson() && $request->hasSession()) {
-            $request->session()->regenerate();
-            
-            // Return user data with empty token for SPA mode
-            return response()->json([
-                'message' => 'ログイン成功',
-                'token' => '', // Empty token indicates cookie auth
-                'user' => $user
-            ], 200);
-        }
-
-        // For API token mode, create token as before
-        $token = $user->createToken('app')->plainTextToken;
-
+        // Cookie認証のみに統一（セキュリティ強化）
+        $request->session()->regenerate();
+        
         return response()->json([
             'message' => 'ログイン成功',
-            'token' => $token,
             'user' => $user
         ], 200);
     }
 
     /**
-     * Handle logout request for both SPA and token authentication.
+     * Handle logout request for cookie authentication.
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function logout(Request $request)
     {
-        // Determine authentication mode
-        $isSpaMode = $request->ajax() && $request->expectsJson() && $request->hasSession();
-        
-        if ($isSpaMode) {
-            // SPA cookie authentication logout
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        } else {
-            // Token-based authentication logout
-            if ($request->user() && $request->bearerToken()) {
-                $request->user()->currentAccessToken()->delete();
-            }
-        }
+        // Cookie認証のみに統一（セキュリティ強化）
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'message' => 'ログアウトしました'

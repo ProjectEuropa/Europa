@@ -10,84 +10,95 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_ユーザー登録でトークンを受け取れる()
+    public function test_ユーザー登録でセッション認証()
     {
-        $response = $this->postJson('/api/v1/register', [
-            'name' => 'テストユーザー',
-            'email' => 'test@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-        ]);
+        $response = $this->withSession([])
+            ->withMiddleware()
+            ->postJson('/api/v1/register', [
+                'name' => 'テストユーザー',
+                'email' => 'test@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ]);
 
         $response->assertStatus(201)
-            ->assertJsonStructure(['message', 'token', 'user']);
+            ->assertJsonStructure(['message', 'user'])
+            ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
+
+        // ユーザーが認証されていることを確認
+        $user = User::where('email', 'test@example.com')->first();
+        $this->assertAuthenticatedAs($user);
     }
 
-    public function test_ユーザーログインでトークンを受け取れる()
+    public function test_ユーザーログインでセッション認証()
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
             'password' => bcrypt('password123'),
         ]);
 
-        $response = $this->postJson('/api/v1/login', [
-            'email' => 'test@example.com',
-            'password' => 'password123',
-        ]);
+        $response = $this->withSession([])
+            ->withMiddleware()
+            ->postJson('/api/v1/login', [
+                'email' => 'test@example.com',
+                'password' => 'password123',
+            ]);
 
         $response->assertStatus(200)
-            ->assertJsonStructure(['message', 'token', 'user']);
-    }
-
-    public function test_SPAログインで空トークンとセッション作成()
-    {
-        $user = User::factory()->create([
-            'email' => 'test@example.com',
-            'password' => bcrypt('password123'),
-        ]);
-
-        // CSRF Cookieを取得
-        $this->get('/api/v1/csrf-cookie');
-
-        $response = $this->withHeaders([
-            'X-Requested-With' => 'XMLHttpRequest',
-            'Accept' => 'application/json',
-        ])->postJson('/api/v1/login', [
-            'email' => 'test@example.com',
-            'password' => 'password123',
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJson([
-                'message' => 'ログイン成功',
-                'token' => '', // SPA認証では空のtoken
-            ])
-            ->assertJsonStructure(['message', 'token', 'user']);
+            ->assertJsonStructure(['message', 'user'])
+            ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
 
         // セッションに認証情報が保存されていることを確認
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_SPA登録で空トークンとセッション作成()
+    public function test_CSRFヘッダー付きログインでセッション認証()
     {
-        // CSRF Cookieを取得
-        $this->get('/api/v1/csrf-cookie');
-
-        $response = $this->withHeaders([
-            'X-Requested-With' => 'XMLHttpRequest',
-            'Accept' => 'application/json',
-        ])->postJson('/api/v1/register', [
-            'name' => 'テストユーザー',
+        $user = User::factory()->create([
             'email' => 'test@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => bcrypt('password123'),
         ]);
 
-        $response->assertStatus(201)
+        // CSRF保護されたリクエスト
+        $response = $this->withSession([])
+            ->withMiddleware()
+            ->withHeaders([
+                'X-Requested-With' => 'XMLHttpRequest',
+                'Accept' => 'application/json',
+            ])->postJson('/api/v1/login', [
+                'email' => 'test@example.com',
+                'password' => 'password123',
+            ]);
+
+        $response->assertStatus(200)
             ->assertJson([
-                'token' => '', // SPA認証では空のtoken
+                'message' => 'ログイン成功',
             ])
-            ->assertJsonStructure(['message', 'token', 'user']);
+            ->assertJsonStructure(['message', 'user'])
+            ->assertJsonMissing(['token']); // tokenは返されない
+
+        // セッションに認証情報が保存されていることを確認
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_CSRF保護された登録でセッション認証()
+    {
+        // CSRF保護されたリクエスト
+        $response = $this->withSession([])
+            ->withMiddleware()
+            ->withHeaders([
+                'X-Requested-With' => 'XMLHttpRequest',
+                'Accept' => 'application/json',
+            ])->postJson('/api/v1/register', [
+                'name' => 'テストユーザー',
+                'email' => 'test@example.com',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+            ]);
+
+        $response->assertStatus(201)
+            ->assertJsonStructure(['message', 'user'])
+            ->assertJsonMissing(['token']); // tokenは返されない
 
         // データベースにユーザーが作成されていることを確認
         $this->assertDatabaseHas('users', [
@@ -100,39 +111,16 @@ class AuthTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_非SPAリクエストでトークンを返す()
-    {
-        $user = User::factory()->create([
-            'email' => 'test@example.com',
-            'password' => bcrypt('password123'),
-        ]);
-
-        // 通常のAPIリクエスト（X-Requested-Withヘッダーなし）
-        $response = $this->postJson('/api/v1/login', [
-            'email' => 'test@example.com',
-            'password' => 'password123',
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure(['message', 'token', 'user']);
-
-        // tokenが空でないことを確認
-        $responseData = $response->json();
-        $this->assertNotEmpty($responseData['token']);
-        $this->assertNotEquals('', $responseData['token']);
-    }
-
-    public function test_SPAログアウトでセッション無効化()
+    public function test_ログアウトでセッション無効化()
     {
         $user = User::factory()->create();
         
-        // SPA認証でログイン
-        $this->actingAs($user);
+        // Cookie認証でログイン（セッション使用）
+        $this->withSession([])
+            ->withMiddleware()
+            ->actingAs($user, 'web');
         
-        $response = $this->withHeaders([
-            'X-Requested-With' => 'XMLHttpRequest',
-            'Accept' => 'application/json',
-        ])->post('/api/v1/auth/logout');
+        $response = $this->post('/api/v1/auth/logout');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -140,26 +128,7 @@ class AuthTest extends TestCase
             ]);
 
         // セッションが無効化されていることを確認
-        $this->assertGuest();
-    }
-
-    public function test_トークンログアウトでトークン無効化()
-    {
-        $user = User::factory()->create();
-        $token = $user->createToken('test-token')->plainTextToken;
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-            'Accept' => 'application/json',
-        ])->post('/api/v1/auth/logout');
-
-        $response->assertStatus(200)
-            ->assertJson([
-                'message' => 'ログアウトしました'
-            ]);
-
-        // トークンが無効化されていることを確認
-        $this->assertEquals(0, $user->tokens()->count());
+        $this->assertGuest('web');
     }
 
     public function test_ログアウトには認証が必要()
