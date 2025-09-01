@@ -179,7 +179,7 @@ jobs:
         working-directory: ./frontend
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: frontend-build-${{ github.sha }}
           path: frontend/
