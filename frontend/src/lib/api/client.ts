@@ -126,8 +126,7 @@ export class ApiClient {
   ): Promise<ApiResponse<T>> {
     const token = this.getToken();
     const headers: Record<string, string> = {
-      Accept: 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
+      ...this.defaultHeaders,
       ...(token && { Authorization: `Bearer ${token}` }),
       ...this.processHeaders(options?.headers),
     };

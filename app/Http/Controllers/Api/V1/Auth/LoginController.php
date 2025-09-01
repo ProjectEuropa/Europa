@@ -38,19 +38,15 @@ class LoginController extends Controller
         $user = Auth::user();
         
         // Check if this is a stateful request (SPA mode)
-        // We detect SPA mode by checking if the request accepts web middleware features
-        if ($request->expectsJson() && $request->hasHeader('X-Requested-With') && $request->header('X-Requested-With') === 'XMLHttpRequest') {
-            // For CSRF-protected SPA authentication, create session
-            if ($request->hasSession()) {
-                $request->session()->regenerate();
-                
-                // Return user data with empty token for SPA mode
-                return response()->json([
-                    'message' => 'ログイン成功',
-                    'token' => '', // Empty token indicates cookie auth
-                    'user' => $user
-                ], 200);
-            }
+        if ($request->ajax() && $request->expectsJson() && $request->hasSession()) {
+            $request->session()->regenerate();
+            
+            // Return user data with empty token for SPA mode
+            return response()->json([
+                'message' => 'ログイン成功',
+                'token' => '', // Empty token indicates cookie auth
+                'user' => $user
+            ], 200);
         }
 
         // For API token mode, create token as before
@@ -72,10 +68,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         // Determine authentication mode
-        $isSpaMode = $request->expectsJson() && 
-                     $request->hasHeader('X-Requested-With') && 
-                     $request->header('X-Requested-With') === 'XMLHttpRequest' &&
-                     $request->hasSession();
+        $isSpaMode = $request->ajax() && $request->expectsJson() && $request->hasSession();
         
         if ($isSpaMode) {
             // SPA cookie authentication logout
