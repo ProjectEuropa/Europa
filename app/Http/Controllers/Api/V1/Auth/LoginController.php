@@ -55,7 +55,8 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         // Cookie認証のみに統一（セキュリティ強化）
-        Auth::logout();
+        // Sanctum SPA認証の場合、guard('web')を使用してログアウト
+        Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
