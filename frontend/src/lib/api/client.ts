@@ -27,7 +27,7 @@ export class ApiClient {
    */
   async getCsrfCookie(): Promise<void> {
     try {
-      await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
+      await fetch(`${this.baseURL}/api/v1/csrf-cookie`, {
         method: 'GET',
         credentials: 'include',
       });
