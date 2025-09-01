@@ -126,7 +126,7 @@ class AuthTest extends TestCase
         // Cookie認証でログイン（セッション使用）
         $this->withSession([])
             ->withMiddleware()
-            ->actingAs($user, 'sanctum');
+            ->actingAs($user, 'web');
         
         $response = $this->withHeaders([
                 'Accept' => 'application/json',
@@ -140,7 +140,7 @@ class AuthTest extends TestCase
             ]);
 
         // セッションが無効化されていることを確認
-        $this->assertGuest();
+        $this->assertGuest('web');
     }
 
     public function test_ログアウトには認証が必要()
