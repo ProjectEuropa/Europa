@@ -35,6 +35,10 @@ Route::group(['middleware' => ['api', 'auth:api']], function () {
 });
 
 Route::prefix('v1')->group(function () {
+    // CSRF Cookie endpoint for SPA authentication
+    Route::get('csrf-cookie', function () {
+        return response()->json(['message' => 'CSRF cookie set']);
+    })->middleware('web');
     Route::post('login', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'login']);
     Route::post('register', [\App\Http\Controllers\Api\V1\Auth\RegisterController::class, 'register']);
     Route::get('auth/logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout']);

@@ -41,14 +41,14 @@ export const useAuthStore = create<AuthStore>()(
           const data = await authApi.login(credentials);
           const { token, user } = data;
 
-          // localStorageにもトークンを保存（api.tsとの互換性のため）
+          // Tokenベースの後方互換性のためTokenがある場合は保存
           if (typeof window !== 'undefined' && token) {
             localStorage.setItem('token', token);
           }
 
           set({
             user,
-            token,
+            token: token || null, // Cookie認証の場合tokenはnull
             isAuthenticated: true,
             loading: false,
           });
@@ -64,14 +64,14 @@ export const useAuthStore = create<AuthStore>()(
           const data = await authApi.register(credentials);
           const { token, user } = data;
 
-          // localStorageにもトークンを保存（api.tsとの互換性のため）
+          // Tokenベースの後方互換性のためTokenがある場合は保存
           if (typeof window !== 'undefined' && token) {
             localStorage.setItem('token', token);
           }
 
           set({
             user,
-            token,
+            token: token || null, // Cookie認証の場合tokenはnull
             isAuthenticated: true,
             loading: false,
           });
@@ -107,12 +107,6 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       fetchUser: async () => {
-        const { token } = get();
-        if (!token) {
-          set({ user: null, isAuthenticated: false, loading: false });
-          return;
-        }
-
         set({ loading: true });
         try {
           const data = await authApi.getProfile();
@@ -124,6 +118,8 @@ export const useAuthStore = create<AuthStore>()(
           });
         } catch (error) {
           console.error('User profile fetch error:', error);
+          // Cookie認証の場合、ログアウト処理
+          authApi.logout();
           set({
             user: null,
             token: null,

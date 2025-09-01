@@ -15,10 +15,11 @@ class LoginController extends Controller
     }
 
     /**
-     * Handle login request.
+     * Handle login request with SPA authentication.
+     * Supports both token-based and cookie-based authentication.
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      * @throws ValidationException
      */
     public function login(Request $request)
@@ -28,13 +29,26 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             return response()->json([
                 'error' => 'メールアドレスまたはパスワードが正しくありません。'
             ], 401);
         }
 
         $user = Auth::user();
+        
+        // Check if this is a stateful request (SPA mode)
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+            
+            // For SPA mode, just return user data without token
+            return response()->json([
+                'message' => 'ログイン成功',
+                'user' => $user
+            ], 200);
+        }
+
+        // For API token mode, create token as before
         $token = $user->createToken('app')->plainTextToken;
 
         return response()->json([
@@ -44,11 +58,25 @@ class LoginController extends Controller
         ], 200);
     }
 
+    /**
+     * Handle logout request for both SPA and token authentication.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // For SPA mode with session
+        if ($request->hasSession()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+        
+        // For token-based authentication, revoke current access token
+        if ($request->user() && $request->bearerToken()) {
+            $request->user()->currentAccessToken()->delete();
+        }
 
         return response()->json([
             'message' => 'ログアウトしました'

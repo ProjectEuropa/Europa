@@ -17,8 +17,23 @@ export class ApiClient {
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'X-Requested-With': 'XMLHttpRequest', // Laravel SPAモードで必要
       ...config?.defaultHeaders,
     };
+  }
+
+  /**
+   * CSRF Cookieを取得してSPA認証を初期化
+   */
+  async getCsrfCookie(): Promise<void> {
+    try {
+      await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.warn('CSRF cookie取得に失敗:', error);
+    }
   }
 
   async request<T>(
@@ -112,6 +127,7 @@ export class ApiClient {
     const token = this.getToken();
     const headers: Record<string, string> = {
       Accept: 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
       ...(token && { Authorization: `Bearer ${token}` }),
       ...this.processHeaders(options?.headers),
     };

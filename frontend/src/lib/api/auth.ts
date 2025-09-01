@@ -53,6 +53,9 @@ function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(
 
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
+    // CSRF Cookieを事前に取得
+    await apiClient.getCsrfCookie();
+    
     const response = await apiClient.post<LoginResponse>(
       '/api/v1/login',
       credentials
@@ -61,6 +64,7 @@ export const authApi = {
     // レスポンス構造の正規化
     const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
 
+    // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
     if (normalizedResponse.token) {
       localStorage.setItem('token', normalizedResponse.token);
     }
@@ -69,6 +73,9 @@ export const authApi = {
   },
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
+    // CSRF Cookieを事前に取得
+    await apiClient.getCsrfCookie();
+    
     const response = await apiClient.post<RegisterResponse>(
       '/api/v1/register',
       {
@@ -83,6 +90,7 @@ export const authApi = {
     const normalizedResponse =
       normalizeAuthResponse<RegisterResponse>(response);
 
+    // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
     if (normalizedResponse.token) {
       localStorage.setItem('token', normalizedResponse.token);
     }

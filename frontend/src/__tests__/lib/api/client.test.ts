@@ -185,4 +185,54 @@ describe('ApiClient', () => {
       expect(result).toEqual(mockResponse);
     });
   });
+
+  describe('getCsrfCookie', () => {
+    it('should fetch CSRF cookie successfully', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({}),
+      });
+
+      await apiClient.getCsrfCookie();
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('/sanctum/csrf-cookie'),
+        expect.objectContaining({
+          method: 'GET',
+          credentials: 'include',
+        })
+      );
+    });
+
+    it('should handle CSRF cookie fetch failure gracefully', async () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+      await apiClient.getCsrfCookie();
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'CSRF cookie取得に失敗:',
+        expect.any(Error)
+      );
+      consoleWarnSpy.mockRestore();
+    });
+
+    it('should include X-Requested-With header in requests', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({}),
+      });
+
+      await apiClient.get('/test');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'X-Requested-With': 'XMLHttpRequest',
+          }),
+        })
+      );
+    });
+  });
 });
