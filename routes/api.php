@@ -41,7 +41,7 @@ Route::prefix('v1')->group(function () {
     })->middleware('web');
     Route::post('login', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'login']);
     Route::post('register', [\App\Http\Controllers\Api\V1\Auth\RegisterController::class, 'register']);
-    Route::get('auth/logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout']);
+    Route::post('auth/logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('download/{id}', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'download']);
     Route::post('sumDownload', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'sumDownload']);
     Route::post('eventNotice', [\App\Http\Controllers\Api\V1\EventNoticeController::class, 'store']);

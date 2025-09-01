@@ -355,10 +355,27 @@ describe('authApi', () => {
   });
 
   describe('logout', () => {
-    it('should remove token from localStorage', () => {
-      authApi.logout();
+    it('should call server logout and remove token from localStorage', async () => {
+      vi.mocked(apiClient.post).mockResolvedValueOnce({ 
+        message: 'ログアウトしました' 
+      });
 
+      await authApi.logout();
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/auth/logout');
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('token');
+    });
+
+    it('should clean localStorage even if server logout fails', async () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Server error'));
+
+      await authApi.logout();
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/auth/logout');
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('token');
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Server logout failed:', expect.any(Error));
+      consoleWarnSpy.mockRestore();
     });
   });
 
@@ -375,7 +392,7 @@ describe('authApi', () => {
 
       const mockResponse = {
         user: { id: 1, name: 'Test User', email: 'test@example.com' },
-        // Cookie認証の場合tokenはundefined
+        token: '', // Cookie認証の場合空文字列
       };
 
       vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
@@ -398,6 +415,7 @@ describe('authApi', () => {
       // Cookie認証時のレスポンス（tokenなし）
       const mockResponse = {
         user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
         message: 'ログイン成功',
       };
 
@@ -420,6 +438,7 @@ describe('authApi', () => {
 
       const mockResponse = {
         user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
       };
 
       vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
@@ -438,7 +457,7 @@ describe('authApi', () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it('should handle CSRF cookie failure gracefully', async () => {
+    it('should call getCsrfCookie and continue with login flow', async () => {
       const credentials: LoginCredentials = {
         email: 'test@example.com',
         password: 'password123',
@@ -446,16 +465,18 @@ describe('authApi', () => {
 
       const mockResponse = {
         user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
       };
 
-      // CSRF Cookie取得が失敗してもログインは継続
-      vi.mocked(apiClient.getCsrfCookie).mockRejectedValueOnce(new Error('CSRF failed'));
+      // CSRF Cookie取得は正常実行、その後ログイン
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
       vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
 
       const result = await authApi.login(credentials);
 
       expect(apiClient.getCsrfCookie).toHaveBeenCalledTimes(1);
       expect(apiClient.post).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
       expect(result).toEqual(mockResponse);
     });
   });

@@ -168,7 +168,15 @@ export const authApi = {
     }
   },
 
-  logout(): void {
-    localStorage.removeItem('token');
+  async logout(): Promise<void> {
+    try {
+      // Call server logout endpoint to invalidate session/token
+      await apiClient.post('/api/v1/auth/logout');
+    } catch (error) {
+      console.warn('Server logout failed:', error);
+    } finally {
+      // Always clean up local storage regardless of server response
+      localStorage.removeItem('token');
+    }
   },
 };
