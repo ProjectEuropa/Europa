@@ -14,6 +14,10 @@ class AuthTest extends TestCase
     {
         $response = $this->withSession([])
             ->withMiddleware()
+            ->withHeaders([
+                'Accept' => 'application/json',
+                'X-Requested-With' => 'XMLHttpRequest',
+            ])
             ->postJson('/api/v1/register', [
                 'name' => 'テストユーザー',
                 'email' => 'test@example.com',
@@ -39,6 +43,10 @@ class AuthTest extends TestCase
 
         $response = $this->withSession([])
             ->withMiddleware()
+            ->withHeaders([
+                'Accept' => 'application/json',
+                'X-Requested-With' => 'XMLHttpRequest',
+            ])
             ->postJson('/api/v1/login', [
                 'email' => 'test@example.com',
                 'password' => 'password123',
@@ -118,9 +126,13 @@ class AuthTest extends TestCase
         // Cookie認証でログイン（セッション使用）
         $this->withSession([])
             ->withMiddleware()
-            ->actingAs($user, 'web');
+            ->actingAs($user, 'sanctum');
         
-        $response = $this->post('/api/v1/auth/logout');
+        $response = $this->withHeaders([
+                'Accept' => 'application/json',
+                'X-Requested-With' => 'XMLHttpRequest',
+            ])
+            ->post('/api/v1/auth/logout');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -128,7 +140,7 @@ class AuthTest extends TestCase
             ]);
 
         // セッションが無効化されていることを確認
-        $this->assertGuest('web');
+        $this->assertGuest();
     }
 
     public function test_ログアウトには認証が必要()

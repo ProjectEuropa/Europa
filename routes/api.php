@@ -39,9 +39,9 @@ Route::prefix('v1')->group(function () {
     Route::get('csrf-cookie', function () {
         return response()->json(['message' => 'CSRF cookie set']);
     })->middleware('web');
-    Route::post('login', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'login']);
-    Route::post('register', [\App\Http\Controllers\Api\V1\Auth\RegisterController::class, 'register']);
-    Route::post('auth/logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout'])->middleware('auth:sanctum');
+    Route::post('login', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'login'])->middleware(['web']);
+    Route::post('register', [\App\Http\Controllers\Api\V1\Auth\RegisterController::class, 'register'])->middleware(['web']);
+    Route::post('auth/logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout'])->middleware(['web','auth:sanctum']);
     Route::get('download/{id}', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'download']);
     Route::post('sumDownload', [\App\Http\Controllers\Api\V1\FileConventionalUtilController::class, 'sumDownload']);
     Route::post('eventNotice', [\App\Http\Controllers\Api\V1\EventNoticeController::class, 'store']);
