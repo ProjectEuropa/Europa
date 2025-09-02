@@ -29,10 +29,7 @@ RUN if [ "$INSTALL_NEW_RELIC" = "true" ]; then \
         curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-${NEW_RELIC_AGENT_VERSION}-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz && \
         tar -xzf /tmp/newrelic-php-agent.tar.gz -C /tmp && \
         cd /tmp/newrelic-php5-${NEW_RELIC_AGENT_VERSION}-linux && \
-        ./newrelic-install install && \
-        echo "extension=newrelic" > /usr/local/etc/php/conf.d/newrelic.ini && \
-        echo "newrelic.license=\"${NEW_RELIC_LICENSE_KEY}\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
-        echo "newrelic.appname=\"${NEW_RELIC_APPNAME}\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
+        NR_INSTALL_SILENT=1 NR_INSTALL_KEY=${NEW_RELIC_LICENSE_KEY} NR_INSTALL_APPNAME="${NEW_RELIC_APPNAME}" ./newrelic-install install && \
         echo "newrelic.daemon.address=\"newrelic-php-daemon:31339\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
         echo "newrelic.daemon.dont_launch=3" >> /usr/local/etc/php/conf.d/newrelic.ini && \
         rm -rf /tmp/newrelic-php5-${NEW_RELIC_AGENT_VERSION}-linux /tmp/newrelic-php-agent.tar.gz; \
