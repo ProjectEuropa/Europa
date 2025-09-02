@@ -196,7 +196,7 @@ describe('ApiClient', () => {
       await apiClient.getCsrfCookie();
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/v1/csrf-cookie'),
+        expect.stringContaining('/sanctum/csrf-cookie'),
         expect.objectContaining({
           method: 'GET',
           credentials: 'include',
