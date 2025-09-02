@@ -33,8 +33,9 @@ class AuthTest extends TestCase
             ->assertJsonStructure(['message', 'user'])
             ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
 
-        // ユーザーが作成されていることを確認
+        // ユーザーが認証されていることを確認
         $user = User::where('email', 'test@example.com')->first();
+        $this->assertAuthenticatedAs($user);
         $this->assertNotNull($user);
     }
 
@@ -63,6 +64,9 @@ class AuthTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure(['message', 'user'])
             ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
+
+        // セッションに認証情報が保存されていることを確認
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_CSRFヘッダー付きログインでセッション認証()
@@ -93,6 +97,9 @@ class AuthTest extends TestCase
             ])
             ->assertJsonStructure(['message', 'user'])
             ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
+
+        // セッションに認証情報が保存されていることを確認
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_CSRF保護された登録でセッション認証()
@@ -123,6 +130,10 @@ class AuthTest extends TestCase
             'email' => 'test@example.com',
             'name' => 'テストユーザー',
         ]);
+
+        // セッションに認証情報が保存されていることを確認
+        $user = User::where('email', 'test@example.com')->first();
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_ログアウトでセッション無効化()
