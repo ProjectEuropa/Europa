@@ -171,7 +171,7 @@ export const authApi = {
   async logout(): Promise<void> {
     try {
       // Call server logout endpoint to invalidate session/token
-      await apiClient.post('/api/v1/auth/logout');
+      await apiClient.post('/api/v1/logout');
     } catch (error) {
       console.warn('Server logout failed:', error);
     } finally {

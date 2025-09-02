@@ -132,7 +132,7 @@ class AuthTest extends TestCase
                 'Accept' => 'application/json',
                 'X-Requested-With' => 'XMLHttpRequest',
             ])
-            ->post('/api/v1/auth/logout');
+            ->post('/api/v1/logout');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -145,7 +145,7 @@ class AuthTest extends TestCase
 
     public function test_ログアウトには認証が必要()
     {
-        $response = $this->postJson('/api/v1/auth/logout');
+        $response = $this->postJson('/api/v1/logout');
 
         $response->assertStatus(401);
     }
