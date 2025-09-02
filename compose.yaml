@@ -81,7 +81,7 @@ services:
     environment:
       - NRIA_LICENSE_KEY=${NRIA_LICENSE_KEY}
   newrelic-php-daemon:
-    image: newrelic/php-daemon:11.9.0
+    image: newrelic/php-daemon:12.0.0
   cron:
     build:
       context: ./cron

@@ -8,7 +8,6 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 ARG NEW_RELIC_AGENT_VERSION
 ARG NEW_RELIC_LICENSE_KEY
 ARG NEW_RELIC_APPNAME
-ARG NEWRELIC_VERSION="12.0.0.25"
 ARG INSTALL_NEW_RELIC="true"
 
 RUN apt update \
@@ -27,16 +26,16 @@ RUN apt update \
 
 # New Relic PHP Agent のインストール（条件付き）
 RUN if [ "$INSTALL_NEW_RELIC" = "true" ]; then \
-        curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-${NEWRELIC_VERSION}-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz && \
+        curl -L https://download.newrelic.com/php_agent/release/newrelic-php5-${NEW_RELIC_AGENT_VERSION}-linux.tar.gz -o /tmp/newrelic-php-agent.tar.gz && \
         tar -xzf /tmp/newrelic-php-agent.tar.gz -C /tmp && \
-        cd /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux && \
+        cd /tmp/newrelic-php5-${NEW_RELIC_AGENT_VERSION}-linux && \
         ./newrelic-install install && \
         echo "extension=newrelic.so" > /usr/local/etc/php/conf.d/newrelic.ini && \
         echo "newrelic.license=\"${NEW_RELIC_LICENSE_KEY}\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
         echo "newrelic.appname=\"${NEW_RELIC_APPNAME}\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
         echo "newrelic.daemon.address=\"newrelic-php-daemon:31339\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
         echo "newrelic.daemon.dont_launch=3" >> /usr/local/etc/php/conf.d/newrelic.ini && \
-        rm -rf /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux /tmp/newrelic-php-agent.tar.gz; \
+        rm -rf /tmp/newrelic-php5-${NEW_RELIC_AGENT_VERSION}-linux /tmp/newrelic-php-agent.tar.gz; \
     else \
         echo "New Relic installation skipped for local development"; \
     fi
