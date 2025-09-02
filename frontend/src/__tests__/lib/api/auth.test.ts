@@ -362,7 +362,7 @@ describe('authApi', () => {
 
       await authApi.logout();
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/auth/logout');
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/logout');
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('token');
     });
 
@@ -372,7 +372,7 @@ describe('authApi', () => {
 
       await authApi.logout();
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/auth/logout');
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/logout');
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('token');
       expect(consoleWarnSpy).toHaveBeenCalledWith('Server logout failed:', expect.any(Error));
       consoleWarnSpy.mockRestore();

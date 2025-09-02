@@ -26,14 +26,34 @@ export class ApiClient {
    * CSRF Cookieを取得してSPA認証を初期化
    */
   async getCsrfCookie(): Promise<void> {
-    try {
-      await fetch(`${this.baseURL}/api/v1/csrf-cookie`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-    } catch (error) {
-      console.warn('CSRF cookie取得に失敗:', error);
+    // Sanctumの標準CSRFエンドポイントを使用
+    const response = await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`CSRF endpoint returned ${response.status}`);
     }
+    
+    // レスポンスを完全に処理してからクッキーが設定されるのを待つ
+    await response.text();
+  }
+
+  private getCsrfTokenFromCookie(): string | null {
+    if (typeof document === 'undefined') return null;
+    
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const parts = cookie.trim().split('=');
+      const name = parts.shift();
+      const value = parts.join('='); // 値に=が含まれている場合も正しく処理
+      
+      if (name === 'XSRF-TOKEN') {
+        return decodeURIComponent(value);
+      }
+    }
+    return null;
   }
 
   async request<T>(
@@ -41,9 +61,12 @@ export class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const token = this.getToken();
+    const csrfToken = this.getCsrfTokenFromCookie();
+    
     const headers = {
       ...this.defaultHeaders,
       ...(token && { Authorization: `Bearer ${token}` }),
+      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
       ...this.processHeaders(options.headers),
     };
 
