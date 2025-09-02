@@ -27,7 +27,7 @@ services:
       context: ./_docker-configs/php-fpm
       args:
         - INSTALL_NEW_RELIC=true
-        - NEW_RELIC_AGENT_VERSION=11.2.0.15
+        - NEW_RELIC_AGENT_VERSION=12.0.0.25
         - NEW_RELIC_LICENSE_KEY=${NRIA_LICENSE_KEY}
         - NEW_RELIC_APPNAME="project-europa - ${APP_ENV}"
     depends_on:
