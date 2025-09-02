@@ -26,22 +26,18 @@ export class ApiClient {
    * CSRF Cookieを取得してSPA認証を初期化
    */
   async getCsrfCookie(): Promise<void> {
-    try {
-      // Sanctumの標準CSRFエンドポイントを使用
-      const response = await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      
-      if (!response.ok) {
-        throw new Error(`CSRF endpoint returned ${response.status}`);
-      }
-      
-      // レスポンスを完全に処理してからクッキーが設定されるのを待つ
-      await response.text();
-    } catch (error) {
-      console.warn('CSRF cookie取得に失敗:', error);
+    // Sanctumの標準CSRFエンドポイントを使用
+    const response = await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`CSRF endpoint returned ${response.status}`);
     }
+    
+    // レスポンスを完全に処理してからクッキーが設定されるのを待つ
+    await response.text();
   }
 
   private getCsrfTokenFromCookie(): string | null {

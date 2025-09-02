@@ -54,7 +54,11 @@ function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     // CSRF Cookieを事前に取得
-    await apiClient.getCsrfCookie();
+    try {
+      await apiClient.getCsrfCookie();
+    } catch (error) {
+      throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
+    }
     
     const response = await apiClient.post<LoginResponse>(
       '/api/v1/login',
@@ -74,7 +78,11 @@ export const authApi = {
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
     // CSRF Cookieを事前に取得
-    await apiClient.getCsrfCookie();
+    try {
+      await apiClient.getCsrfCookie();
+    } catch (error) {
+      throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
+    }
     
     const response = await apiClient.post<RegisterResponse>(
       '/api/v1/register',
