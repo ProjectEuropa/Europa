@@ -190,7 +190,7 @@ describe('ApiClient', () => {
     it('should fetch CSRF cookie successfully', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({}),
+        text: () => Promise.resolve(''),
       });
 
       await apiClient.getCsrfCookie();
@@ -205,16 +205,19 @@ describe('ApiClient', () => {
     });
 
     it('should handle CSRF cookie fetch failure gracefully', async () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      await apiClient.getCsrfCookie();
+      await expect(apiClient.getCsrfCookie()).rejects.toThrow('Network error');
+    });
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'CSRF cookie取得に失敗:',
-        expect.any(Error)
-      );
-      consoleWarnSpy.mockRestore();
+    it('should throw error when CSRF endpoint returns non-ok status', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        text: () => Promise.resolve(''),
+      });
+
+      await expect(apiClient.getCsrfCookie()).rejects.toThrow('CSRF endpoint returned 500');
     });
 
     it('should include X-Requested-With header in requests', async () => {
