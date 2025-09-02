@@ -185,4 +185,57 @@ describe('ApiClient', () => {
       expect(result).toEqual(mockResponse);
     });
   });
+
+  describe('getCsrfCookie', () => {
+    it('should fetch CSRF cookie successfully', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        text: () => Promise.resolve(''),
+      });
+
+      await apiClient.getCsrfCookie();
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('/sanctum/csrf-cookie'),
+        expect.objectContaining({
+          method: 'GET',
+          credentials: 'include',
+        })
+      );
+    });
+
+    it('should handle CSRF cookie fetch failure gracefully', async () => {
+      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+      await expect(apiClient.getCsrfCookie()).rejects.toThrow('Network error');
+    });
+
+    it('should throw error when CSRF endpoint returns non-ok status', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        text: () => Promise.resolve(''),
+      });
+
+      await expect(apiClient.getCsrfCookie()).rejects.toThrow('CSRF endpoint returned 500');
+    });
+
+    it('should include X-Requested-With header in requests', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({}),
+      });
+
+      await apiClient.get('/test');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'X-Requested-With': 'XMLHttpRequest',
+          }),
+        })
+      );
+    });
+  });
 });

@@ -14,13 +14,6 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    /**
-     * Handle login request.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
-     * @throws ValidationException
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -28,27 +21,34 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             return response()->json([
                 'error' => 'メールアドレスまたはパスワードが正しくありません。'
             ], 401);
         }
 
         $user = Auth::user();
-        $token = $user->createToken('app')->plainTextToken;
-
+        
+        // Cookie認証のみに統一（セキュリティ強化）
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+        
         return response()->json([
             'message' => 'ログイン成功',
-            'token' => $token,
             'user' => $user
         ], 200);
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Cookie認証のみに統一（セキュリティ強化）
+        Auth::guard('web')->logout();
+        
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json([
             'message' => 'ログアウトしました'
