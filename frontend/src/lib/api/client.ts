@@ -27,7 +27,6 @@ export class ApiClient {
    */
   async getCsrfCookie(): Promise<void> {
     try {
-      console.log('🔒 Fetching CSRF cookie from:', `${this.baseURL}/sanctum/csrf-cookie`);
       // Sanctumの標準CSRFエンドポイントを使用
       const response = await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
         method: 'GET',
@@ -38,12 +37,8 @@ export class ApiClient {
         throw new Error(`CSRF endpoint returned ${response.status}`);
       }
       
-      console.log('🔒 CSRF cookie response:', response.status);
       // レスポンスを完全に処理してからクッキーが設定されるのを待つ
       await response.text();
-      
-      // クッキー確認
-      console.log('🍪 All cookies after CSRF call:', document.cookie);
     } catch (error) {
       console.warn('CSRF cookie取得に失敗:', error);
     }
@@ -54,7 +49,10 @@ export class ApiClient {
     
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
+      const parts = cookie.trim().split('=');
+      const name = parts.shift();
+      const value = parts.join('='); // 値に=が含まれている場合も正しく処理
+      
       if (name === 'XSRF-TOKEN') {
         return decodeURIComponent(value);
       }
@@ -68,11 +66,6 @@ export class ApiClient {
   ): Promise<ApiResponse<T>> {
     const token = this.getToken();
     const csrfToken = this.getCsrfTokenFromCookie();
-    
-    console.log('🌐 Request:', options.method || 'GET', endpoint);
-    console.log('🔑 CSRF token:', csrfToken ? 'Found' : 'Not found');
-    console.log('🏠 Current domain:', window.location.origin);
-    console.log('🎯 API domain:', this.baseURL);
     
     const headers = {
       ...this.defaultHeaders,
