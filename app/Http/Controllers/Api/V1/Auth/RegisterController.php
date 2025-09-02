@@ -35,7 +35,9 @@ class RegisterController extends Controller
         Auth::login($user);
         
         // Cookie認証のみに統一（セキュリティ強化）
-        $request->session()->regenerate();
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
 
         return response()->json([
             'message' => 'ユーザー登録成功',
