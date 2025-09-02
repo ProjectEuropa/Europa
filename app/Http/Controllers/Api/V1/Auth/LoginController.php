@@ -15,10 +15,11 @@ class LoginController extends Controller
     }
 
     /**
-     * Handle login request.
+     * Handle login request with SPA authentication.
+     * Supports both token-based and cookie-based authentication.
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      * @throws ValidationException
      */
     public function login(Request $request)
@@ -28,25 +29,34 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (!Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             return response()->json([
                 'error' => 'メールアドレスまたはパスワードが正しくありません。'
             ], 401);
         }
 
         $user = Auth::user();
-        $token = $user->createToken('app')->plainTextToken;
-
+        
+        // Cookie認証のみに統一（セキュリティ強化）
+        $request->session()->regenerate();
+        
         return response()->json([
             'message' => 'ログイン成功',
-            'token' => $token,
             'user' => $user
         ], 200);
     }
 
+    /**
+     * Handle logout request for cookie authentication.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
-        Auth::logout();
+        // Cookie認証のみに統一（セキュリティ強化）
+        // Sanctum SPA認証の場合、guard('web')を使用してログアウト
+        Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

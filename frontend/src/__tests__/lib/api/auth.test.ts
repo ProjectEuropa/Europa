@@ -8,6 +8,7 @@ vi.mock('@/lib/api/client', () => ({
   apiClient: {
     post: vi.fn(),
     get: vi.fn(),
+    getCsrfCookie: vi.fn(),
   },
 }));
 
@@ -354,10 +355,129 @@ describe('authApi', () => {
   });
 
   describe('logout', () => {
-    it('should remove token from localStorage', () => {
-      authApi.logout();
+    it('should call server logout and remove token from localStorage', async () => {
+      vi.mocked(apiClient.post).mockResolvedValueOnce({ 
+        message: 'ログアウトしました' 
+      });
 
+      await authApi.logout();
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/auth/logout');
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('token');
+    });
+
+    it('should clean localStorage even if server logout fails', async () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Server error'));
+
+      await authApi.logout();
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/auth/logout');
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('token');
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Server logout failed:', expect.any(Error));
+      consoleWarnSpy.mockRestore();
+    });
+  });
+
+  describe('Cookie Authentication', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should get CSRF cookie before login', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証の場合空文字列
+      };
+
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      const result = await authApi.login(credentials);
+
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledBefore(apiClient.post as any);
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should handle cookie-only authentication without token', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      // Cookie認証時のレスポンス（tokenなし）
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
+        message: 'ログイン成功',
+      };
+
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      const result = await authApi.login(credentials);
+
+      expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should get CSRF cookie before register', async () => {
+      const credentials: RegisterCredentials = {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+        passwordConfirmation: 'password123',
+      };
+
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
+      };
+
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      const result = await authApi.register(credentials);
+
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledBefore(apiClient.post as any);
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/register', {
+        name: credentials.name,
+        email: credentials.email,
+        password: credentials.password,
+        password_confirmation: credentials.passwordConfirmation,
+      });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should call getCsrfCookie and continue with login flow', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
+      };
+
+      // CSRF Cookie取得は正常実行、その後ログイン
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      const result = await authApi.login(credentials);
+
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
+      expect(result).toEqual(mockResponse);
     });
   });
 });
