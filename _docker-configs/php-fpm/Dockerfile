@@ -35,6 +35,7 @@ RUN if [ "$INSTALL_NEW_RELIC" = "true" ]; then \
         echo "newrelic.license=\"${NEW_RELIC_LICENSE_KEY}\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
         echo "newrelic.appname=\"${NEW_RELIC_APPNAME}\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
         echo "newrelic.daemon.address=\"newrelic-php-daemon:31339\"" >> /usr/local/etc/php/conf.d/newrelic.ini && \
+        echo "newrelic.daemon.dont_launch=3" >> /usr/local/etc/php/conf.d/newrelic.ini && \
         rm -rf /tmp/newrelic-php5-${NEWRELIC_VERSION}-linux /tmp/newrelic-php-agent.tar.gz; \
     else \
         echo "New Relic installation skipped for local development"; \
