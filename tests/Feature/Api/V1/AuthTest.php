@@ -194,11 +194,13 @@ class AuthTest extends TestCase
 
     public function test_CSRFクッキーエンドポイントの動作()
     {
-        $response = $this->get('/api/v1/csrf-cookie');
+        // Sanctum標準のCSRFエンドポイントをテスト
+        $response = $this->get('/sanctum/csrf-cookie');
 
-        $response->assertStatus(200)
-            ->assertJson([
-                'message' => 'CSRF cookie set'
-            ]);
+        // Sanctumは204 No Contentレスポンスを返す
+        $response->assertStatus(204);
+        
+        // XSRF-TOKENクッキーが設定されているか確認
+        $this->assertNotNull($response->getCookie('XSRF-TOKEN'));
     }
 }
