@@ -35,10 +35,7 @@ Route::group(['middleware' => ['api', 'auth:api']], function () {
 });
 
 Route::prefix('v1')->group(function () {
-    // CSRF Cookie endpoint for SPA authentication - Sanctum標準のエンドポイント
-    Route::get('csrf-cookie', function () {
-        return response()->json(['message' => 'CSRF cookie set']);
-    })->middleware('web');
+    // Sanctum標準の/sanctum/csrf-cookieエンドポイントを使用するため、カスタムルートは不要
     Route::post('login', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'login'])->middleware(['web']);
     Route::post('register', [\App\Http\Controllers\Api\V1\Auth\RegisterController::class, 'register'])->middleware(['web']);
     Route::post('logout', [\App\Http\Controllers\Api\V1\Auth\LoginController::class, 'logout'])->middleware(['web','auth:sanctum']);
