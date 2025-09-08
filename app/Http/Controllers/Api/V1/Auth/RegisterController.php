@@ -33,12 +33,16 @@ class RegisterController extends Controller
         ]);
 
         Auth::login($user);
-        $token = $user->createToken('app')->plainTextToken;
+        
+        // Cookie認証のみに統一（セキュリティ強化）
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
 
         return response()->json([
             'message' => 'ユーザー登録成功',
-            'token' => $token,
-            'user' => $user
+            'user' => $user,
+            'token' => '' // Cookie認証のため空文字列を返す（後方互換性維持）
         ], 201);
     }
 

@@ -53,6 +53,13 @@ function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(
 
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
+    // CSRF Cookieを事前に取得
+    try {
+      await apiClient.getCsrfCookie();
+    } catch (error) {
+      throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
+    }
+    
     const response = await apiClient.post<LoginResponse>(
       '/api/v1/login',
       credentials
@@ -61,6 +68,7 @@ export const authApi = {
     // レスポンス構造の正規化
     const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
 
+    // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
     if (normalizedResponse.token) {
       localStorage.setItem('token', normalizedResponse.token);
     }
@@ -69,6 +77,13 @@ export const authApi = {
   },
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
+    // CSRF Cookieを事前に取得
+    try {
+      await apiClient.getCsrfCookie();
+    } catch (error) {
+      throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
+    }
+    
     const response = await apiClient.post<RegisterResponse>(
       '/api/v1/register',
       {
@@ -83,6 +98,7 @@ export const authApi = {
     const normalizedResponse =
       normalizeAuthResponse<RegisterResponse>(response);
 
+    // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
     if (normalizedResponse.token) {
       localStorage.setItem('token', normalizedResponse.token);
     }
@@ -160,7 +176,15 @@ export const authApi = {
     }
   },
 
-  logout(): void {
-    localStorage.removeItem('token');
+  async logout(): Promise<void> {
+    try {
+      // Call server logout endpoint to invalidate session/token
+      await apiClient.post('/api/v1/logout');
+    } catch (error) {
+      console.warn('Server logout failed:', error);
+    } finally {
+      // Always clean up local storage regardless of server response
+      localStorage.removeItem('token');
+    }
   },
 };

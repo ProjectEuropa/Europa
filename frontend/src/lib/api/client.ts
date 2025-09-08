@@ -17,8 +17,48 @@ export class ApiClient {
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'X-Requested-With': 'XMLHttpRequest', // Laravel SPAモードで必要
       ...config?.defaultHeaders,
     };
+  }
+
+  /**
+   * CSRF Cookieを取得してSPA認証を初期化
+   */
+  async getCsrfCookie(): Promise<void> {
+    // Sanctumの標準CSRFエンドポイントを使用
+    const response = await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`CSRF endpoint returned ${response.status}`);
+    }
+    
+    // レスポンスを完全に処理してからクッキーが設定されるのを待つ
+    await response.text();
+  }
+
+  private getCsrfTokenFromCookie(): string | null {
+    if (typeof document === 'undefined') return null;
+    
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, ...valueParts] = cookie.trim().split('=');
+      const value = valueParts.join('='); // 値に=が含まれている場合も正しく処理
+      
+      if (name === 'XSRF-TOKEN') {
+        // LaravelのXSRF-TOKENはURLエンコードされているのでデコード
+        try {
+          return decodeURIComponent(value);
+        } catch (e) {
+          console.warn('Failed to decode XSRF-TOKEN:', e);
+          return value; // デコードに失敗した場合は生の値を返す
+        }
+      }
+    }
+    return null;
   }
 
   async request<T>(
@@ -26,9 +66,12 @@ export class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const token = this.getToken();
+    const csrfToken = this.getCsrfTokenFromCookie();
+    
     const headers = {
       ...this.defaultHeaders,
       ...(token && { Authorization: `Bearer ${token}` }),
+      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
       ...this.processHeaders(options.headers),
     };
 
@@ -111,7 +154,7 @@ export class ApiClient {
   ): Promise<ApiResponse<T>> {
     const token = this.getToken();
     const headers: Record<string, string> = {
-      Accept: 'application/json',
+      ...this.defaultHeaders,
       ...(token && { Authorization: `Bearer ${token}` }),
       ...this.processHeaders(options?.headers),
     };

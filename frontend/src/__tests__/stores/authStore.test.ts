@@ -154,7 +154,9 @@ describe('authStore', () => {
   });
 
   describe('Logout', () => {
-    it('should logout successfully', () => {
+    it('should logout successfully', async () => {
+      vi.mocked(authApi.logout).mockResolvedValueOnce(undefined);
+      
       // 初期状態を認証済みに設定
       useAuthStore.setState({
         user: mockUser,
@@ -164,13 +166,66 @@ describe('authStore', () => {
       });
 
       const { logout } = useAuthStore.getState();
-      logout();
+      
+      // window.location.hrefをモック
+      const originalLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        value: { href: '' },
+        writable: true,
+      });
+
+      await logout();
 
       const state = useAuthStore.getState();
       expect(state.user).toBeNull();
       expect(state.token).toBeNull();
       expect(state.isAuthenticated).toBe(false);
       expect(state.loading).toBe(false);
+      expect(authApi.logout).toHaveBeenCalled();
+
+      // window.locationを復元
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+      });
+    });
+
+    it('should handle logout server error gracefully', async () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.mocked(authApi.logout).mockRejectedValueOnce(new Error('Server error'));
+      
+      // 初期状態を認証済みに設定
+      useAuthStore.setState({
+        user: mockUser,
+        token: mockToken,
+        isAuthenticated: true,
+        loading: false,
+      });
+
+      const { logout } = useAuthStore.getState();
+      
+      // window.location.hrefをモック
+      const originalLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        value: { href: '' },
+        writable: true,
+      });
+
+      await logout();
+
+      const state = useAuthStore.getState();
+      expect(state.user).toBeNull();
+      expect(state.token).toBeNull();
+      expect(state.isAuthenticated).toBe(false);
+      expect(state.loading).toBe(false);
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Server logout failed:', expect.any(Error));
+
+      // cleanup
+      consoleWarnSpy.mockRestore();
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+      });
     });
   });
 
@@ -191,8 +246,11 @@ describe('authStore', () => {
     });
 
     it('should handle fetch user error', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const mockError = new Error('Fetch failed');
       vi.mocked(authApi.getProfile).mockRejectedValue(mockError);
+      vi.mocked(authApi.logout).mockResolvedValueOnce(undefined);
 
       // トークンを設定
       useAuthStore.setState({ token: mockToken });
@@ -205,9 +263,18 @@ describe('authStore', () => {
       expect(state.token).toBeNull();
       expect(state.isAuthenticated).toBe(false);
       expect(state.loading).toBe(false);
+      expect(authApi.logout).toHaveBeenCalled();
+
+      consoleErrorSpy.mockRestore();
+      consoleWarnSpy.mockRestore();
     });
 
-    it('should not fetch user when no token', async () => {
+    it('should attempt to fetch user even without token (Cookie auth)', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      vi.mocked(authApi.getProfile).mockRejectedValueOnce(new Error('Unauthorized'));
+      vi.mocked(authApi.logout).mockResolvedValueOnce(undefined);
+
       const { fetchUser } = useAuthStore.getState();
       await fetchUser();
 
@@ -215,7 +282,11 @@ describe('authStore', () => {
       expect(state.user).toBeNull();
       expect(state.isAuthenticated).toBe(false);
       expect(state.loading).toBe(false);
-      expect(authApi.getProfile).not.toHaveBeenCalled();
+      expect(authApi.getProfile).toHaveBeenCalled();
+      expect(authApi.logout).toHaveBeenCalled();
+
+      consoleErrorSpy.mockRestore();
+      consoleWarnSpy.mockRestore();
     });
   });
 
