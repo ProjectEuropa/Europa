@@ -45,12 +45,17 @@ export class ApiClient {
     
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
-      const parts = cookie.trim().split('=');
-      const name = parts.shift();
-      const value = parts.join('='); // 値に=が含まれている場合も正しく処理
+      const [name, ...valueParts] = cookie.trim().split('=');
+      const value = valueParts.join('='); // 値に=が含まれている場合も正しく処理
       
       if (name === 'XSRF-TOKEN') {
-        return decodeURIComponent(value);
+        // LaravelのXSRF-TOKENはURLエンコードされているのでデコード
+        try {
+          return decodeURIComponent(value);
+        } catch (e) {
+          console.warn('Failed to decode XSRF-TOKEN:', e);
+          return value; // デコードに失敗した場合は生の値を返す
+        }
       }
     }
     return null;
