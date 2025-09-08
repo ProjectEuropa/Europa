@@ -41,7 +41,8 @@ class RegisterController extends Controller
 
         return response()->json([
             'message' => 'ユーザー登録成功',
-            'user' => $user
+            'user' => $user,
+            'token' => '' // Cookie認証のため空文字列を返す（後方互換性維持）
         ], 201);
     }
 

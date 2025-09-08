@@ -12,22 +12,24 @@ class AuthTest extends TestCase
 
     public function test_ユーザー登録でセッション認証()
     {
-        // CSRF Cookieを事前取得
-        $csrfResponse = $this->get('/sanctum/csrf-cookie');
+        // CSRF Cookieを事前取得（Sanctumのstateful認証をシミュレート）
+        $csrfResponse = $this->withHeaders([
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->get('/sanctum/csrf-cookie');
         $csrfResponse->assertStatus(204);
         
-        $response = $this->withSession([])
-            ->withMiddleware()
-            ->withHeaders([
-                'Accept' => 'application/json',
-                'X-Requested-With' => 'XMLHttpRequest',
-            ])
-            ->postJson('/api/v1/register', [
-                'name' => 'テストユーザー',
-                'email' => 'test@example.com',
-                'password' => 'password123',
-                'password_confirmation' => 'password123',
-            ]);
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+            'X-Requested-With' => 'XMLHttpRequest',
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->postJson('/api/v1/register', [
+            'name' => 'テストユーザー',
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
 
         $response->assertStatus(201)
             ->assertJsonStructure(['message', 'user'])
@@ -46,20 +48,22 @@ class AuthTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        // CSRF Cookieを事前取得
-        $csrfResponse = $this->get('/sanctum/csrf-cookie');
+        // CSRF Cookieを事前取得（Sanctumのstateful認証をシミュレート）
+        $csrfResponse = $this->withHeaders([
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->get('/sanctum/csrf-cookie');
         $csrfResponse->assertStatus(204);
 
-        $response = $this->withSession([])
-            ->withMiddleware()
-            ->withHeaders([
-                'Accept' => 'application/json',
-                'X-Requested-With' => 'XMLHttpRequest',
-            ])
-            ->postJson('/api/v1/login', [
-                'email' => 'test@example.com',
-                'password' => 'password123',
-            ]);
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+            'X-Requested-With' => 'XMLHttpRequest',
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->postJson('/api/v1/login', [
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ]);
 
         $response->assertStatus(200)
             ->assertJsonStructure(['message', 'user'])
@@ -76,20 +80,23 @@ class AuthTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        // CSRF Cookieを事前取得
-        $csrfResponse = $this->get('/sanctum/csrf-cookie');
+        // CSRF Cookieを事前取得（Sanctumのstateful認証をシミュレート）
+        $csrfResponse = $this->withHeaders([
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->get('/sanctum/csrf-cookie');
         $csrfResponse->assertStatus(204);
 
         // CSRF保護されたリクエスト
-        $response = $this->withSession([])
-            ->withMiddleware()
-            ->withHeaders([
-                'X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->postJson('/api/v1/login', [
-                'email' => 'test@example.com',
-                'password' => 'password123',
-            ]);
+        $response = $this->withHeaders([
+            'X-Requested-With' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->postJson('/api/v1/login', [
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ]);
 
         $response->assertStatus(200)
             ->assertJson([
@@ -140,20 +147,22 @@ class AuthTest extends TestCase
     {
         $user = User::factory()->create();
         
-        // Cookie認証でログイン
-        $this->withSession([])
-            ->withMiddleware()
-            ->actingAs($user, 'web');
+        // Cookie認証でログイン（Sanctumのstateful認証をシミュレート）
+        $this->actingAs($user, 'web');
         
         // CSRF Cookieを事前取得
-        $csrfResponse = $this->get('/sanctum/csrf-cookie');
+        $csrfResponse = $this->withHeaders([
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->get('/sanctum/csrf-cookie');
         $csrfResponse->assertStatus(204);
         
         $response = $this->withHeaders([
-                'Accept' => 'application/json',
-                'X-Requested-With' => 'XMLHttpRequest',
-            ])
-            ->post('/api/v1/logout');
+            'Accept' => 'application/json',
+            'X-Requested-With' => 'XMLHttpRequest',
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->post('/api/v1/logout');
 
         $response->assertStatus(200)
             ->assertJson([
@@ -215,13 +224,16 @@ class AuthTest extends TestCase
 
     public function test_CSRFクッキーエンドポイントの動作()
     {
-        // Sanctum標準のCSRFエンドポイントをテスト
-        $response = $this->get('/sanctum/csrf-cookie');
+        // Sanctum標準のCSRFエンドポイントをテスト（statefulドメインからのリクエストをシミュレート）
+        $response = $this->withHeaders([
+            'Origin' => 'http://localhost:3000',
+            'Referer' => 'http://localhost:3000',
+        ])->get('/sanctum/csrf-cookie');
 
         // Sanctumは204 No Contentレスポンスを返す
         $response->assertStatus(204);
         
         // XSRF-TOKENクッキーが設定されているか確認
-        $this->assertNotNull($response->getCookie('XSRF-TOKEN'));
+        $response->assertCookie('XSRF-TOKEN');
     }
 }
