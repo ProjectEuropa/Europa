@@ -19,7 +19,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        // 本番環境同等のセキュリティ設定
-        // CSRF保護を有効化
+        // Sanctumの正攻法でCSRF保護を維持
     ];
 }

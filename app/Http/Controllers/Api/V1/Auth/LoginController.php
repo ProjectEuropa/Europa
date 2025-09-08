@@ -28,12 +28,10 @@ class LoginController extends Controller
         }
 
         $user = Auth::user();
-        
-        // Cookie認証のみに統一（セキュリティ強化）
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-        }
-        
+
+        // Sanctumのセッション認証を使用
+        $request->session()->regenerate();
+
         return response()->json([
             'message' => 'ログイン成功',
             'user' => $user
@@ -44,7 +42,7 @@ class LoginController extends Controller
     {
         // Cookie認証のみに統一（セキュリティ強化）
         Auth::guard('web')->logout();
-        
+
         if ($request->hasSession()) {
             $request->session()->invalidate();
             $request->session()->regenerateToken();
