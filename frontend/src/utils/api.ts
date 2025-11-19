@@ -3,6 +3,23 @@ const API_BASE_URL =
 const BASIC_AUTH_USER = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
 const BASIC_AUTH_PASSWORD = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 
+// Helper to get CSRF token from cookie
+const getCsrfTokenFromCookie = (): string | null => {
+  if (typeof document === 'undefined') return null;
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, ...valueParts] = cookie.trim().split('=');
+    if (name === 'XSRF-TOKEN') {
+      try {
+        return decodeURIComponent(valueParts.join('='));
+      } catch (e) {
+        return valueParts.join('=');
+      }
+    }
+  }
+  return null;
+};
+
 export const apiRequest = async (
   endpoint: string,
   options: RequestInit = {}
@@ -47,7 +64,14 @@ export const apiRequest = async (
   // デフォルトのヘッダー（Content-Typeがすでに設定されていなければ設定）
   const headers: Record<string, string> = {
     ...baseHeaders,
+    'X-Requested-With': 'XMLHttpRequest',
   };
+
+  // Add CSRF token if available
+  const csrfToken = getCsrfTokenFromCookie();
+  if (csrfToken) {
+    headers['X-XSRF-TOKEN'] = csrfToken;
+  }
 
   if (!headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
@@ -63,7 +87,7 @@ export const apiRequest = async (
       if (token) {
         // APIエンドポイント + トークンありの場合：Bearerトークンのみを使用
         headers.Authorization = `Bearer ${token}`;
-        headers['X-Requested-With'] = 'XMLHttpRequest';
+        // X-Requested-With is already set above
       } else {
         // APIエンドポイント + トークンなしの場合：Basic認証を使用
         headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;

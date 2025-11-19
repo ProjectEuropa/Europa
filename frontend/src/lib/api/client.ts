@@ -26,28 +26,33 @@ export class ApiClient {
    * CSRF Cookieを取得してSPA認証を初期化
    */
   async getCsrfCookie(): Promise<void> {
+    const headers: Record<string, string> = {};
+
+    headers['X-Requested-With'] = 'XMLHttpRequest';
+
     // Sanctumの標準CSRFエンドポイントを使用
     const response = await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
       method: 'GET',
       credentials: 'include',
+      headers,
     });
-    
+
     if (!response.ok) {
       throw new Error(`CSRF endpoint returned ${response.status}`);
     }
-    
+
     // レスポンスを完全に処理してからクッキーが設定されるのを待つ
     await response.text();
   }
 
   private getCsrfTokenFromCookie(): string | null {
     if (typeof document === 'undefined') return null;
-    
+
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
       const [name, ...valueParts] = cookie.trim().split('=');
       const value = valueParts.join('='); // 値に=が含まれている場合も正しく処理
-      
+
       if (name === 'XSRF-TOKEN') {
         // LaravelのXSRF-TOKENはURLエンコードされているのでデコード
         try {
@@ -67,7 +72,7 @@ export class ApiClient {
   ): Promise<ApiResponse<T>> {
     const token = this.getToken();
     const csrfToken = this.getCsrfTokenFromCookie();
-    
+
     const headers = {
       ...this.defaultHeaders,
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -248,11 +253,11 @@ export class ApiClient {
     const basicAuthUser = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
     const basicAuthPassword = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 
+    // ステージング環境の場合、すべてのエンドポイントにBasic認証を追加
     if (
       this.baseURL.includes('stg.project-europa.work') &&
       basicAuthUser &&
-      basicAuthPassword &&
-      !endpoint.startsWith('/api/')
+      basicAuthPassword
     ) {
       headers.Authorization = `Basic ${btoa(`${basicAuthUser}:${basicAuthPassword}`)}`;
     }
