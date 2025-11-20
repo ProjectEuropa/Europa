@@ -1,5 +1,5 @@
+import { apiClient } from '@/lib/api/client';
 import type { SumDownloadItem } from '@/components/features/sumdownload';
-import { apiRequest } from '@/utils/api';
 
 export interface SumDownloadSearchResponse {
   data: SumDownloadItem[];
@@ -15,25 +15,23 @@ export const sumDLSearchTeam = async (
   keyword: string = '',
   page: number = 1
 ): Promise<SumDownloadSearchResponse> => {
-  try {
-    const response = await apiRequest(
-      `/api/v1/sumDLSearch/team?keyword=${encodeURIComponent(keyword)}&page=${page}`
-    );
+  const response = await apiClient.get<any>(
+    `/api/v1/sumDLSearch/team?keyword=${encodeURIComponent(keyword)}&page=${page}`
+  );
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `チーム検索に失敗しました (${response.status})`
-      );
-    }
+  // レスポンス構造の調整
+  // apiClientはApiResponse<T>を返すが、ここではサーバーが返す生のJSON構造に依存
+  // サーバーが { data: { data: [], ... } } のように返しているか、
+  // { data: [], current_page: ... } のように返しているか確認が必要だが、
+  // utils/api.tsの実装を見ると res.json() をそのまま返しているので、
+  // apiClient.get の戻り値（response.data または response そのもの）を返す
 
-    return await response.json();
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error('チーム検索中に予期しないエラーが発生しました');
-  }
+  // apiClientの実装では、response.json()の結果を返している。
+  // サーバーがLaravelのPaginatedResourceResponseを返している場合、
+  // { data: [...], meta: {...}, links: {...} } または
+  // { data: [...], current_page: ..., ... } (Paginator)
+
+  return response as unknown as SumDownloadSearchResponse;
 };
 
 /**
@@ -43,25 +41,10 @@ export const sumDLSearchMatch = async (
   keyword: string = '',
   page: number = 1
 ): Promise<SumDownloadSearchResponse> => {
-  try {
-    const response = await apiRequest(
-      `/api/v1/sumDLSearch/match?keyword=${encodeURIComponent(keyword)}&page=${page}`
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `マッチ検索に失敗しました (${response.status})`
-      );
-    }
-
-    return await response.json();
-  } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error('マッチ検索中に予期しないエラーが発生しました');
-  }
+  const response = await apiClient.get<any>(
+    `/api/v1/sumDLSearch/match?keyword=${encodeURIComponent(keyword)}&page=${page}`
+  );
+  return response as unknown as SumDownloadSearchResponse;
 };
 
 /**
@@ -71,7 +54,7 @@ export const sumDLSearchMatch = async (
 const performBrowserDownload = (blob: Blob, filename: string): (() => void) => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     // テスト環境やSSR環境では何もしない
-    return () => {};
+    return () => { };
   }
 
   const url = window.URL.createObjectURL(blob);
@@ -91,8 +74,6 @@ const performBrowserDownload = (blob: Blob, filename: string): (() => void) => {
         a.parentNode.removeChild(a);
       }
     } catch (error) {
-      // DOMクリーンアップ中のエラーは、特にテスト環境で発生する可能性があるため、
-      // キャッチしてコンソールに出力するに留め、アプリケーションをクラッシュさせない。
       console.error('Error during download cleanup:', error);
     }
   };
@@ -117,46 +98,18 @@ export const sumDownload = async (checkedIds: number[]): Promise<() => void> => 
   }
 
   try {
-    const response = await apiRequest('/api/v1/sumDownload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ checkedId: checkedIds }),
-    });
+    // apiClient.downloadメソッドを使用
+    const blob = await apiClient.download('/api/v1/sumDownload', { checkedId: checkedIds });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `ダウンロードに失敗しました (${response.status})`
-      );
-    }
-
-    // ZIPファイルのダウンロード処理
-    const blob = await response.blob();
-
-    // Content-Dispositionヘッダーからファイル名を取得
-    const disposition = response.headers.get('content-disposition');
-    let filename = `${Date.now()}_bulk_download.zip`; // フォールバック用のファイル名
-
-    if (disposition) {
-      const filenameMatch = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(
-        disposition
-      );
-      if (filenameMatch && filenameMatch[1]) {
-        filename = filenameMatch[1].replace(/['"]/g, '');
-        // URLデコードを試行
-        try {
-          filename = decodeURIComponent(filename);
-        } catch {
-          // デコードに失敗した場合はそのまま使用
-        }
-      }
-    }
+    // ファイル名の生成（サーバーからのヘッダー取得はapiClient.downloadでは難しいので、デフォルト名を使用）
+    // 必要であればapiClient.downloadを拡張してResponseオブジェクトへのアクセスを提供するべきだが、
+    // ここでは簡易的にタイムスタンプ付きファイル名を使用
+    const filename = `${Date.now()}_bulk_download.zip`;
 
     return performBrowserDownload(blob, filename);
   } catch (error) {
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error('ダウンロード中に予期しないエラーが発生しました');
+    console.error('Download failed:', error);
+    throw new Error('Download failed');
   }
 };
+

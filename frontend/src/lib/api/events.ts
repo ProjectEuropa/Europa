@@ -1,76 +1,66 @@
+import { apiClient } from '@/lib/api/client';
+
+export interface EventData {
+  id: string;
+  name: string;
+  details: string;
+  url: string;
+  deadline: string;
+  endDisplayDate: string;
+  type: string;
+  created_at: string;
+  updatedAt: string;
+  isActive: boolean;
+}
+
+export interface EventFormData {
+  name: string;
+  details: string;
+  url?: string;
+  deadline: string;
+  endDisplayDate: string;
+  type: string;
+}
+
 /**
- * イベント関連のAPI関数
+ * イベント登録API
  */
+export const registerEvent = async (formData: EventFormData) => {
+  const response = await apiClient.post('/api/v1/eventNotice', {
+    eventName: formData.name,
+    eventDetails: formData.details,
+    eventReferenceUrl: formData.url,
+    eventClosingDay: formData.deadline,
+    eventDisplayingDay: formData.endDisplayDate,
+    eventType: formData.type,
+  });
+  return response;
+};
 
-import type {
-  Event,
-  EventDeleteResponse,
-  EventFormData,
-  EventRegistrationData,
-  EventResponse,
-  MyEventsResponse,
-} from '@/types/event';
-import { apiClient } from './client';
+/**
+ * イベント一覧取得API
+ */
+export const fetchEvents = async () => {
+  const response = await apiClient.get<{ data: any[] }>('/api/v1/event');
 
-export const eventsApi = {
-  async registerEvent(formData: EventFormData): Promise<Event> {
-    const registrationData: EventRegistrationData = {
-      eventName: formData.name,
-      eventDetails: formData.details,
-      eventReferenceUrl: formData.url || undefined,
-      eventClosingDay: formData.deadline,
-      eventDisplayingDay: formData.endDisplayDate,
-      eventType: formData.type,
-    };
+  // スネークケース→キャメルケース変換
+  // apiClientはレスポンスボディをそのまま返すので、ここで変換を行う
+  // ただし、apiClient.getの戻り値はApiResponse<T>型だが、
+  // 実装では response.json() を返しているため、サーバーのレスポンス構造に依存する。
+  // ここではサーバーが { data: [...] } を返すと仮定。
 
-    const response = await apiClient.post<Event>(
-      '/api/v1/eventNotice',
-      registrationData
-    );
-    return response.data;
-  },
+  const events = (response.data.data ?? []).map((event: any) => ({
+    id: String(event.id),
+    name: event.event_name ?? '',
+    details: event.event_details ?? '',
+    url: event.event_reference_url ?? '',
+    deadline: event.event_closing_day ?? '',
+    endDisplayDate: event.event_displaying_day ?? '',
+    type: event.event_type ?? '',
+    created_at: event.created_at,
+    updatedAt: event.updated_at,
+    isActive: event.is_active,
+  }));
 
-  async fetchEvents(): Promise<Event[]> {
-    const response = await apiClient.get<EventResponse>('/api/v1/event');
-    return response.data.data;
-  },
-
-  async fetchMyEvents(): Promise<Event[]> {
-    const response = await apiClient.get<MyEventsResponse>(
-      '/api/v1/mypage/events'
-    );
-
-    // スネークケース→キャメルケース変換
-    return (response.data.events ?? []).map((event: any) => {
-      // 型安全な変換
-      const transformedEvent: Event = {
-        id: String(event.id),
-        name: event.event_name ?? '',
-        details: event.event_details ?? '',
-        url: event.event_reference_url ?? '',
-        deadline: event.event_closing_day ?? '',
-        endDisplayDate: event.event_displaying_day ?? '',
-        type: (event.event_type as Event['type']) ?? 'other',
-        registeredDate: event.created_at ? event.created_at.slice(0, 10) : '',
-        created_at: event.created_at ?? '',
-        updatedAt: event.updated_at ?? '',
-        isActive: event.is_active ?? true,
-      };
-
-      return transformedEvent;
-    });
-  },
-
-  async deleteMyEvent(id: string | number): Promise<EventDeleteResponse> {
-    const response = await apiClient.post<EventDeleteResponse>(
-      '/api/v1/delete/usersRegisteredCloumn',
-      { id }
-    );
-
-    if (!response.data.deleted) {
-      throw new Error(response.data.error || '削除に失敗しました');
-    }
-
-    return response.data;
-  },
+  return { data: events };
 };

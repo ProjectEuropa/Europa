@@ -22,7 +22,7 @@ return [
         'https://pre.project-europa.work',    // プレ環境
         'https://stg.project-europa.work',    // ステージング環境
         'https://project-europa.work',        // 本番環境
-        env('ALLOWED_ORIGIN'),                // 環境変数での追加設定
+        ...array_filter(explode(',', env('CORS_ALLOWED_ORIGINS', ''))), // 環境変数での追加設定
     ],
 
     'allowed_origins_patterns' => [],
