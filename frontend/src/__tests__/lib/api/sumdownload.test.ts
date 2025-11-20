@@ -142,7 +142,12 @@ describe('sumdownload API', () => {
         type: 'application/zip',
       });
 
-      (apiClient.download as any).mockResolvedValue(mockBlob);
+      // apiClient.downloadは現在DownloadResultを返す
+      (apiClient.download as any).mockResolvedValue({
+        blob: mockBlob,
+        filename: 'test_files.zip',
+        headers: new Headers(),
+      });
 
       const fileIds = [1, 2, 3];
       await sumDownload(fileIds);

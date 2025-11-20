@@ -5,6 +5,12 @@
 import type { ApiClientConfig, ApiResponse } from '@/types/api';
 import { ApiErrorClass } from '@/types/api';
 
+export interface DownloadResult {
+  blob: Blob;
+  filename?: string;
+  headers: Headers;
+}
+
 export class ApiClient {
   private baseURL: string;
   private defaultHeaders: Record<string, string>;
@@ -202,7 +208,7 @@ export class ApiClient {
     }
   }
 
-  async download(endpoint: string, data?: any): Promise<Blob> {
+  async download(endpoint: string, data?: any): Promise<DownloadResult> {
     // const token = this.getToken();
     const csrfToken = this.getCsrfTokenFromCookie();
 
@@ -226,7 +232,25 @@ export class ApiClient {
         throw new Error(`Download failed: ${response.status}`);
       }
 
-      return response.blob();
+      const blob = await response.blob();
+
+      // Content-Dispositionヘッダーからファイル名を抽出
+      const disposition = response.headers.get('content-disposition');
+      let filename: string | undefined;
+
+      if (disposition) {
+        const filenameMatch = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+          try {
+            filename = decodeURIComponent(filename);
+          } catch {
+            // デコード失敗時はそのまま使用
+          }
+        }
+      }
+
+      return { blob, filename, headers: response.headers };
     } catch (error) {
       console.error(`Download from ${endpoint} failed:`, error);
       throw error;

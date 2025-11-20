@@ -98,18 +98,16 @@ export const sumDownload = async (checkedIds: number[]): Promise<() => void> => 
   }
 
   try {
-    // apiClient.downloadメソッドを使用
-    const blob = await apiClient.download('/api/v1/sumDownload', { checkedId: checkedIds });
+    // apiClient.downloadメソッドを使用（ファイル名も取得可能）
+    const { blob, filename } = await apiClient.download('/api/v1/sumDownload', { checkedId: checkedIds });
 
-    // ファイル名の生成（サーバーからのヘッダー取得はapiClient.downloadでは難しいので、デフォルト名を使用）
-    // 必要であればapiClient.downloadを拡張してResponseオブジェクトへのアクセスを提供するべきだが、
-    // ここでは簡易的にタイムスタンプ付きファイル名を使用
-    const filename = `${Date.now()}_bulk_download.zip`;
+    // サーバーからのファイル名を優先、なければタイムスタンプ付き
+    const downloadFilename = filename || `${Date.now()}_bulk_download.zip`;
 
-    return performBrowserDownload(blob, filename);
+    return performBrowserDownload(blob, downloadFilename);
   } catch (error) {
     console.error('Download failed:', error);
-    throw new Error('Download failed');
+    throw error; // 元のエラーをそのまま再スロー（スタックトレース保持）
   }
 };
 

@@ -253,11 +253,11 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
 
 export const sumDownload = async (request: SumDownloadRequest): Promise<void> => {
   try {
-    const blob = await apiClient.download('/api/v1/sumDownload', request);
+    const { blob, filename } = await apiClient.download('/api/v1/sumDownload', request);
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'sum.zip';
+    a.download = filename || 'sum.zip'; // サーバーからのファイル名を優先
     document.body.appendChild(a);
     a.click();
 
@@ -267,7 +267,7 @@ export const sumDownload = async (request: SumDownloadRequest): Promise<void> =>
     }, 100);
   } catch (error) {
     console.error('Download failed:', error);
-    throw new Error('ダウンロード失敗');
+    throw error; // 元のエラーをそのまま再スロー（スタックトレース保持）
   }
 };
 
