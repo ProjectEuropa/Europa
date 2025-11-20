@@ -253,46 +253,23 @@ export const filesApi = {
   },
 
   async sumDownload(request: SumDownloadRequest): Promise<void> {
-    const getCsrfToken = () => {
-      if (typeof document === 'undefined') return null;
-      const match = document.cookie.match(new RegExp('(^|;\\s*)XSRF-TOKEN=([^;]*)'));
-      return match ? decodeURIComponent(match[2]) : null;
-    };
+    try {
+      const blob = await apiClient.download('/api/v1/sumDownload', request);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sum.zip';
+      document.body.appendChild(a);
+      a.click();
 
-    const csrfToken = getCsrfToken();
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-    };
-
-    if (csrfToken) {
-      headers['X-XSRF-TOKEN'] = csrfToken;
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
+    } catch (error) {
+      console.error('Download failed:', error);
+      throw new Error('ダウンロード失敗');
     }
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/sumDownload`,
-      {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(request),
-        credentials: 'include',
-      }
-    );
-
-    if (!response.ok) throw new Error('ダウンロード失敗');
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'sum.zip';
-    document.body.appendChild(a);
-    a.click();
-
-    setTimeout(() => {
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    }, 100);
   },
 
   // 削除関連

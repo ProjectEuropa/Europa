@@ -202,6 +202,37 @@ export class ApiClient {
     }
   }
 
+  async download(endpoint: string, data?: any): Promise<Blob> {
+    // const token = this.getToken();
+    const csrfToken = this.getCsrfTokenFromCookie();
+
+    const headers = {
+      ...this.defaultHeaders,
+      // ...(token && { Authorization: `Bearer ${token}` }),
+      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
+    };
+
+    this.addBasicAuthIfNeeded(headers, endpoint);
+
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'POST',
+        headers,
+        body: data ? JSON.stringify(data) : undefined,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`);
+      }
+
+      return response.blob();
+    } catch (error) {
+      console.error(`Download from ${endpoint} failed:`, error);
+      throw error;
+    }
+  }
+
   // private getToken(): string | null {
   //   if (typeof window === 'undefined') return null;
 
