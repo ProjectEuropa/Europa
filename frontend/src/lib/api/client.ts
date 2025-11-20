@@ -163,10 +163,11 @@ export class ApiClient {
     formData: FormData,
     options?: RequestInit
   ): Promise<ApiResponse<T>> {
-    // const token = this.getToken();
+    const csrfToken = this.getCsrfTokenFromCookie();
+
     const headers: Record<string, string> = {
       ...this.defaultHeaders,
-      // ...(token && { Authorization: `Bearer ${token}` }),
+      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
       ...this.processHeaders(options?.headers),
     };
 
@@ -308,11 +309,13 @@ export class ApiClient {
     const basicAuthUser = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
     const basicAuthPassword = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 
-    // ステージング環境の場合、すべてのエンドポイントにBasic認証を追加
+    // ステージング環境の場合、APIエンドポイント以外にBasic認証を追加
+    // APIエンドポイントはSanctumのCookieベース認証を使用
     if (
       this.baseURL.includes('stg.project-europa.work') &&
       basicAuthUser &&
-      basicAuthPassword
+      basicAuthPassword &&
+      !endpoint.startsWith('/api/') // APIエンドポイントは除外
     ) {
       headers.Authorization = `Basic ${btoa(`${basicAuthUser}:${basicAuthPassword}`)}`;
     }
