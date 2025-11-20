@@ -21,4 +21,34 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         // Sanctumの正攻法でCSRF保護を維持
     ];
+
+    /**
+     * Add the CSRF token to the response cookies.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Symfony\Component\HttpFoundation\Response  $response
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function addCookieToResponse($request, $response)
+    {
+        $config = config('session');
+
+        if ($this->addHttpCookie) {
+            $response->headers->setCookie(
+                cookie(
+                    'XSRF-TOKEN',
+                    $request->session()->token(),
+                    $this->availableAt(60 * $config['lifetime']),
+                    $config['path'],
+                    $config['domain'],
+                    $config['secure'],
+                    false, // httpOnly = false (JavaScriptからアクセス可能)
+                    false, // raw
+                    $config['same_site'] ?? 'none'
+                )
+            );
+        }
+
+        return $response;
+    }
 }
