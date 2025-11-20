@@ -35,10 +35,10 @@ class VerifyCsrfToken extends Middleware
 
         if ($this->addHttpCookie) {
             $response->headers->setCookie(
-                cookie(
+                new \Symfony\Component\HttpFoundation\Cookie(
                     'XSRF-TOKEN',
                     $request->session()->token(),
-                    $this->availableAt(60 * $config['lifetime']),
+                    time() + 60 * $config['lifetime'],
                     $config['path'],
                     $config['domain'],
                     $config['secure'],
