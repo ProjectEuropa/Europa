@@ -17,8 +17,12 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://localhost:3002', // Next.js開発用
-        env('ALLOWED_ORIGIN'),
+        'http://localhost:3000',              // Next.js開発用
+        'http://localhost:3002',              // Next.js開発用（別ポート）
+        'https://pre.project-europa.work',    // プレ環境
+        'https://stg.project-europa.work',    // ステージング環境
+        'https://project-europa.work',        // 本番環境
+        env('ALLOWED_ORIGIN'),                // 環境変数での追加設定
     ],
 
     'allowed_origins_patterns' => [],

@@ -2,6 +2,7 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://local.europa.com';
 const BASIC_AUTH_USER = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
 const BASIC_AUTH_PASSWORD = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
+import { apiClient } from '@/lib/api/client';
 
 // Helper to get CSRF token from cookie
 const getCsrfTokenFromCookie = (): string | null => {
@@ -287,35 +288,9 @@ export const uploadTeamFile = async (
   }
 
   // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
-  // const token =
-  //   typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  const headers: Record<string, string> = {};
-  // トークン認証
-  // if (token) headers.Authorization = `Bearer ${token}`;
-  // APIリクエストとして認識させる
-  headers.Accept = 'application/json';
-  // Basic認証（特定環境のみ）
-  if (
-    API_BASE_URL.includes('stg.project-europa.work') &&
-    BASIC_AUTH_USER &&
-    BASIC_AUTH_PASSWORD &&
-    !endpoint.startsWith('/api/')
-  ) {
-    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
-  }
-
   try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers, // Content-TypeはFormData時は自動
-      body: formData,
-      credentials: 'include',
-    });
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw errorData;
-    }
-    return res.json();
+    const response = await apiClient.upload<any>(endpoint, formData);
+    return response;
   } catch (error: any) {
     console.error('ファイルアップロードAPIエラー:', error);
     throw error;
@@ -568,32 +543,9 @@ export const uploadMatchFile = async (
   }
 
   // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
-  // const token =
-  //   typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  const headers: Record<string, string> = {};
-  // if (token) headers.Authorization = `Bearer ${token}`;
-  headers.Accept = 'application/json';
-  if (
-    API_BASE_URL.includes('stg.project-europa.work') &&
-    BASIC_AUTH_USER &&
-    BASIC_AUTH_PASSWORD &&
-    !endpoint.startsWith('/api/')
-  ) {
-    headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
-  }
-
   try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers,
-      body: formData,
-      credentials: 'include',
-    });
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw errorData;
-    }
-    return res.json();
+    const response = await apiClient.upload<any>(endpoint, formData);
+    return response;
   } catch (error: any) {
     console.error('マッチファイルアップロードAPIエラー:', error);
     throw error;

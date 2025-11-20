@@ -85,24 +85,24 @@ describe('ApiClient', () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it('should include authorization header when token exists', async () => {
-      mockLocalStorage.getItem.mockReturnValue('test-token');
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({}),
-      });
+    // it('should include authorization header when token exists', async () => {
+    //   mockLocalStorage.getItem.mockReturnValue('test-token');
+    //   mockFetch.mockResolvedValueOnce({
+    //     ok: true,
+    //     json: () => Promise.resolve({}),
+    //   });
 
-      await apiClient.get('/test');
+    //   await apiClient.get('/test');
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer test-token',
-          }),
-        })
-      );
-    });
+    //   expect(mockFetch).toHaveBeenCalledWith(
+    //     expect.any(String),
+    //     expect.objectContaining({
+    //       headers: expect.objectContaining({
+    //         Authorization: 'Bearer test-token',
+    //       }),
+    //     })
+    //   );
+    // });
 
     it('should throw ApiErrorClass on HTTP error', async () => {
       const errorData = { message: 'Not found', errors: {} };

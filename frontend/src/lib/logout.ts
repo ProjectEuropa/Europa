@@ -1,4 +1,12 @@
-export function logout() {
+import { authApi } from '@/lib/api/auth';
 
-  window.location.href = '/login';
+export async function logout() {
+  try {
+    await authApi.logout();
+  } catch (error) {
+    console.error('Logout failed:', error);
+  } finally {
+    // localStorage.removeItem('token');
+    window.location.href = '/login';
+  }
 }

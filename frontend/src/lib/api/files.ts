@@ -253,14 +253,27 @@ export const filesApi = {
   },
 
   async sumDownload(request: SumDownloadRequest): Promise<void> {
+    const getCsrfToken = () => {
+      if (typeof document === 'undefined') return null;
+      const match = document.cookie.match(new RegExp('(^|;\\s*)XSRF-TOKEN=([^;]*)'));
+      return match ? decodeURIComponent(match[2]) : null;
+    };
+
+    const csrfToken = getCsrfToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+    };
+
+    if (csrfToken) {
+      headers['X-XSRF-TOKEN'] = csrfToken;
+    }
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/sumDownload`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        headers,
         body: JSON.stringify(request),
         credentials: 'include',
       }

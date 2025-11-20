@@ -19,7 +19,10 @@ class RedirectIfAuthenticated
     {
         if (Auth::guard($guard)->check()) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Already authenticated.'], 200);
+                return response()->json([
+                    'message' => 'Already authenticated.',
+                    'user' => Auth::guard($guard)->user(),
+                ], 200);
             }
             return redirect('/home');
         }

@@ -1,5 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { logout } from '@/lib/logout';
+import { authApi } from '@/lib/api/auth';
+
+// Mock authApi
+vi.mock('@/lib/api/auth', () => ({
+  authApi: {
+    logout: vi.fn(),
+  },
+}));
 
 // localStorage のモック
 const localStorageMock = {
@@ -32,22 +40,19 @@ describe('logout', () => {
     vi.restoreAllMocks();
   });
 
-  it('should remove token from localStorage', () => {
-    logout();
+  it('should call authApi.logout and redirect to login page', async () => {
+    await logout();
 
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('token');
-  });
-
-  it('should redirect to login page', () => {
-    logout();
-
+    expect(authApi.logout).toHaveBeenCalled();
     expect(locationMock.href).toBe('/login');
   });
 
-  it('should perform both actions when called', () => {
-    logout();
+  it('should redirect even if authApi.logout fails', async () => {
+    vi.mocked(authApi.logout).mockRejectedValueOnce(new Error('Logout failed'));
 
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith('token');
+    await logout();
+
+    expect(authApi.logout).toHaveBeenCalled();
     expect(locationMock.href).toBe('/login');
   });
 });
