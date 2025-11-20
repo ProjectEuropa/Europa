@@ -26,23 +26,23 @@ export const apiRequest = async (
 ) => {
   let token = null;
 
-  if (typeof window !== 'undefined') {
-    // まずlocalStorageの'token'キーを確認
-    token = localStorage.getItem('token');
+  // if (typeof window !== 'undefined') {
+  //   // まずlocalStorageの'token'キーを確認
+  //   token = localStorage.getItem('token');
 
-    // なければZustandのpersistストレージを確認
-    if (!token) {
-      const authStorage = localStorage.getItem('auth-storage');
-      if (authStorage) {
-        try {
-          const parsed = JSON.parse(authStorage);
-          token = parsed.state?.token || null;
-        } catch (e) {
-          console.warn('Failed to parse auth-storage:', e);
-        }
-      }
-    }
-  }
+  //   // なければZustandのpersistストレージを確認
+  //   if (!token) {
+  //     const authStorage = localStorage.getItem('auth-storage');
+  //     if (authStorage) {
+  //       try {
+  //         const parsed = JSON.parse(authStorage);
+  //         token = parsed.state?.token || null;
+  //       } catch (e) {
+  //         console.warn('Failed to parse auth-storage:', e);
+  //       }
+  //     }
+  //   }
+  // }
 
   let baseHeaders: Record<string, string> = {};
 
@@ -84,22 +84,23 @@ export const apiRequest = async (
   ) {
     // ステージング環境の認証処理
     if (endpoint.startsWith('/api/')) {
-      if (token) {
-        // APIエンドポイント + トークンありの場合：Bearerトークンのみを使用
-        headers.Authorization = `Bearer ${token}`;
-        // X-Requested-With is already set above
-      } else {
-        // APIエンドポイント + トークンなしの場合：Basic認証を使用
-        headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
-      }
+      // if (token) {
+      //   // APIエンドポイント + トークンありの場合：Bearerトークンのみを使用
+      //   headers.Authorization = `Bearer ${token}`;
+      //   // X-Requested-With is already set above
+      // } else {
+      // APIエンドポイント + トークンなしの場合：Basic認証を使用
+      headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
+      // }
     } else {
       // 非APIエンドポイントの場合：Basic認証を使用
       headers.Authorization = `Basic ${btoa(`${BASIC_AUTH_USER}:${BASIC_AUTH_PASSWORD}`)}`;
     }
-  } else if (token) {
-    // 通常環境でトークンベースの認証
-    headers.Authorization = `Bearer ${token}`;
   }
+  // else if (token) {
+  //   // 通常環境でトークンベースの認証
+  //   headers.Authorization = `Bearer ${token}`;
+  // }
 
   try {
     return fetch(`${API_BASE_URL}${endpoint}`, {
@@ -120,9 +121,9 @@ export const login = async (email: string, password: string) => {
     body: JSON.stringify({ email, password }),
   });
   const data = await res.json();
-  if (data.token) {
-    localStorage.setItem('token', data.token);
-  }
+  // if (data.token) {
+  //   localStorage.setItem('token', data.token);
+  // }
   return data;
 };
 
@@ -247,9 +248,9 @@ export const register = async (
     }),
   });
   const data = await res.json();
-  if (data.token) {
-    localStorage.setItem('token', data.token);
-  }
+  // if (data.token) {
+  //   localStorage.setItem('token', data.token);
+  // }
   return data;
 };
 
@@ -286,11 +287,11 @@ export const uploadTeamFile = async (
   }
 
   // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
-  const token =
-    typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  // const token =
+  //   typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const headers: Record<string, string> = {};
   // トークン認証
-  if (token) headers.Authorization = `Bearer ${token}`;
+  // if (token) headers.Authorization = `Bearer ${token}`;
   // APIリクエストとして認識させる
   headers.Accept = 'application/json';
   // Basic認証（特定環境のみ）
@@ -567,10 +568,10 @@ export const uploadMatchFile = async (
   }
 
   // FormDataの場合はContent-Typeを自動設定（multipart/form-data）
-  const token =
-    typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  // const token =
+  //   typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const headers: Record<string, string> = {};
-  if (token) headers.Authorization = `Bearer ${token}`;
+  // if (token) headers.Authorization = `Bearer ${token}`;
   headers.Accept = 'application/json';
   if (
     API_BASE_URL.includes('stg.project-europa.work') &&

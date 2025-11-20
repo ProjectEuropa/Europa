@@ -42,9 +42,9 @@ export const useAuthStore = create<AuthStore>()(
           const { token, user } = data;
 
           // Tokenベースの後方互換性のためTokenがある場合は保存
-          if (typeof window !== 'undefined' && token) {
-            localStorage.setItem('token', token);
-          }
+          // if (typeof window !== 'undefined' && token) {
+          //   localStorage.setItem('token', token);
+          // }
 
           set({
             user,
@@ -65,9 +65,9 @@ export const useAuthStore = create<AuthStore>()(
           const { token, user } = data;
 
           // Tokenベースの後方互換性のためTokenがある場合は保存
-          if (typeof window !== 'undefined' && token) {
-            localStorage.setItem('token', token);
-          }
+          // if (typeof window !== 'undefined' && token) {
+          //   localStorage.setItem('token', token);
+          // }
 
           set({
             user,
@@ -155,7 +155,7 @@ export const useAuthStore = create<AuthStore>()(
     {
       name: 'auth-storage',
       partialize: state => ({
-        token: state.token,
+        // token: state.token, // Tokenは永続化しない
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
@@ -166,9 +166,9 @@ export const useAuthStore = create<AuthStore>()(
             state.isAuthenticated = true;
           }
           // localStorageにもトークンを同期（api.tsとの互換性のため）
-          if (typeof window !== 'undefined' && state.token) {
-            localStorage.setItem('token', state.token);
-          }
+          // if (typeof window !== 'undefined' && state.token) {
+          //   localStorage.setItem('token', state.token);
+          // }
           // ハイドレーション完了をマーク
           state.hasHydrated = true;
         }

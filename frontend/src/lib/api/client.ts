@@ -70,12 +70,12 @@ export class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const token = this.getToken();
+    // const token = this.getToken();
     const csrfToken = this.getCsrfTokenFromCookie();
 
     const headers = {
       ...this.defaultHeaders,
-      ...(token && { Authorization: `Bearer ${token}` }),
+      // ...(token && { Authorization: `Bearer ${token}` }), // Cookie認証を使用
       ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
       ...this.processHeaders(options.headers),
     };
@@ -157,10 +157,10 @@ export class ApiClient {
     formData: FormData,
     options?: RequestInit
   ): Promise<ApiResponse<T>> {
-    const token = this.getToken();
+    // const token = this.getToken();
     const headers: Record<string, string> = {
       ...this.defaultHeaders,
-      ...(token && { Authorization: `Bearer ${token}` }),
+      // ...(token && { Authorization: `Bearer ${token}` }),
       ...this.processHeaders(options?.headers),
     };
 
@@ -202,27 +202,27 @@ export class ApiClient {
     }
   }
 
-  private getToken(): string | null {
-    if (typeof window === 'undefined') return null;
+  // private getToken(): string | null {
+  //   if (typeof window === 'undefined') return null;
 
-    // まずlocalStorageの'token'キーを確認
-    let token = localStorage.getItem('token');
+  //   // まずlocalStorageの'token'キーを確認
+  //   let token = localStorage.getItem('token');
 
-    // なければZustandのpersistストレージを確認
-    if (!token) {
-      const authStorage = localStorage.getItem('auth-storage');
-      if (authStorage) {
-        try {
-          const parsed = JSON.parse(authStorage);
-          token = parsed.state?.token || null;
-        } catch (e) {
-          console.warn('Failed to parse auth-storage:', e);
-        }
-      }
-    }
+  //   // なければZustandのpersistストレージを確認
+  //   if (!token) {
+  //     const authStorage = localStorage.getItem('auth-storage');
+  //     if (authStorage) {
+  //       try {
+  //         const parsed = JSON.parse(authStorage);
+  //         token = parsed.state?.token || null;
+  //       } catch (e) {
+  //         console.warn('Failed to parse auth-storage:', e);
+  //       }
+  //     }
+  //   }
 
-    return token;
-  }
+  //   return token;
+  // }
 
   private processHeaders(headers?: HeadersInit): Record<string, string> {
     if (!headers) return {};
