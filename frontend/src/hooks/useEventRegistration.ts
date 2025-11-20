@@ -3,7 +3,7 @@
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { eventsApi } from '@/lib/api/events';
+import { registerEvent } from '@/lib/api/events';
 import type { EventFormData } from '@/schemas/event';
 import { useErrorHandler } from './useErrorHandler';
 
@@ -17,7 +17,7 @@ export const useEventRegistration = (options?: UseEventRegistrationOptions) => {
   const { handleError } = useErrorHandler();
 
   return useMutation({
-    mutationFn: (data: EventFormData) => eventsApi.registerEvent(data),
+    mutationFn: (data: EventFormData) => registerEvent(data),
     onSuccess: data => {
       // イベント一覧のキャッシュを無効化
       queryClient.invalidateQueries({ queryKey: ['events'] });

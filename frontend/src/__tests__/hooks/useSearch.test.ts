@@ -8,7 +8,7 @@ import {
   useMatchSearch,
   useTeamSearch,
 } from '@/hooks/useSearch';
-import { filesApi } from '@/lib/api/files';
+import * as filesApi from '@/lib/api/files';
 import type {
   MatchSearchResult,
   SearchParams,
@@ -17,13 +17,11 @@ import type {
 
 // APIをモック
 vi.mock('@/lib/api/files', () => ({
-  filesApi: {
-    searchTeams: vi.fn(),
-    searchMatches: vi.fn(),
-    sumDLSearchTeam: vi.fn(),
-    sumDLSearchMatch: vi.fn(),
-    deleteSearchFile: vi.fn(),
-  },
+  searchTeams: vi.fn(),
+  searchMatches: vi.fn(),
+  sumDLSearchTeam: vi.fn(),
+  sumDLSearchMatch: vi.fn(),
+  deleteSearchFile: vi.fn(),
 }));
 
 // テスト用のQueryClientプロバイダー
