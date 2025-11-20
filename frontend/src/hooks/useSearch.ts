@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { filesApi } from '@/lib/api/files';
+import { searchTeams, searchMatches, sumDLSearchTeam, sumDLSearchMatch, deleteSearchFile } from '@/lib/api/files';
 import type { FileDeleteRequest } from '@/types/file';
 import type { SearchParams } from '@/types/search';
 
@@ -25,7 +25,7 @@ export const SEARCH_QUERY_KEYS = {
 export function useTeamSearch(params: SearchParams) {
   return useQuery({
     queryKey: SEARCH_QUERY_KEYS.teams(params),
-    queryFn: () => filesApi.searchTeams(params),
+    queryFn: () => searchTeams(params),
     enabled: true, // 常に実行（空のキーワードでも検索）
     staleTime: 2 * 60 * 1000, // 2分間キャッシュ
     gcTime: 5 * 60 * 1000, // 5分間保持
@@ -38,7 +38,7 @@ export function useTeamSearch(params: SearchParams) {
 export function useMatchSearch(params: SearchParams) {
   return useQuery({
     queryKey: SEARCH_QUERY_KEYS.matches(params),
-    queryFn: () => filesApi.searchMatches(params),
+    queryFn: () => searchMatches(params),
     enabled: true, // 常に実行（空のキーワードでも検索）
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
@@ -51,7 +51,7 @@ export function useMatchSearch(params: SearchParams) {
 export function useSumDLTeamSearch(params: SearchParams) {
   return useQuery({
     queryKey: SEARCH_QUERY_KEYS.sumDLTeams(params),
-    queryFn: () => filesApi.sumDLSearchTeam(params),
+    queryFn: () => sumDLSearchTeam(params),
     enabled: !!params.keyword.trim(),
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
@@ -64,7 +64,7 @@ export function useSumDLTeamSearch(params: SearchParams) {
 export function useSumDLMatchSearch(params: SearchParams) {
   return useQuery({
     queryKey: SEARCH_QUERY_KEYS.sumDLMatches(params),
-    queryFn: () => filesApi.sumDLSearchMatch(params),
+    queryFn: () => sumDLSearchMatch(params),
     enabled: !!params.keyword.trim(),
     staleTime: 2 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
@@ -79,7 +79,7 @@ export function useDeleteFile() {
 
   return useMutation({
     mutationFn: (request: FileDeleteRequest) =>
-      filesApi.deleteSearchFile(request),
+      deleteSearchFile(request),
     onSuccess: () => {
       // 検索結果のキャッシュを無効化
       queryClient.invalidateQueries({
@@ -114,7 +114,7 @@ export function usePrefetchSearch() {
 
       queryClient.prefetchQuery({
         queryKey: SEARCH_QUERY_KEYS.teams(params),
-        queryFn: () => filesApi.searchTeams(params),
+        queryFn: () => searchTeams(params),
         staleTime: 2 * 60 * 1000,
       });
     },
@@ -127,7 +127,7 @@ export function usePrefetchSearch() {
 
       queryClient.prefetchQuery({
         queryKey: SEARCH_QUERY_KEYS.matches(params),
-        queryFn: () => filesApi.searchMatches(params),
+        queryFn: () => searchMatches(params),
         staleTime: 2 * 60 * 1000,
       });
     },
@@ -139,3 +139,4 @@ export function usePrefetchSearch() {
     prefetchMatchSearch,
   };
 }
+

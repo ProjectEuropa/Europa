@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
-import { filesApi } from '@/lib/api/files';
+import { uploadTeamFile as uploadTeamFileApi, uploadMatchFile as uploadMatchFileApi } from '@/lib/api/files';
 import type { FileUploadOptions, FileUploadResponse } from '@/types/file';
 
 export interface UploadProgress {
@@ -94,7 +94,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         file,
         isAuthenticated,
         uploadOptions,
-        filesApi.uploadTeamFile,
+        uploadTeamFileApi,
         ['search', 'teams']
       ),
     [_uploadFile]
@@ -110,7 +110,7 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
         file,
         isAuthenticated,
         uploadOptions,
-        filesApi.uploadMatchFile,
+        uploadMatchFileApi,
         ['search', 'matches']
       ),
     [_uploadFile]
@@ -128,3 +128,4 @@ export const useFileUpload = (options: UseFileUploadOptions = {}) => {
     isUploading: uploadProgress.status === 'uploading',
   };
 };
+

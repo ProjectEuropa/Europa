@@ -59,7 +59,7 @@ export const authApi = {
     } catch (error) {
       throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
     }
-    
+
     const response = await apiClient.post<LoginResponse>(
       '/api/v1/login',
       credentials
@@ -69,9 +69,9 @@ export const authApi = {
     const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
 
     // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
-    if (normalizedResponse.token) {
-      localStorage.setItem('token', normalizedResponse.token);
-    }
+    // if (normalizedResponse.token) {
+    //   localStorage.setItem('token', normalizedResponse.token);
+    // }
 
     return normalizedResponse;
   },
@@ -83,7 +83,7 @@ export const authApi = {
     } catch (error) {
       throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
     }
-    
+
     const response = await apiClient.post<RegisterResponse>(
       '/api/v1/register',
       {
@@ -99,9 +99,9 @@ export const authApi = {
       normalizeAuthResponse<RegisterResponse>(response);
 
     // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
-    if (normalizedResponse.token) {
-      localStorage.setItem('token', normalizedResponse.token);
-    }
+    // if (normalizedResponse.token) {
+    //   localStorage.setItem('token', normalizedResponse.token);
+    // }
 
     return normalizedResponse;
   },
@@ -184,7 +184,7 @@ export const authApi = {
       console.warn('Server logout failed:', error);
     } finally {
       // Always clean up local storage regardless of server response
-      localStorage.removeItem('token');
+      // localStorage.removeItem('token');
     }
   },
 };

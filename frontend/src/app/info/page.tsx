@@ -14,7 +14,7 @@ const InformationPage: React.FC = () => {
 
   useEffect(() => {
     fetchEvents()
-      .then(res => setEvents(res.data))
+      .then(events => setEvents(events)) // 配列を直接使用
       .catch(() => alert('イベント情報の取得に失敗しました'))
       .finally(() => setLoading(false));
   }, []);
@@ -183,10 +183,10 @@ const InformationPage: React.FC = () => {
                       >
                         {ev.deadline
                           ? new Date(ev.deadline).toLocaleDateString('ja-JP', {
-                              month: 'numeric',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })
+                            month: 'numeric',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
                           : ''}
                       </div>
                       <div
@@ -230,9 +230,9 @@ const InformationPage: React.FC = () => {
                       >
                         {ev.deadline
                           ? new Date(ev.deadline).toLocaleTimeString('ja-JP', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
                           : ''}
                         まで
                       </div>

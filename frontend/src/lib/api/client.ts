@@ -5,6 +5,12 @@
 import type { ApiClientConfig, ApiResponse } from '@/types/api';
 import { ApiErrorClass } from '@/types/api';
 
+export interface DownloadResult {
+  blob: Blob;
+  filename?: string;
+  headers: Headers;
+}
+
 export class ApiClient {
   private baseURL: string;
   private defaultHeaders: Record<string, string>;
@@ -26,28 +32,33 @@ export class ApiClient {
    * CSRF Cookieを取得してSPA認証を初期化
    */
   async getCsrfCookie(): Promise<void> {
+    const headers: Record<string, string> = {};
+
+    headers['X-Requested-With'] = 'XMLHttpRequest';
+
     // Sanctumの標準CSRFエンドポイントを使用
     const response = await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
       method: 'GET',
       credentials: 'include',
+      headers,
     });
-    
+
     if (!response.ok) {
       throw new Error(`CSRF endpoint returned ${response.status}`);
     }
-    
+
     // レスポンスを完全に処理してからクッキーが設定されるのを待つ
     await response.text();
   }
 
   private getCsrfTokenFromCookie(): string | null {
     if (typeof document === 'undefined') return null;
-    
+
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
       const [name, ...valueParts] = cookie.trim().split('=');
       const value = valueParts.join('='); // 値に=が含まれている場合も正しく処理
-      
+
       if (name === 'XSRF-TOKEN') {
         // LaravelのXSRF-TOKENはURLエンコードされているのでデコード
         try {
@@ -65,12 +76,12 @@ export class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const token = this.getToken();
+    // const token = this.getToken();
     const csrfToken = this.getCsrfTokenFromCookie();
-    
+
     const headers = {
       ...this.defaultHeaders,
-      ...(token && { Authorization: `Bearer ${token}` }),
+      // ...(token && { Authorization: `Bearer ${token}` }), // Cookie認証を使用
       ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
       ...this.processHeaders(options.headers),
     };
@@ -152,10 +163,11 @@ export class ApiClient {
     formData: FormData,
     options?: RequestInit
   ): Promise<ApiResponse<T>> {
-    const token = this.getToken();
+    const csrfToken = this.getCsrfTokenFromCookie();
+
     const headers: Record<string, string> = {
       ...this.defaultHeaders,
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
       ...this.processHeaders(options?.headers),
     };
 
@@ -197,27 +209,76 @@ export class ApiClient {
     }
   }
 
-  private getToken(): string | null {
-    if (typeof window === 'undefined') return null;
+  async download(endpoint: string, data?: any): Promise<DownloadResult> {
+    // const token = this.getToken();
+    const csrfToken = this.getCsrfTokenFromCookie();
 
-    // まずlocalStorageの'token'キーを確認
-    let token = localStorage.getItem('token');
+    const headers = {
+      ...this.defaultHeaders,
+      // ...(token && { Authorization: `Bearer ${token}` }),
+      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
+    };
 
-    // なければZustandのpersistストレージを確認
-    if (!token) {
-      const authStorage = localStorage.getItem('auth-storage');
-      if (authStorage) {
-        try {
-          const parsed = JSON.parse(authStorage);
-          token = parsed.state?.token || null;
-        } catch (e) {
-          console.warn('Failed to parse auth-storage:', e);
+    this.addBasicAuthIfNeeded(headers, endpoint);
+
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'POST',
+        headers,
+        body: data ? JSON.stringify(data) : undefined,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      // Content-Dispositionヘッダーからファイル名を抽出
+      const disposition = response.headers.get('content-disposition');
+      let filename: string | undefined;
+
+      if (disposition) {
+        const filenameMatch = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+          try {
+            filename = decodeURIComponent(filename);
+          } catch {
+            // デコード失敗時はそのまま使用
+          }
         }
       }
-    }
 
-    return token;
+      return { blob, filename, headers: response.headers };
+    } catch (error) {
+      console.error(`Download from ${endpoint} failed:`, error);
+      throw error;
+    }
   }
+
+  // private getToken(): string | null {
+  //   if (typeof window === 'undefined') return null;
+
+  //   // まずlocalStorageの'token'キーを確認
+  //   let token = localStorage.getItem('token');
+
+  //   // なければZustandのpersistストレージを確認
+  //   if (!token) {
+  //     const authStorage = localStorage.getItem('auth-storage');
+  //     if (authStorage) {
+  //       try {
+  //         const parsed = JSON.parse(authStorage);
+  //         token = parsed.state?.token || null;
+  //       } catch (e) {
+  //         console.warn('Failed to parse auth-storage:', e);
+  //       }
+  //     }
+  //   }
+
+  //   return token;
+  // }
 
   private processHeaders(headers?: HeadersInit): Record<string, string> {
     if (!headers) return {};
@@ -248,11 +309,13 @@ export class ApiClient {
     const basicAuthUser = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
     const basicAuthPassword = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 
+    // ステージング環境の場合、APIエンドポイント以外にBasic認証を追加
+    // APIエンドポイントはSanctumのCookieベース認証を使用
     if (
       this.baseURL.includes('stg.project-europa.work') &&
       basicAuthUser &&
       basicAuthPassword &&
-      !endpoint.startsWith('/api/')
+      !endpoint.startsWith('/api/') // APIエンドポイントは除外
     ) {
       headers.Authorization = `Basic ${btoa(`${basicAuthUser}:${basicAuthPassword}`)}`;
     }
