@@ -126,7 +126,7 @@ describe('events API', () => {
       const result = await fetchEvents();
 
       expect(apiClient.get).toHaveBeenCalledWith('/api/v1/event');
-      expect(result).toEqual({ data: expectedEvents });
+      expect(result).toEqual(expectedEvents); // 配列を直接期待
     });
   });
 });

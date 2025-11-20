@@ -16,14 +16,14 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
+    'allowed_origins' => array_filter([
         'http://localhost:3000',              // Next.js開発用
         'http://localhost:3002',              // Next.js開発用（別ポート）
-        'https://pre.project-europa.work',    // プレ環境
-        'https://stg.project-europa.work',    // ステージング環境
-        'https://project-europa.work',        // 本番環境
-        ...array_filter(explode(',', env('CORS_ALLOWED_ORIGINS', ''))), // 環境変数での追加設定
-    ],
+        env('FRONTEND_URL_PRE'),              // プレ環境
+        env('FRONTEND_URL_STG'),              // ステージング環境
+        env('FRONTEND_URL_PROD'),             // 本番環境
+        ...explode(',', env('CORS_ALLOWED_ORIGINS', '')), // 追加設定
+    ]),
 
     'allowed_origins_patterns' => [],
 

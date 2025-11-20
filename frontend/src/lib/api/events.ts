@@ -1,5 +1,7 @@
 import { apiClient } from '@/lib/api/client';
 
+import type { EventType } from '@/schemas/event';
+
 export interface EventData {
   id: string;
   name: string;
@@ -7,7 +9,7 @@ export interface EventData {
   url: string;
   deadline: string;
   endDisplayDate: string;
-  type: string;
+  type: EventType; // EventTypeを使用して型安全性を確保
   created_at: string;
   updatedAt: string;
   isActive: boolean;
@@ -40,15 +42,10 @@ export const registerEvent = async (formData: EventFormData) => {
 /**
  * イベント一覧取得API
  */
-export const fetchEvents = async () => {
+export const fetchEvents = async (): Promise<EventData[]> => {
   const response = await apiClient.get<{ data: any[] }>('/api/v1/event');
 
   // スネークケース→キャメルケース変換
-  // apiClientはレスポンスボディをそのまま返すので、ここで変換を行う
-  // ただし、apiClient.getの戻り値はApiResponse<T>型だが、
-  // 実装では response.json() を返しているため、サーバーのレスポンス構造に依存する。
-  // ここではサーバーが { data: [...] } を返すと仮定。
-
   const events = (response.data.data ?? []).map((event: any) => ({
     id: String(event.id),
     name: event.event_name ?? '',
@@ -62,5 +59,6 @@ export const fetchEvents = async () => {
     isActive: event.is_active,
   }));
 
-  return { data: events };
+  return events; // 配列を直接返す
 };
+
