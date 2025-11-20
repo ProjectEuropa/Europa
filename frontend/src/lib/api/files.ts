@@ -213,41 +213,22 @@ export const uploadMatchFile = async (
 
 // ダウンロード関連
 export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadResult> => {
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download/${teamId}`;
-
   try {
-    const res = await fetch(url, {
-      method: 'GET',
-      credentials: 'include',
-      headers: { Accept: 'application/json' },
-    });
+    // ブラウザで直接ダウンロードを開く
+    // apiClientのbaseURLを使用して一貫性を保つ
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download/${teamId}`;
 
-    const contentType = res.headers.get('Content-Type') || '';
-
-    if (!res.ok) {
-      if (contentType.includes('application/json')) {
-        const data = await res.json();
-        return {
-          success: false,
-          error: data.error || `ダウンロードできません (${res.status})`,
-        };
-      } else {
-        return { success: false, error: `ダウンロード失敗 (${res.status})` };
-      }
-    }
-
-    if (contentType.includes('application/json')) {
-      const data = await res.json();
-      return {
-        success: false,
-        error: data.error || 'ダウンロードできません',
-      };
-    }
-
+    // window.openを使用してダウンロードを試行
+    // ブラウザが自動的にcredentials（Cookie）を送信し、
+    // サーバー側でCSRF検証とダウンロード処理が行われる
     window.open(url, '_blank');
+
     return { success: true };
-  } catch (_e) {
-    return { success: false, error: 'ダウンロード通信エラー' };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error?.message || 'ダウンロード通信エラー'
+    };
   }
 };
 
