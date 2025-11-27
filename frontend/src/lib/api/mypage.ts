@@ -19,17 +19,16 @@ type RawEvent = {
  * マイページ：チームファイル取得API
  */
 export const fetchMyTeamFiles = async () => {
-    const response = await apiClient.get<{ files: any[] }>('/api/v1/mypage/team');
-    // apiClientはエラー時に例外を投げるので、ここでは成功時の処理のみ記述
-    return response.data.files || [];
+    const response = await apiClient.get<unknown>('/api/v1/mypage/team');
+    return extractDataFromResponse(response, 'files');
 };
 
 /**
  * マイページ：マッチファイル取得API
  */
 export const fetchMyMatchFiles = async () => {
-    const response = await apiClient.get<{ files: any[] }>('/api/v1/mypage/match');
-    return response.data.files || [];
+    const response = await apiClient.get<unknown>('/api/v1/mypage/match');
+    return extractDataFromResponse(response, 'files');
 };
 
 /**
