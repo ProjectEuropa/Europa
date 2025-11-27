@@ -46,11 +46,18 @@ export const deleteMyFile = async (id: string | number) => {
 /**
  * マイページ：イベント取得API
  */
+interface FlexibleMyEventsResponse {
+    events?: any[];
+    data?: {
+        events?: any[];
+    };
+}
+
 export const fetchMyEvents = async () => {
     const response = await apiClient.get<any>('/api/v1/mypage/events');
 
     // APIレスポンスの構造に合わせて柔軟に対応
-    const rawResponse = response as { events?: any[]; data?: { events?: any[] } };
+    const rawResponse = response as unknown as FlexibleMyEventsResponse;
     const events = rawResponse.events || (rawResponse.data && rawResponse.data.events) || [];
 
     // スネークケース→キャメルケース変換

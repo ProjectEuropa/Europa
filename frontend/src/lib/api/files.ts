@@ -275,14 +275,21 @@ export const deleteMyFile = async (id: string | number): Promise<FileDeleteRespo
 };
 
 // マイページ関連
+interface FlexibleMyFilesResponse {
+  files?: TeamFile[] | MatchFile[];
+  data?: {
+    files?: TeamFile[] | MatchFile[];
+  };
+}
+
 export const fetchMyTeamFiles = async (): Promise<TeamFile[]> => {
   const response = await apiClient.get<any>(
     '/api/v1/mypage/team'
   );
   // APIレスポンスの構造に合わせて柔軟に対応
   // 型定義と実際のレスポンスが異なるため、具体的な型にキャストして安全にアクセス
-  const rawResponse = response as { files?: TeamFile[]; data?: { files?: TeamFile[] } };
-  const files = rawResponse.files || (rawResponse.data && rawResponse.data.files) || [];
+  const rawResponse = response as unknown as FlexibleMyFilesResponse;
+  const files = (rawResponse.files || (rawResponse.data && rawResponse.data.files) || []) as TeamFile[];
   return files;
 };
 
@@ -291,8 +298,8 @@ export const fetchMyMatchFiles = async (): Promise<MatchFile[]> => {
     '/api/v1/mypage/match'
   );
   // APIレスポンスの構造に合わせて柔軟に対応
-  const rawResponse = response as { files?: MatchFile[]; data?: { files?: MatchFile[] } };
-  const files = rawResponse.files || (rawResponse.data && rawResponse.data.files) || [];
+  const rawResponse = response as unknown as FlexibleMyFilesResponse;
+  const files = (rawResponse.files || (rawResponse.data && rawResponse.data.files) || []) as MatchFile[];
   return files;
 };
 
