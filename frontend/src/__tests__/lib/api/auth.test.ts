@@ -410,7 +410,11 @@ describe('authApi', () => {
       const result = await authApi.login(credentials);
 
       expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
-      expect(result).toEqual(mockResponse);
+      // normalizeAuthResponse strips extra properties like 'message'
+      expect(result).toEqual({
+        token: '',
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+      });
     });
 
     it('should get CSRF cookie before register', async () => {
