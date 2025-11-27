@@ -105,4 +105,16 @@ return [
         ],
     ],
 
+      /*
+    |--------------------------------------------------------------------------
+    | Token Cookie Name
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the name of the cookie used to store the Sanctum
+    | authentication token. This cookie is HttpOnly for security.
+    |
+    */
+
+    'token_cookie_name' => env('AUTH_TOKEN_COOKIE_NAME', 'auth_token'),
+
 ];

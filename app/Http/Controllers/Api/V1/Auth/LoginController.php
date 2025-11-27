@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -28,31 +29,55 @@ class LoginController extends Controller
         }
 
         $user = Auth::user();
-        
-        // Sanctumのセッション認証を使用（セッションが利用可能な場合のみ）
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-        }
-        
+
+        // Sanctumトークンを生成
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        // HttpOnly Cookieに保存（XSS攻撃から保護）
+        $cookie = cookie(
+            config('auth.token_cookie_name'), // Cookie名（設定で一元管理）
+            $token,                           // トークン
+            config('session.lifetime'),       // セッション有効期限と同じ
+            '/',                              // パス
+            null,                             // ドメイン（nullで自動）
+            config('session.secure'),         // Secure（HTTPS）
+            true,                             // HttpOnly（JavaScriptからアクセス不可）
+            false,                            // Raw
+            config('session.same_site')       // SameSite
+        );
+
         return response()->json([
             'message' => 'ログイン成功',
-            'user' => $user,
-            'token' => '' // Cookie認証のため空文字列を返す（後方互換性維持）
-        ], 200);
+            'user' => new UserResource($user),
+        ])->cookie($cookie);
     }
 
     public function logout(Request $request)
     {
-        // Cookie認証のみに統一（セキュリティ強化）
-        Auth::guard('web')->logout();
-        
+        $user = $request->user();
+
+        // ユーザーが認証されている場合のみトークン削除
+        if ($user) {
+            $accessToken = $user->currentAccessToken();
+
+            // TransientToken（セッションベース認証）でない場合のみトークンを削除
+            if ($accessToken && !($accessToken instanceof \Laravel\Sanctum\TransientToken)) {
+                $accessToken->delete();
+            }
+        }
+
+        // セッションのクリーンアップ（存在する場合）
         if ($request->hasSession()) {
+            Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
         }
 
+        // Cookieを削除
+        $cookie = cookie()->forget(config('auth.token_cookie_name'));
+
         return response()->json([
             'message' => 'ログアウトしました'
-        ], 200);
+        ])->cookie($cookie);
     }
 }
