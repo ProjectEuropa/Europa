@@ -16,8 +16,8 @@ class AuthenticateFromCookie
      */
     public function handle(Request $request, Closure $next)
     {
-        // Cookieからauth_tokenを取得
-        $token = $request->cookie('auth_token');
+        // Cookieからトークンを取得（設定で一元管理されたCookie名を使用）
+        $token = $request->cookie(config('auth.token_cookie_name'));
 
         // トークンが存在し、Authorizationヘッダーが未設定の場合
         if ($token && !$request->bearerToken()) {

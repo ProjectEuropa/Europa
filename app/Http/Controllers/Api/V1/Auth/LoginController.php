@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -34,20 +35,20 @@ class LoginController extends Controller
 
         // HttpOnly Cookieに保存（XSS攻撃から保護）
         $cookie = cookie(
-            'auth_token',                    // Cookie名
-            $token,                          // トークン
-            config('session.lifetime'),      // セッション有効期限と同じ
-            '/',                             // パス
-            null,                            // ドメイン（nullで自動）
-            config('session.secure'),        // Secure（HTTPS）
-            true,                            // HttpOnly（JavaScriptからアクセス不可）
-            false,                           // Raw
-            config('session.same_site')      // SameSite
+            config('auth.token_cookie_name'), // Cookie名（設定で一元管理）
+            $token,                           // トークン
+            config('session.lifetime'),       // セッション有効期限と同じ
+            '/',                              // パス
+            null,                             // ドメイン（nullで自動）
+            config('session.secure'),         // Secure（HTTPS）
+            true,                             // HttpOnly（JavaScriptからアクセス不可）
+            false,                            // Raw
+            config('session.same_site')       // SameSite
         );
 
         return response()->json([
             'message' => 'ログイン成功',
-            'user' => $user,
+            'user' => new UserResource($user),
         ])->cookie($cookie);
     }
 
@@ -73,7 +74,7 @@ class LoginController extends Controller
         }
 
         // Cookieを削除
-        $cookie = cookie()->forget('auth_token');
+        $cookie = cookie()->forget(config('auth.token_cookie_name'));
 
         return response()->json([
             'message' => 'ログアウトしました'
