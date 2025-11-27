@@ -215,14 +215,57 @@ export const uploadMatchFile = async (
 // ダウンロード関連
 export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadResult> => {
   try {
-    // ブラウザで直接ダウンロードを開く
-    // apiClientのbaseURLを使用して一貫性を保つ
     const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download/${teamId}`;
 
-    // window.openを使用してダウンロードを試行
-    // ブラウザが自動的にcredentials（Cookie）を送信し、
-    // サーバー側でCSRF検証とダウンロード処理が行われる
-    window.open(url, '_blank');
+    // まずfetchでレスポンスを確認
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'include', // Cookieを含める
+    });
+
+    // エラーレスポンスの場合
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        success: false,
+        error: errorData.error || 'ダウンロードに失敗しました'
+      };
+    }
+
+    // 成功の場合、Blobとしてダウンロード
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    // ダウンロード用のaタグを作成
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+
+    // Content-Dispositionヘッダーからファイル名を取得
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = `team_${teamId}.zip`;
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (filenameMatch && filenameMatch[1]) {
+        const rawFilename = filenameMatch[1].replace(/['"]/g, '');
+        try {
+          // URLエンコードされたファイル名をデコード（日本語対応）
+          filename = decodeURIComponent(rawFilename);
+        } catch {
+          // デコードに失敗した場合は、そのままの値を使用します
+          filename = rawFilename;
+        }
+      }
+    }
+    a.download = filename;
+
+    document.body.appendChild(a);
+    a.click();
+
+    // クリーンアップ
+    setTimeout(() => {
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+    }, 100);
 
     return { success: true };
   } catch (error: any) {
