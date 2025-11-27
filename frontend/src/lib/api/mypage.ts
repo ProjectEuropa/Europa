@@ -43,7 +43,7 @@ export const deleteMyFile = async (id: string | number) => {
     return response.data;
 };
 
-import { extractDataFromResponse } from './files';
+import { extractDataFromResponse } from './utils';
 
 // APIから受け取るイベントの型を定義
 type RawEvent = {
