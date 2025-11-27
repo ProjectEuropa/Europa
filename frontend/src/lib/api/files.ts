@@ -275,32 +275,51 @@ export const deleteMyFile = async (id: string | number): Promise<FileDeleteRespo
 };
 
 // マイページ関連
-interface FlexibleMyFilesResponse {
-  files?: TeamFile[] | MatchFile[];
+// 柔軟なレスポンス構造に対応するための型定義
+interface FlexibleResponse<T> {
+  [key: string]: T[] | undefined | any; // インデックスシグネチャを追加
   data?: {
-    files?: TeamFile[] | MatchFile[];
+    [key: string]: T[] | undefined | any;
   };
 }
 
+/**
+ * APIレスポンスから配列データを安全に抽出するヘルパー関数
+ * @param response APIレスポンス
+ * @param key データが含まれるプロパティ名（例: 'files', 'events'）
+ */
+export function extractDataFromResponse<T>(response: unknown, key: string): T[] {
+  if (!response || typeof response !== 'object') {
+    return [];
+  }
+
+  const flexibleResponse = response as FlexibleResponse<T>;
+
+  // 1. response[key] をチェック
+  if (Array.isArray(flexibleResponse[key])) {
+    return flexibleResponse[key] as T[];
+  }
+
+  // 2. response.data[key] をチェック
+  if (flexibleResponse.data && Array.isArray(flexibleResponse.data[key])) {
+    return flexibleResponse.data[key] as T[];
+  }
+
+  return [];
+}
+
 export const fetchMyTeamFiles = async (): Promise<TeamFile[]> => {
-  const response = await apiClient.get<any>(
+  const response = await apiClient.get<unknown>(
     '/api/v1/mypage/team'
   );
-  // APIレスポンスの構造に合わせて柔軟に対応
-  // 型定義と実際のレスポンスが異なるため、具体的な型にキャストして安全にアクセス
-  const rawResponse = response as unknown as FlexibleMyFilesResponse;
-  const files = (rawResponse.files || (rawResponse.data && rawResponse.data.files) || []) as TeamFile[];
-  return files;
+  return extractDataFromResponse<TeamFile>(response, 'files');
 };
 
 export const fetchMyMatchFiles = async (): Promise<MatchFile[]> => {
-  const response = await apiClient.get<any>(
+  const response = await apiClient.get<unknown>(
     '/api/v1/mypage/match'
   );
-  // APIレスポンスの構造に合わせて柔軟に対応
-  const rawResponse = response as unknown as FlexibleMyFilesResponse;
-  const files = (rawResponse.files || (rawResponse.data && rawResponse.data.files) || []) as MatchFile[];
-  return files;
+  return extractDataFromResponse<MatchFile>(response, 'files');
 };
 
 // ファイル削除（検索結果からの削除）
