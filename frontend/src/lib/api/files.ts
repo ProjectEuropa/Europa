@@ -275,12 +275,6 @@ export const deleteMyFile = async (id: string | number): Promise<FileDeleteRespo
 };
 
 // マイページ関連
-// 柔軟なレスポンス構造に対応するための型定義
-interface FlexibleResponse<T> {
-  data?: Record<string, T[] | undefined>;
-  [key: string]: unknown;
-}
-
 /**
  * APIレスポンスから配列データを安全に抽出するヘルパー関数
  * @param response APIレスポンス
@@ -291,16 +285,19 @@ export function extractDataFromResponse<T>(response: unknown, key: string): T[] 
     return [];
   }
 
-  const flexibleResponse = response as FlexibleResponse<T>;
+  const responseObject = response as Record<string, unknown>;
 
   // 1. response[key] をチェック
-  if (Array.isArray(flexibleResponse[key])) {
-    return flexibleResponse[key] as T[];
+  if (Array.isArray(responseObject[key])) {
+    return responseObject[key] as T[];
   }
 
   // 2. response.data[key] をチェック
-  if (flexibleResponse.data && Array.isArray(flexibleResponse.data[key])) {
-    return flexibleResponse.data[key];
+  if (responseObject.data && typeof responseObject.data === 'object') {
+    const dataObject = responseObject.data as Record<string, unknown>;
+    if (Array.isArray(dataObject[key])) {
+      return dataObject[key] as T[];
+    }
   }
 
   return [];
