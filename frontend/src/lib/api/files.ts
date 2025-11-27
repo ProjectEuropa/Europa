@@ -19,6 +19,7 @@ import type {
   TeamSearchResult,
 } from '@/types/search';
 import { apiClient } from './client';
+import { extractDataFromResponse } from './utils';
 
 // 検索関連
 export const searchTeams = async (params: SearchParams): Promise<TeamSearchResult> => {
@@ -275,7 +276,6 @@ export const deleteMyFile = async (id: string | number): Promise<FileDeleteRespo
 };
 
 // マイページ関連
-import { extractDataFromResponse } from './utils';
 
 export const fetchMyTeamFiles = async (): Promise<TeamFile[]> => {
   const response = await apiClient.get<unknown>(

@@ -20,7 +20,7 @@ export function extractDataFromResponse<T>(response: unknown, key: string): T[] 
     }
 
     // 2. response.data[key] をチェック
-    if (responseObject.data && typeof responseObject.data === 'object') {
+    if (responseObject.data && typeof responseObject.data === 'object' && !Array.isArray(responseObject.data)) {
         const dataObject = responseObject.data as Record<string, unknown>;
         if (Array.isArray(dataObject[key])) {
             return dataObject[key] as T[];
