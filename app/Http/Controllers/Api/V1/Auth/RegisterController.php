@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,18 +33,26 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
-        
-        // Cookie認証のみに統一（セキュリティ強化）
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-        }
+        // Sanctumトークンを生成
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        // HttpOnly Cookieに保存（XSS攻撃から保護）
+        $cookie = cookie(
+            config('auth.token_cookie_name'), // Cookie名（設定で一元管理）
+            $token,                           // トークン
+            config('session.lifetime'),       // セッション有効期限と同じ
+            '/',                              // パス
+            null,                             // ドメイン（nullで自動）
+            config('session.secure'),         // Secure（HTTPS）
+            true,                             // HttpOnly（JavaScriptからアクセス不可）
+            false,                            // Raw
+            config('session.same_site')       // SameSite
+        );
 
         return response()->json([
             'message' => 'ユーザー登録成功',
-            'user' => $user,
-            'token' => '' // Cookie認証のため空文字列を返す（後方互換性維持）
-        ], 201);
+            'user' => new UserResource($user),
+        ], 201)->cookie($cookie);
     }
 
     protected function validator(array $data)
