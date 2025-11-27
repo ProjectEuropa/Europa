@@ -45,13 +45,27 @@ export const deleteMyFile = async (id: string | number) => {
 
 import { extractDataFromResponse } from './files';
 
+// APIから受け取るイベントの型を定義
+type RawEvent = {
+    id: number | string;
+    event_name?: string;
+    event_details?: string;
+    event_reference_url?: string;
+    event_closing_day?: string;
+    event_displaying_day?: string;
+    event_type?: string;
+    created_at?: string;
+    updated_at?: string;
+    is_active?: boolean;
+};
+
 export const fetchMyEvents = async () => {
     const response = await apiClient.get<unknown>('/api/v1/mypage/events');
 
-    const events = extractDataFromResponse<any>(response, 'events');
+    const events = extractDataFromResponse<RawEvent>(response, 'events');
 
     // スネークケース→キャメルケース変換
-    return events.map((event: any) => ({
+    return events.map((event: RawEvent) => ({
         id: String(event.id),
         name: event.event_name ?? '',
         details: event.event_details ?? '',

@@ -277,10 +277,8 @@ export const deleteMyFile = async (id: string | number): Promise<FileDeleteRespo
 // マイページ関連
 // 柔軟なレスポンス構造に対応するための型定義
 interface FlexibleResponse<T> {
-  [key: string]: T[] | undefined | any; // インデックスシグネチャを追加
-  data?: {
-    [key: string]: T[] | undefined | any;
-  };
+  data?: Record<string, T[] | undefined>;
+  [key: string]: unknown;
 }
 
 /**
@@ -302,7 +300,7 @@ export function extractDataFromResponse<T>(response: unknown, key: string): T[] 
 
   // 2. response.data[key] をチェック
   if (flexibleResponse.data && Array.isArray(flexibleResponse.data[key])) {
-    return flexibleResponse.data[key] as T[];
+    return flexibleResponse.data[key];
   }
 
   return [];
