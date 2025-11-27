@@ -34,11 +34,13 @@ class RegisterController extends Controller
         ]);
 
         // トークンの有効期限を設定（Cookieと一致させる）
-        $tokenLifetimeMinutes = config('session.lifetime');
+        $tokenLifetimeMinutes = intval(config('session.lifetime', 120));
+        $expiresAt = now()->addMinutes($tokenLifetimeMinutes);
+
         $token = $user->createToken(
             'auth-token',
             ['*'],
-            now()->addMinutes($tokenLifetimeMinutes)
+            $expiresAt
         )->plainTextToken;
 
         // HttpOnly Cookieに保存（XSS攻撃から保護）

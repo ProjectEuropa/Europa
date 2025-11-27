@@ -28,16 +28,13 @@ class CleanupExpiredTokens extends Command
      */
     public function handle()
     {
-        $expiredTokens = PersonalAccessToken::where('expires_at', '<', now())->count();
+        $deletedCount = PersonalAccessToken::where('expires_at', '<', now())->delete();
 
-        if ($expiredTokens === 0) {
+        if ($deletedCount === 0) {
             $this->info('期限切れのトークンはありません。');
-            return 0;
+        } else {
+            $this->info("{$deletedCount}個の期限切れトークンを削除しました。");
         }
-
-        PersonalAccessToken::where('expires_at', '<', now())->delete();
-
-        $this->info("{$expiredTokens}個の期限切れトークンを削除しました。");
 
         return 0;
     }
