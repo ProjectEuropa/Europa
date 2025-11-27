@@ -187,37 +187,12 @@ describe('ApiClient', () => {
   });
 
   describe('getCsrfCookie', () => {
-    it('should fetch CSRF cookie successfully', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        text: () => Promise.resolve(''),
-      });
-
+    it('should return immediately (no-op for token-based auth)', async () => {
+      // Sanctum Token + HttpOnly Cookie方式ではCSRF不要
       await apiClient.getCsrfCookie();
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/sanctum/csrf-cookie'),
-        expect.objectContaining({
-          method: 'GET',
-          credentials: 'include',
-        })
-      );
-    });
-
-    it('should handle CSRF cookie fetch failure gracefully', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
-
-      await expect(apiClient.getCsrfCookie()).rejects.toThrow('Network error');
-    });
-
-    it('should throw error when CSRF endpoint returns non-ok status', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        text: () => Promise.resolve(''),
-      });
-
-      await expect(apiClient.getCsrfCookie()).rejects.toThrow('CSRF endpoint returned 500');
+      // fetchが呼ばれないことを確認
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it('should include X-Requested-With header in requests', async () => {

@@ -53,8 +53,24 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        // Sanctumトークンを削除
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+
+        // ユーザーが認証されている場合のみトークン削除
+        if ($user) {
+            $accessToken = $user->currentAccessToken();
+
+            // TransientToken（セッションベース認証）でない場合のみトークンを削除
+            if ($accessToken && !($accessToken instanceof \Laravel\Sanctum\TransientToken)) {
+                $accessToken->delete();
+            }
+        }
+
+        // セッションのクリーンアップ（存在する場合）
+        if ($request->hasSession()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         // Cookieを削除
         $cookie = cookie()->forget('auth_token');
