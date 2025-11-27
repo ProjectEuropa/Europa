@@ -228,7 +228,7 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
       const errorData = await response.json().catch(() => ({}));
       return {
         success: false,
-        error: errorData.error || '現在はダウンロード可能な状態ではありません。'
+        error: errorData.error || 'ダウンロードに失敗しました'
       };
     }
 
@@ -246,7 +246,14 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
     if (contentDisposition) {
       const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
       if (filenameMatch && filenameMatch[1]) {
-        filename = filenameMatch[1].replace(/['"]/g, '');
+        const rawFilename = filenameMatch[1].replace(/['"]/g, '');
+        try {
+          // URLエンコードされたファイル名をデコード（日本語対応）
+          filename = decodeURIComponent(rawFilename);
+        } catch {
+          // デコードに失敗した場合は、そのままの値を使用します
+          filename = rawFilename;
+        }
       }
     }
     a.download = filename;
