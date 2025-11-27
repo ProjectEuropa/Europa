@@ -26,21 +26,30 @@ import { apiClient } from './client';
 function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(
   response: any
 ): T {
-  // パターン1: 直接データ構造 { user: {...}, token: "..." }
+  // パターン1: HttpOnly Cookie認証 { message: "...", user: {...} }
+  // token はCookieに保存されているため、レスポンスに含まれない
   if (
     response &&
     typeof response === 'object' &&
-    'token' in response &&
-    'user' in response
+    'user' in response &&
+    typeof response.user === 'object'
   ) {
-    return response as T;
+    // tokenがない場合は空文字列を設定（後方互換性のため）
+    // messageなどの余計なプロパティは除外して、必要なものだけを返す
+    return {
+      token: response.token || '',
+      user: response.user,
+    } as T;
   }
 
   // パターン2: dataプロパティでラップ { data: { user: {...}, token: "..." } }
   if (response && typeof response === 'object' && 'data' in response) {
-    const apiResponse = response as ApiResponse<T>;
-    if (apiResponse.data) {
-      return apiResponse.data;
+    const apiResponse = response as ApiResponse<any>;
+    if (apiResponse.data && typeof apiResponse.data === 'object' && 'user' in apiResponse.data) {
+      return {
+        token: apiResponse.data.token || '',
+        user: apiResponse.data.user,
+      } as T;
     }
   }
 

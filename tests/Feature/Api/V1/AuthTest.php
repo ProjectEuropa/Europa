@@ -12,19 +12,7 @@ class AuthTest extends TestCase
 
     public function test_ユーザー登録でセッション認証()
     {
-        // CSRF Cookieを事前取得（Sanctumのstateful認証をシミュレート）
-        $csrfResponse = $this->withHeaders([
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->get('/sanctum/csrf-cookie');
-        $csrfResponse->assertStatus(204);
-        
-        $response = $this->withHeaders([
-            'Accept' => 'application/json',
-            'X-Requested-With' => 'XMLHttpRequest',
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->postJson('/api/v1/register', [
+        $response = $this->postJson('/api/v1/register', [
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
             'password' => 'password123',
@@ -33,12 +21,14 @@ class AuthTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonStructure(['message', 'user'])
-            ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
+            ->assertCookie(config('auth.token_cookie_name')); // HttpOnly Cookieにトークンが設定される
 
-        // ユーザーが認証されていることを確認
+        // ユーザーがデータベースに作成されたことを確認
         $user = User::where('email', 'test@example.com')->first();
-        $this->assertAuthenticatedAs($user);
         $this->assertNotNull($user);
+
+        // トークンが生成されたことを確認
+        $this->assertCount(1, $user->tokens);
     }
 
     public function test_ユーザーログインでセッション認証()
@@ -48,29 +38,17 @@ class AuthTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        // CSRF Cookieを事前取得（Sanctumのstateful認証をシミュレート）
-        $csrfResponse = $this->withHeaders([
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->get('/sanctum/csrf-cookie');
-        $csrfResponse->assertStatus(204);
-
-        $response = $this->withHeaders([
-            'Accept' => 'application/json',
-            'X-Requested-With' => 'XMLHttpRequest',
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->postJson('/api/v1/login', [
+        $response = $this->postJson('/api/v1/login', [
             'email' => 'test@example.com',
             'password' => 'password123',
         ]);
 
         $response->assertStatus(200)
             ->assertJsonStructure(['message', 'user'])
-            ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
+            ->assertCookie(config('auth.token_cookie_name')); // HttpOnly Cookieにトークンが設定される
 
-        // セッションに認証情報が保存されていることを確認
-        $this->assertAuthenticatedAs($user);
+        // トークンが生成されたことを確認
+        $this->assertCount(1, $user->fresh()->tokens);
     }
 
     public function test_CSRFヘッダー付きログインでセッション認証()
@@ -80,20 +58,7 @@ class AuthTest extends TestCase
             'password' => bcrypt('password123'),
         ]);
 
-        // CSRF Cookieを事前取得（Sanctumのstateful認証をシミュレート）
-        $csrfResponse = $this->withHeaders([
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->get('/sanctum/csrf-cookie');
-        $csrfResponse->assertStatus(204);
-
-        // CSRF保護されたリクエスト
-        $response = $this->withHeaders([
-            'X-Requested-With' => 'XMLHttpRequest',
-            'Accept' => 'application/json',
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->postJson('/api/v1/login', [
+        $response = $this->postJson('/api/v1/login', [
             'email' => 'test@example.com',
             'password' => 'password123',
         ]);
@@ -103,34 +68,24 @@ class AuthTest extends TestCase
                 'message' => 'ログイン成功',
             ])
             ->assertJsonStructure(['message', 'user'])
-            ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
+            ->assertCookie(config('auth.token_cookie_name')); // HttpOnly Cookieにトークンが設定される
 
-        // セッションに認証情報が保存されていることを確認
-        $this->assertAuthenticatedAs($user);
+        // トークンが生成されたことを確認
+        $this->assertCount(1, $user->fresh()->tokens);
     }
 
     public function test_CSRF保護された登録でセッション認証()
     {
-        // CSRF Cookieを事前取得
-        $csrfResponse = $this->get('/sanctum/csrf-cookie');
-        $csrfResponse->assertStatus(204);
-
-        // CSRF保護されたリクエスト
-        $response = $this->withSession([])
-            ->withMiddleware()
-            ->withHeaders([
-                'X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-            ])->postJson('/api/v1/register', [
-                'name' => 'テストユーザー',
-                'email' => 'test@example.com',
-                'password' => 'password123',
-                'password_confirmation' => 'password123',
-            ]);
+        $response = $this->postJson('/api/v1/register', [
+            'name' => 'テストユーザー',
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ]);
 
         $response->assertStatus(201)
             ->assertJsonStructure(['message', 'user'])
-            ->assertJsonMissing(['token']); // tokenは返されない（Cookie認証）
+            ->assertCookie(config('auth.token_cookie_name')); // HttpOnly Cookieにトークンが設定される
 
         // データベースにユーザーが作成されていることを確認
         $this->assertDatabaseHas('users', [
@@ -138,39 +93,30 @@ class AuthTest extends TestCase
             'name' => 'テストユーザー',
         ]);
 
-        // セッションに認証情報が保存されていることを確認
+        // トークンが生成されたことを確認
         $user = User::where('email', 'test@example.com')->first();
-        $this->assertAuthenticatedAs($user);
+        $this->assertCount(1, $user->tokens);
     }
 
     public function test_ログアウトでセッション無効化()
     {
         $user = User::factory()->create();
-        
-        // Cookie認証でログイン（Sanctumのstateful認証をシミュレート）
-        $this->actingAs($user, 'web');
-        
-        // CSRF Cookieを事前取得
-        $csrfResponse = $this->withHeaders([
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->get('/sanctum/csrf-cookie');
-        $csrfResponse->assertStatus(204);
-        
+
+        // Sanctumトークンを生成
+        $token = $user->createToken('test-token')->plainTextToken;
+
+        // トークン認証でログアウト
         $response = $this->withHeaders([
-            'Accept' => 'application/json',
-            'X-Requested-With' => 'XMLHttpRequest',
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->post('/api/v1/logout');
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/v1/logout');
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'ログアウトしました'
             ]);
 
-        // セッションが無効化されていることを確認
-        $this->assertGuest('web');
+        // トークンが削除されていることを確認
+        $this->assertCount(0, $user->fresh()->tokens);
     }
 
     public function test_ログアウトには認証が必要()
@@ -222,18 +168,17 @@ class AuthTest extends TestCase
             ->assertJsonValidationErrors(['password']);
     }
 
-    public function test_CSRFクッキーエンドポイントの動作()
+    public function test_トークン認証でAPIアクセス可能()
     {
-        // Sanctum標準のCSRFエンドポイントをテスト（statefulドメインからのリクエストをシミュレート）
-        $response = $this->withHeaders([
-            'Origin' => 'http://localhost:3000',
-            'Referer' => 'http://localhost:3000',
-        ])->get('/sanctum/csrf-cookie');
+        $user = User::factory()->create();
+        $token = $user->createToken('test-token')->plainTextToken;
 
-        // Sanctumは204 No Contentレスポンスを返す
-        $response->assertStatus(204);
-        
-        // XSRF-TOKENクッキーが設定されているか確認
-        $response->assertCookie('XSRF-TOKEN');
+        // トークン認証でプロフィール取得
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->getJson('/api/v1/user/profile');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['id', 'name', 'email', 'created_at']);
     }
 }

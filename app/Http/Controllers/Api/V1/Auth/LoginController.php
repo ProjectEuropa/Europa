@@ -30,14 +30,21 @@ class LoginController extends Controller
 
         $user = Auth::user();
 
-        // Sanctumトークンを生成
-        $token = $user->createToken('auth-token')->plainTextToken;
+        // トークンの有効期限を設定（Cookieと一致させる）
+        $tokenLifetimeMinutes = intval(config('session.lifetime', 120));
+        $expiresAt = now()->addMinutes($tokenLifetimeMinutes);
+
+        $token = $user->createToken(
+            'auth-token',
+            ['*'],
+            $expiresAt
+        )->plainTextToken;
 
         // HttpOnly Cookieに保存（XSS攻撃から保護）
         $cookie = cookie(
             config('auth.token_cookie_name'), // Cookie名（設定で一元管理）
             $token,                           // トークン
-            config('session.lifetime'),       // セッション有効期限と同じ
+            $tokenLifetimeMinutes,            // 有効期限をトークンと合わせる
             '/',                              // パス
             null,                             // ドメイン（nullで自動）
             config('session.secure'),         // Secure（HTTPS）

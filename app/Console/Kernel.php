@@ -24,8 +24,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        // 期限切れSanctumトークンを毎日クリーンアップ
+        $schedule->command('sanctum:prune-expired')
+                 ->daily()
+                 ->at('02:00');
     }
 
     /**

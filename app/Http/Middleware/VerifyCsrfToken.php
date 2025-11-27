@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'api/*',      // API routes (Sanctum Token認証を使用)
+        'sanctum/*',  // Sanctum routes
     ];
 }
