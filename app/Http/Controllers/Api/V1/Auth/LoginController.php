@@ -28,31 +28,39 @@ class LoginController extends Controller
         }
 
         $user = Auth::user();
-        
-        // Sanctumのセッション認証を使用（セッションが利用可能な場合のみ）
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-        }
-        
+
+        // Sanctumトークンを生成
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        // HttpOnly Cookieに保存（XSS攻撃から保護）
+        $cookie = cookie(
+            'auth_token',                    // Cookie名
+            $token,                          // トークン
+            config('session.lifetime'),      // セッション有効期限と同じ
+            '/',                             // パス
+            null,                            // ドメイン（nullで自動）
+            config('session.secure'),        // Secure（HTTPS）
+            true,                            // HttpOnly（JavaScriptからアクセス不可）
+            false,                           // Raw
+            config('session.same_site')      // SameSite
+        );
+
         return response()->json([
             'message' => 'ログイン成功',
             'user' => $user,
-            'token' => '' // Cookie認証のため空文字列を返す（後方互換性維持）
-        ], 200);
+        ])->cookie($cookie);
     }
 
     public function logout(Request $request)
     {
-        // Cookie認証のみに統一（セキュリティ強化）
-        Auth::guard('web')->logout();
-        
-        if ($request->hasSession()) {
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        }
+        // Sanctumトークンを削除
+        $request->user()->currentAccessToken()->delete();
+
+        // Cookieを削除
+        $cookie = cookie()->forget('auth_token');
 
         return response()->json([
             'message' => 'ログアウトしました'
-        ], 200);
+        ])->cookie($cookie);
     }
 }

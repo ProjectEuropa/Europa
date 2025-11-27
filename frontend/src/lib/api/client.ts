@@ -29,60 +29,20 @@ export class ApiClient {
   }
 
   /**
-   * CSRF Cookieを取得してSPA認証を初期化
+   * CSRF Cookieを取得（Sanctum Token認証では不要だが互換性のため残す）
    */
   async getCsrfCookie(): Promise<void> {
-    const headers: Record<string, string> = {};
-
-    headers['X-Requested-With'] = 'XMLHttpRequest';
-
-    // Sanctumの標準CSRFエンドポイントを使用
-    const response = await fetch(`${this.baseURL}/sanctum/csrf-cookie`, {
-      method: 'GET',
-      credentials: 'include',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`CSRF endpoint returned ${response.status}`);
-    }
-
-    // レスポンスを完全に処理してからクッキーが設定されるのを待つ
-    await response.text();
-  }
-
-  private getCsrfTokenFromCookie(): string | null {
-    if (typeof document === 'undefined') return null;
-
-    const cookies = document.cookie.split(';');
-    for (const cookie of cookies) {
-      const [name, ...valueParts] = cookie.trim().split('=');
-      const value = valueParts.join('='); // 値に=が含まれている場合も正しく処理
-
-      if (name === 'XSRF-TOKEN') {
-        // LaravelのXSRF-TOKENはURLエンコードされているのでデコード
-        try {
-          return decodeURIComponent(value);
-        } catch (e) {
-          console.warn('Failed to decode XSRF-TOKEN:', e);
-          return value; // デコードに失敗した場合は生の値を返す
-        }
-      }
-    }
-    return null;
+    // Sanctum Token + HttpOnly Cookie方式ではCSRF不要
+    // 互換性のため空実装を残す
+    return Promise.resolve();
   }
 
   async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    // const token = this.getToken();
-    const csrfToken = this.getCsrfTokenFromCookie();
-
     const headers = {
       ...this.defaultHeaders,
-      // ...(token && { Authorization: `Bearer ${token}` }), // Cookie認証を使用
-      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
       ...this.processHeaders(options.headers),
     };
 
@@ -93,7 +53,7 @@ export class ApiClient {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...options,
         headers,
-        credentials: 'include',
+        credentials: 'include', // HttpOnly Cookieの送受信に必須
       });
 
       if (!response.ok) {
@@ -163,11 +123,8 @@ export class ApiClient {
     formData: FormData,
     options?: RequestInit
   ): Promise<ApiResponse<T>> {
-    const csrfToken = this.getCsrfTokenFromCookie();
-
     const headers: Record<string, string> = {
       ...this.defaultHeaders,
-      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
       ...this.processHeaders(options?.headers),
     };
 
@@ -182,7 +139,7 @@ export class ApiClient {
         method: 'POST',
         headers,
         body: formData,
-        credentials: 'include',
+        credentials: 'include', // HttpOnly Cookieの送受信に必須
       });
 
       if (!response.ok) {
@@ -210,13 +167,8 @@ export class ApiClient {
   }
 
   async download(endpoint: string, data?: any): Promise<DownloadResult> {
-    // const token = this.getToken();
-    const csrfToken = this.getCsrfTokenFromCookie();
-
     const headers = {
       ...this.defaultHeaders,
-      // ...(token && { Authorization: `Bearer ${token}` }),
-      ...(csrfToken && { 'X-XSRF-TOKEN': csrfToken }),
     };
 
     this.addBasicAuthIfNeeded(headers, endpoint);
@@ -226,7 +178,7 @@ export class ApiClient {
         method: 'POST',
         headers,
         body: data ? JSON.stringify(data) : undefined,
-        credentials: 'include',
+        credentials: 'include', // HttpOnly Cookieの送受信に必須
       });
 
       if (!response.ok) {
@@ -257,28 +209,6 @@ export class ApiClient {
       throw error;
     }
   }
-
-  // private getToken(): string | null {
-  //   if (typeof window === 'undefined') return null;
-
-  //   // まずlocalStorageの'token'キーを確認
-  //   let token = localStorage.getItem('token');
-
-  //   // なければZustandのpersistストレージを確認
-  //   if (!token) {
-  //     const authStorage = localStorage.getItem('auth-storage');
-  //     if (authStorage) {
-  //       try {
-  //         const parsed = JSON.parse(authStorage);
-  //         token = parsed.state?.token || null;
-  //       } catch (e) {
-  //         console.warn('Failed to parse auth-storage:', e);
-  //       }
-  //     }
-  //   }
-
-  //   return token;
-  // }
 
   private processHeaders(headers?: HeadersInit): Record<string, string> {
     if (!headers) return {};
