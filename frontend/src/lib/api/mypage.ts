@@ -15,20 +15,39 @@ type RawEvent = {
     is_active?: boolean;
 };
 
+// APIから受け取るファイルの型を定義
+type RawFile = {
+    id: number | string;
+    file_name?: string;
+    name?: string;
+    upload_owner_name?: string;
+    ownerName?: string;
+    file_comment?: string;
+    comment?: string;
+    created_at?: string;
+    uploadDate?: string;
+    downloadable_at?: string;
+    downloadableAt?: string;
+    search_tag1?: string;
+    search_tag2?: string;
+    search_tag3?: string;
+    search_tag4?: string;
+};
+
 /**
  * マイページ：チームファイル取得API
  */
-export const fetchMyTeamFiles = async () => {
+export const fetchMyTeamFiles = async (): Promise<RawFile[]> => {
     const response = await apiClient.get<unknown>('/api/v1/mypage/team');
-    return extractDataFromResponse(response, 'files');
+    return extractDataFromResponse<RawFile>(response, 'files');
 };
 
 /**
  * マイページ：マッチファイル取得API
  */
-export const fetchMyMatchFiles = async () => {
+export const fetchMyMatchFiles = async (): Promise<RawFile[]> => {
     const response = await apiClient.get<unknown>('/api/v1/mypage/match');
-    return extractDataFromResponse(response, 'files');
+    return extractDataFromResponse<RawFile>(response, 'files');
 };
 
 /**
