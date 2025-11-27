@@ -19,6 +19,7 @@ import type {
   TeamSearchResult,
 } from '@/types/search';
 import { apiClient } from './client';
+import { extractDataFromResponse } from './utils';
 
 // 検索関連
 export const searchTeams = async (params: SearchParams): Promise<TeamSearchResult> => {
@@ -275,18 +276,19 @@ export const deleteMyFile = async (id: string | number): Promise<FileDeleteRespo
 };
 
 // マイページ関連
+
 export const fetchMyTeamFiles = async (): Promise<TeamFile[]> => {
-  const response = await apiClient.get<MyFilesResponse>(
+  const response = await apiClient.get<unknown>(
     '/api/v1/mypage/team'
   );
-  return response.data.files as TeamFile[];
+  return extractDataFromResponse<TeamFile>(response, 'files');
 };
 
 export const fetchMyMatchFiles = async (): Promise<MatchFile[]> => {
-  const response = await apiClient.get<MyFilesResponse>(
+  const response = await apiClient.get<unknown>(
     '/api/v1/mypage/match'
   );
-  return response.data.files as MatchFile[];
+  return extractDataFromResponse<MatchFile>(response, 'files');
 };
 
 // ファイル削除（検索結果からの削除）

@@ -1,4 +1,19 @@
 import { apiClient } from '@/lib/api/client';
+import { extractDataFromResponse } from './utils';
+
+// APIから受け取るイベントの型を定義
+type RawEvent = {
+    id: number | string;
+    event_name?: string;
+    event_details?: string;
+    event_reference_url?: string;
+    event_closing_day?: string;
+    event_displaying_day?: string;
+    event_type?: string;
+    created_at?: string;
+    updated_at?: string;
+    is_active?: boolean;
+};
 
 /**
  * マイページ：チームファイル取得API
@@ -47,10 +62,12 @@ export const deleteMyFile = async (id: string | number) => {
  * マイページ：イベント取得API
  */
 export const fetchMyEvents = async () => {
-    const response = await apiClient.get<{ events: any[] }>('/api/v1/mypage/events');
+    const response = await apiClient.get<unknown>('/api/v1/mypage/events');
+
+    const events = extractDataFromResponse<RawEvent>(response, 'events');
 
     // スネークケース→キャメルケース変換
-    return (response.data.events ?? []).map((event: any) => ({
+    return events.map((event: RawEvent) => ({
         id: String(event.id),
         name: event.event_name ?? '',
         details: event.event_details ?? '',
