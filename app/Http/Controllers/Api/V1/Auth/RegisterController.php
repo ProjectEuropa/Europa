@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,14 +33,33 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
-        $token = $user->createToken('app')->plainTextToken;
+        // トークンの有効期限を設定（Cookieと一致させる）
+        $tokenLifetimeMinutes = intval(config('session.lifetime', 120));
+        $expiresAt = now()->addMinutes($tokenLifetimeMinutes);
+
+        $token = $user->createToken(
+            'auth-token',
+            ['*'],
+            $expiresAt
+        )->plainTextToken;
+
+        // HttpOnly Cookieに保存（XSS攻撃から保護）
+        $cookie = cookie(
+            config('auth.token_cookie_name'), // Cookie名（設定で一元管理）
+            $token,                           // トークン
+            $tokenLifetimeMinutes,            // 有効期限をトークンと合わせる
+            '/',                              // パス
+            null,                             // ドメイン（nullで自動）
+            config('session.secure'),         // Secure（HTTPS）
+            true,                             // HttpOnly（JavaScriptからアクセス不可）
+            false,                            // Raw
+            config('session.same_site')       // SameSite
+        );
 
         return response()->json([
             'message' => 'ユーザー登録成功',
-            'token' => $token,
-            'user' => $user
-        ], 201);
+            'user' => new UserResource($user),
+        ], 201)->cookie($cookie);
     }
 
     protected function validator(array $data)

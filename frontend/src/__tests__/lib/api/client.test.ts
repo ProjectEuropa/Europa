@@ -85,24 +85,24 @@ describe('ApiClient', () => {
       expect(result).toEqual(mockResponse);
     });
 
-    it('should include authorization header when token exists', async () => {
-      mockLocalStorage.getItem.mockReturnValue('test-token');
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({}),
-      });
+    // it('should include authorization header when token exists', async () => {
+    //   mockLocalStorage.getItem.mockReturnValue('test-token');
+    //   mockFetch.mockResolvedValueOnce({
+    //     ok: true,
+    //     json: () => Promise.resolve({}),
+    //   });
 
-      await apiClient.get('/test');
+    //   await apiClient.get('/test');
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer test-token',
-          }),
-        })
-      );
-    });
+    //   expect(mockFetch).toHaveBeenCalledWith(
+    //     expect.any(String),
+    //     expect.objectContaining({
+    //       headers: expect.objectContaining({
+    //         Authorization: 'Bearer test-token',
+    //       }),
+    //     })
+    //   );
+    // });
 
     it('should throw ApiErrorClass on HTTP error', async () => {
       const errorData = { message: 'Not found', errors: {} };
@@ -183,6 +183,34 @@ describe('ApiClient', () => {
         })
       );
       expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe('getCsrfCookie', () => {
+    it('should return immediately (no-op for token-based auth)', async () => {
+      // Sanctum Token + HttpOnly Cookie方式ではCSRF不要
+      await apiClient.getCsrfCookie();
+
+      // fetchが呼ばれないことを確認
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('should include X-Requested-With header in requests', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({}),
+      });
+
+      await apiClient.get('/test');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'X-Requested-With': 'XMLHttpRequest',
+          }),
+        })
+      );
     });
   });
 });

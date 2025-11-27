@@ -8,6 +8,7 @@ vi.mock('@/lib/api/client', () => ({
   apiClient: {
     post: vi.fn(),
     get: vi.fn(),
+    getCsrfCookie: vi.fn(),
   },
 }));
 
@@ -45,15 +46,11 @@ describe('authApi', () => {
         token: 'test-token-123',
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       const result = await authApi.login(credentials);
 
       expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'token',
-        'test-token-123'
-      );
       expect(result).toEqual(mockResponse);
     });
 
@@ -71,15 +68,11 @@ describe('authApi', () => {
         },
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       const result = await authApi.login(credentials);
 
       expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'token',
-        'test-token-123'
-      );
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -95,7 +88,7 @@ describe('authApi', () => {
         token: '', // 空のtoken
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       const result = await authApi.login(credentials);
 
@@ -115,7 +108,7 @@ describe('authApi', () => {
         unexpected: 'structure',
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       // エラーが適切に処理されることを確認
       await expect(authApi.login(credentials)).rejects.toThrow();
@@ -137,7 +130,7 @@ describe('authApi', () => {
         token: 'test-token-123',
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       const result = await authApi.register(credentials);
 
@@ -147,10 +140,7 @@ describe('authApi', () => {
         password: credentials.password,
         password_confirmation: credentials.passwordConfirmation,
       });
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'token',
-        'test-token-123'
-      );
+
       expect(result).toEqual(mockResponse);
     });
 
@@ -170,7 +160,7 @@ describe('authApi', () => {
         },
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       const result = await authApi.register(credentials);
 
@@ -180,10 +170,7 @@ describe('authApi', () => {
         password: credentials.password,
         password_confirmation: credentials.passwordConfirmation,
       });
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'token',
-        'test-token-123'
-      );
+
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -200,7 +187,7 @@ describe('authApi', () => {
         unexpected: 'structure',
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       // エラーが適切に処理されることを確認
       await expect(authApi.register(credentials)).rejects.toThrow();
@@ -216,7 +203,7 @@ describe('authApi', () => {
         created_at: '2024-01-01T00:00:00Z',
       };
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce(mockUser);
+      vi.mocked(apiClient.get).mockResolvedValueOnce(mockUser as any);
 
       const result = await authApi.getProfile();
 
@@ -233,7 +220,7 @@ describe('authApi', () => {
       };
 
       const mockResponse = { data: mockUser };
-      vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse as any);
 
       const result = await authApi.getProfile();
 
@@ -249,7 +236,7 @@ describe('authApi', () => {
         email: 'updated@example.com',
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce({ data: {} });
+      vi.mocked(apiClient.post).mockResolvedValueOnce({ data: {} } as any);
 
       await authApi.updateProfile(updateData);
 
@@ -267,7 +254,7 @@ describe('authApi', () => {
         data: { message: 'Password reset link sent' },
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       const result = await authApi.sendPasswordResetLink(request);
 
@@ -283,7 +270,7 @@ describe('authApi', () => {
     it('should return valid for valid token', async () => {
       const check = { token: 'valid-token', email: 'test@example.com' };
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: {} });
+      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: {} } as any);
 
       const result = await authApi.checkResetPasswordToken(check);
 
@@ -322,7 +309,7 @@ describe('authApi', () => {
         message: 'Password reset successfully',
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
 
       const result = await authApi.resetPassword(data);
 
@@ -354,10 +341,132 @@ describe('authApi', () => {
   });
 
   describe('logout', () => {
-    it('should remove token from localStorage', () => {
-      authApi.logout();
+    it('should call server logout and remove token from localStorage', async () => {
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        message: 'ログアウトしました'
+      } as any);
 
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('token');
+      await authApi.logout();
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/logout');
+    });
+
+    it('should clean localStorage even if server logout fails', async () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+      vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Server error'));
+
+      await authApi.logout();
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/logout');
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Server logout failed:', expect.any(Error));
+      consoleWarnSpy.mockRestore();
+    });
+  });
+
+  describe('Cookie Authentication', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should get CSRF cookie before login', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証の場合空文字列
+      };
+
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
+
+      const result = await authApi.login(credentials);
+
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledBefore(apiClient.post as any);
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should handle cookie-only authentication without token', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      // Cookie認証時のレスポンス（tokenなし）
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
+        message: 'ログイン成功',
+      };
+
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
+
+      const result = await authApi.login(credentials);
+
+      expect(mockLocalStorage.setItem).not.toHaveBeenCalled();
+      // normalizeAuthResponse strips extra properties like 'message'
+      expect(result).toEqual({
+        token: '',
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+      });
+    });
+
+    it('should get CSRF cookie before register', async () => {
+      const credentials: RegisterCredentials = {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+        passwordConfirmation: 'password123',
+      };
+
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
+      };
+
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
+
+      const result = await authApi.register(credentials);
+
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledBefore(apiClient.post as any);
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/register', {
+        name: credentials.name,
+        email: credentials.email,
+        password: credentials.password,
+        password_confirmation: credentials.passwordConfirmation,
+      });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should call getCsrfCookie and continue with login flow', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+      };
+
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: '', // Cookie認証では空文字列
+      };
+
+      // CSRF Cookie取得は正常実行、その後ログイン
+      vi.mocked(apiClient.getCsrfCookie).mockResolvedValueOnce(undefined);
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
+
+      const result = await authApi.login(credentials);
+
+      expect(apiClient.getCsrfCookie).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledTimes(1);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
+      expect(result).toEqual(mockResponse);
     });
   });
 });

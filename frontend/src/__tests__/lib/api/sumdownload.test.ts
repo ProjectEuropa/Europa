@@ -4,13 +4,15 @@ import {
   sumDLSearchMatch,
   sumDownload,
 } from '@/lib/api/sumdownload';
+import { apiClient } from '@/lib/api/client';
 
-// apiRequestをモック
-vi.mock('@/utils/api', () => ({
-  apiRequest: vi.fn(),
+// apiClientをモック
+vi.mock('@/lib/api/client', () => ({
+  apiClient: {
+    get: vi.fn(),
+    download: vi.fn(),
+  },
 }));
-
-const mockApiRequest = vi.mocked(await import('@/utils/api')).apiRequest;
 
 describe('sumdownload API', () => {
   beforeEach(() => {
@@ -40,25 +42,20 @@ describe('sumdownload API', () => {
         total: 1,
       };
 
-      mockApiRequest.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      });
+      // apiClient.get はレスポンスデータを直接返すようにモックする（実装依存）
+      // 実装では response.data || response を返している
+      (apiClient.get as any).mockResolvedValue(mockResponse);
 
       const result = await sumDLSearchTeam('テスト', 1);
 
-      expect(mockApiRequest).toHaveBeenCalledWith(
+      expect(apiClient.get).toHaveBeenCalledWith(
         expect.stringContaining('/api/v1/sumDLSearch/team')
       );
       expect(result).toEqual(mockResponse);
     });
 
     it('should handle search errors', async () => {
-      mockApiRequest.mockResolvedValue({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ message: 'Server Error' }),
-      });
+      (apiClient.get as any).mockRejectedValue(new Error('Server Error'));
 
       await expect(sumDLSearchTeam('テスト', 1)).rejects.toThrow();
     });
@@ -82,14 +79,11 @@ describe('sumdownload API', () => {
         total: 1,
       };
 
-      mockApiRequest.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      });
+      (apiClient.get as any).mockResolvedValue(mockResponse);
 
       const result = await sumDLSearchMatch('マッチテスト', 1);
 
-      expect(mockApiRequest).toHaveBeenCalledWith(
+      expect(apiClient.get).toHaveBeenCalledWith(
         expect.stringContaining('/api/v1/sumDLSearch/match')
       );
       expect(result).toEqual(mockResponse);
@@ -104,6 +98,7 @@ describe('sumdownload API', () => {
           createObjectURL: vi.fn(() => 'blob:mock-url'),
           revokeObjectURL: vi.fn(),
         },
+        writable: true,
       });
 
       // document.createElementとaddEventListenerのモック
@@ -146,29 +141,20 @@ describe('sumdownload API', () => {
       const mockBlob = new Blob(['test file content'], {
         type: 'application/zip',
       });
-      const mockResponse = {
-        ok: true,
-        blob: () => Promise.resolve(mockBlob),
-        headers: {
-          get: vi.fn(header => {
-            if (header === 'content-disposition') {
-              return 'attachment; filename="test_files.zip"';
-            }
-            return null;
-          }),
-        },
-      };
 
-      mockApiRequest.mockResolvedValue(mockResponse);
+      // apiClient.downloadは現在DownloadResultを返す
+      (apiClient.download as any).mockResolvedValue({
+        blob: mockBlob,
+        filename: 'test_files.zip',
+        headers: new Headers(),
+      });
 
       const fileIds = [1, 2, 3];
       await sumDownload(fileIds);
 
       // APIが正しく呼び出されることを確認
-      expect(mockApiRequest).toHaveBeenCalledWith('/api/v1/sumDownload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ checkedId: fileIds }),
+      expect(apiClient.download).toHaveBeenCalledWith('/api/v1/sumDownload', {
+        checkedId: fileIds,
       });
 
       // ダウンロード処理が実行されることを確認
@@ -178,13 +164,10 @@ describe('sumdownload API', () => {
     });
 
     it('should handle download API errors', async () => {
-      mockApiRequest.mockResolvedValue({
-        ok: false,
-        status: 500,
-        json: () => Promise.resolve({ message: 'Download failed' }),
-      });
+      (apiClient.download as any).mockRejectedValue(new Error('Download failed'));
 
       await expect(sumDownload([1, 2])).rejects.toThrow('Download failed');
     });
   });
 });
+

@@ -14,7 +14,7 @@ interface AuthState {
 interface AuthActions {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
-  logout: (redirectCallback?: () => void) => void;
+  logout: (redirectCallback?: () => void) => Promise<void>;
   fetchUser: () => Promise<void>;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
@@ -41,14 +41,14 @@ export const useAuthStore = create<AuthStore>()(
           const data = await authApi.login(credentials);
           const { token, user } = data;
 
-          // localStorageにもトークンを保存（api.tsとの互換性のため）
-          if (typeof window !== 'undefined' && token) {
-            localStorage.setItem('token', token);
-          }
+          // Tokenベースの後方互換性のためTokenがある場合は保存
+          // if (typeof window !== 'undefined' && token) {
+          //   localStorage.setItem('token', token);
+          // }
 
           set({
             user,
-            token,
+            token: token || null, // Cookie認証の場合tokenはnull
             isAuthenticated: true,
             loading: false,
           });
@@ -64,14 +64,14 @@ export const useAuthStore = create<AuthStore>()(
           const data = await authApi.register(credentials);
           const { token, user } = data;
 
-          // localStorageにもトークンを保存（api.tsとの互換性のため）
-          if (typeof window !== 'undefined' && token) {
-            localStorage.setItem('token', token);
-          }
+          // Tokenベースの後方互換性のためTokenがある場合は保存
+          // if (typeof window !== 'undefined' && token) {
+          //   localStorage.setItem('token', token);
+          // }
 
           set({
             user,
-            token,
+            token: token || null, // Cookie認証の場合tokenはnull
             isAuthenticated: true,
             loading: false,
           });
@@ -81,38 +81,32 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      logout: (redirectCallback?: () => void) => {
-        // APIのlogout関数を呼び出してlocalStorageからトークンを削除
-        authApi.logout();
+      logout: async (redirectCallback?: () => void) => {
+        try {
+          // APIのlogout関数を呼び出してサーバー側でセッション/トークンを無効化
+          await authApi.logout();
+        } catch (error) {
+          console.warn('Server logout failed:', error);
+        } finally {
+          // 常にクライアント側のステートをクリア
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            loading: false,
+          });
 
-        // 念のため、直接localStorageからも削除
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('token');
-        }
-
-        set({
-          user: null,
-          token: null,
-          isAuthenticated: false,
-          loading: false,
-        });
-
-        // リダイレクトコールバックが提供されていれば実行、そうでなければfallback
-        if (redirectCallback) {
-          redirectCallback();
-        } else if (typeof window !== 'undefined') {
-          // fallback: 直接リダイレクト
-          window.location.href = '/';
+          // リダイレクトコールバックが提供されていれば実行、そうでなければfallback
+          if (redirectCallback) {
+            redirectCallback();
+          } else if (typeof window !== 'undefined') {
+            // fallback: 直接リダイレクト
+            window.location.href = '/';
+          }
         }
       },
 
       fetchUser: async () => {
-        const { token } = get();
-        if (!token) {
-          set({ user: null, isAuthenticated: false, loading: false });
-          return;
-        }
-
         set({ loading: true });
         try {
           const data = await authApi.getProfile();
@@ -124,6 +118,12 @@ export const useAuthStore = create<AuthStore>()(
           });
         } catch (error) {
           console.error('User profile fetch error:', error);
+          // プロファイル取得失敗時はサーバー側ログアウトを呼び出し
+          try {
+            await authApi.logout();
+          } catch (logoutError) {
+            console.warn('Logout after profile fetch failure failed:', logoutError);
+          }
           set({
             user: null,
             token: null,
@@ -155,7 +155,7 @@ export const useAuthStore = create<AuthStore>()(
     {
       name: 'auth-storage',
       partialize: state => ({
-        token: state.token,
+        // token: state.token, // Tokenは永続化しない
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
@@ -166,9 +166,9 @@ export const useAuthStore = create<AuthStore>()(
             state.isAuthenticated = true;
           }
           // localStorageにもトークンを同期（api.tsとの互換性のため）
-          if (typeof window !== 'undefined' && state.token) {
-            localStorage.setItem('token', state.token);
-          }
+          // if (typeof window !== 'undefined' && state.token) {
+          //   localStorage.setItem('token', state.token);
+          // }
           // ハイドレーション完了をマーク
           state.hasHydrated = true;
         }

@@ -6,14 +6,12 @@ import { useFileUpload } from '@/hooks/useFileUpload';
 
 // モック
 vi.mock('@/lib/api/files', () => ({
-  filesApi: {
-    uploadTeamFile: vi.fn(),
-    uploadMatchFile: vi.fn(),
-  },
+  uploadTeamFile: vi.fn(),
+  uploadMatchFile: vi.fn(),
 }));
 
 // モック関数の参照を取得
-import { filesApi } from '@/lib/api/files';
+import * as filesApi from '@/lib/api/files';
 
 const mockUploadTeamFile = vi.mocked(filesApi.uploadTeamFile);
 const mockUploadMatchFile = vi.mocked(filesApi.uploadMatchFile);

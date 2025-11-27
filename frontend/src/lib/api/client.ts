@@ -5,6 +5,12 @@
 import type { ApiClientConfig, ApiResponse } from '@/types/api';
 import { ApiErrorClass } from '@/types/api';
 
+export interface DownloadResult {
+  blob: Blob;
+  filename?: string;
+  headers: Headers;
+}
+
 export class ApiClient {
   private baseURL: string;
   private defaultHeaders: Record<string, string>;
@@ -17,18 +23,26 @@ export class ApiClient {
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'X-Requested-With': 'XMLHttpRequest', // Laravel SPAモードで必要
       ...config?.defaultHeaders,
     };
+  }
+
+  /**
+   * CSRF Cookieを取得（Sanctum Token認証では不要だが互換性のため残す）
+   */
+  async getCsrfCookie(): Promise<void> {
+    // Sanctum Token + HttpOnly Cookie方式ではCSRF不要
+    // 互換性のため空実装を残す
+    return Promise.resolve();
   }
 
   async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const token = this.getToken();
     const headers = {
       ...this.defaultHeaders,
-      ...(token && { Authorization: `Bearer ${token}` }),
       ...this.processHeaders(options.headers),
     };
 
@@ -39,7 +53,7 @@ export class ApiClient {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...options,
         headers,
-        credentials: 'include',
+        credentials: 'include', // HttpOnly Cookieの送受信に必須
       });
 
       if (!response.ok) {
@@ -109,10 +123,8 @@ export class ApiClient {
     formData: FormData,
     options?: RequestInit
   ): Promise<ApiResponse<T>> {
-    const token = this.getToken();
     const headers: Record<string, string> = {
-      Accept: 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...this.defaultHeaders,
       ...this.processHeaders(options?.headers),
     };
 
@@ -127,7 +139,7 @@ export class ApiClient {
         method: 'POST',
         headers,
         body: formData,
-        credentials: 'include',
+        credentials: 'include', // HttpOnly Cookieの送受信に必須
       });
 
       if (!response.ok) {
@@ -154,26 +166,48 @@ export class ApiClient {
     }
   }
 
-  private getToken(): string | null {
-    if (typeof window === 'undefined') return null;
+  async download(endpoint: string, data?: any): Promise<DownloadResult> {
+    const headers = {
+      ...this.defaultHeaders,
+    };
 
-    // まずlocalStorageの'token'キーを確認
-    let token = localStorage.getItem('token');
+    this.addBasicAuthIfNeeded(headers, endpoint);
 
-    // なければZustandのpersistストレージを確認
-    if (!token) {
-      const authStorage = localStorage.getItem('auth-storage');
-      if (authStorage) {
-        try {
-          const parsed = JSON.parse(authStorage);
-          token = parsed.state?.token || null;
-        } catch (e) {
-          console.warn('Failed to parse auth-storage:', e);
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'POST',
+        headers,
+        body: data ? JSON.stringify(data) : undefined,
+        credentials: 'include', // HttpOnly Cookieの送受信に必須
+      });
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      // Content-Dispositionヘッダーからファイル名を抽出
+      const disposition = response.headers.get('content-disposition');
+      let filename: string | undefined;
+
+      if (disposition) {
+        const filenameMatch = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+          try {
+            filename = decodeURIComponent(filename);
+          } catch {
+            // デコード失敗時はそのまま使用
+          }
         }
       }
-    }
 
-    return token;
+      return { blob, filename, headers: response.headers };
+    } catch (error) {
+      console.error(`Download from ${endpoint} failed:`, error);
+      throw error;
+    }
   }
 
   private processHeaders(headers?: HeadersInit): Record<string, string> {
@@ -205,11 +239,13 @@ export class ApiClient {
     const basicAuthUser = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
     const basicAuthPassword = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
 
+    // ステージング環境の場合、APIエンドポイント以外にBasic認証を追加
+    // APIエンドポイントはSanctumのCookieベース認証を使用
     if (
       this.baseURL.includes('stg.project-europa.work') &&
       basicAuthUser &&
       basicAuthPassword &&
-      !endpoint.startsWith('/api/')
+      !endpoint.startsWith('/api/') // APIエンドポイントは除外
     ) {
       headers.Authorization = `Basic ${btoa(`${basicAuthUser}:${basicAuthPassword}`)}`;
     }

@@ -26,21 +26,30 @@ import { apiClient } from './client';
 function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(
   response: any
 ): T {
-  // パターン1: 直接データ構造 { user: {...}, token: "..." }
+  // パターン1: HttpOnly Cookie認証 { message: "...", user: {...} }
+  // token はCookieに保存されているため、レスポンスに含まれない
   if (
     response &&
     typeof response === 'object' &&
-    'token' in response &&
-    'user' in response
+    'user' in response &&
+    typeof response.user === 'object'
   ) {
-    return response as T;
+    // tokenがない場合は空文字列を設定（後方互換性のため）
+    // messageなどの余計なプロパティは除外して、必要なものだけを返す
+    return {
+      token: response.token || '',
+      user: response.user,
+    } as T;
   }
 
   // パターン2: dataプロパティでラップ { data: { user: {...}, token: "..." } }
   if (response && typeof response === 'object' && 'data' in response) {
-    const apiResponse = response as ApiResponse<T>;
-    if (apiResponse.data) {
-      return apiResponse.data;
+    const apiResponse = response as ApiResponse<any>;
+    if (apiResponse.data && typeof apiResponse.data === 'object' && 'user' in apiResponse.data) {
+      return {
+        token: apiResponse.data.token || '',
+        user: apiResponse.data.user,
+      } as T;
     }
   }
 
@@ -53,6 +62,13 @@ function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(
 
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
+    // CSRF Cookieを事前に取得
+    try {
+      await apiClient.getCsrfCookie();
+    } catch (error) {
+      throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
+    }
+
     const response = await apiClient.post<LoginResponse>(
       '/api/v1/login',
       credentials
@@ -61,14 +77,22 @@ export const authApi = {
     // レスポンス構造の正規化
     const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
 
-    if (normalizedResponse.token) {
-      localStorage.setItem('token', normalizedResponse.token);
-    }
+    // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
+    // if (normalizedResponse.token) {
+    //   localStorage.setItem('token', normalizedResponse.token);
+    // }
 
     return normalizedResponse;
   },
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
+    // CSRF Cookieを事前に取得
+    try {
+      await apiClient.getCsrfCookie();
+    } catch (error) {
+      throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
+    }
+
     const response = await apiClient.post<RegisterResponse>(
       '/api/v1/register',
       {
@@ -83,9 +107,10 @@ export const authApi = {
     const normalizedResponse =
       normalizeAuthResponse<RegisterResponse>(response);
 
-    if (normalizedResponse.token) {
-      localStorage.setItem('token', normalizedResponse.token);
-    }
+    // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
+    // if (normalizedResponse.token) {
+    //   localStorage.setItem('token', normalizedResponse.token);
+    // }
 
     return normalizedResponse;
   },
@@ -160,7 +185,15 @@ export const authApi = {
     }
   },
 
-  logout(): void {
-    localStorage.removeItem('token');
+  async logout(): Promise<void> {
+    try {
+      // Call server logout endpoint to invalidate session/token
+      await apiClient.post('/api/v1/logout');
+    } catch (error) {
+      console.warn('Server logout failed:', error);
+    } finally {
+      // Always clean up local storage regardless of server response
+      // localStorage.removeItem('token');
+    }
   },
 };
