@@ -74,6 +74,35 @@ class AuthTest extends TestCase
         $this->assertCount(1, $user->fresh()->tokens);
     }
 
+    public function test_ログインしたままにする機能でセッション期間延長()
+    {
+        $user = User::factory()->create([
+            'email' => 'test@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->postJson('/api/v1/login', [
+            'email' => 'test@example.com',
+            'password' => 'password123',
+            'remember' => true,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure(['message', 'user'])
+            ->assertCookie(config('auth.token_cookie_name'));
+
+        // トークンの有効期限が約14日後（20160分）になっていることを確認
+        // 注: 正確な時間をテストするのは難しいため、デフォルト（120分）より明らかに長いことで判定
+        $token = $user->fresh()->tokens->first();
+        $this->assertNotNull($token->expires_at);
+        
+        // 13日以上後の有効期限であることを確認
+        $this->assertTrue(
+            $token->expires_at->gt(now()->addDays(13)),
+            'Token expiration should be greater than 13 days'
+        );
+    }
+
     public function test_CSRF保護された登録でセッション認証()
     {
         $response = $this->postJson('/api/v1/register', [

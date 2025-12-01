@@ -62,6 +62,32 @@ describe('authStore', () => {
       expect(state.token).toBe(mockToken);
       expect(state.isAuthenticated).toBe(true);
       expect(state.loading).toBe(false);
+      expect(authApi.login).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+    });
+
+    it('should login successfully with remember me', async () => {
+      const mockResponse = { token: mockToken, user: mockUser };
+      vi.mocked(authApi.login).mockResolvedValue(mockResponse);
+
+      const { login } = useAuthStore.getState();
+
+      await login({
+        email: 'test@example.com',
+        password: 'password123',
+        remember: true,
+      });
+
+      const state = useAuthStore.getState();
+      expect(state.user).toEqual(mockUser);
+      expect(state.isAuthenticated).toBe(true);
+      expect(authApi.login).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+        remember: true,
+      });
     });
 
     it('should handle login error', async () => {
@@ -85,11 +111,11 @@ describe('authStore', () => {
     });
 
     it('should set loading state during login', async () => {
-      let resolveLogin: (value: unknown) => void;
+      let resolveLogin: (value: any) => void = () => { };
       const loginPromise = new Promise(resolve => {
         resolveLogin = resolve;
       });
-      vi.mocked(authApi.login).mockReturnValue(loginPromise);
+      vi.mocked(authApi.login).mockReturnValue(loginPromise as any);
 
       const { login } = useAuthStore.getState();
 
@@ -156,7 +182,7 @@ describe('authStore', () => {
   describe('Logout', () => {
     it('should logout successfully', async () => {
       vi.mocked(authApi.logout).mockResolvedValueOnce(undefined);
-      
+
       // 初期状態を認証済みに設定
       useAuthStore.setState({
         user: mockUser,
@@ -166,7 +192,7 @@ describe('authStore', () => {
       });
 
       const { logout } = useAuthStore.getState();
-      
+
       // window.location.hrefをモック
       const originalLocation = window.location;
       Object.defineProperty(window, 'location', {
@@ -191,9 +217,9 @@ describe('authStore', () => {
     });
 
     it('should handle logout server error gracefully', async () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
       vi.mocked(authApi.logout).mockRejectedValueOnce(new Error('Server error'));
-      
+
       // 初期状態を認証済みに設定
       useAuthStore.setState({
         user: mockUser,
@@ -203,7 +229,7 @@ describe('authStore', () => {
       });
 
       const { logout } = useAuthStore.getState();
-      
+
       // window.location.hrefをモック
       const originalLocation = window.location;
       Object.defineProperty(window, 'location', {
@@ -246,8 +272,8 @@ describe('authStore', () => {
     });
 
     it('should handle fetch user error', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
       const mockError = new Error('Fetch failed');
       vi.mocked(authApi.getProfile).mockRejectedValue(mockError);
       vi.mocked(authApi.logout).mockResolvedValueOnce(undefined);
@@ -270,8 +296,8 @@ describe('authStore', () => {
     });
 
     it('should attempt to fetch user even without token (Cookie auth)', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
       vi.mocked(authApi.getProfile).mockRejectedValueOnce(new Error('Unauthorized'));
       vi.mocked(authApi.logout).mockResolvedValueOnce(undefined);
 

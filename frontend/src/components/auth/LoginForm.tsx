@@ -20,6 +20,7 @@ const loginSchema = z.object({
     .string()
     .min(1, 'パスワードを入力してください')
     .min(6, 'パスワードは6文字以上で入力してください'),
+  remember: z.boolean().optional(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -204,6 +205,33 @@ export function LoginForm({
             {errors.password.message}
           </p>
         )}
+      </div>
+
+      {/* ログインしたままにするチェックボックス */}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <input
+          id="remember"
+          type="checkbox"
+          {...register('remember')}
+          style={{
+            width: '16px',
+            height: '16px',
+            marginRight: '8px',
+            cursor: 'pointer',
+            accentColor: '#00c8ff',
+          }}
+        />
+        <label
+          htmlFor="remember"
+          style={{
+            color: '#b0c4d8',
+            fontSize: '0.9rem',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+        >
+          ログインしたままにする
+        </label>
       </div>
 
       {/* 送信ボタン */}
