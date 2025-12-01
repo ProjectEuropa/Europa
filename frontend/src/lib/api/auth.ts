@@ -71,7 +71,11 @@ export const authApi = {
 
     const response = await apiClient.post<LoginResponse>(
       '/api/v1/login',
-      credentials
+      {
+        email: credentials.email,
+        password: credentials.password,
+        remember: credentials.remember,
+      }
     );
 
     // レスポンス構造の正規化

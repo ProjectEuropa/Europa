@@ -30,8 +30,13 @@ class LoginController extends Controller
 
         $user = Auth::user();
 
-        // トークンの有効期限を設定（Cookieと一致させる）
-        $tokenLifetimeMinutes = intval(config('session.lifetime', 120));
+        // トークンの有効期限を設定
+        // rememberがtrueの場合は14日間、falseの場合は設定値（デフォルト120分）
+        $isRemember = $request->boolean('remember');
+        $tokenLifetimeMinutes = $isRemember 
+            ? 14 * 24 * 60 // 14 days in minutes
+            : intval(config('session.lifetime', 120));
+            
         $expiresAt = now()->addMinutes($tokenLifetimeMinutes);
 
         $token = $user->createToken(

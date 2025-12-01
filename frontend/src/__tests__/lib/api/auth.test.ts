@@ -50,7 +50,33 @@ describe('authApi', () => {
 
       const result = await authApi.login(credentials);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', {
+        ...credentials,
+        remember: undefined,
+      });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should login successfully with remember me option', async () => {
+      const credentials: LoginCredentials = {
+        email: 'test@example.com',
+        password: 'password123',
+        remember: true,
+      };
+
+      const mockResponse = {
+        user: { id: 1, name: 'Test User', email: 'test@example.com' },
+        token: 'test-token-123',
+      };
+
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse as any);
+
+      const result = await authApi.login(credentials);
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', {
+        ...credentials,
+        remember: true,
+      });
       expect(result).toEqual(mockResponse);
     });
 
@@ -72,7 +98,10 @@ describe('authApi', () => {
 
       const result = await authApi.login(credentials);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', credentials);
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/login', {
+        ...credentials,
+        remember: undefined,
+      });
       expect(result).toEqual(mockResponse.data);
     });
 
