@@ -43,10 +43,13 @@ export const registerEvent = async (formData: EventFormData) => {
  * イベント一覧取得API
  */
 export const fetchEvents = async (): Promise<EventData[]> => {
-  const response = await apiClient.get<{ data: any[] }>('/api/v1/event');
+  const response = await apiClient.get<any>('/api/v1/event');
+
+  // APIレスポンス: { data: [...] } 形式
+  const rawEvents = response.data ?? [];
 
   // スネークケース→キャメルケース変換
-  const events = (response.data.data ?? []).map((event: any) => ({
+  const events = rawEvents.map((event: any) => ({
     id: String(event.id),
     name: event.event_name ?? '',
     details: event.event_details ?? '',
@@ -59,6 +62,5 @@ export const fetchEvents = async (): Promise<EventData[]> => {
     isActive: event.is_active,
   }));
 
-  return events; // 配列を直接返す
+  return events;
 };
-
