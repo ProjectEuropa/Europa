@@ -120,7 +120,7 @@ describe('events API', () => {
         },
       ];
 
-      const mockResponse = { data: { data: mockEvents } };
+      const mockResponse = { data: mockEvents };
       vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
 
       const result = await fetchEvents();
