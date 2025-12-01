@@ -122,6 +122,7 @@ describe('LoginForm', () => {
         expect(mockLogin).toHaveBeenCalledWith({
           email: 'test@example.com',
           password: 'password123',
+          remember: false,
         });
       });
     });
