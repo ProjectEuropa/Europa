@@ -12,31 +12,33 @@ async function migrateMetadata() {
         user: process.env.OLD_DB_USERNAME,
         password: process.env.OLD_DB_PASSWORD,
     });
-    await oldDb.connect();
 
-    const newDb = neon(process.env.NEON_DATABASE_URL!);
+    try {
+        await oldDb.connect();
 
-    console.log('=== メタデータ移行開始 ===\n');
+        const newDb = neon(process.env.NEON_DATABASE_URL!);
 
-    // 1. users テーブル移行
-    console.log('1. users テーブル移行中...');
-    const users = await oldDb.query('SELECT * FROM users ORDER BY id');
+        console.log('=== メタデータ移行開始 ===\n');
 
-    for (const user of users.rows) {
-        await newDb`
+        // 1. users テーブル移行
+        console.log('1. users テーブル移行中...');
+        const users = await oldDb.query('SELECT * FROM users ORDER BY id');
+
+        for (const user of users.rows) {
+            await newDb`
       INSERT INTO users (id, name, email, password, created_at, updated_at)
       VALUES (${user.id}, ${user.name}, ${user.email}, ${user.password}, ${user.created_at}, ${user.updated_at})
       ON CONFLICT (id) DO NOTHING
     `;
-    }
-    console.log(`  ✓ ${users.rows.length}件移行完了\n`);
+        }
+        console.log(`  ✓ ${users.rows.length}件移行完了\n`);
 
-    // 2. events テーブル移行
-    console.log('2. events テーブル移行中...');
-    const events = await oldDb.query('SELECT * FROM events ORDER BY id');
+        // 2. events テーブル移行
+        console.log('2. events テーブル移行中...');
+        const events = await oldDb.query('SELECT * FROM events ORDER BY id');
 
-    for (const event of events.rows) {
-        await newDb`
+        for (const event of events.rows) {
+            await newDb`
       INSERT INTO events (
         id, register_user_id, event_name, event_details, event_reference_url, event_type,
         event_closing_day, event_displaying_day, created_at, updated_at
@@ -48,27 +50,33 @@ async function migrateMetadata() {
       )
       ON CONFLICT (id) DO NOTHING
     `;
-    }
-    console.log(`  ✓ ${events.rows.length}件移行完了\n`);
+        }
+        console.log(`  ✓ ${events.rows.length}件移行完了\n`);
 
-    // 3. password_resets テーブル移行（オプション）
-    console.log('3. password_resets テーブル移行中...');
-    try {
-        const resets = await oldDb.query('SELECT * FROM password_resets');
-        for (const reset of resets.rows) {
-            await newDb`
+        // 3. password_resets テーブル移行（オプション）
+        console.log('3. password_resets テーブル移行中...');
+        try {
+            const resets = await oldDb.query('SELECT * FROM password_resets');
+            for (const reset of resets.rows) {
+                await newDb`
         INSERT INTO password_resets (email, token, created_at)
         VALUES (${reset.email}, ${reset.token}, ${reset.created_at})
         ON CONFLICT DO NOTHING
         `;
+            }
+            console.log(`  ✓ ${resets.rows.length}件移行完了\n`);
+        } catch (e) {
+            console.log('  ! password_resetsテーブルが見つからないか、エラーが発生しました（スキップします）');
         }
-        console.log(`  ✓ ${resets.rows.length}件移行完了\n`);
-    } catch (e) {
-        console.log('  ! password_resetsテーブルが見つからないか、エラーが発生しました（スキップします）');
-    }
 
-    await oldDb.end();
-    console.log('=== メタデータ移行完了 ===');
+        console.log('=== メタデータ移行完了 ===');
+    } catch (error) {
+        console.error('移行エラー:', error);
+        process.exit(1);
+    } finally {
+        await oldDb.end();
+        console.log('✓ DB接続終了');
+    }
 }
 
 migrateMetadata();
