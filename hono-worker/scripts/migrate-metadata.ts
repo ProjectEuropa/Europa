@@ -2,7 +2,18 @@ import { Client } from 'pg';
 import { neon } from '@neondatabase/serverless';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: '.env.migration' });
+// 環境変数読み込み
+const args = process.argv.slice(2);
+const envIndex = args.indexOf('--env');
+const environment = envIndex !== -1 ? args[envIndex + 1] : 'staging';
+const envFile = environment === 'production'
+    ? '.env.production.migration'
+    : '.env.migration';
+
+console.log(`環境: ${environment}`);
+console.log(`設定ファイル: ${envFile}\n`);
+
+dotenv.config({ path: envFile });
 
 async function migrateMetadata() {
     const oldDb = new Client({
@@ -25,9 +36,13 @@ async function migrateMetadata() {
         const users = await oldDb.query('SELECT * FROM users ORDER BY id');
 
         for (const user of users.rows) {
+            // emailがNULLの場合はダミー値を設定
+            const email = user.email || `user${user.id}@placeholder.local`;
+            const password = user.password || '';
+
             await newDb`
-      INSERT INTO users (id, name, email, password, created_at, updated_at)
-      VALUES (${user.id}, ${user.name}, ${user.email}, ${user.password}, ${user.created_at}, ${user.updated_at})
+      INSERT INTO users (id, name, email, password, remember_token, created_at, updated_at)
+      VALUES (${user.id}, ${user.name}, ${email}, ${password}, ${user.remember_token}, ${user.created_at}, ${user.updated_at})
       ON CONFLICT (id) DO NOTHING
     `;
         }

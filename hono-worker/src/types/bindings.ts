@@ -1,12 +1,27 @@
-import { KVNamespace, R2Bucket } from '@cloudflare/workers-types';
+// Cloudflare Workers環境変数の型定義
 
-export type Bindings = {
+export interface Env {
+    // 環境識別子
     ENVIRONMENT: 'development' | 'staging' | 'production';
+
+    // APIバージョン
     API_VERSION: string;
-    LOG_LEVEL: string;
+
+    // ログレベル
+    LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error';
+
+    // データベース（Neon）
     DATABASE_URL: string;
+
+    // JWT認証
     JWT_SECRET: string;
-    RESEND_API_KEY: string;
-    R2_BUCKET: R2Bucket;
-    KV: KVNamespace;
+
+    // メール送信（Resend）
+    RESEND_API_KEY?: string;
+
+    // フロントエンドURL（CORS用）
+    FRONTEND_URL?: string;
+
+    // R2 Bucket
+    FILES_BUCKET: R2Bucket;
 };

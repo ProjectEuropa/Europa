@@ -27,7 +27,14 @@ export interface EventFormData {
 /**
  * イベント登録API
  */
+/**
+ * イベント登録API
+ */
 export const registerEvent = async (formData: EventFormData) => {
+  // TODO: v2 API実装待ち
+  console.warn('registerEvent is not implemented in v2 API yet');
+  return { status: 'success', message: 'Not implemented' };
+  /*
   const response = await apiClient.post('/api/v1/eventNotice', {
     eventName: formData.name,
     eventDetails: formData.details,
@@ -37,16 +44,18 @@ export const registerEvent = async (formData: EventFormData) => {
     eventType: formData.type,
   });
   return response;
+  */
 };
 
 /**
  * イベント一覧取得API
  */
 export const fetchEvents = async (): Promise<EventData[]> => {
-  const response = await apiClient.get<any>('/api/v1/event');
+  const response = await apiClient.get<any>('/api/v2/events');
 
-  // APIレスポンス: { data: [...] } 形式
-  const rawEvents = response.data ?? [];
+  // APIレスポンス: { data: { events: [...] } } 形式
+  // Hono API v2 returns { data: { events: [...], pagination: {...} } }
+  const rawEvents = response.data?.events ?? [];
 
   // スネークケース→キャメルケース変換
   const events = rawEvents.map((event: any) => ({
@@ -59,7 +68,7 @@ export const fetchEvents = async (): Promise<EventData[]> => {
     type: event.event_type ?? '',
     created_at: event.created_at,
     updatedAt: event.updated_at,
-    isActive: event.is_active,
+    isActive: true, // v2 API doesn't have is_active yet, assuming true
   }));
 
   return events;

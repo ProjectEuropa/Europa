@@ -7,6 +7,9 @@
         "dev": "wrangler dev",
         "deploy:staging": "wrangler deploy --env staging",
         "deploy:production": "wrangler deploy --env production",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "deploy:stg": "wrangler deploy --env staging",
+        "deploy:prod": "wrangler deploy --env production",
         "migrate:files:stg": "tsx scripts/migrate-files-to-r2.ts --env staging",
         "migrate:files:prod": "tsx scripts/migrate-files-to-r2.ts --env production"
     },
@@ -20,19 +23,20 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
-        "hono": "^4.4.0",
-        "@neondatabase/serverless": "^0.9.0",
         "@aws-sdk/client-s3": "^3.600.0",
+        "@neondatabase/serverless": "^0.9.0",
         "bcrypt": "^5.1.1",
-        "resend": "^3.2.0"
+        "hono": "^4.4.0",
+        "resend": "^3.2.0",
+        "zod": "^4.1.13"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20241127.0",
-        "wrangler": "^3.60.0",
-        "typescript": "^5.3.3",
-        "tsx": "^4.7.0",
-        "pg": "^8.11.3",
+        "@types/bcrypt": "^5.0.2",
         "@types/pg": "^8.11.0",
-        "@types/bcrypt": "^5.0.2"
+        "pg": "^8.11.3",
+        "tsx": "^4.7.0",
+        "typescript": "^5.3.3",
+        "wrangler": "^3.60.0"
     }
 }

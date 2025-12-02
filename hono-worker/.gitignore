@@ -4,9 +4,13 @@ npm-debug.log
 yarn-error.log
 pnpm-debug.log
 
+# 環境変数ファイル
+.dev.vars
+.env.migration
+.env.production.migration
+
 # Cloudflare Workers
 .wrangler/
-.dev.vars
 
 # Environment Variables (Migration & Secrets)
 .env

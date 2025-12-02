@@ -70,7 +70,7 @@ export const authApi = {
     }
 
     const response = await apiClient.post<LoginResponse>(
-      '/api/v1/login',
+      '/api/v2/auth/login',
       {
         email: credentials.email,
         password: credentials.password,
@@ -80,11 +80,6 @@ export const authApi = {
 
     // レスポンス構造の正規化
     const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
-
-    // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
-    // if (normalizedResponse.token) {
-    //   localStorage.setItem('token', normalizedResponse.token);
-    // }
 
     return normalizedResponse;
   },
@@ -98,7 +93,7 @@ export const authApi = {
     }
 
     const response = await apiClient.post<RegisterResponse>(
-      '/api/v1/register',
+      '/api/v2/auth/register',
       {
         name: credentials.name,
         email: credentials.email,
@@ -111,16 +106,11 @@ export const authApi = {
     const normalizedResponse =
       normalizeAuthResponse<RegisterResponse>(response);
 
-    // Tokenベース認証との後方互換性のため、tokenがある場合はlocalStorageに保存
-    // if (normalizedResponse.token) {
-    //   localStorage.setItem('token', normalizedResponse.token);
-    // }
-
     return normalizedResponse;
   },
 
   async getProfile(): Promise<User> {
-    const response = await apiClient.get<User>('/api/v1/user/profile');
+    const response = await apiClient.get<User>('/api/v2/auth/me');
 
     // レスポンスが直接ユーザーデータを含む場合
     if (response && typeof response === 'object' && 'id' in response) {
@@ -130,30 +120,40 @@ export const authApi = {
     // レスポンスがdata プロパティを持つ場合
     if (response && typeof response === 'object' && 'data' in response) {
       const apiResponse = response as unknown as ApiResponse<User>;
-      return apiResponse.data;
+      return apiResponse.data.user || apiResponse.data;
     }
 
     throw new Error('Invalid user profile response structure');
   },
 
   async updateProfile(data: UserUpdateData): Promise<void> {
-    await apiClient.post('/api/v1/user/update', data);
+    // TODO: v2 API実装待ち
+    console.warn('updateProfile is not implemented in v2 API yet');
+    // await apiClient.post('/api/v1/user/update', data);
   },
 
   async sendPasswordResetLink(
     request: PasswordResetRequest
   ): Promise<PasswordResetResponse> {
+    // TODO: v2 API実装待ち
+    console.warn('sendPasswordResetLink is not implemented in v2 API yet');
+    return { status: 'success', message: 'Not implemented' };
+    /*
     const response = await apiClient.post<PasswordResetResponse>(
       '/api/v1/forgot-password',
       request
     );
-    // Laravel APIは直接レスポンスオブジェクトを返すため、response.dataではなくresponse自体を返す
     return response as PasswordResetResponse;
+    */
   },
 
   async checkResetPasswordToken(
     check: PasswordResetTokenCheck
   ): Promise<PasswordResetTokenResponse> {
+    // TODO: v2 API実装待ち
+    console.warn('checkResetPasswordToken is not implemented in v2 API yet');
+    return { valid: false, message: 'Not implemented' };
+    /*
     const params = new URLSearchParams({
       token: check.token,
       email: check.email,
@@ -168,9 +168,14 @@ export const authApi = {
         message: error.message || '無効なリセットリンクです',
       };
     }
+    */
   },
 
   async resetPassword(data: PasswordResetData): Promise<PasswordResetResult> {
+    // TODO: v2 API実装待ち
+    console.warn('resetPassword is not implemented in v2 API yet');
+    return { error: 'Not implemented' };
+    /*
     try {
       const response = await apiClient.post<{ message: string }>(
         '/api/v1/reset-password',
@@ -182,17 +187,17 @@ export const authApi = {
         }
       );
 
-      // Laravel APIは直接レスポンスオブジェクトを返すため、response.dataではなくresponse自体を使用
       return { message: (response as any).message };
     } catch (error: any) {
       return { error: error.message || 'リセットに失敗しました' };
     }
+    */
   },
 
   async logout(): Promise<void> {
     try {
       // Call server logout endpoint to invalidate session/token
-      await apiClient.post('/api/v1/logout');
+      await apiClient.post('/api/v2/auth/logout');
     } catch (error) {
       console.warn('Server logout failed:', error);
     } finally {

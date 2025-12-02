@@ -4,7 +4,18 @@ import { neon } from '@neondatabase/serverless';
 import * as dotenv from 'dotenv';
 
 // 環境変数読み込み
-dotenv.config({ path: '.env.migration' });
+// --env フラグで環境を指定（staging, production）
+const args = process.argv.slice(2);
+const envIndex = args.indexOf('--env');
+const environment = envIndex !== -1 ? args[envIndex + 1] : 'staging';
+const envFile = environment === 'production'
+    ? '.env.production.migration'
+    : '.env.migration';
+
+console.log(`環境: ${environment}`);
+console.log(`設定ファイル: ${envFile}\n`);
+
+dotenv.config({ path: envFile });
 
 interface FileRecord {
     id: number;
@@ -169,25 +180,81 @@ class FileMigrator {
             }));
 
             // 2. Neonにメタデータ挿入
+            // upload_user_idが存在するか確認（存在しない場合はNULL）
+            let validUserId: number | null = file.upload_user_id;
+            if (file.upload_user_id) {
+                const userCheck = await this.newDb`
+          SELECT id FROM users WHERE id = ${file.upload_user_id}
+        `;
+                if (Array.isArray(userCheck) && userCheck.length === 0) {
+                    validUserId = null;
+                }
+            }
+
+            // ファイルメタデータを挿入
             await this.newDb`
         INSERT INTO files (
           id, upload_user_id, file_name, file_path, file_size,
-          file_comment, search_tag1, search_tag2, search_tag3, search_tag4,
-          downloadable_at, created_at, updated_at
+          file_comment, downloadable_at, created_at, updated_at
         ) VALUES (
-          ${file.id}, ${file.upload_user_id}, ${file.file_name}, ${key}, ${fileSize},
-          ${file.file_comment}, ${file.search_tag1}, ${file.search_tag2}, 
-          ${file.search_tag3}, ${file.search_tag4},
-          ${file.downloadable_at}, ${file.created_at}, ${file.updated_at}
+          ${file.id}, ${validUserId}, ${file.file_name}, ${key}, ${fileSize},
+          ${file.file_comment}, ${file.downloadable_at}, ${file.created_at}, ${file.updated_at}
         )
         ON CONFLICT (id) DO UPDATE SET
           file_path = EXCLUDED.file_path,
           updated_at = NOW()
       `;
+
+            // 3. タグを処理
+            const tags = [
+                file.search_tag1,
+                file.search_tag2,
+                file.search_tag3,
+                file.search_tag4
+            ].filter(tag => tag && tag.trim() !== '');
+
+            for (const tagName of tags) {
+                const normalizedTag = this.normalizeSearchTag(tagName);
+                if (!normalizedTag) continue;
+
+                // タグを取得または作成
+                const tagResult = await this.newDb`
+          INSERT INTO tags (tag_name)
+          VALUES (${normalizedTag})
+          ON CONFLICT (tag_name) DO UPDATE SET tag_name = EXCLUDED.tag_name
+          RETURNING id
+        `;
+
+                if (!Array.isArray(tagResult) || tagResult.length === 0) continue;
+                const tagId = (tagResult as any[])[0]?.id;
+                if (!tagId) continue;
+
+                // file_tagsに関連付け
+                await this.newDb`
+          INSERT INTO file_tags (file_id, tag_id)
+          VALUES (${file.id}, ${tagId})
+          ON CONFLICT (file_id, tag_id) DO NOTHING
+        `;
+            }
         }
 
         // ドライランでも表示
         console.log(`✓ ${file.file_name} (ID: ${file.id}, ${this.formatBytes(file.file_data.length)})`);
+    }
+
+    private normalizeSearchTag(tag: string | null | undefined): string | null {
+        if (!tag) return null;
+
+        // トリミング
+        const trimmed = tag.trim();
+
+        // 空文字列の場合はNULL
+        if (trimmed === '') return null;
+
+        // 小文字に統一（オプション: 必要に応じてコメントアウト）
+        // return trimmed.toLowerCase();
+
+        return trimmed;
     }
 
     private getContentType(filename: string): string {

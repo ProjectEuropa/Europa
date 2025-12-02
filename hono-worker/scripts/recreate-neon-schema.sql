@@ -1,3 +1,18 @@
+-- ===================================
+-- Neon データベース再構築スクリプト
+-- ===================================
+-- 注意: このスクリプトは既存のすべてのデータを削除します
+
+-- 1. 既存テーブルを削除（依存関係の逆順）
+DROP TABLE IF EXISTS file_tags CASCADE;
+DROP TABLE IF EXISTS tags CASCADE;
+DROP TABLE IF EXISTS password_resets CASCADE;
+DROP TABLE IF EXISTS files CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- 2. 新しいスキーマを作成
+
 -- users テーブル
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -58,10 +73,17 @@ CREATE TABLE password_resets (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- インデックス作成（パフォーマンス最適化）
+-- 3. インデックス作成（パフォーマンス最適化）
 CREATE INDEX idx_files_upload_user_id ON files(upload_user_id);
 CREATE INDEX idx_files_downloadable_at ON files(downloadable_at);
 CREATE INDEX idx_events_displaying_day ON events(event_displaying_day);
 CREATE INDEX idx_password_resets_token ON password_resets(token);
 CREATE INDEX idx_tags_tag_name ON tags(tag_name);
 CREATE INDEX idx_file_tags_tag_id ON file_tags(tag_id);
+
+-- 完了
+-- テーブル一覧を確認
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public'
+ORDER BY table_name;

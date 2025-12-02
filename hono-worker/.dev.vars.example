@@ -1,0 +1,23 @@
+# Hono Worker 環境変数（ローカル開発用）
+# このファイルは .gitignore に含まれています
+
+# 環境識別子
+ENVIRONMENT=development
+
+# APIバージョン
+API_VERSION=v2
+
+# ログレベル
+LOG_LEVEL=debug
+
+# データベース（Neon STG）
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+
+# JWT認証
+JWT_SECRET=your-secret-key-must-be-at-least-32-characters-long-for-security
+
+# フロントエンドURL（CORS用）
+FRONTEND_URL=http://localhost:3000
+
+# メール送信（Resend）- オプション
+# RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
