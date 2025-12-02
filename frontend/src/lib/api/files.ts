@@ -24,7 +24,7 @@ import { extractDataFromResponse } from './utils';
 // 検索関連
 // 検索関連
 export const searchTeams = async (params: SearchParams): Promise<TeamSearchResult> => {
-  const url = `/api/v2/files?tag=team&page=${params.page || 1}&limit=10`;
+  const url = `/api/v2/files?data_type=1&page=${params.page || 1}&limit=10&keyword=${encodeURIComponent(params.keyword)}`;
 
   const response = await apiClient.get<any>(url);
   const rawData = response.data?.files || [];
@@ -33,7 +33,7 @@ export const searchTeams = async (params: SearchParams): Promise<TeamSearchResul
   const transformedData = rawData.map((item: any) => ({
     id: item.id,
     name: item.file_name || '',
-    ownerName: '', // v2 API doesn't return owner name yet (only upload_user_id)
+    ownerName: item.upload_owner_name || 'Anonymous',
     comment: item.file_comment || '',
     downloadableAt: item.downloadable_at || '',
     created_at: item.created_at || '',
@@ -62,7 +62,7 @@ export const searchTeams = async (params: SearchParams): Promise<TeamSearchResul
 };
 
 export const searchMatches = async (params: SearchParams): Promise<MatchSearchResult> => {
-  const url = `/api/v2/files?tag=match&page=${params.page || 1}&limit=10`;
+  const url = `/api/v2/files?data_type=2&page=${params.page || 1}&limit=10&keyword=${encodeURIComponent(params.keyword)}`;
 
   const response = await apiClient.get<any>(url);
   const rawData = response.data?.files || [];
@@ -71,7 +71,7 @@ export const searchMatches = async (params: SearchParams): Promise<MatchSearchRe
   const transformedData = rawData.map((item: any) => ({
     id: item.id,
     name: item.file_name || '',
-    ownerName: '', // v2 API doesn't return owner name yet
+    ownerName: item.upload_owner_name || 'Anonymous',
     comment: item.file_comment || '',
     downloadableAt: item.downloadable_at || '',
     created_at: item.created_at || '',
@@ -210,30 +210,42 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
 
     // Content-Dispositionヘッダーからファイル名を取得
     const contentDisposition = response.headers.get('Content-Disposition');
+    console.log('Content-Disposition:', contentDisposition);
+    
     let filename = `file_${teamId}`;
     if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-      if (filenameMatch && filenameMatch[1]) {
-        const rawFilename = filenameMatch[1].replace(/['"]/g, '');
-        try {
-          // URLエンコードされたファイル名をデコード（日本語対応）
-          filename = decodeURIComponent(rawFilename);
-        } catch {
-          // デコードに失敗した場合は、そのままの値を使用します
-          filename = rawFilename;
+      // filename="XTN234.CHE" のような形式から抽出
+      const startIndex = contentDisposition.indexOf('filename="');
+      if (startIndex !== -1) {
+        const start = startIndex + 10; // 'filename="'.length
+        const end = contentDisposition.indexOf('"', start);
+        if (end !== -1) {
+          filename = contentDisposition.substring(start, end);
+          console.log('Extracted filename:', filename);
         }
       }
     }
-    a.download = filename;
+    
+    console.log('Final filename for download:', filename);
+    
+    // downloadAttribute を明示的に設定
+    a.setAttribute('download', filename);
+    a.style.display = 'none';
 
     document.body.appendChild(a);
-    a.click();
-
-    // クリーンアップ
+    
+    // 少し待ってからクリック（ブラウザによる処理を待つ）
     setTimeout(() => {
-      window.URL.revokeObjectURL(downloadUrl);
-      document.body.removeChild(a);
-    }, 100);
+      a.click();
+      
+      // クリーンアップ
+      setTimeout(() => {
+        window.URL.revokeObjectURL(downloadUrl);
+        if (document.body.contains(a)) {
+          document.body.removeChild(a);
+        }
+      }, 1000); // より長い待機時間
+    }, 50);
 
     return { success: true };
   } catch (error: any) {
@@ -272,7 +284,7 @@ export const deleteMyFile = async (id: string | number): Promise<FileDeleteRespo
 
 export const fetchMyTeamFiles = async (): Promise<TeamFile[]> => {
   const response = await apiClient.get<any>(
-    '/api/v2/files?tag=team&mine=true'
+    '/api/v2/files?data_type=1&mine=true'
   );
   // v2 returns { data: { files: [...] } }
   const rawFiles = response.data?.files || [];
@@ -288,7 +300,7 @@ export const fetchMyTeamFiles = async (): Promise<TeamFile[]> => {
 
 export const fetchMyMatchFiles = async (): Promise<MatchFile[]> => {
   const response = await apiClient.get<any>(
-    '/api/v2/files?tag=match&mine=true'
+    '/api/v2/files?data_type=2&mine=true'
   );
   const rawFiles = response.data?.files || [];
 

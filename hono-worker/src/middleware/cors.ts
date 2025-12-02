@@ -13,15 +13,22 @@ export function setupCORS() {
                 const allowedOrigins = [
                     'http://localhost:3000',
                     'http://localhost:3001',
+                    'http://localhost:3002', // フロントエンド開発サーバー（HTTP）
+                    'https://localhost:3002', // フロントエンド開発サーバー（HTTPS）
                     c.env.FRONTEND_URL,
                 ].filter(Boolean) as string[];
 
-                return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+                // 直接URLアクセス（Originなし）を許可
+                if (!origin) {
+                    return true;
+                }
+
+                return allowedOrigins.includes(origin) ? origin : false;
             },
             credentials: true,
             allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-            allowHeaders: ['Content-Type', 'Authorization'],
-            exposeHeaders: ['Set-Cookie'],
+            allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+            exposeHeaders: ['Set-Cookie', 'Content-Disposition'],
             maxAge: 86400, // 24時間
         });
 

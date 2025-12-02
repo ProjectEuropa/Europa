@@ -22,24 +22,24 @@ export async function authMiddleware(c: Context<{ Bindings: Env }>, next: Next) 
     const token = getTokenFromCookie(cookieHeader);
 
     if (!token) {
-        throw new HTTPException(401, { message: 'Unauthorized: No token provided' });
+        throw new HTTPException(401, { message: '[AuthMiddleware] Unauthorized: No token provided' });
     }
 
     const jwtSecret = c.env.JWT_SECRET;
     if (!jwtSecret) {
-        throw new HTTPException(500, { message: 'JWT_SECRET not configured' });
+        throw new HTTPException(500, { message: '[AuthMiddleware] JWT_SECRET not configured' });
     }
 
     const payload = await verifyToken(token, jwtSecret);
 
     if (!payload) {
-        throw new HTTPException(401, { message: 'Unauthorized: Invalid token' });
+        throw new HTTPException(401, { message: '[AuthMiddleware] Unauthorized: Invalid token' });
     }
 
     // トークンの有効期限チェック
     const now = Math.floor(Date.now() / 1000);
     if (payload.exp < now) {
-        throw new HTTPException(401, { message: 'Unauthorized: Token expired' });
+        throw new HTTPException(401, { message: '[AuthMiddleware] Unauthorized: Token expired' });
     }
 
     // ユーザー情報をコンテキストに保存

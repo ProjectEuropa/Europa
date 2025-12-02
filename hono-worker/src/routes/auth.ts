@@ -56,7 +56,13 @@ auth.post('/register', async (c) => {
     const token = await generateToken(user.id, user.email, c.env.JWT_SECRET);
 
     // Cookieを設定
-    const cookieHeader = createCookieHeader(token, 7 * 24 * 60 * 60, c.env.ENVIRONMENT === 'production');
+    // Cookieを設定（Cross-Origin対応）
+    const cookieHeader = createCookieHeader(
+        token,
+        7 * 24 * 60 * 60,
+        c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
+        c.env.ENVIRONMENT
+    );
 
     const response: SuccessResponse<{ user: User }> = {
         data: { user },
@@ -111,7 +117,13 @@ auth.post('/login', async (c) => {
     const token = await generateToken(user.id, user.email, c.env.JWT_SECRET);
 
     // Cookieを設定
-    const cookieHeader = createCookieHeader(token, 7 * 24 * 60 * 60, c.env.ENVIRONMENT === 'production');
+    // Cookieを設定（Cross-Origin対応）
+    const cookieHeader = createCookieHeader(
+        token,
+        7 * 24 * 60 * 60,
+        c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
+        c.env.ENVIRONMENT
+    );
 
     // パスワードを除外
     const { password: _, ...userWithoutPassword } = user;

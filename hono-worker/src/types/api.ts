@@ -24,10 +24,12 @@ export interface Event {
 export interface File {
     id: number;
     upload_user_id: number | null;
+    upload_owner_name: string;  // アップロード者名（匿名対応）
     file_name: string;
     file_path: string;
     file_size: number;
     file_comment: string | null;
+    data_type: string;  // チーム:1 or マッチ:2
     downloadable_at: string | null;
     tags: string[];
     created_at: string;

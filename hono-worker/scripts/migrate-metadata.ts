@@ -41,10 +41,10 @@ async function migrateMetadata() {
             const password = user.password || '';
 
             await newDb`
-      INSERT INTO users (id, name, email, password, remember_token, created_at, updated_at)
-      VALUES (${user.id}, ${user.name}, ${email}, ${password}, ${user.remember_token}, ${user.created_at}, ${user.updated_at})
-      ON CONFLICT (id) DO NOTHING
-    `;
+                INSERT INTO users (id, name, email, password, remember_token, created_at, updated_at)
+                VALUES (${user.id}, ${user.name}, ${email}, ${password}, ${user.remember_token}, ${user.created_at}, ${user.updated_at})
+                ON CONFLICT (id) DO NOTHING
+            `;
         }
         console.log(`  ✓ ${users.rows.length}件移行完了\n`);
 
@@ -54,17 +54,17 @@ async function migrateMetadata() {
 
         for (const event of events.rows) {
             await newDb`
-      INSERT INTO events (
-        id, register_user_id, event_name, event_details, event_reference_url, event_type,
-        event_closing_day, event_displaying_day, created_at, updated_at
-      )
-      VALUES (
-        ${event.id}, ${event.register_user_id}, ${event.event_name}, ${event.event_details},
-        ${event.event_reference_url}, ${event.event_type}, ${event.event_closing_day},
-        ${event.event_displaying_day}, ${event.created_at}, ${event.updated_at}
-      )
-      ON CONFLICT (id) DO NOTHING
-    `;
+                INSERT INTO events (
+                    id, register_user_id, event_name, event_details, event_reference_url, event_type,
+                    event_closing_day, event_displaying_day, created_at, updated_at
+                )
+                VALUES (
+                    ${event.id}, ${event.register_user_id}, ${event.event_name}, ${event.event_details},
+                    ${event.event_reference_url}, ${event.event_type}, ${event.event_closing_day},
+                    ${event.event_displaying_day}, ${event.created_at}, ${event.updated_at}
+                )
+                ON CONFLICT (id) DO NOTHING
+            `;
         }
         console.log(`  ✓ ${events.rows.length}件移行完了\n`);
 

@@ -27,10 +27,12 @@ CREATE TABLE events (
 CREATE TABLE files (
   id SERIAL PRIMARY KEY,
   upload_user_id INTEGER REFERENCES users(id),
+  upload_owner_name VARCHAR(255) DEFAULT 'Anonymous',  -- アップロード者名（匿名対応）
   file_name VARCHAR(255) NOT NULL,
   file_path VARCHAR(255),  -- R2オブジェクトキー
   file_size BIGINT,
   file_comment TEXT,
+  data_type VARCHAR(10) DEFAULT '1',  -- チーム:1 or マッチ:2
   downloadable_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()

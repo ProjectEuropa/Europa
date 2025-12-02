@@ -33,6 +33,8 @@ export const fileQuerySchema = z.object({
     tag: z.string().max(255).optional(),
     upload_user_id: z.string().regex(/^\d+$/).transform(Number).optional(),
     mine: z.string().optional(),
+    keyword: z.string().max(255).optional(), // ファイル名・コメント検索用
+    data_type: z.string().regex(/^[12]$/).optional(), // チーム:1 or マッチ:2
 });
 
 // バリデーションヘルパー

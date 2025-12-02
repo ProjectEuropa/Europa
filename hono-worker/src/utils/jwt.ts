@@ -59,18 +59,28 @@ export function getTokenFromCookie(cookieHeader: string | null): string | null {
 export function createCookieHeader(
     token: string,
     maxAge: number = 7 * 24 * 60 * 60, // 7日間（秒）
-    secure: boolean = true
+    secure: boolean = true,
+    environment: string = 'production'
 ): string {
     const cookieOptions = [
         `token=${token}`,
         `Max-Age=${maxAge}`,
         'Path=/',
         'HttpOnly',
-        'SameSite=Strict',
     ];
 
-    if (secure) {
-        cookieOptions.push('Secure');
+    // Cross-Origin Cookie対応
+    // 本番・ステージング環境：SameSite=None; Secure（HTTPSフロントエンド用）
+    // 開発環境：SameSite=Lax（HTTPローカル開発用）
+    if (environment === 'production' || environment === 'staging') {
+        // HTTPSフロントエンドからのCross-Originリクエストに対応
+        cookieOptions.push('SameSite=None');
+        if (secure) {
+            cookieOptions.push('Secure');
+        }
+    } else {
+        // 開発環境ではLax（Same-Origin前提）
+        cookieOptions.push('SameSite=Lax');
     }
 
     return cookieOptions.join('; ');
