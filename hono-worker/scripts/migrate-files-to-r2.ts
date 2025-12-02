@@ -32,13 +32,26 @@ class FileMigrator {
     constructor(dryRun = false) {
         this.dryRun = dryRun;
 
+        // 環境変数のバリデーション
+        const requiredEnvVars = [
+            'OLD_DB_DATABASE', 'OLD_DB_USERNAME', 'OLD_DB_PASSWORD',
+            'NEON_DATABASE_URL', 'R2_ENDPOINT', 'R2_ACCESS_KEY_ID',
+            'R2_SECRET_ACCESS_KEY', 'R2_BUCKET_NAME'
+        ];
+        for (const envVar of requiredEnvVars) {
+            if (!process.env[envVar]) {
+                console.error(`エラー: 環境変数 ${envVar} が設定されていません。`);
+                process.exit(1);
+            }
+        }
+
         // 旧DB（Docker PostgreSQL）
         this.oldDb = new Client({
             host: process.env.OLD_DB_HOST || 'localhost',
             port: parseInt(process.env.OLD_DB_PORT || '5432'),
-            database: process.env.OLD_DB_DATABASE,
-            user: process.env.OLD_DB_USERNAME,
-            password: process.env.OLD_DB_PASSWORD,
+            database: process.env.OLD_DB_DATABASE!,
+            user: process.env.OLD_DB_USERNAME!,
+            password: process.env.OLD_DB_PASSWORD!,
         });
 
         // 新DB（Neon）
@@ -47,7 +60,7 @@ class FileMigrator {
         // R2（S3互換）
         this.s3 = new S3Client({
             region: 'auto',
-            endpoint: process.env.R2_ENDPOINT,
+            endpoint: process.env.R2_ENDPOINT!,
             credentials: {
                 accessKeyId: process.env.R2_ACCESS_KEY_ID!,
                 secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
@@ -174,7 +187,7 @@ class FileMigrator {
         }
 
         // ドライランでも表示
-        console.log(`✓ ${file.file_name} (ID: ${file.id}, ${this.formatBytes(file.file_size)})`);
+        console.log(`✓ ${file.file_name} (ID: ${file.id}, ${this.formatBytes(file.file_data.length)})`);
     }
 
     private getContentType(filename: string): string {

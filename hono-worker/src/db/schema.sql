@@ -4,6 +4,7 @@ CREATE TABLE users (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
+  remember_token VARCHAR(100),
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -11,9 +12,13 @@ CREATE TABLE users (
 -- events テーブル
 CREATE TABLE events (
   id SERIAL PRIMARY KEY,
-  event_title VARCHAR(255) NOT NULL,
-  event_closing_day TIMESTAMP,
-  event_displaying_day TIMESTAMP,
+  register_user_id VARCHAR(255),
+  event_name VARCHAR(255) NOT NULL,
+  event_details VARCHAR(255) NOT NULL,
+  event_reference_url VARCHAR(255),
+  event_type VARCHAR(255) NOT NULL,  -- 大会:1 その他:2
+  event_closing_day TIMESTAMP NOT NULL,
+  event_displaying_day TIMESTAMP NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -37,7 +42,7 @@ CREATE TABLE files (
 
 -- password_resets テーブル
 CREATE TABLE password_resets (
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) PRIMARY KEY,
   token VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT NOW()
 );
@@ -46,5 +51,4 @@ CREATE TABLE password_resets (
 CREATE INDEX idx_files_upload_user_id ON files(upload_user_id);
 CREATE INDEX idx_files_downloadable_at ON files(downloadable_at);
 CREATE INDEX idx_events_displaying_day ON events(event_displaying_day);
-CREATE INDEX idx_password_resets_email ON password_resets(email);
 CREATE INDEX idx_password_resets_token ON password_resets(token);

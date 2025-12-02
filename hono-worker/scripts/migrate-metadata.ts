@@ -37,8 +37,15 @@ async function migrateMetadata() {
 
     for (const event of events.rows) {
         await newDb`
-      INSERT INTO events (id, event_title, event_closing_day, event_displaying_day, created_at, updated_at)
-      VALUES (${event.id}, ${event.event_name}, ${event.event_closing_day}, ${event.event_displaying_day}, ${event.created_at}, ${event.updated_at})
+      INSERT INTO events (
+        id, register_user_id, event_name, event_details, event_reference_url, event_type,
+        event_closing_day, event_displaying_day, created_at, updated_at
+      )
+      VALUES (
+        ${event.id}, ${event.register_user_id}, ${event.event_name}, ${event.event_details},
+        ${event.event_reference_url}, ${event.event_type}, ${event.event_closing_day},
+        ${event.event_displaying_day}, ${event.created_at}, ${event.updated_at}
+      )
       ON CONFLICT (id) DO NOTHING
     `;
     }

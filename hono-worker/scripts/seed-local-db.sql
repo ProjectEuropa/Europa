@@ -5,16 +5,20 @@ ON CONFLICT (email) DO NOTHING;
 
 -- テスト用イベント
 INSERT INTO events (
+    register_user_id,
     event_name,
     event_details,
+    event_reference_url,
     event_type,
     event_closing_day,
     event_displaying_day,
     created_at,
     updated_at
 ) VALUES (
+    (SELECT id FROM users WHERE email = 'migration@example.com'),
     'Migration Test Event',
-    'Details...',
+    'Test event details',
+    'https://example.com',
     '1',
     NOW() + INTERVAL '7 days',
     NOW(),
