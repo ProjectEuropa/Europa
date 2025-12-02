@@ -1,0 +1,19 @@
+name = "hono-worker"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# STG環境（デフォルト）
+[env.staging]
+vars = { ENVIRONMENT = "staging", API_VERSION = "v2", LOG_LEVEL = "debug" }
+
+[[env.staging.r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "europa-files-stg"
+
+# 本番環境
+[env.production]
+vars = { ENVIRONMENT = "production", API_VERSION = "v2", LOG_LEVEL = "info" }
+
+[[env.production.r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "europa-files-prod"

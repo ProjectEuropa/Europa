@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Cloudflare Workers
+.wrangler/
+.dev.vars
+
+# Environment Variables (Migration & Secrets)
+.env
+.env.*
+!.env.example
+!.env.migration.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+dist/
+worker/
