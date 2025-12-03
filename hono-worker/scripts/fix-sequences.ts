@@ -1,41 +1,56 @@
-import { neon } from '@neondatabase/serverless';
-import * as dotenv from 'dotenv';
+/**
+ * データベースのシーケンスを修正するスクリプト
+ * 
+ * 使用方法:
+ * npx tsx scripts/fix-sequences.ts
+ */
 
-// 環境変数読み込み
-dotenv.config({ path: '.env.migration' });
+import { neon } from '@neondatabase/serverless';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+import { readFileSync } from 'fs';
+
+// .dev.vars から環境変数を読み込む
+config({ path: resolve(__dirname, '../.dev.vars') });
+
+const DATABASE_URL = process.env.DATABASE_URL;
+
+if (!DATABASE_URL) {
+  console.error('❌ DATABASE_URL が設定されていません');
+  process.exit(1);
+}
 
 async function fixSequences() {
-    if (!process.env.NEON_DATABASE_URL) {
-        console.error('エラー: NEON_DATABASE_URLが設定されていません。');
-        process.exit(1);
+  console.log('🔧 データベースシーケンスを修正しています...\n');
+
+  const sql = neon(DATABASE_URL);
+
+  try {
+    // SQLファイルを読み込んで実行
+    const sqlContent = readFileSync(resolve(__dirname, 'fix-sequences.sql'), 'utf-8');
+    
+    // セミコロンで分割して各クエリを実行
+    const queries = sqlContent
+      .split(';')
+      .map(q => q.trim())
+      .filter(q => q && !q.startsWith('--'));
+
+    for (const query of queries) {
+      if (query.toLowerCase().includes('select setval')) {
+        const result = await sql(query);
+        console.log('✅ シーケンスをリセット:', result);
+      } else if (query.toLowerCase().includes('select')) {
+        const result = await sql(query);
+        console.log('\n📊 現在のシーケンス状態:');
+        console.table(result);
+      }
     }
 
-    const sql = neon(process.env.NEON_DATABASE_URL);
-
-    console.log('=== シーケンス修正開始 ===\n');
-
-    try {
-        // users
-        console.log('usersテーブルのシーケンスを更新中...');
-        await sql`SELECT setval('users_id_seq', (SELECT MAX(id) FROM users))`;
-
-        // events
-        console.log('eventsテーブルのシーケンスを更新中...');
-        await sql`SELECT setval('events_id_seq', (SELECT MAX(id) FROM events))`;
-
-        // files
-        console.log('filesテーブルのシーケンスを更新中...');
-        await sql`SELECT setval('files_id_seq', (SELECT MAX(id) FROM files))`;
-
-        // tags
-        console.log('tagsテーブルのシーケンスを更新中...');
-        await sql`SELECT setval('tags_id_seq', (SELECT MAX(id) FROM tags))`;
-
-        console.log('\n✅ シーケンス修正完了');
-    } catch (error) {
-        console.error('エラーが発生しました:', error);
-        process.exit(1);
-    }
+    console.log('\n✅ シーケンスの修正が完了しました！');
+  } catch (error) {
+    console.error('❌ エラーが発生しました:', error);
+    process.exit(1);
+  }
 }
 
 fixSequences();

@@ -33,6 +33,7 @@ CREATE TABLE files (
   file_size BIGINT,
   file_comment TEXT,
   data_type VARCHAR(10) DEFAULT '1',  -- チーム:1 or マッチ:2
+  delete_password VARCHAR(255) NULL,  -- 匿名ユーザー用削除パスワード（ハッシュ化）
   downloadable_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()

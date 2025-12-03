@@ -6,6 +6,7 @@ import type { Env } from '../types/bindings';
 import type { File as FileType, SuccessResponse, PaginationMeta } from '../types/api';
 import { fileQuerySchema, type FileQueryInput } from '../utils/validation';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth';
+import { generateDeletePassword, hashDeletePassword, verifyDeletePassword } from '../utils/password';
 
 const files = new Hono<{ Bindings: Env }>();
 
@@ -232,7 +233,7 @@ files.get('/:id', async (c) => {
 
   // ファイル情報を取得
   const filesList = await sql`
-    SELECT id, file_name, file_path, file_size
+    SELECT id, file_name, file_path, file_size, downloadable_at
     FROM files
     WHERE id = ${parseInt(id)}
   `;
@@ -242,6 +243,29 @@ files.get('/:id', async (c) => {
   }
 
   const file = filesList[0] as FileType;
+
+  // ダウンロード可能日時のチェック
+  if (file.downloadable_at) {
+    const now = new Date();
+    const downloadableDate = new Date(file.downloadable_at);
+    
+    if (now < downloadableDate) {
+      // DBの値をそのまま日本語形式で表示（タイムゾーン変換なし）
+      const formatted = downloadableDate.toLocaleString('ja-JP', { 
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      
+      throw new HTTPException(403, { 
+        message: `このファイルは${formatted}以降にダウンロード可能です` 
+      });
+    }
+  }
 
   console.log('Download file info:', {
     id: file.id,
@@ -278,6 +302,9 @@ files.post('/', optionalAuthMiddleware, async (c) => {
   const file = formData.get('file') as File;
   const comment = formData.get('comment') as string | null;
   const tagsString = formData.get('tags') as string | null;
+  const inputDeletePassword = formData.get('deletePassword') as string | null; // ユーザー入力の削除パスワード
+  const inputOwnerName = formData.get('upload_owner_name') as string | null; // ユーザー入力のアップロード者名
+  const inputDownloadableAt = formData.get('downloadable_at') as string | null; // ダウンロード可能日時
 
   if (!file) {
     throw new HTTPException(400, { message: 'File is required' });
@@ -292,22 +319,43 @@ files.post('/', optionalAuthMiddleware, async (c) => {
   // タグをパース
   const tags = tagsString ? JSON.parse(tagsString) : [];
 
+  // data_typeを判定（tagsの最初の要素から）
+  let dataType = '1'; // デフォルトはチーム
+  if (tags.includes('match')) {
+    dataType = '2';
+  } else if (tags.includes('team')) {
+    dataType = '1';
+  }
+
   // データベース接続
   const sql = neon(c.env.DATABASE_URL);
 
+  // 削除パスワードを処理（ログインユーザー・匿名ユーザー両方とも設定可能）
+  let deletePassword: string | null = null;
+  let hashedDeletePassword: string | null = null;
+
+  if (inputDeletePassword && inputDeletePassword.trim()) {
+    // ユーザーが入力した削除パスワードをハッシュ化して保存
+    deletePassword = inputDeletePassword.trim();
+    hashedDeletePassword = await hashDeletePassword(deletePassword);
+  }
+
+  // アップロード者名を決定（優先順位: 入力値 > ログインユーザーのemail > Anonymous）
+  const ownerName = inputOwnerName && inputOwnerName.trim()
+    ? inputOwnerName.trim()
+    : (user ? user.email : 'Anonymous');
+
   // ファイルメタデータを挿入
-  const ownerName = user ? user.email || 'Anonymous' : 'Anonymous';
-  
   const newFiles = await sql`
     INSERT INTO files (
-      upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment,
+      upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, delete_password, downloadable_at,
       created_at, updated_at
     )
     VALUES (
-      ${user?.userId || null}, ${ownerName}, ${file.name}, '', ${file.size}, ${comment || null},
+      ${user?.userId || null}, ${ownerName}, ${file.name}, '', ${file.size}, ${comment || null}, ${dataType}, ${hashedDeletePassword}, ${inputDownloadableAt || null},
       NOW(), NOW()
     )
-    RETURNING id, upload_user_id, upload_owner_name, file_name, file_size, file_comment, created_at, updated_at
+    RETURNING id, upload_user_id, upload_owner_name, file_name, file_size, file_comment, data_type, downloadable_at, created_at, updated_at
   `;
 
   const newFile = newFiles[0] as FileType;
@@ -358,13 +406,16 @@ files.post('/', optionalAuthMiddleware, async (c) => {
     tagNames.push(trimmed);
   }
 
-  const response: SuccessResponse<{ file: FileType }> = {
+  // レスポンスに削除パスワードを含める（匿名ユーザーのみ）
+  const response: SuccessResponse<{ file: FileType; deletePassword?: string }> = {
     data: {
       file: {
         ...newFile,
         file_path: key,
         tags: tagNames,
+        delete_password: null, // ハッシュ化されたパスワードは返さない
       },
+      ...(deletePassword && { deletePassword }), // 平文の削除パスワードを返す
     },
   };
 
@@ -373,11 +424,14 @@ files.post('/', optionalAuthMiddleware, async (c) => {
 
 /**
  * DELETE /api/v2/files/:id
- * ファイル削除（認証必須）
+ * ファイル削除（認証ユーザー or 削除パスワード）
  */
-files.delete('/:id', authMiddleware, async (c) => {
+files.delete('/:id', optionalAuthMiddleware, async (c) => {
+  console.log('[Files DELETE] Starting deletion process');
   const user = c.get('user');
   const id = c.req.param('id');
+  console.log('[Files DELETE] User:', user ? `ID ${user.userId}` : 'Anonymous');
+  console.log('[Files DELETE] File ID:', id);
 
   // IDのバリデーション
   if (!/^\d+$/.test(id)) {
@@ -387,9 +441,9 @@ files.delete('/:id', authMiddleware, async (c) => {
   // データベース接続
   const sql = neon(c.env.DATABASE_URL);
 
-  // ファイル情報を取得
+  // ファイル情報を取得（delete_passwordも取得）
   const filesList = await sql`
-    SELECT id, upload_user_id, file_path
+    SELECT id, upload_user_id, file_path, delete_password
     FROM files
     WHERE id = ${parseInt(id)}
   `;
@@ -400,9 +454,42 @@ files.delete('/:id', authMiddleware, async (c) => {
 
   const file = filesList[0] as FileType;
 
-  // 権限チェック（アップロードしたユーザーのみ削除可能）
-  if (file.upload_user_id !== user.userId) {
-    throw new HTTPException(403, { message: 'Forbidden: You can only delete your own files' });
+  // 権限チェック
+  if (user) {
+    // 認証ユーザー: ユーザーIDで権限チェック
+    if (file.upload_user_id !== user.userId) {
+      throw new HTTPException(403, { message: '自分がアップロードしたファイルのみ削除できます' });
+    }
+  } else {
+    // 匿名ユーザー: 削除パスワードで検証
+    console.log('[Files DELETE] Anonymous user deletion attempt');
+    const body = await c.req.json().catch(() => ({}));
+    console.log('[Files DELETE] Request body:', body);
+    const { deletePassword } = body;
+    console.log('[Files DELETE] Delete password provided:', !!deletePassword);
+
+    if (!deletePassword) {
+      console.log('[Files DELETE] No password provided, throwing 401');
+      throw new HTTPException(401, { message: '削除パスワードが必要です' });
+    }
+
+    if (!file.delete_password) {
+      console.log('Delete Debug: No delete password stored');
+      throw new HTTPException(403, { message: 'このファイルには削除パスワードが設定されていません。アップロード時に認証が必要です。' });
+    }
+
+    const generatedHash = await hashDeletePassword(deletePassword);
+    console.log('Delete Debug:', {
+      inputPassword: deletePassword,
+      storedHash: file.delete_password,
+      generatedHash: generatedHash,
+      match: generatedHash === file.delete_password
+    });
+
+    const isValid = await verifyDeletePassword(deletePassword, file.delete_password);
+    if (!isValid) {
+      throw new HTTPException(403, { message: '削除パスワードが正しくありません' });
+    }
   }
 
   // R2から削除

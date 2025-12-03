@@ -30,6 +30,7 @@ export interface File {
     file_size: number;
     file_comment: string | null;
     data_type: string;  // チーム:1 or マッチ:2
+    delete_password: string | null;  // 匿名ユーザー用削除パスワード（ハッシュ化）
     downloadable_at: string | null;
     tags: string[];
     created_at: string;

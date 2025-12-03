@@ -73,3 +73,51 @@ function timingSafeEqual(a: string, b: string): boolean {
 
     return result === 0;
 }
+
+/**
+ * ランダムな削除パスワードを生成（8文字の英数字）
+ * 匿名ユーザーのファイル削除用
+ */
+export function generateDeletePassword(): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; // 紛らわしい文字を除外
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+}
+
+/**
+ * 削除パスワードをハッシュ化
+ * bcryptを使用（より安全で環境非依存）
+ * Workers環境での互換性のため同期メソッドを使用
+ */
+export async function hashDeletePassword(password: string): Promise<string> {
+    return bcrypt.hash(password, SALT_ROUNDS);
+}
+
+/**
+ * 旧SHA-256ハッシュ化（後方互換性用）
+ */
+async function hashDeletePasswordSHA256(password: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
+/**
+ * 削除パスワードを検証
+ */
+export async function verifyDeletePassword(password: string, hashedPassword: string): Promise<boolean> {
+    // bcryptハッシュかチェック
+    if (hashedPassword.startsWith('$2')) {
+        return bcrypt.compare(password, hashedPassword);
+    }
+
+    // 旧SHA-256ハッシュの検証
+    const hash = await hashDeletePasswordSHA256(password);
+    return timingSafeEqual(hash, hashedPassword);
+}

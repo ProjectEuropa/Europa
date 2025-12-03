@@ -43,6 +43,7 @@ export const searchTeams = async (params: SearchParams): Promise<TeamSearchResul
     searchTag3: item.tags?.[2] || '',
     searchTag4: item.tags?.[3] || '',
     uploadType: 'team',
+    upload_type: item.upload_user_id ? '1' : '2', // 1: 認証, 2: 匿名(削除可能)
     type: 'team' as const,
     file_path: item.file_path,
     file_size: item.file_size,
@@ -81,6 +82,7 @@ export const searchMatches = async (params: SearchParams): Promise<MatchSearchRe
     searchTag3: item.tags?.[2] || '',
     searchTag4: item.tags?.[3] || '',
     uploadType: 'match',
+    upload_type: item.upload_user_id ? '1' : '2', // 1: 認証, 2: 匿名(削除可能)
     type: 'match' as const,
     file_path: item.file_path,
     file_size: item.file_size,
@@ -123,6 +125,9 @@ export const uploadTeamFile = async (
 
   formData.append('file', file);
   if (options?.comment) formData.append('comment', options.comment);
+  if (options?.ownerName) formData.append('upload_owner_name', options.ownerName);
+  if (options?.deletePassword) formData.append('deletePassword', options.deletePassword);
+  if (options?.downloadDate) formData.append('downloadable_at', options.downloadDate);
 
   // タグの構築
   const tags = ['team'];
@@ -158,6 +163,9 @@ export const uploadMatchFile = async (
 
   formData.append('file', file);
   if (options?.comment) formData.append('comment', options.comment);
+  if (options?.ownerName) formData.append('upload_owner_name', options.ownerName);
+  if (options?.deletePassword) formData.append('deletePassword', options.deletePassword);
+  if (options?.downloadDate) formData.append('downloadable_at', options.downloadDate);
 
   // タグの構築
   const tags = ['match'];
@@ -211,7 +219,7 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
     // Content-Dispositionヘッダーからファイル名を取得
     const contentDisposition = response.headers.get('Content-Disposition');
     console.log('Content-Disposition:', contentDisposition);
-    
+
     let filename = `file_${teamId}`;
     if (contentDisposition) {
       // filename="XTN234.CHE" のような形式から抽出
@@ -225,19 +233,19 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
         }
       }
     }
-    
+
     console.log('Final filename for download:', filename);
-    
+
     // downloadAttribute を明示的に設定
     a.setAttribute('download', filename);
     a.style.display = 'none';
 
     document.body.appendChild(a);
-    
+
     // 少し待ってからクリック（ブラウザによる処理を待つ）
     setTimeout(() => {
       a.click();
-      
+
       // クリーンアップ
       setTimeout(() => {
         window.URL.revokeObjectURL(downloadUrl);
@@ -267,7 +275,10 @@ export const deleteSearchFile = async (
   request: FileDeleteRequest
 ): Promise<FileDeleteResponse> => {
   const response = await apiClient.delete<FileDeleteResponse>(
-    `/api/v2/files/${request.id}`
+    `/api/v2/files/${request.id}`,
+    {
+      body: JSON.stringify({ deletePassword: request.deletePassword }),
+    }
   );
   // v2 returns { message: "..." }
   return response as unknown as FileDeleteResponse;

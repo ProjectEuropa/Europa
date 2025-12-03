@@ -820,15 +820,14 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
           <div
             style={{
-              border: `2px dashed ${
-                fieldErrors.file
-                  ? '#ef4444'
-                  : selectedFile
+              border: `2px dashed ${fieldErrors.file
+                ? '#ef4444'
+                : selectedFile
+                  ? '#00c8ff'
+                  : dragActive
                     ? '#00c8ff'
-                    : dragActive
-                      ? '#00c8ff'
-                      : '#1E3A5F'
-              }`,
+                    : '#1E3A5F'
+                }`,
               borderRadius: '12px',
               padding: '32px',
               textAlign: 'center',

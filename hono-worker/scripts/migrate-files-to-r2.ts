@@ -26,6 +26,7 @@ interface FileRecord {
     upload_owner_name: string;
     file_comment: string;
     data_type: string;
+    delete_password: string | null;
     search_tag1: string;
     search_tag2: string;
     search_tag3: string;
@@ -118,7 +119,7 @@ class FileMigrator {
         while (offset < totalCount) {
             const result = await this.oldDb.query<FileRecord>(
                 `SELECT id, file_name, file_data, upload_user_id, upload_owner_name,
-                file_comment, data_type, search_tag1, search_tag2, search_tag3, search_tag4,
+                file_comment, data_type, delete_password, search_tag1, search_tag2, search_tag3, search_tag4,
                 downloadable_at, created_at, updated_at
          FROM files 
          WHERE file_data IS NOT NULL
@@ -197,15 +198,16 @@ class FileMigrator {
             await this.newDb`
         INSERT INTO files (
           id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-          file_comment, data_type, downloadable_at, created_at, updated_at
+          file_comment, data_type, delete_password, downloadable_at, created_at, updated_at
         ) VALUES (
           ${file.id}, ${validUserId}, ${file.upload_owner_name || 'Anonymous'}, ${file.file_name}, ${key}, ${fileSize},
-          ${file.file_comment}, ${file.data_type}, ${file.downloadable_at}, ${file.created_at}, ${file.updated_at}
+          ${file.file_comment}, ${file.data_type}, ${file.delete_password || null}, ${file.downloadable_at}, ${file.created_at}, ${file.updated_at}
         )
         ON CONFLICT (id) DO UPDATE SET
           file_path = EXCLUDED.file_path,
           upload_owner_name = EXCLUDED.upload_owner_name,
           data_type = EXCLUDED.data_type,
+          delete_password = EXCLUDED.delete_password,
           updated_at = NOW()
       `;
 
