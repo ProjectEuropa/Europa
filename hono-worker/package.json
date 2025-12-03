@@ -7,7 +7,10 @@
         "dev": "wrangler dev",
         "deploy:staging": "wrangler deploy --env staging",
         "deploy:production": "wrangler deploy --env production",
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "test:ui": "vitest --ui",
+        "test:coverage": "vitest run --coverage",
         "deploy:stg": "wrangler deploy --env staging",
         "deploy:prod": "wrangler deploy --env production",
         "migrate:files:stg": "tsx scripts/migrate-files-to-r2.ts --env staging",
@@ -35,9 +38,11 @@
         "@cloudflare/workers-types": "^4.20241127.0",
         "@types/bcryptjs": "^2.4.6",
         "@types/pg": "^8.11.0",
+        "@vitest/ui": "^4.0.15",
         "pg": "^8.11.3",
         "tsx": "^4.7.0",
         "typescript": "^5.3.3",
+        "vitest": "^4.0.15",
         "wrangler": "^4.51.0"
     }
 }
