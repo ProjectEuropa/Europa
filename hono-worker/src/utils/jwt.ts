@@ -34,7 +34,7 @@ export async function verifyToken(
     try {
         const payload = await verify(token, secret, JWT_ALGORITHM);
         return payload as JWTPayload;
-    } catch (error) {
+    } catch (_error) {
         return null;
     }
 }

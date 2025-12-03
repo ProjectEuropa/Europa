@@ -31,7 +31,7 @@ export async function verifyPassword(
 
         // カスタムハッシュの検証（後方互換性のため残す）
         return verifyCustomHash(password, hashedPassword);
-    } catch (error) {
+    } catch (_error) {
         return false;
     }
 }
@@ -55,7 +55,7 @@ async function verifyCustomHash(password: string, hashedPassword: string): Promi
         const computedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
         return timingSafeEqual(computedHash, storedHash);
-    } catch (error) {
+    } catch (_error) {
         return false;
     }
 }

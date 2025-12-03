@@ -7,6 +7,7 @@ import type { File as FileType, SuccessResponse, PaginationMeta } from '../types
 import { fileQuerySchema, type FileQueryInput } from '../utils/validation';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth';
 import { generateDeletePassword, hashDeletePassword, verifyDeletePassword } from '../utils/password';
+import { maskFilesIfNotDownloadable } from '../utils/file-mask';
 
 const files = new Hono<{ Bindings: Env }>();
 
@@ -43,22 +44,24 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   // クエリを動的に構築（保守性を向上）
   const keywordPattern = keyword ? `%${keyword}%` : '';
 
-  let countResult;
-  let filesList;
+  // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
+  let countResult: unknown;
+  // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
+  let filesList: unknown;
 
   // WHERE条件の組み合わせに応じてクエリを実行
   if (data_type && targetUserId && keyword) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
+    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
   } else if (data_type && targetUserId) {
     countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId}`;
     filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
   } else if (data_type && keyword) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
+    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
   } else if (targetUserId && keyword) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
+    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
   } else if (data_type) {
     countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type}`;
     filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
@@ -66,8 +69,8 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId}`;
     filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
   } else if (keyword) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
+    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
   } else {
     countResult = await sql`SELECT COUNT(*) as count FROM files`;
     filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
@@ -105,6 +108,9 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     tags: tagsByFileId.get(file.id) || [],
   })) as FileType[];
 
+  // マスク処理を適用（マイページの場合はスキップ）
+  const maskedFiles = mine === 'true' ? filesWithTags : maskFilesIfNotDownloadable(filesWithTags);
+
   const pagination: PaginationMeta = {
     page,
     limit,
@@ -113,7 +119,7 @@ files.get('/', optionalAuthMiddleware, async (c) => {
 
   const response: SuccessResponse<{ files: FileType[]; pagination: PaginationMeta }> = {
     data: {
-      files: filesWithTags,
+      files: maskedFiles as FileType[],
       pagination,
     },
   };
@@ -157,7 +163,11 @@ files.get('/:id', async (c) => {
     if (now < downloadableDate) {
       // ISO 8601形式の文字列をそのままフォーマット（変換しない）
       // "2025-12-21T23:59:00.000Z" → "2025-12-21 23:59:00"
-      const formatted = file.downloadable_at
+      const dateStr = file.downloadable_at instanceof Date
+        ? file.downloadable_at.toISOString()
+        : String(file.downloadable_at);
+
+      const formatted = dateStr
         .replace(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*/, '$1 $2');
 
       throw new HTTPException(403, {
