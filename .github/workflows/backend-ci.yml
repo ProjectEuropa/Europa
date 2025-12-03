@@ -1,0 +1,202 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [prd, master]
+    paths:
+      - 'hono-worker/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [prd, master]
+    paths:
+      - 'hono-worker/**'
+      - '.github/workflows/backend-ci.yml'
+
+# Concurrency: cancel running workflows on new pushes to the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  # Performance optimizations
+  NODE_OPTIONS: '--max-old-space-size=4096'
+  CI: true
+
+jobs:
+  # Job for dependency installation and caching
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ./hono-worker
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: './hono-worker/package-lock.json'
+
+      # Cache node_modules separately for sharing across jobs
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: hono-worker/node_modules
+          key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-deps-
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+  # Lint job
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        working-directory: ./hono-worker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: hono-worker/node_modules
+          key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
+
+      - name: Run Biome lint (non-blocking)
+        run: npm run lint || echo "⚠️ Lint warnings/errors found but continuing CI"
+        continue-on-error: true
+
+      - name: Run Biome format check (non-blocking)
+        run: npm run format || echo "⚠️ Format issues found but continuing CI"
+        continue-on-error: true
+
+  # Optimized test job
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    needs: [setup]
+    defaults:
+      run:
+        working-directory: ./hono-worker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: hono-worker/node_modules
+          key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
+
+      # Vitest cache
+      - name: Cache Vitest
+        uses: actions/cache@v4
+        with:
+          path: |
+            hono-worker/node_modules/.vitest
+            hono-worker/coverage
+          key: ${{ runner.os }}-backend-vitest-${{ hashFiles('hono-worker/package-lock.json') }}-${{ hashFiles('hono-worker/**/*.test.*', 'hono-worker/**/*.spec.*', 'hono-worker/src/**/*.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-vitest-${{ hashFiles('hono-worker/package-lock.json') }}-
+            ${{ runner.os }}-backend-vitest-
+
+      - name: Run tests with coverage
+        run: npm run test:coverage -- --reporter=verbose --reporter=github-actions
+        env:
+          # Vitest optimizations
+          VITEST_MIN_THREADS: 2
+          VITEST_MAX_THREADS: 4
+
+      - name: Generate coverage summary
+        if: always()
+        run: |
+          if [ -d "coverage" ]; then
+            echo "📊 Coverage Summary"
+            echo "===================="
+            if [ -f "coverage/coverage-summary.json" ]; then
+              cat coverage/coverage-summary.json
+            else
+              echo "Coverage report generated successfully"
+            fi
+          fi
+
+  # Type check job
+  type-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [setup]
+    defaults:
+      run:
+        working-directory: ./hono-worker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: hono-worker/node_modules
+          key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
+
+      - name: Run TypeScript type check (non-blocking)
+        run: npx tsc --noEmit || echo "⚠️ Type errors found but continuing CI"
+        continue-on-error: true
+
+  # Simplified notification job
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    needs: [lint, test, type-check]
+    if: always() && (needs.lint.result == 'failure' || needs.test.result == 'failure' || needs.type-check.result == 'failure')
+    steps:
+      - name: Determine status
+        id: status
+        run: |
+          if [[ "${{ needs.lint.result }}" == "failure" || "${{ needs.test.result }}" == "failure" || "${{ needs.type-check.result }}" == "failure" ]]; then
+            echo "status=failure" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify on failure
+        uses: 8398a7/action-slack@v3
+        if: steps.status.outputs.status == 'failure'
+        with:
+          status: failure
+          fields: repo,message,author,job,ref
+          text: |
+            🚨 Backend CI Pipeline Failed
+            Lint: ${{ needs.lint.result }}
+            Test: ${{ needs.test.result }}
+            Type Check: ${{ needs.type-check.result }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
