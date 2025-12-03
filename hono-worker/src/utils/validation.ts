@@ -75,3 +75,9 @@ export const passwordResetUpdateSchema = z.object({
 export type PasswordResetRequestInput = z.infer<typeof passwordResetRequestSchema>;
 export type PasswordResetUpdateInput = z.infer<typeof passwordResetUpdateSchema>;
 export type FileQueryInput = z.infer<typeof fileQuerySchema>;
+
+export const userUpdateSchema = z.object({
+    name: z.string().min(1, 'Name is required').max(255),
+});
+
+export type UserUpdateInput = z.infer<typeof userUpdateSchema>;

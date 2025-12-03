@@ -127,9 +127,7 @@ export const authApi = {
   },
 
   async updateProfile(data: UserUpdateData): Promise<void> {
-    // TODO: v2 API実装待ち
-    console.warn('updateProfile is not implemented in v2 API yet');
-    // await apiClient.post('/api/v1/user/update', data);
+    await apiClient.put('/api/v2/auth/me', data);
   },
 
   async sendPasswordResetLink(

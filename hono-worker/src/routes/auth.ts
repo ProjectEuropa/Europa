@@ -184,6 +184,50 @@ auth.get('/me', authMiddleware, async (c) => {
 });
 
 /**
+ * PUT /api/v2/auth/me
+ * ユーザー情報を更新
+ */
+auth.put('/me', authMiddleware, async (c) => {
+    const jwtPayload = c.get('user');
+    const body = await c.req.json();
+
+    // バリデーション
+    const { userUpdateSchema } = await import('../utils/validation');
+    const result = userUpdateSchema.safeParse(body);
+    if (!result.success) {
+        throw new HTTPException(400, {
+            message: 'Validation error',
+            cause: result.error.errors
+        });
+    }
+
+    const { name } = result.data;
+
+    // データベース接続
+    const sql = neon(c.env.DATABASE_URL);
+
+    // ユーザー情報を更新
+    const users = await sql`
+        UPDATE users
+        SET name = ${name}, updated_at = NOW()
+        WHERE id = ${jwtPayload.userId}
+        RETURNING id, name, email, created_at, updated_at
+    `;
+
+    if (users.length === 0) {
+        throw new HTTPException(404, { message: 'User not found' });
+    }
+
+    const user = users[0] as User;
+
+    const response: SuccessResponse<{ user: User }> = {
+        data: { user },
+    };
+
+    return c.json(response, 200);
+});
+
+/**
  * POST /api/v2/auth/password/reset
  * パスワードリセット申請
  */
