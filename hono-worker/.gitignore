@@ -31,3 +31,6 @@ Thumbs.db
 # Build
 dist/
 worker/
+
+# Test Coverage
+coverage/
