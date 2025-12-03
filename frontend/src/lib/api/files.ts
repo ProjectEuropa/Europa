@@ -216,15 +216,25 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
 
     let filename = `file_${teamId}`;
     if (contentDisposition) {
-      // filename="XTN234.CHE" のような形式から抽出
-      const startIndex = contentDisposition.indexOf('filename="');
-      if (startIndex !== -1) {
-        const start = startIndex + 10; // 'filename="'.length
-        const end = contentDisposition.indexOf('"', start);
-        if (end !== -1) {
-          filename = contentDisposition.substring(start, end);
-          console.log('Extracted filename:', filename);
+      // より堅牢なContent-Dispositionヘッダー解析
+      // filename="..." と filename*=UTF-8''... の両方に対応
+      const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (filenameMatch && filenameMatch[1]) {
+        let rawFilename = filenameMatch[1].replace(/['"]/g, '');
+
+        // filename*=UTF-8''encoded-name 形式の場合
+        if (rawFilename.startsWith('UTF-8\'\'')) {
+          rawFilename = rawFilename.substring(7); // 'UTF-8'''.length
         }
+
+        try {
+          // URLエンコードされたファイル名をデコード（日本語対応）
+          filename = decodeURIComponent(rawFilename);
+        } catch {
+          // デコードに失敗した場合は、そのままの値を使用
+          filename = rawFilename;
+        }
+        console.log('Extracted filename:', filename);
       }
     }
 
