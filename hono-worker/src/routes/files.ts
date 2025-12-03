@@ -222,16 +222,10 @@ files.get('/:id', async (c) => {
     const downloadableDate = new Date(file.downloadable_at);
 
     if (now < downloadableDate) {
-      // DBの値をそのまま日本語形式で表示（タイムゾーン変換なし）
-      const formatted = downloadableDate.toLocaleString('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      });
+      // ISO 8601形式の文字列をそのままフォーマット（変換しない）
+      // "2025-12-21T23:59:00.000Z" → "2025-12-21 23:59:00"
+      const formatted = file.downloadable_at
+        .replace(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*/, '$1 $2');
 
       throw new HTTPException(403, {
         message: `このファイルは${formatted}以降にダウンロード可能です`

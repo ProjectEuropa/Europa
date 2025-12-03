@@ -138,28 +138,23 @@ export const formatDownloadDateTime = (dateString: string | null): string => {
   }
 
   try {
-    const date = new Date(dateString);
+    // ISO 8601形式の文字列をそのままフォーマット（変換しない）
+    // "2025-12-21T23:59:00.000Z" → "2025-12-21 23:59:00"
+    const formatted = dateString
+      .replace(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*/, '$1 $2');
 
-    // 日時パースに失敗した場合
-    if (Number.isNaN(date.getTime())) {
+    // フォーマットに失敗した場合（パターンマッチしなかった場合）
+    if (formatted === dateString) {
       const parseError: DateFormatError = {
         type: DateFormatErrorType.PARSE_ERROR,
         originalValue: dateString,
-        message: 'Failed to parse date string',
+        message: 'Failed to format date string',
       };
       logDateFormatError(parseError, 'formatDownloadDateTime');
       return '日時解析エラー';
     }
 
-    // DBに保存されたJST時刻をそのまま表示（タイムゾーン変換なし）
-    return date.toLocaleString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'UTC',
-    });
+    return formatted;
   } catch (error) {
     // 予期しないエラーが発生した場合
     const unknownError: DateFormatError = {
@@ -192,28 +187,23 @@ export const formatUploadDateTime = (dateString: string): string => {
   }
 
   try {
-    const date = new Date(dateString);
+    // ISO 8601形式の文字列をそのままフォーマット（変換しない）
+    // "2025-12-21T23:59:00.000Z" → "2025-12-21 23:59:00"
+    const formatted = dateString
+      .replace(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*/, '$1 $2');
 
-    // 日時パースに失敗した場合
-    if (Number.isNaN(date.getTime())) {
+    // フォーマットに失敗した場合（パターンマッチしなかった場合）
+    if (formatted === dateString) {
       const parseError: DateFormatError = {
         type: DateFormatErrorType.PARSE_ERROR,
         originalValue: dateString,
-        message: 'Failed to parse date string',
+        message: 'Failed to format date string',
       };
       logDateFormatError(parseError, 'formatUploadDateTime');
       return '日時解析エラー';
     }
 
-    // DBに保存されたJST時刻をそのまま表示（タイムゾーン変換なし）
-    return date.toLocaleString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'UTC',
-    });
+    return formatted;
   } catch (error) {
     // 予期しないエラーが発生した場合
     const unknownError: DateFormatError = {

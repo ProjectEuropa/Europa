@@ -27,24 +27,37 @@ export interface EventFormData {
 /**
  * イベント登録API
  */
-/**
- * イベント登録API
- */
 export const registerEvent = async (formData: EventFormData) => {
-  // TODO: v2 API実装待ち
-  console.warn('registerEvent is not implemented in v2 API yet');
-  return { status: 'success', message: 'Not implemented' };
-  /*
-  const response = await apiClient.post('/api/v1/eventNotice', {
-    eventName: formData.name,
-    eventDetails: formData.details,
-    eventReferenceUrl: formData.url,
-    eventClosingDay: formData.deadline,
-    eventDisplayingDay: formData.endDisplayDate,
-    eventType: formData.type,
-  });
-  return response;
-  */
+  try {
+    // イベントタイプの変換
+    let type = '2'; // デフォルト: その他
+    if (formData.type === 'tournament') {
+      type = '1';
+    } else if (formData.type === 'announcement' || formData.type === 'other') {
+      type = '2';
+    }
+
+    // 日付の変換 (YYYY-MM-DD -> ISO 8601)
+    // 締切と表示期限は、その日の終わり(23:59:59)とする
+    const deadline = new Date(`${formData.deadline}T23:59:59`).toISOString();
+    const endDisplayDate = new Date(`${formData.endDisplayDate}T23:59:59`).toISOString();
+
+    const response = await apiClient.post('/api/v2/events', {
+      name: formData.name,
+      details: formData.details,
+      url: formData.url,
+      type: type,
+      deadline: deadline,
+      endDisplayDate: endDisplayDate,
+    });
+    return { status: 'success', data: response };
+  } catch (error: any) {
+    console.error('Failed to register event:', error);
+    return {
+      status: 'error',
+      message: error.message || 'イベントの登録に失敗しました'
+    };
+  }
 };
 
 /**

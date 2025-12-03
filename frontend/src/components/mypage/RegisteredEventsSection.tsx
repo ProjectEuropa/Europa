@@ -239,7 +239,13 @@ const RegisteredEventsSection: React.FC = () => {
                       color: '#b0c4d8',
                     }}
                   >
-                    {event.deadline}
+                    {(() => {
+                      if (!event.deadline) return '';
+                      const d = new Date(event.deadline);
+                      const hours = String(d.getUTCHours()).padStart(2, '0');
+                      const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+                      return `${d.getUTCFullYear()}/${d.getUTCMonth() + 1}/${d.getUTCDate()} ${hours}:${minutes}`;
+                    })()}
                   </td>
                   <td
                     style={{
@@ -248,7 +254,13 @@ const RegisteredEventsSection: React.FC = () => {
                       color: '#b0c4d8',
                     }}
                   >
-                    {event.endDisplayDate}
+                    {(() => {
+                      if (!event.endDisplayDate) return '';
+                      const d = new Date(event.endDisplayDate);
+                      const hours = String(d.getUTCHours()).padStart(2, '0');
+                      const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+                      return `${d.getUTCFullYear()}/${d.getUTCMonth() + 1}/${d.getUTCDate()} ${hours}:${minutes}`;
+                    })()}
                   </td>
 
                   <td

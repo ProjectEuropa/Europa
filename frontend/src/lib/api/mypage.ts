@@ -82,20 +82,10 @@ export const fetchMyMatchFiles = async (): Promise<RawFile[]> => {
  * マイページ：イベント削除API
  */
 export const deleteMyEvent = async (id: string | number) => {
-    // TODO: v2 API実装待ち
-    console.warn('deleteMyEvent is not implemented in v2 API yet');
-    throw new Error('Not implemented');
-    /*
-    const response = await apiClient.post<{ deleted: boolean; error?: string }>(
-        '/api/v1/delete/usersRegisteredCloumn',
-        { id }
+    const response = await apiClient.delete<{ message?: string }>(
+        `/api/v2/events/${id}`
     );
-
-    if (!response.data.deleted) {
-        throw new Error(response.data.error || '削除に失敗しました');
-    }
-    return response.data;
-    */
+    return response;
 };
 
 /**
