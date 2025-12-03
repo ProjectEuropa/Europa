@@ -110,14 +110,22 @@ async function hashDeletePasswordSHA256(password: string): Promise<string> {
 
 /**
  * 削除パスワードを検証
+ * @returns { isValid: 検証結果, needsUpgrade: ハッシュの更新が必要かどうか }
  */
-export async function verifyDeletePassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function verifyDeletePassword(
+    password: string,
+    hashedPassword: string
+): Promise<{ isValid: boolean; needsUpgrade: boolean }> {
     // bcryptハッシュかチェック
     if (hashedPassword.startsWith('$2')) {
-        return bcrypt.compare(password, hashedPassword);
+        const isValid = await bcrypt.compare(password, hashedPassword);
+        return { isValid, needsUpgrade: false };
     }
 
     // 旧SHA-256ハッシュの検証
     const hash = await hashDeletePasswordSHA256(password);
-    return timingSafeEqual(hash, hashedPassword);
+    const isValid = timingSafeEqual(hash, hashedPassword);
+
+    // SHA-256で検証成功した場合、bcryptへの移行が必要
+    return { isValid, needsUpgrade: isValid };
 }

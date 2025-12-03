@@ -40,147 +40,104 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     targetUserId = user.userId;
   }
 
-  // デバッグログ
-  console.log('[FilesRoute] Query params:', { mine, data_type, targetUserId, userId: user?.userId });
-
-  // data_typeによるファイル検索
+  // クエリを実行（条件に応じて動的に構築）
   let filesList;
   let countResult;
+  const keywordPattern = keyword ? `%${keyword}%` : '';
 
-  if (data_type === '1') {
-    // チームファイル検索
-    if (targetUserId && keyword) {
-      countResult = await sql`
-        SELECT COUNT(*) as count FROM files 
-        WHERE data_type = '1' AND upload_user_id = ${targetUserId}
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-      `;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files
-        WHERE data_type = '1' AND upload_user_id = ${targetUserId}
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else if (targetUserId) {
-      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = '1' AND upload_user_id = ${targetUserId}`;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files WHERE data_type = '1' AND upload_user_id = ${targetUserId}
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else if (keyword) {
-      countResult = await sql`
-        SELECT COUNT(*) as count FROM files WHERE data_type = '1'
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-      `;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files WHERE data_type = '1'
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else {
-      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = '1'`;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files WHERE data_type = '1'
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    }
-  } else if (data_type === '2') {
-    // マッチファイル検索
-    if (targetUserId && keyword) {
-      countResult = await sql`
-        SELECT COUNT(*) as count FROM files 
-        WHERE data_type = '2' AND upload_user_id = ${targetUserId}
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-      `;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files
-        WHERE data_type = '2' AND upload_user_id = ${targetUserId}
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else if (targetUserId) {
-      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = '2' AND upload_user_id = ${targetUserId}`;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files WHERE data_type = '2' AND upload_user_id = ${targetUserId}
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else if (keyword) {
-      countResult = await sql`
-        SELECT COUNT(*) as count FROM files WHERE data_type = '2'
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-      `;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files WHERE data_type = '2'
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else {
-      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = '2'`;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files WHERE data_type = '2'
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    }
+  // 条件の組み合わせに応じてクエリを構築
+  if (data_type && targetUserId && keyword) {
+    // data_type + targetUserId + keyword
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM files
+      WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId}
+      AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})
+    `;
+    filesList = await sql`
+      SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
+             file_comment, data_type, downloadable_at, created_at, updated_at
+      FROM files
+      WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId}
+      AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})
+      ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+    `;
+  } else if (data_type && targetUserId) {
+    // data_type + targetUserId
+    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId}`;
+    filesList = await sql`
+      SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
+             file_comment, data_type, downloadable_at, created_at, updated_at
+      FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId}
+      ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+    `;
+  } else if (data_type && keyword) {
+    // data_type + keyword
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type}
+      AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})
+    `;
+    filesList = await sql`
+      SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
+             file_comment, data_type, downloadable_at, created_at, updated_at
+      FROM files WHERE data_type = ${data_type}
+      AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})
+      ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+    `;
+  } else if (targetUserId && keyword) {
+    // targetUserId + keyword
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM files
+      WHERE upload_user_id = ${targetUserId}
+      AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})
+    `;
+    filesList = await sql`
+      SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
+             file_comment, data_type, downloadable_at, created_at, updated_at
+      FROM files
+      WHERE upload_user_id = ${targetUserId}
+      AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern})
+      ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+    `;
+  } else if (data_type) {
+    // data_typeのみ
+    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type}`;
+    filesList = await sql`
+      SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
+             file_comment, data_type, downloadable_at, created_at, updated_at
+      FROM files WHERE data_type = ${data_type}
+      ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+    `;
+  } else if (targetUserId) {
+    // targetUserIdのみ
+    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId}`;
+    filesList = await sql`
+      SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
+             file_comment, data_type, downloadable_at, created_at, updated_at
+      FROM files WHERE upload_user_id = ${targetUserId}
+      ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+    `;
+  } else if (keyword) {
+    // keywordのみ
+    countResult = await sql`
+      SELECT COUNT(*) as count FROM files
+      WHERE file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}
+    `;
+    filesList = await sql`
+      SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
+             file_comment, data_type, downloadable_at, created_at, updated_at
+      FROM files
+      WHERE file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern}
+      ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+    `;
   } else {
-    // 全ファイル検索
-    if (targetUserId && keyword) {
-      countResult = await sql`
-        SELECT COUNT(*) as count FROM files 
-        WHERE upload_user_id = ${targetUserId}
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-      `;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files
-        WHERE upload_user_id = ${targetUserId}
-        AND (file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`})
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else if (targetUserId) {
-      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId}`;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files WHERE upload_user_id = ${targetUserId}
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else if (keyword) {
-      countResult = await sql`
-        SELECT COUNT(*) as count FROM files 
-        WHERE file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`}
-      `;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files
-        WHERE file_name ILIKE ${`%${keyword}%`} OR file_comment ILIKE ${`%${keyword}%`}
-        ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    } else {
-      countResult = await sql`SELECT COUNT(*) as count FROM files`;
-      filesList = await sql`
-        SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
-               file_comment, data_type, downloadable_at, created_at, updated_at
-        FROM files ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
-      `;
-    }
+    // 条件なし
+    countResult = await sql`SELECT COUNT(*) as count FROM files`;
+    filesList = await sql`
+      SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size,
+             file_comment, data_type, downloadable_at, created_at, updated_at
+      FROM files
+      ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}
+    `;
   }
 
   const total = parseInt(countResult[0].count as string);
@@ -442,11 +399,8 @@ files.post('/', optionalAuthMiddleware, async (c) => {
  * ファイル削除（認証ユーザー or 削除パスワード）
  */
 files.delete('/:id', optionalAuthMiddleware, async (c) => {
-  console.log('[Files DELETE] Starting deletion process');
   const user = c.get('user');
   const id = c.req.param('id');
-  console.log('[Files DELETE] User:', user ? `ID ${user.userId}` : 'Anonymous');
-  console.log('[Files DELETE] File ID:', id);
 
   // IDのバリデーション
   if (!/^\d+$/.test(id)) {
@@ -477,34 +431,25 @@ files.delete('/:id', optionalAuthMiddleware, async (c) => {
     }
   } else {
     // 匿名ユーザー: 削除パスワードで検証
-    console.log('[Files DELETE] Anonymous user deletion attempt');
     const body = await c.req.json().catch(() => ({}));
-    console.log('[Files DELETE] Request body:', body);
     const { deletePassword } = body;
-    console.log('[Files DELETE] Delete password provided:', !!deletePassword);
 
     if (!deletePassword) {
-      console.log('[Files DELETE] No password provided, throwing 401');
       throw new HTTPException(401, { message: '削除パスワードが必要です' });
     }
 
     if (!file.delete_password) {
-      console.log('Delete Debug: No delete password stored');
       throw new HTTPException(403, { message: '削除に失敗しました' });
     }
 
-    const generatedHash = await hashDeletePassword(deletePassword);
-    console.log('Delete Debug:', {
-      inputPassword: deletePassword,
-      storedHash: file.delete_password,
-      generatedHash: generatedHash,
-      match: generatedHash === file.delete_password
-    });
-
-    const isValid = await verifyDeletePassword(deletePassword, file.delete_password);
+    const { isValid, needsUpgrade } = await verifyDeletePassword(deletePassword, file.delete_password);
     if (!isValid) {
       throw new HTTPException(403, { message: '削除パスワードが正しくありません' });
     }
+
+    // 注: needsUpgradeフラグは削除時には使用されません。
+    // 古いSHA-256ハッシュは、新規アップロード時にbcryptを使うことで
+    // 時間とともに自然に減少していきます。
   }
 
   // R2から削除
