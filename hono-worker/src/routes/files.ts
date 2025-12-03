@@ -220,10 +220,10 @@ files.get('/:id', async (c) => {
   if (file.downloadable_at) {
     const now = new Date();
     const downloadableDate = new Date(file.downloadable_at);
-    
+
     if (now < downloadableDate) {
       // DBの値をそのまま日本語形式で表示（タイムゾーン変換なし）
-      const formatted = downloadableDate.toLocaleString('ja-JP', { 
+      const formatted = downloadableDate.toLocaleString('ja-JP', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -232,9 +232,9 @@ files.get('/:id', async (c) => {
         second: '2-digit',
         hour12: false
       });
-      
-      throw new HTTPException(403, { 
-        message: `このファイルは${formatted}以降にダウンロード可能です` 
+
+      throw new HTTPException(403, {
+        message: `このファイルは${formatted}以降にダウンロード可能です`
       });
     }
   }
@@ -475,11 +475,133 @@ files.delete('/:id', optionalAuthMiddleware, async (c) => {
     DELETE FROM files WHERE id = ${parseInt(id)}
   `;
 
-  const response: SuccessResponse<never> = {
-    message: 'File deleted successfully',
-  };
+  return c.json({ message: 'File deleted successfully' }, 200);
+});
 
-  return c.json(response, 200);
+/**
+ * POST /api/v2/files/bulk-download
+ * 複数ファイルの一括ダウンロード（ZIP形式）
+ */
+files.post('/bulk-download', optionalAuthMiddleware, async (c) => {
+  const body = await c.req.json().catch(() => ({}));
+  const { fileIds } = body;
+
+  // バリデーション
+  if (!Array.isArray(fileIds) || fileIds.length === 0) {
+    throw new HTTPException(400, { message: 'ファイルIDのリストが必要です' });
+  }
+
+  if (fileIds.length > 50) {
+    throw new HTTPException(400, { message: '一度に選択できるファイルは50個までです' });
+  }
+
+  // データベース接続
+  const sql = neon(c.env.DATABASE_URL);
+
+  // ファイル情報を取得
+  const filesList = await sql`
+    SELECT id, file_name, file_path, file_size, downloadable_at
+    FROM files
+    WHERE id = ANY(${fileIds})
+  `;
+
+  if (filesList.length === 0) {
+    throw new HTTPException(404, { message: 'ファイルが見つかりません' });
+  }
+
+  // fflateを動的インポート
+  const { zipSync } = await import('fflate');
+
+  // ZIPファイルの内容を準備
+  const zipContents: Record<string, Uint8Array> = {};
+  const fileNameCounts = new Map<string, number>(); // ファイル名の出現回数を記録
+  const skippedFiles: string[] = []; // ダウンロード不可のファイル
+  let totalSize = 0;
+
+  for (const file of filesList) {
+    // ダウンロード可能日時のチェック
+    if (file.downloadable_at) {
+      const now = new Date();
+      const downloadableDate = new Date(file.downloadable_at);
+
+      if (now < downloadableDate) {
+        // ダウンロード可能日時前のファイルはスキップ
+        skippedFiles.push(file.file_name);
+        continue;
+      }
+    }
+    try {
+      // R2からファイルを取得
+      const object = await c.env.FILES_BUCKET.get(file.file_path);
+
+      if (!object) {
+        console.warn(`File not found in R2: ${file.file_path}`);
+        continue;
+      }
+
+      const arrayBuffer = await object.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      totalSize += uint8Array.length;
+
+      // メモリ制限チェック（100MB）
+      if (totalSize > 100 * 1024 * 1024) {
+        throw new HTTPException(413, { message: 'ファイルサイズの合計が大きすぎます' });
+      }
+
+      // ファイル名の重複処理
+      let safeFileName = file.file_name;
+      const count = fileNameCounts.get(file.file_name) || 0;
+
+      if (count > 0) {
+        // 重複がある場合のみ番号を付ける
+        const nameParts = file.file_name.split('.');
+        if (nameParts.length > 1) {
+          const ext = nameParts.pop();
+          const baseName = nameParts.join('.');
+          safeFileName = `${baseName}_${count}.${ext}`;
+        } else {
+          safeFileName = `${file.file_name}_${count}`;
+        }
+      }
+
+      fileNameCounts.set(file.file_name, count + 1);
+      zipContents[safeFileName] = uint8Array;
+    } catch (error) {
+      console.error(`Error fetching file ${file.id}:`, error);
+      // エラーが発生したファイルはスキップ
+      continue;
+    }
+  }
+
+  if (Object.keys(zipContents).length === 0) {
+    // 全てのファイルがダウンロード不可の場合
+    if (skippedFiles.length > 0) {
+      throw new HTTPException(403, {
+        message: `選択されたファイルはまだダウンロード可能日時に達していません`
+      });
+    }
+    throw new HTTPException(404, { message: 'ダウンロード可能なファイルがありません' });
+  }
+
+  // ZIPファイルを生成
+  const zipped = zipSync(zipContents, {
+    level: 6, // 圧縮レベル（0-9、6がデフォルト）
+  });
+
+  // ファイル名を生成（タイムスタンプ付き）
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+  const filename = `bulk_download_${timestamp}.zip`;
+
+  // Responseオブジェクトを返す
+  return new Response(zipped, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': zipped.length.toString(),
+    },
+  });
 });
 
 export default files;

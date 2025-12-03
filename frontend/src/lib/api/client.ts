@@ -61,7 +61,7 @@ export class ApiClient {
         try {
           const rawError = await response.json();
           console.log('[API Client] Raw error response:', rawError);
-          
+
           // バックエンドのエラー形式を正規化
           // { error: { message: "..." } } → { message: "..." }
           if (rawError.error?.message) {
@@ -80,7 +80,7 @@ export class ApiClient {
               rawError,
             };
           }
-          
+
           console.log('[API Client] Normalized error data:', errorData);
         } catch (parseError) {
           console.error('[API Client] Failed to parse error response:', parseError);
@@ -138,10 +138,10 @@ export class ApiClient {
     endpoint: string,
     options?: RequestInit & { body?: string }
   ): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { 
-      ...options, 
+    return this.request<T>(endpoint, {
+      ...options,
       method: 'DELETE',
-      body: options?.body 
+      body: options?.body
     });
   }
 
@@ -174,7 +174,7 @@ export class ApiClient {
         try {
           const rawError = await response.json();
           console.log('[API Client] Raw error response:', rawError);
-          
+
           // バックエンドのエラー形式を正規化
           // { error: { message: "..." } } → { message: "..." }
           if (rawError.error?.message) {
@@ -193,7 +193,7 @@ export class ApiClient {
               rawError,
             };
           }
-          
+
           console.log('[API Client] Normalized error data:', errorData);
         } catch (parseError) {
           console.error('[API Client] Failed to parse error response:', parseError);
@@ -232,7 +232,36 @@ export class ApiClient {
       });
 
       if (!response.ok) {
-        throw new Error(`Download failed: ${response.status}`);
+        let errorData: any = {};
+        try {
+          const rawError = await response.json();
+
+          // バックエンドのエラー形式を正規化
+          // { error: { message: "..." } } → { message: "..." }
+          if (rawError.error?.message) {
+            errorData = {
+              message: rawError.error.message,
+              code: rawError.error.code,
+              errors: rawError.error.details || rawError.errors,
+            };
+          } else if (rawError.message) {
+            // 既に正しい形式の場合
+            errorData = rawError;
+          } else {
+            // 予期しない形式の場合
+            errorData = {
+              message: `HTTP ${response.status}: ${response.statusText}`,
+              rawError,
+            };
+          }
+        } catch {
+          // JSONパースに失敗した場合のフォールバック
+          errorData = {
+            message: `HTTP ${response.status}: ${response.statusText}`,
+            status: response.status,
+          };
+        }
+        throw new ApiErrorClass(response.status, errorData);
       }
 
       const blob = await response.blob();
@@ -255,8 +284,11 @@ export class ApiClient {
 
       return { blob, filename, headers: response.headers };
     } catch (error) {
+      if (error instanceof ApiErrorClass) {
+        throw error;
+      }
       console.error(`Download from ${endpoint} failed:`, error);
-      throw error;
+      throw new ApiErrorClass(500, { message: 'Download failed' });
     }
   }
 

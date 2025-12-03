@@ -20,7 +20,7 @@ events.get('/', async (c) => {
     const { page = 1, limit = 20 }: EventQueryInput = result.success
         ? result.data
         : { page: 1, limit: 20 };
-  
+
     // ページネーション計算
     const offset = (page - 1) * limit;
 
