@@ -1,4 +1,4 @@
-import { Context, Next } from 'hono';
+import type { Context, Next } from 'hono';
 import { cors } from 'hono/cors';
 import type { Env } from '../types/bindings';
 

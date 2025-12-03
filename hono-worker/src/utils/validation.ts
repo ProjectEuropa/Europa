@@ -60,4 +60,18 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type FileUploadInput = z.infer<typeof fileUploadSchema>;
 export type EventQueryInput = z.infer<typeof eventQuerySchema>;
 export type EventRegistrationInput = z.infer<typeof eventRegistrationSchema>;
+
+// パスワードリセット関連のバリデーションスキーマ
+
+export const passwordResetRequestSchema = z.object({
+    email: z.string().email('Invalid email format').max(255),
+});
+
+export const passwordResetUpdateSchema = z.object({
+    token: z.string().min(32, 'Invalid token').max(32),
+    password: z.string().min(8, 'Password must be at least 8 characters').max(255),
+});
+
+export type PasswordResetRequestInput = z.infer<typeof passwordResetRequestSchema>;
+export type PasswordResetUpdateInput = z.infer<typeof passwordResetUpdateSchema>;
 export type FileQueryInput = z.infer<typeof fileQuerySchema>;

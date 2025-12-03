@@ -183,4 +183,129 @@ auth.get('/me', authMiddleware, async (c) => {
     return c.json(response, 200);
 });
 
+/**
+ * POST /api/v2/auth/password/reset
+ * パスワードリセット申請
+ */
+auth.post('/password/reset', async (c) => {
+    const body = await c.req.json().catch(() => ({}));
+
+    // バリデーション
+    const { passwordResetRequestSchema } = await import('../utils/validation');
+    const result = passwordResetRequestSchema.safeParse(body);
+    if (!result.success) {
+        throw new HTTPException(400, {
+            message: 'Validation error',
+            cause: result.error
+        });
+    }
+
+    const { email } = result.data;
+
+    // データベース接続
+    const sql = neon(c.env.DATABASE_URL);
+
+    // メールアドレスの存在確認
+    const users = await sql`SELECT id FROM users WHERE email = ${email}`;
+
+    // セキュリティ上、メールアドレスの存在に関わらず同じレスポンスを返す
+    if (users.length > 0) {
+        // トークン生成
+        const { generateResetToken } = await import('../utils/token');
+        const token = generateResetToken();
+
+        // password_resetsテーブルに保存（既存レコードがあれば上書き）
+        await sql`
+            INSERT INTO password_resets (email, token, created_at)
+            VALUES (${email}, ${token}, NOW())
+            ON CONFLICT (email)
+            DO UPDATE SET token = ${token}, created_at = NOW()
+        `;
+
+        // メール送信（開発環境ではコンソールログ）
+        const resetUrl = `${c.env.FRONTEND_URL}/password-reset/confirm?token=${token}`;
+        if (c.env.ENVIRONMENT === 'production') {
+            // TODO: 本番環境では実際のメール送信サービスを使用
+            console.log('TODO: Send email via email service');
+        } else {
+            console.log('=== Password Reset Email ===');
+            console.log(`To: ${email}`);
+            console.log(`Reset URL: ${resetUrl}`);
+            console.log(`Token: ${token}`);
+            console.log('============================');
+        }
+    }
+
+    // セキュリティ上、常に同じレスポンスを返す
+    return c.json({
+        message: 'パスワードリセットのメールを送信しました'
+    }, 200);
+});
+
+/**
+ * POST /api/v2/auth/password/update
+ * パスワードリセット実行
+ */
+auth.post('/password/update', async (c) => {
+    const body = await c.req.json().catch(() => ({}));
+
+    // バリデーション
+    const { passwordResetUpdateSchema } = await import('../utils/validation');
+    const result = passwordResetUpdateSchema.safeParse(body);
+    if (!result.success) {
+        throw new HTTPException(400, {
+            message: 'Validation error',
+            cause: result.error
+        });
+    }
+
+    const { token, password } = result.data;
+
+    // データベース接続
+    const sql = neon(c.env.DATABASE_URL);
+
+    // トークンの検証
+    const resets = await sql`
+        SELECT email, created_at FROM password_resets WHERE token = ${token}
+    `;
+
+    if (resets.length === 0) {
+        throw new HTTPException(400, {
+            message: '無効なトークンまたは有効期限切れです',
+            cause: { code: 'INVALID_TOKEN' }
+        });
+    }
+
+    const reset = resets[0];
+
+    // トークンの有効期限チェック（1時間）
+    const { isTokenExpired } = await import('../utils/token');
+    if (isTokenExpired(new Date(reset.created_at))) {
+        // 期限切れトークンを削除
+        await sql`DELETE FROM password_resets WHERE token = ${token}`;
+        throw new HTTPException(400, {
+            message: '無効なトークンまたは有効期限切れです',
+            cause: { code: 'TOKEN_EXPIRED' }
+        });
+    }
+
+    // パスワードをハッシュ化
+    const hashedPassword = await hashPassword(password);
+
+    // パスワード更新
+    await sql`
+        UPDATE users
+        SET password = ${hashedPassword}, updated_at = NOW()
+        WHERE email = ${reset.email}
+    `;
+
+    // トークン削除
+    await sql`DELETE FROM password_resets WHERE token = ${token}`;
+
+    return c.json({
+        message: 'パスワードを更新しました'
+    }, 200);
+});
+
 export default auth;
+

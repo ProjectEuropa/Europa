@@ -1,4 +1,4 @@
-import { Context, Next } from 'hono';
+import type { Context, Next } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import type { ErrorResponse } from '../types/api';
 

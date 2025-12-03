@@ -496,8 +496,6 @@ files.post('/bulk-download', optionalAuthMiddleware, async (c) => {
       zipContents[safeFileName] = uint8Array;
     } catch (error) {
       console.error(`Error fetching file ${file.id}:`, error);
-      // エラーが発生したファイルはスキップ
-      continue;
     }
   }
 
