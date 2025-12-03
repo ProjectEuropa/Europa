@@ -135,63 +135,27 @@ export const authApi = {
   async sendPasswordResetLink(
     request: PasswordResetRequest
   ): Promise<PasswordResetResponse> {
-    // TODO: v2 API実装待ち
-    console.warn('sendPasswordResetLink is not implemented in v2 API yet');
-    return { status: 'success', message: 'Not implemented' };
-    /*
-    const response = await apiClient.post<PasswordResetResponse>(
-      '/api/v1/forgot-password',
-      request
+    const response = await apiClient.post<{ message: string }>(
+      '/api/v2/auth/password/reset',
+      { email: request.email }
     );
-    return response as PasswordResetResponse;
-    */
-  },
-
-  async checkResetPasswordToken(
-    check: PasswordResetTokenCheck
-  ): Promise<PasswordResetTokenResponse> {
-    // TODO: v2 API実装待ち
-    console.warn('checkResetPasswordToken is not implemented in v2 API yet');
-    return { valid: false, message: 'Not implemented' };
-    /*
-    const params = new URLSearchParams({
-      token: check.token,
-      email: check.email,
-    });
-
-    try {
-      await apiClient.get(`/api/v1/reset-password?${params.toString()}`);
-      return { valid: true };
-    } catch (error: any) {
-      return {
-        valid: false,
-        message: error.message || '無効なリセットリンクです',
-      };
-    }
-    */
+    return { status: 'success', message: response.message };
   },
 
   async resetPassword(data: PasswordResetData): Promise<PasswordResetResult> {
-    // TODO: v2 API実装待ち
-    console.warn('resetPassword is not implemented in v2 API yet');
-    return { error: 'Not implemented' };
-    /*
     try {
       const response = await apiClient.post<{ message: string }>(
-        '/api/v1/reset-password',
+        '/api/v2/auth/password/update',
         {
           token: data.token,
-          email: data.email,
           password: data.password,
-          password_confirmation: data.passwordConfirmation,
         }
       );
 
-      return { message: (response as any).message };
+      return { message: response.message };
     } catch (error: any) {
       return { error: error.message || 'リセットに失敗しました' };
     }
-    */
   },
 
   async logout(): Promise<void> {
