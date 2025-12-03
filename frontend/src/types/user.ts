@@ -53,6 +53,7 @@ export interface PasswordResetRequest {
 
 export interface PasswordResetResponse {
   status?: string;
+  message?: string;
   error?: string;
 }
 

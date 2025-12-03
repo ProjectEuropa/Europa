@@ -120,7 +120,7 @@ export const authApi = {
     // レスポンスがdata プロパティを持つ場合
     if (response && typeof response === 'object' && 'data' in response) {
       const apiResponse = response as unknown as ApiResponse<User>;
-      return apiResponse.data.user || apiResponse.data;
+      return (apiResponse.data as any).user || apiResponse.data;
     }
 
     throw new Error('Invalid user profile response structure');
@@ -154,6 +154,18 @@ export const authApi = {
     } catch (error: any) {
       return { error: error.message || 'リセットに失敗しました' };
     }
+  },
+
+  async checkResetPasswordToken(
+    data: PasswordResetTokenCheck
+  ): Promise<PasswordResetTokenResponse> {
+    const response = await apiClient.post<PasswordResetTokenResponse>(
+      '/api/v2/auth/password/check',
+      {
+        token: data.token,
+      }
+    );
+    return response.data;
   },
 
   async logout(): Promise<void> {

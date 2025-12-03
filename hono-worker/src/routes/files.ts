@@ -45,9 +45,9 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   const keywordPattern = keyword ? `%${keyword}%` : '';
 
   // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
-  let countResult: unknown;
+  let countResult: any;
   // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
-  let filesList: unknown;
+  let filesList: any;
 
   // WHERE条件の組み合わせに応じてクエリを実行
   if (data_type && targetUserId && keyword) {
@@ -79,7 +79,7 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   const total = parseInt(countResult[0].count as string);
 
   // 全ファイルのタグを一度に取得（N+1問題を回避）
-  const fileIds = filesList.map((f: any) => f.id);
+  const fileIds = (filesList as any[]).map((f: any) => f.id);
   let allTags: any[] = [];
 
   if (fileIds.length > 0) {
@@ -109,7 +109,7 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   })) as FileType[];
 
   // マスク処理を適用（マイページの場合はスキップ）
-  const maskedFiles = mine === 'true' ? filesWithTags : maskFilesIfNotDownloadable(filesWithTags);
+  const maskedFiles = mine === 'true' ? filesWithTags : maskFilesIfNotDownloadable(filesWithTags as unknown as Record<string, unknown>[]);
 
   const pagination: PaginationMeta = {
     page,
@@ -163,8 +163,10 @@ files.get('/:id', async (c) => {
     if (now < downloadableDate) {
       // ISO 8601形式の文字列をそのままフォーマット（変換しない）
       // "2025-12-21T23:59:00.000Z" → "2025-12-21 23:59:00"
-      const dateStr = file.downloadable_at instanceof Date
-        ? file.downloadable_at.toISOString()
+      // ISO 8601形式の文字列をそのままフォーマット（変換しない）
+      // "2025-12-21T23:59:00.000Z" → "2025-12-21 23:59:00"
+      const dateStr = (file.downloadable_at as unknown) instanceof Date
+        ? (file.downloadable_at as unknown as Date).toISOString()
         : String(file.downloadable_at);
 
       const formatted = dateStr
@@ -208,7 +210,7 @@ files.post('/', optionalAuthMiddleware, async (c) => {
 
   // multipart/form-data を解析
   const formData = await c.req.formData();
-  const file = formData.get('file') as File;
+  const file = formData.get('file') as unknown as File;
   const comment = formData.get('comment') as string | null;
   const tagsString = formData.get('tags') as string | null;
   const inputDeletePassword = formData.get('deletePassword') as string | null; // ユーザー入力の削除パスワード

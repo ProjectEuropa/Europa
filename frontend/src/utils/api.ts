@@ -20,7 +20,6 @@ import {
   deleteMyFile,
   fetchMyEvents,
 } from '@/lib/api/mypage';
-import { updateUserName } from '@/lib/api/user';
 import { sumDLSearchTeam, sumDLSearchMatch, sumDownload } from '@/lib/api/sumdownload';
 import { authApi } from '@/lib/api/auth';
 
@@ -38,10 +37,13 @@ export {
   deleteMyEvent,
   deleteMyFile,
   fetchMyEvents,
-  updateUserName,
   sumDLSearchTeam,
   sumDLSearchMatch,
   sumDownload,
+};
+
+export const updateUserName = async (name: string) => {
+  return authApi.updateProfile({ name });
 };
 
 // 古い関数名のエイリアス

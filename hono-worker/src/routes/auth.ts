@@ -22,7 +22,7 @@ auth.post('/register', async (c) => {
     if (!result.success) {
         throw new HTTPException(400, {
             message: 'Validation error',
-            cause: result.error.errors
+            cause: result.error.issues
         });
     }
 
@@ -85,7 +85,7 @@ auth.post('/login', async (c) => {
     if (!result.success) {
         throw new HTTPException(400, {
             message: 'Validation error',
-            cause: result.error.errors
+            cause: result.error.issues
         });
     }
 
@@ -197,7 +197,7 @@ auth.put('/me', authMiddleware, async (c) => {
     if (!result.success) {
         throw new HTTPException(400, {
             message: 'Validation error',
-            cause: result.error.errors
+            cause: result.error.issues
         });
     }
 

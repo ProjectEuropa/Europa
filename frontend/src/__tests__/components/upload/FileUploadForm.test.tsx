@@ -255,6 +255,7 @@ describe('FileUploadForm', () => {
     // 必要な情報を入力
     await user.type(screen.getByLabelText('オーナー名'), 'テストユーザー');
     await user.type(screen.getByLabelText('削除パスワード'), 'password');
+    await user.type(screen.getByLabelText('コメント'), 'テストコメント');
 
     // ファイルを選択
     const file = new File(['test'], 'test.che', {
@@ -288,6 +289,7 @@ describe('FileUploadForm', () => {
     // 必要な情報を入力
     await user.type(screen.getByLabelText('オーナー名'), 'テストユーザー');
     await user.type(screen.getByLabelText('削除パスワード'), 'password');
+    await user.type(screen.getByLabelText('コメント'), 'テストコメント');
 
     // ファイルを選択
     const file = new File(['test'], 'test.che', {

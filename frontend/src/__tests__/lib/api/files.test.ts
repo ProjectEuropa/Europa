@@ -5,11 +5,12 @@ import type { FileUploadOptions } from '@/types/file';
 import type { SearchParams } from '@/types/search';
 
 // APIクライアントをモック
-vi.mock('@/lib/api/client', () => ({
+vi.mock("@/lib/api/client", () => ({
   apiClient: {
     get: vi.fn(),
     post: vi.fn(),
     upload: vi.fn(),
+    delete: vi.fn(),
   },
 }));
 
@@ -81,11 +82,11 @@ describe('filesApi', () => {
       const params: SearchParams = { keyword: 'test', page: 1 };
       const mockResponse = {
         data: {
-          data: [
-            { id: 1, file_name: 'Team 1', upload_owner_name: 'Owner 1' },
-            { id: 2, file_name: 'Team 2', upload_owner_name: 'Owner 2' },
+          files: [
+            { id: 1, file_name: "Team 1", upload_owner_name: "Owner 1" },
+            { id: 2, file_name: "Team 2", upload_owner_name: "Owner 2" },
           ],
-          meta: { currentPage: 1, lastPage: 1, total: 2 },
+          pagination: { page: 1, limit: 10, total: 2 },
         },
       };
 
@@ -94,50 +95,52 @@ describe('filesApi', () => {
       const result = await filesApi.searchTeams(params);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/api/v1/search/team?keyword=test&page=1'
+        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test`
       );
       expect(result).toEqual({
         data: [
           {
             id: 1,
-            file_name: 'Team 1',
-            upload_owner_name: 'Owner 1',
-            name: 'Team 1',
-            ownerName: 'Owner 1',
-            comment: '',
-            downloadableAt: '',
-            created_at: '',
+            name: "Team 1",
+            ownerName: "Owner 1",
+            comment: "",
+            downloadableAt: "",
+            created_at: "",
             updatedAt: undefined,
-            searchTag1: undefined,
-            searchTag2: undefined,
-            searchTag3: undefined,
-            searchTag4: undefined,
-            upload_type: undefined,
-            type: 'team',
+            searchTag1: "",
+            searchTag2: "",
+            searchTag3: "",
+            searchTag4: "",
+            uploadType: "team",
+            upload_type: "2",
+            type: "team",
+            file_path: undefined,
+            file_size: undefined,
           },
           {
             id: 2,
-            file_name: 'Team 2',
-            upload_owner_name: 'Owner 2',
-            name: 'Team 2',
-            ownerName: 'Owner 2',
-            comment: '',
-            downloadableAt: '',
-            created_at: '',
+            name: "Team 2",
+            ownerName: "Owner 2",
+            comment: "",
+            downloadableAt: "",
+            created_at: "",
             updatedAt: undefined,
-            searchTag1: undefined,
-            searchTag2: undefined,
-            searchTag3: undefined,
-            searchTag4: undefined,
-            upload_type: undefined,
-            type: 'team',
+            searchTag1: "",
+            searchTag2: "",
+            searchTag3: "",
+            searchTag4: "",
+            uploadType: "team",
+            upload_type: "2",
+            type: "team",
+            file_path: undefined,
+            file_size: undefined,
           },
         ],
         meta: {
           currentPage: 1,
           lastPage: 1,
           perPage: 10,
-          total: 0,
+          total: 2,
         },
       });
     });
@@ -152,7 +155,7 @@ describe('filesApi', () => {
       await filesApi.searchTeams(params);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/api/v1/search/team?keyword=test%20%26%20special&page=1'
+        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test%20%26%20special`
       );
     });
   });
@@ -162,8 +165,8 @@ describe('filesApi', () => {
       const params: SearchParams = { keyword: 'match', page: 2 };
       const mockResponse = {
         data: {
-          data: [{ id: 1, file_name: 'Match 1', upload_owner_name: 'Owner 1' }],
-          meta: { currentPage: 2, lastPage: 3, total: 10 },
+          files: [{ id: 1, file_name: "Match 1", upload_owner_name: "Owner 1" }],
+          pagination: { page: 2, limit: 10, total: 30 },
         },
       };
 
@@ -172,33 +175,34 @@ describe('filesApi', () => {
       const result = await filesApi.searchMatches(params);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        '/api/v1/search/match?keyword=match&page=2'
+        `/api/v2/files?data_type=2&page=2&limit=10&keyword=match`
       );
       expect(result).toEqual({
         data: [
           {
             id: 1,
-            file_name: 'Match 1',
-            upload_owner_name: 'Owner 1',
-            name: 'Match 1',
-            ownerName: 'Owner 1',
-            comment: '',
-            downloadableAt: '',
-            created_at: '',
+            name: "Match 1",
+            ownerName: "Owner 1",
+            comment: "",
+            downloadableAt: "",
+            created_at: "",
             updatedAt: undefined,
-            searchTag1: undefined,
-            searchTag2: undefined,
-            searchTag3: undefined,
-            searchTag4: undefined,
-            upload_type: undefined,
-            type: 'match',
+            searchTag1: "",
+            searchTag2: "",
+            searchTag3: "",
+            searchTag4: "",
+            uploadType: "match",
+            upload_type: "2",
+            type: "match",
+            file_path: undefined,
+            file_size: undefined,
           },
         ],
         meta: {
-          currentPage: 1,
-          lastPage: 1,
+          currentPage: 2,
+          lastPage: 3,
           perPage: 10,
-          total: 0,
+          total: 30,
         },
       });
     });
@@ -215,7 +219,7 @@ describe('filesApi', () => {
       };
 
       const mockResponse = {
-        data: { success: true, fileId: 123 },
+        data: { file: { id: 123, file_name: 'test.txt', file_comment: 'Test comment', created_at: '2024-01-01' } },
       };
 
       vi.mocked(apiClient.upload).mockResolvedValueOnce(mockResponse);
@@ -223,10 +227,15 @@ describe('filesApi', () => {
       const result = await filesApi.uploadTeamFile(file, true, options);
 
       expect(apiClient.upload).toHaveBeenCalledWith(
-        '/api/v1/team/upload',
+        `/api/v2/files`,
         expect.any(FormData)
       );
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual({
+        id: 123,
+        name: "test.txt",
+        comment: "Test comment",
+        created_at: "2024-01-01",
+      });
     });
 
     it('should upload team file for unauthenticated user', async () => {
@@ -237,7 +246,7 @@ describe('filesApi', () => {
       };
 
       const mockResponse = {
-        data: { success: true, fileId: 123 },
+        data: { file: { id: 123, file_name: 'test.txt' } },
       };
 
       vi.mocked(apiClient.upload).mockResolvedValueOnce(mockResponse);
@@ -245,17 +254,22 @@ describe('filesApi', () => {
       const result = await filesApi.uploadTeamFile(file, false, options);
 
       expect(apiClient.upload).toHaveBeenCalledWith(
-        '/api/v1/team/simpleupload',
+        `/api/v2/files`,
         expect.any(FormData)
       );
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual({
+        id: 123,
+        name: "test.txt",
+        comment: undefined,
+        created_at: undefined,
+      });
     });
 
     it('should upload team file without options', async () => {
       const file = new File(['test'], 'test.txt', { type: 'text/plain' });
 
       const mockResponse = {
-        data: { success: true, fileId: 123 },
+        data: { file: { id: 123, file_name: 'test.txt' } },
       };
 
       vi.mocked(apiClient.upload).mockResolvedValueOnce(mockResponse);
@@ -263,10 +277,15 @@ describe('filesApi', () => {
       const result = await filesApi.uploadTeamFile(file, true);
 
       expect(apiClient.upload).toHaveBeenCalledWith(
-        '/api/v1/team/upload',
+        `/api/v2/files`,
         expect.any(FormData)
       );
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual({
+        id: 123,
+        name: "test.txt",
+        comment: undefined,
+        created_at: undefined,
+      });
     });
   });
 
@@ -279,7 +298,7 @@ describe('filesApi', () => {
       };
 
       const mockResponse = {
-        data: { success: true, fileId: 456 },
+        data: { file: { id: 456, file_name: 'test.txt' } },
       };
 
       vi.mocked(apiClient.upload).mockResolvedValueOnce(mockResponse);
@@ -287,10 +306,15 @@ describe('filesApi', () => {
       const result = await filesApi.uploadMatchFile(file, true, options);
 
       expect(apiClient.upload).toHaveBeenCalledWith(
-        '/api/v1/match/upload',
+        `/api/v2/files`,
         expect.any(FormData)
       );
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual({
+        id: 456,
+        name: "test.txt",
+        comment: undefined,
+        created_at: undefined,
+      });
     });
   });
 
@@ -368,43 +392,37 @@ describe('filesApi', () => {
     it('should delete search file successfully', async () => {
       const request = { id: 123, deletePassword: 'password123' };
       const mockResponse = {
-        data: { success: true, message: 'File deleted' },
+        message: 'File deleted' ,
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.delete).mockResolvedValueOnce(mockResponse as any);
 
       const result = await filesApi.deleteSearchFile(request);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/delete/searchFile', {
-        id: 123,
-        deletePassword: 'password123',
-      });
-      expect(result).toEqual(mockResponse.data);
+      expect(apiClient.delete).toHaveBeenCalledWith(`/api/v2/files/123`, { body: JSON.stringify({ deletePassword: 'password123' }) });
+      expect(result).toEqual(mockResponse);
     });
 
     it('should delete search file without password', async () => {
       const request = { id: 123 };
       const mockResponse = {
-        data: { success: true, message: 'File deleted' },
+        message: 'File deleted',
       };
 
-      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+      vi.mocked(apiClient.delete).mockResolvedValueOnce(mockResponse as any);
 
       const result = await filesApi.deleteSearchFile(request);
 
-      expect(apiClient.post).toHaveBeenCalledWith('/api/v1/delete/searchFile', {
-        id: 123,
-        deletePassword: '',
-      });
-      expect(result).toEqual(mockResponse.data);
+      expect(apiClient.delete).toHaveBeenCalledWith(`/api/v2/files/123`, { body: JSON.stringify({ deletePassword: undefined }) });
+      expect(result).toEqual(mockResponse);
     });
   });
 
   describe('fetchMyTeamFiles', () => {
     it('should fetch my team files successfully', async () => {
       const mockFiles = [
-        { id: 1, name: 'Team File 1', ownerName: 'Owner 1' },
-        { id: 2, name: 'Team File 2', ownerName: 'Owner 2' },
+        { id: 1, file_name: "Team File 1", upload_owner_name: "Owner 1" },
+        { id: 2, file_name: "Team File 2", upload_owner_name: "Owner 2" },
       ];
 
       const mockResponse = {
@@ -415,14 +433,14 @@ describe('filesApi', () => {
 
       const result = await filesApi.fetchMyTeamFiles();
 
-      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/mypage/team');
-      expect(result).toEqual(mockFiles);
+      expect(apiClient.get).toHaveBeenCalledWith('/api/v2/files?data_type=1&mine=true');
+      expect(result).toEqual(mockResponse.data.files.map((f: any) => ({ id: f.id, name: f.file_name, comment: f.file_comment, created_at: f.created_at })));
     });
   });
 
   describe('fetchMyMatchFiles', () => {
     it('should fetch my match files successfully', async () => {
-      const mockFiles = [{ id: 1, name: 'Match File 1', ownerName: 'Owner 1' }];
+      const mockFiles = [{ id: 1, file_name: "Match File 1", upload_owner_name: "Owner 1" }];
 
       const mockResponse = {
         data: { files: mockFiles },
@@ -432,8 +450,8 @@ describe('filesApi', () => {
 
       const result = await filesApi.fetchMyMatchFiles();
 
-      expect(apiClient.get).toHaveBeenCalledWith('/api/v1/mypage/match');
-      expect(result).toEqual(mockFiles);
+      expect(apiClient.get).toHaveBeenCalledWith('/api/v2/files?data_type=2&mine=true');
+      expect(result).toEqual(mockResponse.data.files.map((f: any) => ({ id: f.id, name: f.file_name, comment: f.file_comment, created_at: f.created_at })));
     });
   });
 });
