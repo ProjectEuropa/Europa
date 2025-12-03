@@ -151,14 +151,14 @@ export const formatDownloadDateTime = (dateString: string | null): string => {
       return '日時解析エラー';
     }
 
-    // 正常にフォーマット（JST: UTC+9で固定）
+    // DBに保存されたJST時刻をそのまま表示（タイムゾーン変換なし）
     return date.toLocaleString('ja-JP', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      timeZone: 'Asia/Tokyo',
+      timeZone: 'UTC',
     });
   } catch (error) {
     // 予期しないエラーが発生した場合
@@ -205,14 +205,14 @@ export const formatUploadDateTime = (dateString: string): string => {
       return '日時解析エラー';
     }
 
-    // 正常にフォーマット（JST: UTC+9で固定）
+    // DBに保存されたJST時刻をそのまま表示（タイムゾーン変換なし）
     return date.toLocaleString('ja-JP', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      timeZone: 'Asia/Tokyo',
+      timeZone: 'UTC',
     });
   } catch (error) {
     // 予期しないエラーが発生した場合

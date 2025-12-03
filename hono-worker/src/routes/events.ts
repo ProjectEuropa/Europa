@@ -4,14 +4,67 @@ import { neon } from '@neondatabase/serverless';
 import type { Env } from '../types/bindings';
 import type { Event, SuccessResponse, PaginationMeta } from '../types/api';
 import { eventQuerySchema, type EventQueryInput } from '../utils/validation';
+import { authMiddleware } from '../middleware/auth';
 
 const events = new Hono<{ Bindings: Env }>();
 
 /**
  * GET /api/v2/events
- * イベント一覧取得
+ * イベント一覧取得（全体）
  */
 events.get('/', async (c) => {
+    // クエリパラメータのバリデーション
+    const queryParams = c.req.query();
+    const result = eventQuerySchema.safeParse(queryParams);
+
+    const { page = 1, limit = 20 }: EventQueryInput = result.success
+        ? result.data
+        : { page: 1, limit: 20 };
+  
+    // ページネーション計算
+    const offset = (page - 1) * limit;
+
+    // データベース接続
+    const sql = neon(c.env.DATABASE_URL);
+
+    // 総件数を取得
+    const countResult = await sql`SELECT COUNT(*) as count FROM events`;
+    const total = parseInt(countResult[0].count as string);
+
+    // イベント一覧を取得
+    const eventsList = await sql`
+    SELECT
+      id, register_user_id, event_name, event_details, event_reference_url,
+      event_type, event_closing_day, event_displaying_day, created_at, updated_at
+    FROM events
+    ORDER BY event_displaying_day DESC, created_at DESC
+    LIMIT ${limit}
+    OFFSET ${offset}
+  `;
+
+    const pagination: PaginationMeta = {
+        page,
+        limit,
+        total,
+    };
+
+    const response: SuccessResponse<{ events: Event[]; pagination: PaginationMeta }> = {
+        data: {
+            events: eventsList as Event[],
+            pagination,
+        },
+    };
+
+    return c.json(response, 200);
+});
+
+/**
+ * GET /api/v2/events/me
+ * 自分が登録したイベント一覧取得（認証必須）
+ */
+events.get('/me', authMiddleware, async (c) => {
+    const user = c.get('user');
+
     // クエリパラメータのバリデーション
     const queryParams = c.req.query();
     const result = eventQuerySchema.safeParse(queryParams);
@@ -26,22 +79,24 @@ events.get('/', async (c) => {
     // データベース接続
     const sql = neon(c.env.DATABASE_URL);
 
-    // 総件数を取得
+    // 総件数を取得（認証ユーザーのみ）
     const countResult = await sql`
-    SELECT COUNT(*) as count FROM events
-  `;
+        SELECT COUNT(*) as count FROM events
+        WHERE register_user_id = ${user.userId}
+    `;
     const total = parseInt(countResult[0].count as string);
 
-    // イベント一覧を取得
+    // イベント一覧を取得（認証ユーザーのみ）
     const eventsList = await sql`
-    SELECT 
-      id, register_user_id, event_name, event_details, event_reference_url,
-      event_type, event_closing_day, event_displaying_day, created_at, updated_at
-    FROM events
-    ORDER BY event_displaying_day DESC, created_at DESC
-    LIMIT ${limit}
-    OFFSET ${offset}
-  `;
+        SELECT
+            id, register_user_id, event_name, event_details, event_reference_url,
+            event_type, event_closing_day, event_displaying_day, created_at, updated_at
+        FROM events
+        WHERE register_user_id = ${user.userId}
+        ORDER BY event_displaying_day DESC, created_at DESC
+        LIMIT ${limit}
+        OFFSET ${offset}
+    `;
 
     const pagination: PaginationMeta = {
         page,
@@ -76,7 +131,7 @@ events.get('/:id', async (c) => {
 
     // イベントを取得
     const eventsList = await sql`
-    SELECT 
+    SELECT
       id, register_user_id, event_name, event_details, event_reference_url,
       event_type, event_closing_day, event_displaying_day, created_at, updated_at
     FROM events

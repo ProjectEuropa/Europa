@@ -70,16 +70,15 @@ export function createCookieHeader(
     ];
 
     // Cross-Origin Cookie対応
-    // 本番・ステージング環境：SameSite=None; Secure（HTTPSフロントエンド用）
-    // 開発環境：SameSite=Lax（HTTPローカル開発用）
+    // Chrome HTTPではSameSite=None + Secureが必須だがHTTPでは動作しない
+    // 開発環境：SameSite=Laxで同一サイト扱い（localhost:* → localhost:*）
+    // 本番/ステージング：SameSite=None + Secureでクロスオリジン対応
     if (environment === 'production' || environment === 'staging') {
-        // HTTPSフロントエンドからのCross-Originリクエストに対応
         cookieOptions.push('SameSite=None');
         if (secure) {
             cookieOptions.push('Secure');
         }
     } else {
-        // 開発環境ではLax（Same-Origin前提）
         cookieOptions.push('SameSite=Lax');
     }
 

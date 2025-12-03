@@ -41,7 +41,7 @@ type RawFile = {
  * マイページ：チームファイル取得API
  */
 export const fetchMyTeamFiles = async (): Promise<RawFile[]> => {
-    const response = await apiClient.get<any>('/api/v2/files?tag=team&mine=true');
+    const response = await apiClient.get<any>('/api/v2/files?data_type=1&mine=true&limit=1000');
     const rawFiles = response.data?.files || [];
 
     return rawFiles.map((file: any) => ({
@@ -62,7 +62,7 @@ export const fetchMyTeamFiles = async (): Promise<RawFile[]> => {
  * マイページ：マッチファイル取得API
  */
 export const fetchMyMatchFiles = async (): Promise<RawFile[]> => {
-    const response = await apiClient.get<any>('/api/v2/files?tag=match&mine=true');
+    const response = await apiClient.get<any>('/api/v2/files?data_type=2&mine=true&limit=1000');
     const rawFiles = response.data?.files || [];
 
     return rawFiles.map((file: any) => ({
@@ -112,9 +112,8 @@ export const deleteMyFile = async (id: string | number) => {
  * マイページ：イベント取得API
  */
 export const fetchMyEvents = async () => {
-    // TODO: v2 API implementation for "My Events"
-    // For now, return all events or empty
-    const response = await apiClient.get<any>('/api/v2/events');
+    // 認証済みユーザーのイベントのみを取得する専用エンドポイントを使用
+    const response = await apiClient.get<any>('/api/v2/events/me');
     const rawEvents = response.data?.events || [];
 
     // スネークケース→キャメルケース変換

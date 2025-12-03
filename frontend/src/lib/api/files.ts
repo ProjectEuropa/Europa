@@ -130,10 +130,7 @@ export const uploadTeamFile = async (
   if (options?.downloadDate) formData.append('downloadable_at', options.downloadDate);
 
   // タグの構築
-  const tags = ['team'];
-  if (options?.tags && Array.isArray(options.tags)) {
-    tags.push(...options.tags);
-  }
+  const tags = options?.tags && Array.isArray(options.tags) ? options.tags : [];
   formData.append('tags', JSON.stringify(tags));
 
   const response = await apiClient.upload<any>(
@@ -168,10 +165,7 @@ export const uploadMatchFile = async (
   if (options?.downloadDate) formData.append('downloadable_at', options.downloadDate);
 
   // タグの構築
-  const tags = ['match'];
-  if (options?.tags && Array.isArray(options.tags)) {
-    tags.push(...options.tags);
-  }
+  const tags = options?.tags && Array.isArray(options.tags) ? options.tags : [];
   formData.append('tags', JSON.stringify(tags));
 
   const response = await apiClient.upload<any>(

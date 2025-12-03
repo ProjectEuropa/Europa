@@ -37,8 +37,11 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     if (!user) {
       throw new HTTPException(401, { message: '[FilesRoute] Unauthorized: Login required for "mine" filter' });
     }
-    targetUserId = parseInt(user.userId);
+    targetUserId = user.userId;
   }
+
+  // デバッグログ
+  console.log('[FilesRoute] Query params:', { mine, data_type, targetUserId, userId: user?.userId });
 
   // data_typeによるファイル検索
   let filesList;
@@ -182,23 +185,35 @@ files.get('/', optionalAuthMiddleware, async (c) => {
 
   const total = parseInt(countResult[0].count as string);
 
-  // 各ファイルのタグを取得
-  const filesWithTags = await Promise.all(
-    filesList.map(async (file: any) => {
-      const tags = await sql`
-        SELECT t.tag_name
-        FROM tags t
-        INNER JOIN file_tags ft ON t.id = ft.tag_id
-        WHERE ft.file_id = ${file.id}
-        ORDER BY t.tag_name
-      `;
+  // 全ファイルのタグを一度に取得（N+1問題を回避）
+  const fileIds = filesList.map((f: any) => f.id);
+  let allTags: any[] = [];
 
-      return {
-        ...file,
-        tags: tags.map((t: any) => t.tag_name),
-      } as FileType;
-    })
-  );
+  if (fileIds.length > 0) {
+    allTags = await sql`
+      SELECT ft.file_id, t.tag_name
+      FROM tags t
+      INNER JOIN file_tags ft ON t.id = ft.tag_id
+      WHERE ft.file_id = ANY(${fileIds})
+      ORDER BY ft.file_id, t.tag_name
+    `;
+  }
+
+  // ファイルIDごとにタグをグループ化
+  const tagsByFileId = new Map<number, string[]>();
+  for (const tag of allTags) {
+    const fileId = tag.file_id;
+    if (!tagsByFileId.has(fileId)) {
+      tagsByFileId.set(fileId, []);
+    }
+    tagsByFileId.get(fileId)!.push(tag.tag_name);
+  }
+
+  // ファイルにタグを追加
+  const filesWithTags = filesList.map((file: any) => ({
+    ...file,
+    tags: tagsByFileId.get(file.id) || [],
+  })) as FileType[];
 
   const pagination: PaginationMeta = {
     page,
@@ -345,7 +360,7 @@ files.post('/', optionalAuthMiddleware, async (c) => {
     ? inputOwnerName.trim()
     : (user ? user.email : 'Anonymous');
 
-  // ファイルメタデータを挿入
+  // ファイルメタデータを挿入（JST時刻で保存）
   const newFiles = await sql`
     INSERT INTO files (
       upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, delete_password, downloadable_at,
@@ -353,7 +368,7 @@ files.post('/', optionalAuthMiddleware, async (c) => {
     )
     VALUES (
       ${user?.userId || null}, ${ownerName}, ${file.name}, '', ${file.size}, ${comment || null}, ${dataType}, ${hashedDeletePassword}, ${inputDownloadableAt || null},
-      NOW(), NOW()
+      NOW() AT TIME ZONE 'Asia/Tokyo', NOW() AT TIME ZONE 'Asia/Tokyo'
     )
     RETURNING id, upload_user_id, upload_owner_name, file_name, file_size, file_comment, data_type, downloadable_at, created_at, updated_at
   `;
@@ -458,7 +473,7 @@ files.delete('/:id', optionalAuthMiddleware, async (c) => {
   if (user) {
     // 認証ユーザー: ユーザーIDで権限チェック
     if (file.upload_user_id !== user.userId) {
-      throw new HTTPException(403, { message: '自分がアップロードしたファイルのみ削除できます' });
+      throw new HTTPException(403, { message: '削除に失敗しました' });
     }
   } else {
     // 匿名ユーザー: 削除パスワードで検証
@@ -475,7 +490,7 @@ files.delete('/:id', optionalAuthMiddleware, async (c) => {
 
     if (!file.delete_password) {
       console.log('Delete Debug: No delete password stored');
-      throw new HTTPException(403, { message: 'このファイルには削除パスワードが設定されていません。アップロード時に認証が必要です。' });
+      throw new HTTPException(403, { message: '削除に失敗しました' });
     }
 
     const generatedHash = await hashDeletePassword(deletePassword);
