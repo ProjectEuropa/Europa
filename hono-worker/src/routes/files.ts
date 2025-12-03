@@ -288,6 +288,21 @@ files.post('/', optionalAuthMiddleware, async (c) => {
     throw new HTTPException(400, { message: 'File size exceeds 10MB limit' });
   }
 
+  // コメントは必須
+  if (!comment || !comment.trim()) {
+    throw new HTTPException(400, { message: 'コメントを入力してください' });
+  }
+
+  // 未認証ユーザーの場合、オーナー名と削除パスワードが必須
+  if (!user) {
+    if (!inputOwnerName || !inputOwnerName.trim()) {
+      throw new HTTPException(400, { message: 'オーナー名を入力してください' });
+    }
+    if (!inputDeletePassword || !inputDeletePassword.trim()) {
+      throw new HTTPException(400, { message: '削除パスワードを入力してください' });
+    }
+  }
+
   // タグをパース
   const tags = tagsString ? JSON.parse(tagsString) : [];
 

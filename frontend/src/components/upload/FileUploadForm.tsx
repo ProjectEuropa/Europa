@@ -177,18 +177,39 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     async (e: React.FormEvent) => {
       e.preventDefault();
 
+      const errors: Record<string, string[]> = {};
+
+      // ファイルチェック
       if (!selectedFile) {
-        setFieldErrors(prev => ({
-          ...prev,
-          file: ['ファイルを選択してください'],
-        }));
-        toast.error('ファイルを選択してください');
+        errors.file = ['ファイルを選択してください'];
+      }
+
+      // コメントチェック（必須）
+      if (!formData.comment || !formData.comment.trim()) {
+        errors[`${fileType}Comment`] = ['コメントを入力してください'];
+      }
+
+      // 未認証ユーザーの場合の追加チェック
+      if (!isAuthenticated) {
+        if (!formData.ownerName || !formData.ownerName.trim()) {
+          errors.ownerName = ['オーナー名を入力してください'];
+        }
+        if (!formData.deletePassword || !formData.deletePassword.trim()) {
+          errors[`${fileType}DeletePassWord`] = ['削除パスワードを入力してください'];
+        }
+      }
+
+      // エラーがある場合
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
+        toast.error('入力内容に不備があります。赤枠の項目を確認してください。');
         return;
       }
 
+      setFieldErrors({});
       setShowConfirmDialog(true);
     },
-    [selectedFile]
+    [selectedFile, formData, isAuthenticated, fileType]
   );
 
   const executeUpload = useCallback(async () => {
