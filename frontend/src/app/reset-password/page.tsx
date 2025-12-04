@@ -11,19 +11,16 @@ import Header from '@/components/Header';
 const ResetPasswordFormWrapper = () => {
   const searchParams = useSearchParams();
   const [token, setToken] = useState('');
-  const [email, setEmail] = useState('');
 
   useEffect(() => {
-    // URLからトークンとメールを取得
+    // URLからトークンを取得
     const tokenParam = searchParams.get('token');
-    const emailParam = searchParams.get('email');
-    if (tokenParam && emailParam) {
+    if (tokenParam) {
       setToken(tokenParam);
-      setEmail(emailParam);
     }
   }, [searchParams]);
 
-  if (!token || !email) {
+  if (!token) {
     return (
       <div
         style={{
@@ -67,7 +64,7 @@ const ResetPasswordFormWrapper = () => {
         パスワードリセット
       </h1>
 
-      <PasswordResetForm token={token} email={email} />
+      <PasswordResetForm token={token} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useToast } from '@/hooks/useToast';
 import { authApi } from '@/lib/api/auth';
 import type {
@@ -14,7 +14,7 @@ export const usePasswordReset = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const sendResetLink = async (data: PasswordResetRequest) => {
+  const sendResetLink = useCallback(async (data: PasswordResetRequest) => {
     setIsLoading(true);
     try {
       const result = await authApi.sendPasswordResetLink(data);
@@ -55,13 +55,14 @@ export const usePasswordReset = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
-  const checkToken = async (tokenCheck: PasswordResetTokenCheck) => {
+  const checkToken = useCallback(async (tokenCheck: { token: string; email?: string }) => {
     try {
       const result = await authApi.checkResetPasswordToken(tokenCheck);
       return {
         isValid: result.valid,
+        email: result.email,
         message: result.message,
       };
     } catch (error: any) {
@@ -73,9 +74,9 @@ export const usePasswordReset = () => {
           '無効なリセットリンクです。パスワードリセットを再度リクエストしてください。',
       };
     }
-  };
+  }, []);
 
-  const resetPassword = async (data: PasswordResetData) => {
+  const resetPassword = useCallback(async (data: PasswordResetData) => {
     setIsLoading(true);
     try {
       const result = await authApi.resetPassword(data);
@@ -110,7 +111,7 @@ export const usePasswordReset = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
 
   return {
     isLoading,

@@ -157,7 +157,7 @@ export const authApi = {
   },
 
   async checkResetPasswordToken(
-    data: PasswordResetTokenCheck
+    data: { token: string; email?: string }
   ): Promise<PasswordResetTokenResponse> {
     const response = await apiClient.post<PasswordResetTokenResponse>(
       '/api/v2/auth/password/check',
@@ -165,7 +165,13 @@ export const authApi = {
         token: data.token,
       }
     );
-    return response.data;
+    
+    // レスポンスがdataプロパティでラップされている場合を処理
+    if (response && typeof response === 'object' && 'data' in response) {
+      return (response as any).data;
+    }
+    
+    return response;
   },
 
   async logout(): Promise<void> {
