@@ -9,42 +9,67 @@ export interface SumDownloadSearchResponse {
 }
 
 /**
- * チーム一括ダウンロード用の検索API
+ * チーム一括ダウンロード用の検索API (v2)
  */
 export const sumDLSearchTeam = async (
   keyword: string = '',
   page: number = 1
 ): Promise<SumDownloadSearchResponse> => {
+  // v2 APIを使用、limit=50で一括ダウンロード用に多めに取得
   const response = await apiClient.get<any>(
-    `/api/v1/sumDLSearch/team?keyword=${encodeURIComponent(keyword)}&page=${page}`
+    `/api/v2/files?data_type=1&limit=50&page=${page}&keyword=${encodeURIComponent(keyword)}`
   );
 
-  // レスポンス構造の調整
-  // apiClientはApiResponse<T>を返すが、ここではサーバーが返す生のJSON構造に依存
-  // サーバーが { data: { data: [], ... } } のように返しているか、
-  // { data: [], current_page: ... } のように返しているか確認が必要だが、
-  // utils/api.tsの実装を見ると res.json() をそのまま返しているので、
-  // apiClient.get の戻り値（response.data または response そのもの）を返す
+  // v2 APIのレスポンス形式を一括ダウンロード用の形式に変換
+  const files = response.data?.files || [];
+  const pagination = response.data?.pagination || { page: 1, limit: 50, total: 0 };
 
-  // apiClientの実装では、response.json()の結果を返している。
-  // サーバーがLaravelのPaginatedResourceResponseを返している場合、
-  // { data: [...], meta: {...}, links: {...} } または
-  // { data: [...], current_page: ..., ... } (Paginator)
-
-  return response as unknown as SumDownloadSearchResponse;
+  return {
+    data: files.map((file: any) => ({
+      id: file.id,
+      file_name: file.file_name,
+      upload_owner_name: file.upload_owner_name,
+      file_comment: file.file_comment,
+      created_at: file.created_at,
+      file_size: file.file_size,
+      downloadable_at: file.downloadable_at,
+    })),
+    current_page: pagination.page,
+    last_page: Math.ceil(pagination.total / pagination.limit),
+    total: pagination.total,
+  };
 };
 
 /**
- * マッチ一括ダウンロード用の検索API
+ * マッチ一括ダウンロード用の検索API (v2)
  */
 export const sumDLSearchMatch = async (
   keyword: string = '',
   page: number = 1
 ): Promise<SumDownloadSearchResponse> => {
+  // v2 APIを使用、limit=50で一括ダウンロード用に多めに取得
   const response = await apiClient.get<any>(
-    `/api/v1/sumDLSearch/match?keyword=${encodeURIComponent(keyword)}&page=${page}`
+    `/api/v2/files?data_type=2&limit=50&page=${page}&keyword=${encodeURIComponent(keyword)}`
   );
-  return response as unknown as SumDownloadSearchResponse;
+
+  // v2 APIのレスポンス形式を一括ダウンロード用の形式に変換
+  const files = response.data?.files || [];
+  const pagination = response.data?.pagination || { page: 1, limit: 50, total: 0 };
+
+  return {
+    data: files.map((file: any) => ({
+      id: file.id,
+      file_name: file.file_name,
+      upload_owner_name: file.upload_owner_name,
+      file_comment: file.file_comment,
+      created_at: file.created_at,
+      file_size: file.file_size,
+      downloadable_at: file.downloadable_at,
+    })),
+    current_page: pagination.page,
+    last_page: Math.ceil(pagination.total / pagination.limit),
+    total: pagination.total,
+  };
 };
 
 /**
@@ -98,16 +123,31 @@ export const sumDownload = async (checkedIds: number[]): Promise<() => void> => 
   }
 
   try {
-    // apiClient.downloadメソッドを使用（ファイル名も取得可能）
-    const { blob, filename } = await apiClient.download('/api/v1/sumDownload', { checkedId: checkedIds });
+    // v2 APIエンドポイントを使用
+    const { blob, filename } = await apiClient.download('/api/v2/files/bulk-download', { fileIds: checkedIds });
 
     // サーバーからのファイル名を優先、なければタイムスタンプ付き
-    const downloadFilename = filename || `${Date.now()}_bulk_download.zip`;
+    const downloadFilename = filename || `bulk_download_${Date.now()}.zip`;
 
     return performBrowserDownload(blob, downloadFilename);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Download failed:', error);
-    throw error; // 元のエラーをそのまま再スロー（スタックトレース保持）
+
+    // APIエラーからメッセージを抽出
+    if (error?.message) {
+      throw new Error(error.message);
+    }
+
+    // ステータスコードに応じたメッセージ
+    if (error?.status === 403) {
+      throw new Error('選択されたファイルはまだダウンロード可能日時に達していません');
+    } else if (error?.status === 404) {
+      throw new Error('ダウンロード可能なファイルがありません');
+    } else if (error?.status === 413) {
+      throw new Error('ファイルサイズの合計が大きすぎます');
+    }
+
+    throw new Error('ダウンロードに失敗しました。しばらくしてから再度お試しください。');
   }
 };
 

@@ -1,5 +1,5 @@
-import React from 'react';
-import { render, RenderOptions } from '@testing-library/react';
+import type React from 'react';
+import { render, type RenderOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // テスト用のQueryClientを作成する関数

@@ -1,10 +1,11 @@
 'use client';
 
 import type React from 'react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { DateTimeInput } from '@/components/ui/datetime-input';
 import { Icons } from '@/icons';
+import { fetchTags } from '@/lib/api/files';
 
 export interface FileUploadOptions {
   ownerName: string;
@@ -19,7 +20,6 @@ export interface FileUploadFormProps {
   subtitle?: string;
   fileType: 'team' | 'match';
   maxFileSize: number; // KB
-  specialTags: string[];
   isAuthenticated: boolean;
   defaultOwnerName?: string;
   onSubmit: (file: File, options: FileUploadOptions) => Promise<void>;
@@ -31,7 +31,6 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
   subtitle,
   fileType,
   maxFileSize,
-  specialTags,
   isAuthenticated,
   defaultOwnerName = '',
   onSubmit,
@@ -47,14 +46,30 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
   const [tagInput, setTagInput] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showSpecialTags, setShowSpecialTags] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [dragActive, setDragActive] = useState(false);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const [showTagSelector, setShowTagSelector] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+
+  // タグ一覧を取得
+  useEffect(() => {
+    const loadTags = async () => {
+      try {
+        const tags = await fetchTags();
+        console.log('Fetched tags:', tags);
+        setAvailableTags(tags);
+      } catch (error) {
+        console.error('Failed to fetch tags:', error);
+      }
+    };
+    loadTags();
+  }, []);
 
   const updateFormData = useCallback((updates: Partial<FileUploadOptions>) => {
     setFormData(prev => ({ ...prev, ...updates }));
@@ -150,45 +165,82 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
   const handleTagKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if ((e.key === 'Enter' || e.key === ' ') && tagInput.trim()) {
+      const suggestions = getFilteredSuggestions();
+
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
-        addTag(tagInput.trim());
+        setSelectedSuggestionIndex(prev =>
+          prev < suggestions.length - 1 ? prev + 1 : prev
+        );
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedSuggestionIndex(prev => prev > 0 ? prev - 1 : -1);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedSuggestionIndex >= 0 && suggestions[selectedSuggestionIndex]) {
+          addTag(suggestions[selectedSuggestionIndex]);
+          setSelectedSuggestionIndex(-1);
+        } else if (tagInput.trim()) {
+          addTag(tagInput.trim());
+        }
+      } else if (e.key === 'Escape') {
+        setSelectedSuggestionIndex(-1);
+        setShowTagSelector(false);
       }
     },
-    [tagInput, addTag]
+    [tagInput, addTag, selectedSuggestionIndex, availableTags, formData.tags]
   );
 
-  const toggleSpecialTag = useCallback(
-    (tag: string) => {
-      if (formData.tags.includes(tag)) {
-        removeTag(tag);
-      } else {
-        if (formData.tags.length >= 4) {
-          toast.error('タグは最大4つまでです');
-          return;
-        }
-        updateFormData({ tags: [...formData.tags, tag] });
-      }
-    },
-    [formData.tags, removeTag, updateFormData]
-  );
+  // フィルタリングされたサジェストを取得
+  const getFilteredSuggestions = useCallback(() => {
+    if (!tagInput.trim()) return [];
+    return availableTags
+      .filter(tag =>
+        tag.toLowerCase().includes(tagInput.toLowerCase()) &&
+        !formData.tags.includes(tag)
+      )
+      .slice(0, 10);
+  }, [tagInput, availableTags, formData.tags]);
+
+
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
 
+      const errors: Record<string, string[]> = {};
+
+      // ファイルチェック
       if (!selectedFile) {
-        setFieldErrors(prev => ({
-          ...prev,
-          file: ['ファイルを選択してください'],
-        }));
-        toast.error('ファイルを選択してください');
+        errors.file = ['ファイルを選択してください'];
+      }
+
+      // コメントチェック（必須）
+      if (!formData.comment || !formData.comment.trim()) {
+        errors[`${fileType}Comment`] = ['コメントを入力してください'];
+      }
+
+      // 未認証ユーザーの場合の追加チェック
+      if (!isAuthenticated) {
+        if (!formData.ownerName || !formData.ownerName.trim()) {
+          errors.ownerName = ['オーナー名を入力してください'];
+        }
+        if (!formData.deletePassword || !formData.deletePassword.trim()) {
+          errors[`${fileType}DeletePassWord`] = ['削除パスワードを入力してください'];
+        }
+      }
+
+      // エラーがある場合
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
+        toast.error('入力内容に不備があります。赤枠の項目を確認してください。');
         return;
       }
 
+      setFieldErrors({});
       setShowConfirmDialog(true);
     },
-    [selectedFile]
+    [selectedFile, formData, isAuthenticated, fileType]
   );
 
   const executeUpload = useCallback(async () => {
@@ -371,37 +423,6 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                 <li>• 必要な情報を入力して送信</li>
               </ul>
             </div>
-            {fileType === 'match' && specialTags.length > 0 && (
-              <div>
-                <h4
-                  style={{
-                    fontWeight: '600',
-                    color: '#b0c4d8',
-                    margin: '0 0 8px 0',
-                  }}
-                >
-                  スペシャルタグ
-                </h4>
-                <div style={{ color: '#8CB4FF', lineHeight: 1.6 }}>
-                  <p style={{ margin: '0 0 8px 0', fontSize: '13px' }}>
-                    マッチデータ用の特別なタグ：
-                  </p>
-                  <ul
-                    style={{
-                      listStyle: 'none',
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {specialTags.map(tag => (
-                      <li key={tag} style={{ fontSize: '13px' }}>
-                        • <span style={{ fontWeight: '500' }}>{tag}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -548,8 +569,8 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                 value={tagInput}
                 onChange={e => setTagInput(e.target.value)}
                 onKeyDown={handleTagKeyDown}
-                onFocus={() => setShowSpecialTags(true)}
-                onBlur={() => setTimeout(() => setShowSpecialTags(false), 200)}
+                onFocus={() => setShowTagSelector(true)}
+                onBlur={() => setTimeout(() => setShowTagSelector(false), 200)}
                 placeholder="タグを入力（Enterキーで追加）"
                 style={{
                   flex: 1,
@@ -602,49 +623,94 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
               </button>
             </div>
 
-            {/* スペシャルタグドロップダウン */}
-            {showSpecialTags && (
+            {/* タグセレクター（チェックボックス式） */}
+            {showTagSelector && availableTags.length > 0 && (
               <div
                 style={{
                   position: 'absolute',
                   top: '100%',
                   left: 0,
-                  zIndex: 10,
+                  zIndex: 11,
                   marginTop: '4px',
-                  width: '256px',
+                  width: '100%',
+                  maxWidth: '500px',
                   background: '#0a0e1a',
                   border: '1px solid #1E3A5F',
                   borderRadius: '8px',
-                  padding: '16px',
+                  maxHeight: '300px',
+                  overflowY: 'auto',
                   boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                  padding: '12px',
                 }}
               >
-                {specialTags.map(tag => (
-                  <label
-                    key={tag}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      cursor: 'pointer',
-                      padding: '8px 0',
-                      fontSize: '14px',
-                      color: '#b0c4d8',
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.tags.includes(tag)}
-                      onChange={() => toggleSpecialTag(tag)}
+                <div style={{
+                  marginBottom: '8px',
+                  paddingBottom: '8px',
+                  borderBottom: '1px solid #1E3A5F',
+                  color: '#b0c4d8',
+                  fontSize: '13px',
+                  fontWeight: '600'
+                }}>
+                  登録済みタグから選択
+                </div>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+                  gap: '8px'
+                }}>
+                  {availableTags.map(tag => (
+                    <label
+                      key={tag}
                       style={{
-                        width: '16px',
-                        height: '16px',
-                        accentColor: '#00c8ff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        cursor: formData.tags.length >= 4 && !formData.tags.includes(tag) ? 'not-allowed' : 'pointer',
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        fontSize: '13px',
+                        color: formData.tags.includes(tag) ? '#00c8ff' : '#b0c4d8',
+                        background: formData.tags.includes(tag) ? 'rgba(0, 200, 255, 0.1)' : 'transparent',
+                        transition: 'all 0.2s',
+                        opacity: formData.tags.length >= 4 && !formData.tags.includes(tag) ? 0.5 : 1,
                       }}
-                    />
-                    <span>{tag}</span>
-                  </label>
-                ))}
+                      onMouseEnter={(e) => {
+                        if (formData.tags.length < 4 || formData.tags.includes(tag)) {
+                          (e.currentTarget as HTMLElement).style.background = 'rgba(0, 200, 255, 0.15)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.background = formData.tags.includes(tag) ? 'rgba(0, 200, 255, 0.1)' : 'transparent';
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.tags.includes(tag)}
+                        disabled={formData.tags.length >= 4 && !formData.tags.includes(tag)}
+                        onChange={() => {
+                          if (formData.tags.includes(tag)) {
+                            removeTag(tag);
+                          } else {
+                            if (formData.tags.length >= 4) {
+                              toast.error('タグは最大4つまでです');
+                              return;
+                            }
+                            updateFormData({ tags: [...formData.tags, tag] });
+                          }
+                        }}
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          cursor: formData.tags.length >= 4 && !formData.tags.includes(tag) ? 'not-allowed' : 'pointer',
+                          accentColor: '#00c8ff',
+                        }}
+                      />
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {tag}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -820,15 +886,14 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
           <div
             style={{
-              border: `2px dashed ${
-                fieldErrors.file
-                  ? '#ef4444'
-                  : selectedFile
+              border: `2px dashed ${fieldErrors.file
+                ? '#ef4444'
+                : selectedFile
+                  ? '#00c8ff'
+                  : dragActive
                     ? '#00c8ff'
-                    : dragActive
-                      ? '#00c8ff'
-                      : '#1E3A5F'
-              }`,
+                    : '#1E3A5F'
+                }`,
               borderRadius: '12px',
               padding: '32px',
               textAlign: 'center',

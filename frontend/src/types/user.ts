@@ -53,6 +53,7 @@ export interface PasswordResetRequest {
 
 export interface PasswordResetResponse {
   status?: string;
+  message?: string;
   error?: string;
 }
 
@@ -63,6 +64,7 @@ export interface PasswordResetTokenCheck {
 
 export interface PasswordResetTokenResponse {
   valid: boolean;
+  email?: string;
   message?: string;
 }
 

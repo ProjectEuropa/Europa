@@ -72,7 +72,6 @@ const MatchUploadPage: React.FC = () => {
             subtitle="CHEファイル形式のマッチデータをアップロードできます"
             fileType="match"
             maxFileSize={MAX_FILE_SIZE}
-            specialTags={MATCH_SPECIAL_TAGS}
             isAuthenticated={isAuthenticated}
             defaultOwnerName={user?.name || ''}
             onSubmit={handleUpload}

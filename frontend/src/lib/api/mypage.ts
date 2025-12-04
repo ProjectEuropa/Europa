@@ -37,55 +37,77 @@ type RawFile = {
 /**
  * マイページ：チームファイル取得API
  */
+/**
+ * マイページ：チームファイル取得API
+ */
 export const fetchMyTeamFiles = async (): Promise<RawFile[]> => {
-    const response = await apiClient.get<unknown>('/api/v1/mypage/team');
-    return extractDataFromResponse<RawFile>(response, 'files');
+    const response = await apiClient.get<any>('/api/v2/files?data_type=1&mine=true&limit=1000');
+    const rawFiles = response.data?.files || [];
+
+    return rawFiles.map((file: any) => ({
+        id: file.id,
+        file_name: file.file_name,
+        name: file.file_name,
+        file_comment: file.file_comment,
+        comment: file.file_comment,
+        created_at: file.created_at,
+        uploadDate: file.created_at,
+        downloadable_at: file.downloadable_at,
+        downloadableAt: file.downloadable_at,
+        // tags mapping if needed
+    }));
 };
 
 /**
  * マイページ：マッチファイル取得API
  */
 export const fetchMyMatchFiles = async (): Promise<RawFile[]> => {
-    const response = await apiClient.get<unknown>('/api/v1/mypage/match');
-    return extractDataFromResponse<RawFile>(response, 'files');
+    const response = await apiClient.get<any>('/api/v2/files?data_type=2&mine=true&limit=1000');
+    const rawFiles = response.data?.files || [];
+
+    return rawFiles.map((file: any) => ({
+        id: file.id,
+        file_name: file.file_name,
+        name: file.file_name,
+        file_comment: file.file_comment,
+        comment: file.file_comment,
+        created_at: file.created_at,
+        uploadDate: file.created_at,
+        downloadable_at: file.downloadable_at,
+        downloadableAt: file.downloadable_at,
+    }));
 };
 
 /**
  * マイページ：イベント削除API
  */
 export const deleteMyEvent = async (id: string | number) => {
-    const response = await apiClient.post<{ deleted: boolean; error?: string }>(
-        '/api/v1/delete/usersRegisteredCloumn',
-        { id }
+    const response = await apiClient.delete<{ message?: string }>(
+        `/api/v2/events/${id}`
     );
-
-    if (!response.data.deleted) {
-        throw new Error(response.data.error || '削除に失敗しました');
-    }
-    return response.data;
+    return response;
 };
 
 /**
  * マイページ：ファイル削除API
  */
 export const deleteMyFile = async (id: string | number) => {
-    const response = await apiClient.post<{ message?: string }>(
-        '/api/v1/delete/myFile',
-        { id }
+    const response = await apiClient.delete<{ message?: string }>(
+        `/api/v2/files/${id}`
     );
-    return response.data;
+    return response;
 };
 
 /**
  * マイページ：イベント取得API
  */
 export const fetchMyEvents = async () => {
-    const response = await apiClient.get<unknown>('/api/v1/mypage/events');
-
-    const events = extractDataFromResponse<RawEvent>(response, 'events');
+    // 認証済みユーザーのイベントのみを取得する専用エンドポイントを使用
+    const response = await apiClient.get<any>('/api/v2/events/me');
+    const rawEvents = response.data?.events || [];
 
     // スネークケース→キャメルケース変換
-    return events.map((event: RawEvent) => ({
+    return rawEvents.map((event: any) => ({
         id: String(event.id),
         name: event.event_name ?? '',
         details: event.event_details ?? '',
@@ -96,6 +118,6 @@ export const fetchMyEvents = async () => {
         registeredDate: event.created_at ? event.created_at.slice(0, 10) : '',
         created_at: event.created_at,
         updatedAt: event.updated_at,
-        isActive: event.is_active,
+        isActive: true, // v2 API doesn't have is_active yet
     }));
 };
