@@ -8,7 +8,8 @@
  * @returns マスク処理されたファイルオブジェクト
  */
 export function maskFileIfNotDownloadable(file: Record<string, unknown>): Record<string, unknown> {
-    const now = new Date();
+    // JSTで比較
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
     const downloadableAt = file.downloadable_at ? new Date(file.downloadable_at as string) : null;
 
     // downloadable_atが設定されていない、または過ぎている場合はそのまま返す
