@@ -13,7 +13,7 @@ bucket_name = "europa-files-stg" # STG環境用
 
 # STG環境（デフォルト）
 [env.staging]
-vars = { ENVIRONMENT = "staging", API_VERSION = "v2", LOG_LEVEL = "debug", FRONTEND_URL = "https://localhost:3002" }
+vars = { ENVIRONMENT = "staging", API_VERSION = "v2", LOG_LEVEL = "debug", FRONTEND_URL = "https://pre.project-europa.work" }
 
 [[env.staging.r2_buckets]]
 binding = "FILES_BUCKET"
