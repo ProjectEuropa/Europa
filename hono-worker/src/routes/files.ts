@@ -183,7 +183,8 @@ files.get('/:id', async (c) => {
 
   // ダウンロード可能日時のチェック
   if (file.downloadable_at) {
-    const now = new Date();
+    // JSTで比較
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
     const downloadableDate = new Date(file.downloadable_at);
 
     if (now < downloadableDate) {
@@ -486,7 +487,8 @@ files.post('/bulk-download', optionalAuthMiddleware, async (c) => {
   for (const file of filesList) {
     // ダウンロード可能日時のチェック
     if (file.downloadable_at) {
-      const now = new Date();
+      // ダウンロード可能日時チェック（JSTで比較）
+      const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
       const downloadableDate = new Date(file.downloadable_at);
 
       if (now < downloadableDate) {
