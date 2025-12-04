@@ -266,17 +266,37 @@ auth.post('/password/reset', async (c) => {
             DO UPDATE SET token = ${token}, created_at = NOW()
         `;
 
-        // メール送信（開発環境ではコンソールログ）
-        const resetUrl = `${c.env.FRONTEND_URL}/password-reset/confirm?token=${token}`;
-        if (c.env.ENVIRONMENT === 'production') {
-            // TODO: 本番環境では実際のメール送信サービスを使用
-            console.log('TODO: Send email via email service');
+        // メール送信
+        const resetUrl = `${c.env.FRONTEND_URL}/reset-password?token=${token}`;
+        
+        if (c.env.RESEND_API_KEY) {
+            // Resendを使用してメール送信
+            const { sendEmail, generatePasswordResetEmail } = await import('../utils/email');
+            const { html, text } = generatePasswordResetEmail(resetUrl, email);
+            
+            const fromEmail = c.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+            
+            const result = await sendEmail(
+                {
+                    to: email,
+                    subject: 'パスワードリセットのご案内',
+                    html,
+                    text,
+                },
+                c.env.RESEND_API_KEY,
+                fromEmail
+            );
+
+            if (!result.success) {
+                console.error('Failed to send password reset email:', result.error);
+                // メール送信失敗時もエラーは返さない（セキュリティのため）
+            } else {
+                console.log('Password reset email sent successfully to:', email);
+            }
         } else {
-            console.log('=== Password Reset Email ===');
-            console.log(`To: ${email}`);
-            console.log(`Reset URL: ${resetUrl}`);
-            console.log(`Token: ${token}`);
-            console.log('============================');
+            // 開発環境：コンソールログ
+            const { logEmailToConsole } = await import('../utils/email');
+            logEmailToConsole(email, 'パスワードリセットのご案内', resetUrl, token);
         }
     }
 
@@ -348,6 +368,56 @@ auth.post('/password/update', async (c) => {
 
     return c.json({
         message: 'パスワードを更新しました'
+    }, 200);
+});
+
+/**
+ * POST /api/v2/auth/password/check
+ * パスワードリセットトークンの検証
+ */
+auth.post('/password/check', async (c) => {
+    const body = await c.req.json().catch(() => ({}));
+
+    const { token } = body;
+
+    if (!token || typeof token !== 'string') {
+        throw new HTTPException(400, {
+            message: 'トークンが必要です',
+            cause: { code: 'TOKEN_REQUIRED' }
+        });
+    }
+
+    // データベース接続
+    const sql = neon(c.env.DATABASE_URL);
+
+    // トークンの検証
+    const resets = await sql`
+        SELECT email, created_at FROM password_resets WHERE token = ${token}
+    `;
+
+    if (resets.length === 0) {
+        throw new HTTPException(400, {
+            message: '無効なトークンまたは有効期限切れです',
+            cause: { code: 'INVALID_TOKEN' }
+        });
+    }
+
+    const reset = resets[0];
+
+    // トークンの有効期限チェック（1時間）
+    const { isTokenExpired } = await import('../utils/token');
+    if (isTokenExpired(new Date(reset.created_at))) {
+        // 期限切れトークンを削除
+        await sql`DELETE FROM password_resets WHERE token = ${token}`;
+        throw new HTTPException(400, {
+            message: '無効なトークンまたは有効期限切れです',
+            cause: { code: 'TOKEN_EXPIRED' }
+        });
+    }
+
+    return c.json({
+        valid: true,
+        email: reset.email
     }, 200);
 });
 

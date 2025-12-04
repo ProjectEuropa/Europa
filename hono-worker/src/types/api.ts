@@ -49,6 +49,7 @@ export interface JWTPayload {
     email: string;
     iat: number;
     exp: number;
+    [key: string]: any; // Honoのデフォルト型との互換性のため
 }
 
 // API Responses

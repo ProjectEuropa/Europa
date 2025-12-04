@@ -18,6 +18,7 @@ export interface Env {
 
     // メール送信（Resend）
     RESEND_API_KEY?: string;
+    RESEND_FROM_EMAIL?: string;
 
     // フロントエンドURL（CORS用）
     FRONTEND_URL?: string;

@@ -64,6 +64,7 @@ export interface PasswordResetTokenCheck {
 
 export interface PasswordResetTokenResponse {
   valid: boolean;
+  email?: string;
   message?: string;
 }
 
