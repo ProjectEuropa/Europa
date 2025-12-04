@@ -338,6 +338,14 @@ export const deleteFile = async (
   return response as unknown as { message: string };
 };
 
+/**
+ * タグ一覧取得
+ */
+export const fetchTags = async (): Promise<string[]> => {
+  const response = await apiClient.get<{ tags: string[] }>('/api/v2/files/tags');
+  return response.data?.tags || [];
+};
+
 export const filesApi = {
   searchTeams,
   searchMatches,
@@ -352,5 +360,6 @@ export const filesApi = {
   fetchMyTeamFiles,
   fetchMyMatchFiles,
   deleteFile,
+  fetchTags,
 };
 

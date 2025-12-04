@@ -128,6 +128,32 @@ files.get('/', optionalAuthMiddleware, async (c) => {
 });
 
 /**
+ * GET /api/v2/tags
+ * タグ一覧取得（認証不要）
+ */
+files.get('/tags', async (c) => {
+  // データベース接続
+  const sql = neon(c.env.DATABASE_URL);
+
+  // タグを使用頻度順で取得
+  const tagsResult = await sql`
+    SELECT t.tag_name, COUNT(ft.file_id) as usage_count
+    FROM tags t
+    LEFT JOIN file_tags ft ON t.id = ft.tag_id
+    GROUP BY t.tag_name
+    ORDER BY usage_count DESC, t.tag_name ASC
+  `;
+
+  const tags = tagsResult.map((row: any) => row.tag_name);
+
+  const response: SuccessResponse<{ tags: string[] }> = {
+    data: { tags },
+  };
+
+  return c.json(response, 200);
+});
+
+/**
  * GET /api/v2/files/:id
  * ファイルダウンロード（認証不要）
  */

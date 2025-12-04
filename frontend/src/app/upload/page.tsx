@@ -72,7 +72,6 @@ const TeamUploadPage: React.FC = () => {
             subtitle="CHEファイル形式のチームデータをアップロードできます"
             fileType="team"
             maxFileSize={MAX_FILE_SIZE}
-            specialTags={TEAM_SPECIAL_TAGS}
             isAuthenticated={isAuthenticated}
             defaultOwnerName={user?.name || ''}
             onSubmit={handleUpload}
