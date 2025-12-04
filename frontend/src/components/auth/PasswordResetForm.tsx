@@ -74,7 +74,7 @@ export function PasswordResetForm({
       );
       setIsInitializing(false);
     }
-  }, [token, isSuccess, checkToken, setValue]);
+  }, [token, isSuccess, checkToken, setValue]); // checkTokenはuseCallbackでメモ化されているので安全
 
   const onSubmit = async (data: PasswordResetFormData) => {
     const result = await resetPassword(data);
