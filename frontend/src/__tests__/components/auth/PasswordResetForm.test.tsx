@@ -18,7 +18,6 @@ const mockResetPassword = vi.fn();
 describe('PasswordResetForm', () => {
   const defaultProps = {
     token: 'valid-token',
-    email: 'test@example.com',
   };
 
   beforeEach(() => {
@@ -29,7 +28,10 @@ describe('PasswordResetForm', () => {
       checkToken: mockCheckToken,
       resetPassword: mockResetPassword,
     });
-    mockCheckToken.mockResolvedValue({ isValid: true });
+    mockCheckToken.mockResolvedValue({ 
+      isValid: true, 
+      email: 'test@example.com' 
+    });
   });
 
   describe('Token Validation', () => {
@@ -39,7 +41,6 @@ describe('PasswordResetForm', () => {
       await waitFor(() => {
         expect(mockCheckToken).toHaveBeenCalledWith({
           token: 'valid-token',
-          email: 'test@example.com',
         });
       });
     });
