@@ -57,11 +57,12 @@ export const usePasswordReset = () => {
     }
   };
 
-  const checkToken = async (tokenCheck: PasswordResetTokenCheck) => {
+  const checkToken = async (tokenCheck: { token: string; email?: string }) => {
     try {
       const result = await authApi.checkResetPasswordToken(tokenCheck);
       return {
         isValid: result.valid,
+        email: result.email,
         message: result.message,
       };
     } catch (error: any) {

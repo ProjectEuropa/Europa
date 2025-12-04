@@ -12,18 +12,18 @@ import { passwordResetSchema } from '@/schemas/auth';
 
 interface PasswordResetFormProps {
   token: string;
-  email: string;
   onSuccess?: () => void;
 }
 
 export function PasswordResetForm({
   token,
-  email,
   onSuccess,
 }: PasswordResetFormProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isTokenValid, setIsTokenValid] = useState(true);
   const [tokenError, setTokenError] = useState('');
+  const [email, setEmail] = useState('');
+  const [isInitializing, setIsInitializing] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] =
     useState(false);
@@ -35,11 +35,12 @@ export function PasswordResetForm({
     handleSubmit,
     formState: { errors },
     setError,
+    setValue,
   } = useForm<PasswordResetFormData>({
     resolver: zodResolver(passwordResetSchema),
     defaultValues: {
       token,
-      email,
+      email: '',
       password: '',
       passwordConfirmation: '',
     },
@@ -47,11 +48,16 @@ export function PasswordResetForm({
 
   useEffect(() => {
     const validateToken = async () => {
-      const result = await checkToken({ token, email });
+      const result = await checkToken({ token });
       setIsTokenValid(result.isValid);
       if (!result.isValid) {
         setTokenError(result.message || '無効なリセットリンクです。');
+      } else if (result.email) {
+        // APIから取得したemailをフォームに設定
+        setEmail(result.email);
+        setValue('email', result.email);
       }
+      setIsInitializing(false);
     };
 
     // パスワードリセット成功後は再検証をスキップ
@@ -59,15 +65,16 @@ export function PasswordResetForm({
       return;
     }
 
-    if (token && email) {
+    if (token) {
       validateToken();
     } else {
       setIsTokenValid(false);
       setTokenError(
         '無効なリセットリンクです。パスワードリセットを再度リクエストしてください。'
       );
+      setIsInitializing(false);
     }
-  }, [token, email, isSuccess, checkToken]); // checkTokenを依存配列から削除
+  }, [token, isSuccess, checkToken, setValue]);
 
   const onSubmit = async (data: PasswordResetFormData) => {
     const result = await resetPassword(data);
@@ -122,6 +129,15 @@ export function PasswordResetForm({
         >
           ログインページへ
         </Link>
+      </div>
+    );
+  }
+
+  // 初期化中
+  if (isInitializing) {
+    return (
+      <div style={{ textAlign: 'center', color: '#00c8ff', padding: '20px' }}>
+        トークンを検証しています...
       </div>
     );
   }
