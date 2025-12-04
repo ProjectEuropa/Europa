@@ -60,7 +60,6 @@ export class ApiClient {
         let errorData: any = {};
         try {
           const rawError = await response.json();
-          console.log('[API Client] Raw error response:', rawError);
 
           // バックエンドのエラー形式を正規化
           // { error: { message: "..." } } → { message: "..." }
@@ -80,8 +79,6 @@ export class ApiClient {
               rawError,
             };
           }
-
-          console.log('[API Client] Normalized error data:', errorData);
         } catch (parseError) {
           console.error('[API Client] Failed to parse error response:', parseError);
           // JSONパースに失敗した場合のフォールバック
@@ -173,7 +170,6 @@ export class ApiClient {
         let errorData: any = {};
         try {
           const rawError = await response.json();
-          console.log('[API Client] Raw error response:', rawError);
 
           // バックエンドのエラー形式を正規化
           // { error: { message: "..." } } → { message: "..." }
@@ -193,8 +189,6 @@ export class ApiClient {
               rawError,
             };
           }
-
-          console.log('[API Client] Normalized error data:', errorData);
         } catch (parseError) {
           console.error('[API Client] Failed to parse error response:', parseError);
           // JSONパースに失敗した場合のフォールバック

@@ -12,7 +12,7 @@ CREATE TABLE users (
 -- events テーブル
 CREATE TABLE events (
   id SERIAL PRIMARY KEY,
-  register_user_id VARCHAR(255),
+  register_user_id INTEGER REFERENCES users(id),
   event_name VARCHAR(255) NOT NULL,
   event_details VARCHAR(255) NOT NULL,
   event_reference_url VARCHAR(255),

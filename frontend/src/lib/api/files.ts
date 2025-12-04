@@ -212,7 +212,6 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
 
     // Content-Dispositionヘッダーからファイル名を取得
     const contentDisposition = response.headers.get('Content-Disposition');
-    console.log('Content-Disposition:', contentDisposition);
 
     let filename = `file_${teamId}`;
     if (contentDisposition) {
