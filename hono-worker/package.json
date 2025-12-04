@@ -17,7 +17,7 @@
         "test:run": "vitest run",
         "test:ui": "vitest --ui",
         "test:coverage": "vitest run --coverage",
-        "deploy:stg": "wrangler deploy --env staging",
+        "deploy": "wrangler deploy --env staging",
         "deploy:prod": "wrangler deploy --env production",
         "migrate:files:stg": "tsx scripts/migrate-files-to-r2.ts --env staging",
         "migrate:files:prod": "tsx scripts/migrate-files-to-r2.ts --env production"
