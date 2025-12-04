@@ -16,13 +16,13 @@ vi.mock('@/lib/api/client', () => ({
 
 describe('sumdownload API', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('sumDLSearchTeam', () => {
     it('should search team data successfully', async () => {
       const mockResponse = {
-        data: [
+        files: [
           {
             id: 1,
             file_name: 'テストファイル1',
@@ -36,22 +36,38 @@ describe('sumdownload API', () => {
             search_tag4: null,
           },
         ],
-        current_page: 1,
-        last_page: 1,
-        per_page: 10,
-        total: 1,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 1,
+        },
       };
 
       // apiClient.get はレスポンスデータを直接返すようにモックする（実装依存）
       // 実装では response.data || response を返している
-      (apiClient.get as any).mockResolvedValue(mockResponse);
+      (apiClient.get as any).mockResolvedValueOnce({ data: mockResponse });
 
       const result = await sumDLSearchTeam('テスト', 1);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('/api/v1/sumDLSearch/team')
+        `/api/v2/files?data_type=1&limit=50&page=1&keyword=${encodeURIComponent("テスト")}`
       );
-      expect(result).toEqual(mockResponse);
+      expect(result).toEqual({
+        data: [
+          {
+            id: 1,
+            file_name: 'テストファイル1',
+            upload_owner_name: 'テストオーナー',
+            created_at: '2024-01-01T10:00:00Z',
+            file_comment: 'テストコメント',
+            downloadable_at: '2024-01-01T10:00:00Z',
+            file_size: undefined,
+          },
+        ],
+        current_page: 1,
+        last_page: 1,
+        total: 1,
+      });
     });
 
     it('should handle search errors', async () => {
@@ -62,9 +78,11 @@ describe('sumdownload API', () => {
   });
 
   describe('sumDLSearchMatch', () => {
+
+
     it('should search match data successfully', async () => {
       const mockResponse = {
-        data: [
+        files: [
           {
             id: 3,
             file_name: 'テストマッチ1',
@@ -74,19 +92,40 @@ describe('sumdownload API', () => {
             downloadable_at: '2024-01-03T10:00:00Z',
           },
         ],
-        current_page: 1,
-        last_page: 1,
-        total: 1,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 1,
+        },
       };
 
-      (apiClient.get as any).mockResolvedValue(mockResponse);
+      (apiClient.get as any).mockResolvedValueOnce({ data: mockResponse });
 
       const result = await sumDLSearchMatch('マッチテスト', 1);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('/api/v1/sumDLSearch/match')
+        `/api/v2/files?data_type=2&limit=50&page=1&keyword=${encodeURIComponent("マッチテスト")}`
       );
-      expect(result).toEqual(mockResponse);
+      expect(result).toEqual({
+        data: [
+          {
+            id: 3,
+            file_name: 'テストマッチ1',
+            upload_owner_name: 'テストオーナー3',
+            created_at: '2024-01-03T10:00:00Z',
+            file_comment: 'マッチコメント1',
+            downloadable_at: '2024-01-03T10:00:00Z',
+            file_size: undefined,
+            search_tag1: undefined,
+            search_tag2: undefined,
+            search_tag3: undefined,
+            search_tag4: undefined,
+          },
+        ],
+        current_page: 1,
+        last_page: 1,
+        total: 1,
+      });
     });
   });
 
@@ -152,9 +191,8 @@ describe('sumdownload API', () => {
       const fileIds = [1, 2, 3];
       await sumDownload(fileIds);
 
-      // APIが正しく呼び出されることを確認
-      expect(apiClient.download).toHaveBeenCalledWith('/api/v1/sumDownload', {
-        checkedId: fileIds,
+      expect(apiClient.download).toHaveBeenCalledWith("/api/v2/files/bulk-download", {
+        fileIds: fileIds,
       });
 
       // ダウンロード処理が実行されることを確認

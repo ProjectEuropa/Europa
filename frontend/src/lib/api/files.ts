@@ -22,49 +22,40 @@ import { apiClient } from './client';
 import { extractDataFromResponse } from './utils';
 
 // 検索関連
+// 検索関連
 export const searchTeams = async (params: SearchParams): Promise<TeamSearchResult> => {
-  const url = `/api/v1/search/team?keyword=${encodeURIComponent(params.keyword)}&page=${params.page || 1}`;
+  const url = `/api/v2/files?data_type=1&page=${params.page || 1}&limit=10&keyword=${encodeURIComponent(params.keyword)}`;
 
   const response = await apiClient.get<any>(url);
+  const rawData = response.data?.files || [];
+  const pagination = response.data?.pagination || { page: 1, limit: 10, total: 0 };
 
-  // APIレスポンスを変換（スネークケース → キャメルケース + エイリアス）
-  // response は既にJSONパース済みなので、response.data ではなく response を使用
-  const rawData = response.data || response;
-
-  // APIレスポンスが配列として直接返される場合と、dataプロパティに含まれる場合の両方に対応
-  let dataArray = [];
-  if (Array.isArray(rawData)) {
-    dataArray = rawData;
-  } else if (Array.isArray(rawData.data)) {
-    dataArray = rawData.data;
-  } else {
-    dataArray = [];
-  }
-
-  const transformedData = dataArray.map((item: any) => ({
-    ...item,
-    // エイリアスを追加
+  const transformedData = rawData.map((item: any) => ({
+    id: item.id,
     name: item.file_name || '',
-    ownerName: item.upload_owner_name || '',
+    ownerName: item.upload_owner_name || 'Anonymous',
     comment: item.file_comment || '',
     downloadableAt: item.downloadable_at || '',
     created_at: item.created_at || '',
     updatedAt: item.updated_at,
-    searchTag1: item.search_tag1,
-    searchTag2: item.search_tag2,
-    searchTag3: item.search_tag3,
-    searchTag4: item.search_tag4,
-    uploadType: item.upload_type,
+    searchTag1: item.tags?.[0] || '',
+    searchTag2: item.tags?.[1] || '',
+    searchTag3: item.tags?.[2] || '',
+    searchTag4: item.tags?.[3] || '',
+    uploadType: 'team',
+    upload_type: item.upload_user_id ? '1' : '2', // 1: 認証, 2: 匿名(削除可能)
     type: 'team' as const,
+    file_path: item.file_path,
+    file_size: item.file_size,
   }));
 
   const result = {
     data: transformedData,
     meta: {
-      currentPage: response.current_page || 1,
-      lastPage: response.last_page || 1,
-      perPage: response.per_page || 10,
-      total: response.total || 0,
+      currentPage: pagination.page,
+      lastPage: Math.ceil(pagination.total / pagination.limit),
+      perPage: pagination.limit,
+      total: pagination.total,
     },
   };
 
@@ -72,47 +63,38 @@ export const searchTeams = async (params: SearchParams): Promise<TeamSearchResul
 };
 
 export const searchMatches = async (params: SearchParams): Promise<MatchSearchResult> => {
-  const url = `/api/v1/search/match?keyword=${encodeURIComponent(params.keyword)}&page=${params.page || 1}`;
+  const url = `/api/v2/files?data_type=2&page=${params.page || 1}&limit=10&keyword=${encodeURIComponent(params.keyword)}`;
 
   const response = await apiClient.get<any>(url);
+  const rawData = response.data?.files || [];
+  const pagination = response.data?.pagination || { page: 1, limit: 10, total: 0 };
 
-  // APIレスポンスを変換（スネークケース → キャメルケース + エイリアス）
-  const rawData = response.data || response;
-
-  // APIレスポンスが配列として直接返される場合と、dataプロパティに含まれる場合の両方に対応
-  let dataArray = [];
-  if (Array.isArray(rawData)) {
-    dataArray = rawData;
-  } else if (Array.isArray(rawData.data)) {
-    dataArray = rawData.data;
-  } else {
-    dataArray = [];
-  }
-
-  const transformedData = dataArray.map((item: any) => ({
-    ...item,
-    // エイリアスを追加
+  const transformedData = rawData.map((item: any) => ({
+    id: item.id,
     name: item.file_name || '',
-    ownerName: item.upload_owner_name || '',
+    ownerName: item.upload_owner_name || 'Anonymous',
     comment: item.file_comment || '',
     downloadableAt: item.downloadable_at || '',
     created_at: item.created_at || '',
     updatedAt: item.updated_at,
-    searchTag1: item.search_tag1,
-    searchTag2: item.search_tag2,
-    searchTag3: item.search_tag3,
-    searchTag4: item.search_tag4,
-    uploadType: item.upload_type,
+    searchTag1: item.tags?.[0] || '',
+    searchTag2: item.tags?.[1] || '',
+    searchTag3: item.tags?.[2] || '',
+    searchTag4: item.tags?.[3] || '',
+    uploadType: 'match',
+    upload_type: item.upload_user_id ? '1' : '2', // 1: 認証, 2: 匿名(削除可能)
     type: 'match' as const,
+    file_path: item.file_path,
+    file_size: item.file_size,
   }));
 
   const result = {
     data: transformedData,
     meta: {
-      currentPage: response.current_page || 1,
-      lastPage: response.last_page || 1,
-      perPage: response.per_page || 10,
-      total: response.total || 0,
+      currentPage: pagination.page,
+      lastPage: Math.ceil(pagination.total / pagination.limit),
+      perPage: pagination.limit,
+      total: pagination.total,
     },
   };
 
@@ -121,37 +103,15 @@ export const searchMatches = async (params: SearchParams): Promise<MatchSearchRe
 
 // 一括ダウンロード用検索
 export const sumDLSearchTeam = async (params: SearchParams): Promise<TeamSearchResult> => {
-  const response = await apiClient.get<any>(
-    `/api/v1/sumDLSearch/team?keyword=${encodeURIComponent(params.keyword)}&page=${params.page || 1}`
-  );
-
-  // APIレスポンスをキャメルケースに変換
-  return {
-    data: response.data.data || [],
-    meta: {
-      currentPage: response.data.current_page || 1,
-      lastPage: response.data.last_page || 1,
-      perPage: response.data.per_page || 10,
-      total: response.data.total || 0,
-    },
-  };
+  // TODO: v2 API実装待ち
+  console.warn('sumDLSearchTeam is not implemented in v2 API yet');
+  return { data: [], meta: { currentPage: 1, lastPage: 1, perPage: 10, total: 0 } };
 };
 
 export const sumDLSearchMatch = async (params: SearchParams): Promise<MatchSearchResult> => {
-  const response = await apiClient.get<any>(
-    `/api/v1/sumDLSearch/match?keyword=${encodeURIComponent(params.keyword)}&page=${params.page || 1}`
-  );
-
-  // APIレスポンスをキャメルケースに変換
-  return {
-    data: response.data.data || [],
-    meta: {
-      currentPage: response.data.current_page || 1,
-      lastPage: response.data.last_page || 1,
-      perPage: response.data.per_page || 10,
-      total: response.data.total || 0,
-    },
-  };
+  // TODO: v2 API実装待ち
+  console.warn('sumDLSearchMatch is not implemented in v2 API yet');
+  return { data: [], meta: { currentPage: 1, lastPage: 1, perPage: 10, total: 0 } };
 };
 
 // アップロード関連
@@ -160,27 +120,34 @@ export const uploadTeamFile = async (
   isAuthenticated: boolean,
   options?: FileUploadOptions
 ): Promise<FileUploadResponse> => {
-  const endpoint = isAuthenticated
-    ? '/api/v1/team/upload'
-    : '/api/v1/team/simpleupload';
+  const endpoint = '/api/v2/files';
   const formData = new FormData();
 
-  formData.append('teamFile', file);
-  if (options?.ownerName) formData.append('teamOwnerName', options.ownerName);
-  if (options?.comment) formData.append('teamComment', options.comment);
-  if (options?.deletePassword)
-    formData.append('teamDeletePassWord', options.deletePassword);
-  if (options?.downloadDate)
-    formData.append('teamDownloadableAt', options.downloadDate);
-  if (options?.tags && Array.isArray(options.tags)) {
-    formData.append('teamSearchTags', options.tags.join(','));
-  }
+  formData.append('file', file);
+  if (options?.comment) formData.append('comment', options.comment);
+  if (options?.ownerName) formData.append('upload_owner_name', options.ownerName);
+  if (options?.deletePassword) formData.append('deletePassword', options.deletePassword);
+  if (options?.downloadDate) formData.append('downloadable_at', options.downloadDate);
 
-  const response = await apiClient.upload<FileUploadResponse>(
+  // タグの構築
+  const tags = options?.tags && Array.isArray(options.tags) ? options.tags : [];
+  formData.append('tags', JSON.stringify(tags));
+
+  const response = await apiClient.upload<any>(
     endpoint,
     formData
   );
-  return response.data;
+
+  // v2 response format: { data: { file: {...} } }
+  // Frontend expects FileUploadResponse (which might be different, let's adapt)
+  const newFile = response.data.file;
+  return {
+    id: newFile.id,
+    name: newFile.file_name,
+    comment: newFile.file_comment,
+    created_at: newFile.created_at,
+    // ... map other fields as needed
+  } as unknown as FileUploadResponse;
 };
 
 export const uploadMatchFile = async (
@@ -188,34 +155,37 @@ export const uploadMatchFile = async (
   isAuthenticated: boolean,
   options?: FileUploadOptions
 ): Promise<FileUploadResponse> => {
-  const endpoint = isAuthenticated
-    ? '/api/v1/match/upload'
-    : '/api/v1/match/simpleupload';
+  const endpoint = '/api/v2/files';
   const formData = new FormData();
 
-  formData.append('matchFile', file);
-  if (options?.ownerName)
-    formData.append('matchOwnerName', options.ownerName);
-  if (options?.comment) formData.append('matchComment', options.comment);
-  if (options?.deletePassword)
-    formData.append('matchDeletePassWord', options.deletePassword);
-  if (options?.downloadDate)
-    formData.append('matchDownloadableAt', options.downloadDate);
-  if (options?.tags && Array.isArray(options.tags)) {
-    formData.append('matchSearchTags', options.tags.join(','));
-  }
+  formData.append('file', file);
+  if (options?.comment) formData.append('comment', options.comment);
+  if (options?.ownerName) formData.append('upload_owner_name', options.ownerName);
+  if (options?.deletePassword) formData.append('deletePassword', options.deletePassword);
+  if (options?.downloadDate) formData.append('downloadable_at', options.downloadDate);
 
-  const response = await apiClient.upload<FileUploadResponse>(
+  // タグの構築
+  const tags = options?.tags && Array.isArray(options.tags) ? options.tags : [];
+  formData.append('tags', JSON.stringify(tags));
+
+  const response = await apiClient.upload<any>(
     endpoint,
     formData
   );
-  return response.data;
+
+  const newFile = response.data.file;
+  return {
+    id: newFile.id,
+    name: newFile.file_name,
+    comment: newFile.file_comment,
+    created_at: newFile.created_at,
+  } as unknown as FileUploadResponse;
 };
 
 // ダウンロード関連
 export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadResult> => {
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download/${teamId}`;
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v2/files/${teamId}`;
 
     // まずfetchでレスポンスを確認
     const response = await fetch(url, {
@@ -228,7 +198,7 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
       const errorData = await response.json().catch(() => ({}));
       return {
         success: false,
-        error: errorData.error || 'ダウンロードに失敗しました'
+        error: errorData.error?.message || 'ダウンロードに失敗しました'
       };
     }
 
@@ -242,30 +212,51 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
 
     // Content-Dispositionヘッダーからファイル名を取得
     const contentDisposition = response.headers.get('Content-Disposition');
-    let filename = `team_${teamId}.zip`;
+
+    let filename = `file_${teamId}`;
     if (contentDisposition) {
+      // より堅牢なContent-Dispositionヘッダー解析
+      // filename="..." と filename*=UTF-8''... の両方に対応
       const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
       if (filenameMatch && filenameMatch[1]) {
-        const rawFilename = filenameMatch[1].replace(/['"]/g, '');
+        let rawFilename = filenameMatch[1].replace(/['"]/g, '');
+
+        // filename*=UTF-8''encoded-name 形式の場合
+        if (rawFilename.startsWith('UTF-8\'\'')) {
+          rawFilename = rawFilename.substring(7); // 'UTF-8'''.length
+        }
+
         try {
           // URLエンコードされたファイル名をデコード（日本語対応）
           filename = decodeURIComponent(rawFilename);
         } catch {
-          // デコードに失敗した場合は、そのままの値を使用します
+          // デコードに失敗した場合は、そのままの値を使用
           filename = rawFilename;
         }
+        console.log('Extracted filename:', filename);
       }
     }
-    a.download = filename;
+
+    console.log('Final filename for download:', filename);
+
+    // downloadAttribute を明示的に設定
+    a.setAttribute('download', filename);
+    a.style.display = 'none';
 
     document.body.appendChild(a);
-    a.click();
 
-    // クリーンアップ
+    // 少し待ってからクリック（ブラウザによる処理を待つ）
     setTimeout(() => {
-      window.URL.revokeObjectURL(downloadUrl);
-      document.body.removeChild(a);
-    }, 100);
+      a.click();
+
+      // クリーンアップ
+      setTimeout(() => {
+        window.URL.revokeObjectURL(downloadUrl);
+        if (document.body.contains(a)) {
+          document.body.removeChild(a);
+        }
+      }, 1000); // より長い待機時間
+    }, 50);
 
     return { success: true };
   } catch (error: any) {
@@ -277,61 +268,63 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
 };
 
 export const sumDownload = async (request: SumDownloadRequest): Promise<void> => {
-  try {
-    const { blob, filename } = await apiClient.download('/api/v1/sumDownload', request);
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename || 'sum.zip'; // サーバーからのファイル名を優先
-    document.body.appendChild(a);
-    a.click();
-
-    setTimeout(() => {
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    }, 100);
-  } catch (error) {
-    console.error('Download failed:', error);
-    throw error; // 元のエラーをそのまま再スロー（スタックトレース保持）
-  }
+  // TODO: v2 API実装待ち
+  console.warn('sumDownload is not implemented in v2 API yet');
+  throw new Error('Not implemented');
 };
 
 // 削除関連
 export const deleteSearchFile = async (
   request: FileDeleteRequest
 ): Promise<FileDeleteResponse> => {
-  const response = await apiClient.post<FileDeleteResponse>(
-    '/api/v1/delete/searchFile',
+  const response = await apiClient.delete<FileDeleteResponse>(
+    `/api/v2/files/${request.id}`,
     {
-      id: request.id,
-      deletePassword: request.deletePassword || '',
+      body: JSON.stringify({ deletePassword: request.deletePassword }),
     }
   );
-  return response.data;
+  // v2 returns { message: "..." }
+  return response as unknown as FileDeleteResponse;
 };
 
 export const deleteMyFile = async (id: string | number): Promise<FileDeleteResponse> => {
-  const response = await apiClient.post<FileDeleteResponse>(
-    '/api/v1/delete/myFile',
-    { id }
+  const response = await apiClient.delete<FileDeleteResponse>(
+    `/api/v2/files/${id}`
   );
-  return response.data;
+  return response as unknown as FileDeleteResponse;
 };
 
 // マイページ関連
 
 export const fetchMyTeamFiles = async (): Promise<TeamFile[]> => {
-  const response = await apiClient.get<unknown>(
-    '/api/v1/mypage/team'
+  const response = await apiClient.get<any>(
+    '/api/v2/files?data_type=1&mine=true'
   );
-  return extractDataFromResponse<TeamFile>(response, 'files');
+  // v2 returns { data: { files: [...] } }
+  const rawFiles = response.data?.files || [];
+
+  return rawFiles.map((file: any) => ({
+    id: file.id,
+    name: file.file_name,
+    comment: file.file_comment,
+    created_at: file.created_at,
+    // map other fields
+  })) as TeamFile[];
 };
 
 export const fetchMyMatchFiles = async (): Promise<MatchFile[]> => {
-  const response = await apiClient.get<unknown>(
-    '/api/v1/mypage/match'
+  const response = await apiClient.get<any>(
+    '/api/v2/files?data_type=2&mine=true'
   );
-  return extractDataFromResponse<MatchFile>(response, 'files');
+  const rawFiles = response.data?.files || [];
+
+  return rawFiles.map((file: any) => ({
+    id: file.id,
+    name: file.file_name,
+    comment: file.file_comment,
+    created_at: file.created_at,
+    // map other fields
+  })) as MatchFile[];
 };
 
 // ファイル削除（検索結果からの削除）
@@ -339,14 +332,18 @@ export const deleteFile = async (
   id: number,
   deletePassword?: string
 ): Promise<{ message: string }> => {
-  const response = await apiClient.post<{ message: string }>(
-    '/api/v1/delete/searchFile',
-    {
-      id,
-      deletePassword: deletePassword || '',
-    }
+  const response = await apiClient.delete<{ message: string }>(
+    `/api/v2/files/${id}`
   );
-  return response.data;
+  return response as unknown as { message: string };
+};
+
+/**
+ * タグ一覧取得
+ */
+export const fetchTags = async (): Promise<string[]> => {
+  const response = await apiClient.get<{ tags: string[] }>('/api/v2/files/tags');
+  return response.data?.tags || [];
 };
 
 export const filesApi = {
@@ -363,5 +360,6 @@ export const filesApi = {
   fetchMyTeamFiles,
   fetchMyMatchFiles,
   deleteFile,
+  fetchTags,
 };
 

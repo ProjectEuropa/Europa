@@ -1,0 +1,29 @@
+name = "hono-worker"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# 環境変数（Cloudflare Secrets経由で設定）
+# wrangler secret put JWT_SECRET
+# wrangler secret put DATABASE_URL
+
+# R2 Bucket Bindings
+[[r2_buckets]]
+binding = "FILES_BUCKET"
+bucket_name = "europa-files-stg" # STG環境用
+
+# STG環境（デフォルト）
+[env.staging]
+vars = { ENVIRONMENT = "staging", API_VERSION = "v2", LOG_LEVEL = "debug", FRONTEND_URL = "https://pre.project-europa.work" }
+
+[[env.staging.r2_buckets]]
+binding = "FILES_BUCKET"
+bucket_name = "europa-files-stg"
+
+# 本番環境
+[env.production]
+name = "hono-worker-prod"
+vars = { ENVIRONMENT = "production", API_VERSION = "v2", LOG_LEVEL = "info", FRONTEND_URL = "https://project-europa.work" }
+
+[[env.production.r2_buckets]]
+binding = "FILES_BUCKET"
+bucket_name = "europa-files-prod" # 本番環境用

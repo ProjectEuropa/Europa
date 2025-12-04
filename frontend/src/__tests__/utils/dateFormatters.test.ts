@@ -7,16 +7,16 @@ import {
 
 describe('dateFormatters', () => {
   describe('formatDownloadDateTime', () => {
-    it('正常な日時文字列を正しくフォーマットする', () => {
-      const dateString = '2023-01-01T00:00:00Z';
+    it('正常な日時文字列を正しくフォーマットする（変換なし）', () => {
+      const dateString = '2023-01-01T00:00:00.000Z';
       const result = formatDownloadDateTime(dateString);
-      expect(result).toBe('2023/01/01 09:00');
+      expect(result).toBe('2023-01-01 00:00:00');
     });
 
-    it('別の正常な日時文字列を正しくフォーマットする', () => {
-      const dateString = '2023-12-31T15:30:45Z';
+    it('別の正常な日時文字列を正しくフォーマットする（変換なし）', () => {
+      const dateString = '2023-12-31T15:30:45.000Z';
       const result = formatDownloadDateTime(dateString);
-      expect(result).toBe('2024/01/01 00:30');
+      expect(result).toBe('2023-12-31 15:30:45');
     });
 
     it('空文字列の場合は「未設定」を返す', () => {
@@ -42,7 +42,7 @@ describe('dateFormatters', () => {
       expect(result).toBe('日時解析エラー');
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[formatDownloadDateTime] Date format error: Failed to parse date string'
+          '[formatDownloadDateTime] Date format error: Failed to format date string'
         )
       );
 
@@ -64,36 +64,27 @@ describe('dateFormatters', () => {
       consoleSpy.mockRestore();
     });
 
-    it('Date()コンストラクタでエラーが発生した場合は「日時処理エラー」を返し、エラーをログに出力する', () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
+    it('正規表現でフォーマットできない日時文字列の場合は「日時解析エラー」を返す', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-      // Dateコンストラクタをモックしてエラーを投げる
-      const originalDate = global.Date;
-      global.Date = vi.fn(() => {
-        throw new Error('Date constructor error');
-      }) as never;
+      // 正規表現パターンにマッチしない形式（'-'は含むが正しいフォーマットではない）
+      const result = formatDownloadDateTime('not-a-valid-date');
 
-      const result = formatDownloadDateTime('2023-01-01T00:00:00Z');
-
-      expect(result).toBe('日時処理エラー');
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect(result).toBe('日時解析エラー');
+      expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[formatDownloadDateTime] Date format error: Date constructor error'
+          '[formatDownloadDateTime] Date format error: Failed to format date string'
         )
       );
 
-      // 元のDateを復元
-      global.Date = originalDate;
-      consoleErrorSpy.mockRestore();
+      consoleSpy.mockRestore();
     });
 
-    it('ISO 8601形式の様々な日時文字列を正しく処理する', () => {
+    it('ISO 8601形式の様々な日時文字列を正しく処理する（変換なし）', () => {
       const testCases = [
-        { input: '2023-06-15T12:30:00Z', expected: '2023/06/15 21:30' },
-        { input: '2023-01-01T23:59:59Z', expected: '2023/01/02 08:59' },
-        { input: '2023-12-31T00:00:00Z', expected: '2023/12/31 09:00' },
+        { input: '2025-12-21T23:59:00.000Z', expected: '2025-12-21 23:59:00' },
+        { input: '2023-06-15T12:30:45.123Z', expected: '2023-06-15 12:30:45' },
+        { input: '2023-01-01T00:00:00.000Z', expected: '2023-01-01 00:00:00' },
       ];
 
       testCases.forEach(({ input, expected }) => {
@@ -104,16 +95,16 @@ describe('dateFormatters', () => {
   });
 
   describe('formatUploadDateTime', () => {
-    it('正常な日時文字列を正しくフォーマットする', () => {
-      const dateString = '2023-01-01T00:00:00Z';
+    it('正常な日時文字列を正しくフォーマットする（変換なし）', () => {
+      const dateString = '2023-01-01T00:00:00.000Z';
       const result = formatUploadDateTime(dateString);
-      expect(result).toBe('2023/01/01 09:00');
+      expect(result).toBe('2023-01-01 00:00:00');
     });
 
-    it('別の正常な日時文字列を正しくフォーマットする', () => {
-      const dateString = '2023-12-31T15:30:45Z';
+    it('別の正常な日時文字列を正しくフォーマットする（変換なし）', () => {
+      const dateString = '2023-12-31T15:30:45.000Z';
       const result = formatUploadDateTime(dateString);
-      expect(result).toBe('2024/01/01 00:30');
+      expect(result).toBe('2023-12-31 15:30:45');
     });
 
     it('空文字列の場合は「-」を返す', () => {
@@ -139,7 +130,7 @@ describe('dateFormatters', () => {
       expect(result).toBe('日時解析エラー');
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[formatUploadDateTime] Date format error: Failed to parse date string'
+          '[formatUploadDateTime] Date format error: Failed to format date string'
         )
       );
 
@@ -161,36 +152,27 @@ describe('dateFormatters', () => {
       consoleSpy.mockRestore();
     });
 
-    it('Date()コンストラクタでエラーが発生した場合は「日時処理エラー」を返し、エラーをログに出力する', () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
+    it('正規表現でフォーマットできない日時文字列の場合は「日時解析エラー」を返す', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-      // Dateコンストラクタをモックしてエラーを投げる
-      const originalDate = global.Date;
-      global.Date = vi.fn(() => {
-        throw new Error('Date constructor error');
-      }) as never;
+      // 正規表現パターンにマッチしない形式（'-'は含むが正しいフォーマットではない）
+      const result = formatUploadDateTime('not-a-valid-date');
 
-      const result = formatUploadDateTime('2023-01-01T00:00:00Z');
-
-      expect(result).toBe('日時処理エラー');
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect(result).toBe('日時解析エラー');
+      expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[formatUploadDateTime] Date format error: Date constructor error'
+          '[formatUploadDateTime] Date format error: Failed to format date string'
         )
       );
 
-      // 元のDateを復元
-      global.Date = originalDate;
-      consoleErrorSpy.mockRestore();
+      consoleSpy.mockRestore();
     });
 
-    it('ISO 8601形式の様々な日時文字列を正しく処理する', () => {
+    it('ISO 8601形式の様々な日時文字列を正しく処理する（変換なし）', () => {
       const testCases = [
-        { input: '2023-06-15T12:30:00Z', expected: '2023/06/15 21:30' },
-        { input: '2023-01-01T23:59:59Z', expected: '2023/01/02 08:59' },
-        { input: '2023-12-31T00:00:00Z', expected: '2023/12/31 09:00' },
+        { input: '2025-12-21T23:59:00.000Z', expected: '2025-12-21 23:59:00' },
+        { input: '2023-06-15T12:30:45.123Z', expected: '2023-06-15 12:30:45' },
+        { input: '2023-01-01T00:00:00.000Z', expected: '2023-01-01 00:00:00' },
       ];
 
       testCases.forEach(({ input, expected }) => {
@@ -242,7 +224,7 @@ describe('dateFormatters', () => {
       expect(result).toBe('日時解析エラー');
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[formatDownloadDateTime] Date format error: Failed to parse date string'
+          '[formatDownloadDateTime] Date format error: Failed to format date string'
         )
       );
 
@@ -268,9 +250,6 @@ describe('dateFormatters', () => {
       const consoleWarnSpy = vi
         .spyOn(console, 'warn')
         .mockImplementation(() => {});
-      const consoleErrorSpy = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
 
       // 形式エラー（warn レベル）
       formatDownloadDateTime('12345');
@@ -278,27 +257,14 @@ describe('dateFormatters', () => {
         expect.stringContaining('Date string contains only numbers')
       );
 
-      // パースエラー（warn レベル）
+      // フォーマットエラー（warn レベル）
       formatDownloadDateTime('invalid-date');
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to parse date string')
-      );
-
-      // 予期しないエラー（error レベル）
-      const originalDate = global.Date;
-      global.Date = vi.fn(() => {
-        throw new Error('Unexpected error');
-      }) as never;
-
-      formatDownloadDateTime('2023-01-01T00:00:00Z');
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Unexpected error')
+        expect.stringContaining('Failed to format date string')
       );
 
       // 復元
-      global.Date = originalDate;
       consoleWarnSpy.mockRestore();
-      consoleErrorSpy.mockRestore();
     });
 
     it('エラーメッセージに元の値が含まれる', () => {
@@ -346,24 +312,24 @@ describe('dateFormatters', () => {
 
     it('正常な日時の場合に適切なアクセシビリティ情報を返す', () => {
       const result = getAccessibilityDateInfo(
-        '2023-01-01T00:00:00Z',
-        '2023/01/01 09:00',
+        '2023-01-01T00:00:00.000Z',
+        '2023-01-01 00:00:00',
         'download'
       );
 
-      expect(result.ariaLabel).toBe('ダウンロード日時: 2023/01/01 09:00');
-      expect(result.title).toBe('ダウンロード日時: 2023/01/01 09:00');
+      expect(result.ariaLabel).toBe('ダウンロード日時: 2023-01-01 00:00:00');
+      expect(result.title).toBe('ダウンロード日時: 2023-01-01 00:00:00');
     });
 
     it('アップロード日時の正常な場合に適切なアクセシビリティ情報を返す', () => {
       const result = getAccessibilityDateInfo(
-        '2023-01-01T00:00:00Z',
-        '2023/01/01 09:00',
+        '2023-01-01T00:00:00.000Z',
+        '2023-01-01 00:00:00',
         'upload'
       );
 
-      expect(result.ariaLabel).toBe('アップロード日時: 2023/01/01 09:00');
-      expect(result.title).toBe('アップロード日時: 2023/01/01 09:00');
+      expect(result.ariaLabel).toBe('アップロード日時: 2023-01-01 00:00:00');
+      expect(result.title).toBe('アップロード日時: 2023-01-01 00:00:00');
     });
   });
 });

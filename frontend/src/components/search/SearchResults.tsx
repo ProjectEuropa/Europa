@@ -57,7 +57,15 @@ export const SearchResults = memo<SearchResultsProps>(
       const date = new Date(dateValue);
       if (Number.isNaN(date.getTime())) return '無効な日付';
 
-      return date.toLocaleString('ja-JP');
+      // UTCの値をそのまま表示（APIがUTCとして返すが、実際はJSTの入力値そのまま）
+      const year = date.getUTCFullYear();
+      const month = date.getUTCMonth() + 1;
+      const day = date.getUTCDate();
+      const hours = date.getUTCHours();
+      const minutes = date.getUTCMinutes();
+      const seconds = date.getUTCSeconds();
+
+      return `${year}/${month}/${day} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
     // 結果データの前処理（メモ化）
@@ -93,6 +101,9 @@ export const SearchResults = memo<SearchResultsProps>(
         setDeleteModalOpen(false);
         setDeleteTarget(null);
       } catch (error: any) {
+        console.error('[SearchResults] Delete error:', error);
+        console.error('[SearchResults] Error message:', error.message);
+        console.error('[SearchResults] Error status:', error.status);
         toast.error(error.message || 'ファイルの削除に失敗しました');
       }
     };

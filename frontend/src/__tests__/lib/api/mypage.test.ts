@@ -7,6 +7,7 @@ vi.mock('@/lib/api/client', () => ({
     apiClient: {
         post: vi.fn(),
         get: vi.fn(),
+        delete: vi.fn(),
     },
 }));
 
@@ -56,7 +57,7 @@ describe('mypage API', () => {
 
             const result = await fetchMyEvents();
 
-            expect(apiClient.get).toHaveBeenCalledWith('/api/v1/mypage/events');
+            expect(apiClient.get).toHaveBeenCalledWith('/api/v2/events/me');
             expect(result).toHaveLength(2);
             expect(result[0]).toEqual({
                 id: '1',
@@ -97,32 +98,25 @@ describe('mypage API', () => {
             const eventId = '1';
             const mockResponse = {
                 data: {
-                    deleted: true,
                     message: 'Event deleted successfully',
                 },
             };
 
-            vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+            vi.mocked(apiClient.delete).mockResolvedValueOnce(mockResponse);
 
             const result = await deleteMyEvent(eventId);
 
-            expect(apiClient.post).toHaveBeenCalledWith(
-                '/api/v1/delete/usersRegisteredCloumn',
-                { id: eventId }
+            expect(apiClient.delete).toHaveBeenCalledWith(
+                `/api/v2/events/${eventId}`
             );
-            expect(result).toEqual(mockResponse.data);
+            expect(result).toEqual(mockResponse);
         });
 
         it('should throw error when deletion fails', async () => {
             const eventId = '1';
-            const mockResponse = {
-                data: {
-                    deleted: false,
-                    error: 'Deletion failed',
-                },
-            };
+            const mockError = new Error('Deletion failed');
 
-            vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+            vi.mocked(apiClient.delete).mockRejectedValueOnce(mockError);
 
             await expect(deleteMyEvent(eventId)).rejects.toThrow(
                 'Deletion failed'
@@ -131,13 +125,9 @@ describe('mypage API', () => {
 
         it('should throw default error message when no error provided', async () => {
             const eventId = '1';
-            const mockResponse = {
-                data: {
-                    deleted: false,
-                },
-            };
+            const mockError = new Error('削除に失敗しました');
 
-            vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+            vi.mocked(apiClient.delete).mockRejectedValueOnce(mockError);
 
             await expect(deleteMyEvent(eventId)).rejects.toThrow(
                 '削除に失敗しました'
@@ -148,20 +138,18 @@ describe('mypage API', () => {
             const eventId = 123;
             const mockResponse = {
                 data: {
-                    deleted: true,
                     message: 'Event deleted successfully',
                 },
             };
 
-            vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+            vi.mocked(apiClient.delete).mockResolvedValueOnce(mockResponse);
 
             const result = await deleteMyEvent(eventId);
 
-            expect(apiClient.post).toHaveBeenCalledWith(
-                '/api/v1/delete/usersRegisteredCloumn',
-                { id: eventId }
+            expect(apiClient.delete).toHaveBeenCalledWith(
+                `/api/v2/events/${eventId}`
             );
-            expect(result).toEqual(mockResponse.data);
+            expect(result).toEqual(mockResponse);
         });
     });
 });

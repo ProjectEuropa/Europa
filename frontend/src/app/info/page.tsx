@@ -182,11 +182,10 @@ const InformationPage: React.FC = () => {
                         }}
                       >
                         {ev.deadline
-                          ? new Date(ev.deadline).toLocaleDateString('ja-JP', {
-                            month: 'numeric',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })
+                          ? (() => {
+                            const d = new Date(ev.deadline);
+                            return `${d.getUTCFullYear()}/${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
+                          })()
                           : ''}
                       </div>
                       <div
@@ -229,10 +228,12 @@ const InformationPage: React.FC = () => {
                         }}
                       >
                         {ev.deadline
-                          ? new Date(ev.deadline).toLocaleTimeString('ja-JP', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })
+                          ? (() => {
+                            const d = new Date(ev.deadline);
+                            const hours = String(d.getUTCHours()).padStart(2, '0');
+                            const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+                            return `${hours}:${minutes}`;
+                          })()
                           : ''}
                         まで
                       </div>

@@ -153,4 +153,11 @@ export const handlers = [
       },
     });
   }),
+
+  // タグ一覧取得
+  http.get(`${API_BASE_URL}/api/v2/files/tags`, () => {
+    return HttpResponse.json({
+      tags: ['タグ1', 'タグ2', 'タグ3', 'タグ4'],
+    });
+  }),
 ];
