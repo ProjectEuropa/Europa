@@ -89,7 +89,7 @@ auth.post('/login', async (c) => {
         });
     }
 
-    const { email, password }: LoginInput = result.data;
+    const { email, password, remember }: LoginInput = result.data;
 
     // データベース接続
     const sql = neon(c.env.DATABASE_URL);
@@ -113,14 +113,16 @@ auth.post('/login', async (c) => {
         throw new HTTPException(401, { message: 'Invalid credentials' });
     }
 
-    // JWTトークンを生成
-    const token = await generateToken(user.id, user.email, c.env.JWT_SECRET);
+    // Remember Me: 30日間、通常: 7日間
+    const expiresIn = remember ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60;
 
-    // Cookieを設定
+    // JWTトークンを生成
+    const token = await generateToken(user.id, user.email, c.env.JWT_SECRET, expiresIn);
+
     // Cookieを設定（Cross-Origin対応）
     const cookieHeader = createCookieHeader(
         token,
-        7 * 24 * 60 * 60,
+        expiresIn,
         c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
         c.env.ENVIRONMENT
     );

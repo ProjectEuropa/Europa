@@ -22,7 +22,7 @@ bucket_name = "europa-files-stg"
 # 本番環境
 [env.production]
 name = "hono-worker-prod"
-vars = { ENVIRONMENT = "production", API_VERSION = "v2", LOG_LEVEL = "info" }
+vars = { ENVIRONMENT = "production", API_VERSION = "v2", LOG_LEVEL = "info", FRONTEND_URL = "https://project-europa.work" }
 
 [[env.production.r2_buckets]]
 binding = "FILES_BUCKET"
