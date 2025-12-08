@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.2",
         "doctrine/dbal": "^3.0",
-        "filament/filament": "^3.3",
+        "filament/filament": "^4.3",
         "fzaninotto/faker": "^1.4",
         "laravel/breeze": "^2.0",
         "laravel/framework": "^11.0",
