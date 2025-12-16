@@ -12,14 +12,6 @@ import { maskFilesIfNotDownloadable } from '../utils/file-mask';
 const files = new Hono<{ Bindings: Env }>();
 
 /**
- * キーワード検索条件を構築するヘルパー関数
- */
-const buildKeywordSearchCondition = (keyword: string) => {
-  const keywordPattern = `%${keyword}%`;
-  return { keywordPattern };
-};
-
-/**
  * GET /api/v2/files
  * ファイル一覧取得（認証はオプショナル）
  */
@@ -49,39 +41,84 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     targetUserId = user.userId;
   }
 
-  // クエリを動的に構築（保守性を向上）
-  const { keywordPattern } = keyword ? buildKeywordSearchCondition(keyword) : { keywordPattern: '' };
+  // キーワードパターンの構築
+  const keywordPattern = keyword ? `%${keyword}%` : '';
 
   // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
   let countResult: any;
   // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
   let filesList: any;
 
-  // WHERE条件の組み合わせに応じてクエリを実行
-  if (data_type && targetUserId && keyword) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-  } else if (data_type && targetUserId) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId}`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-  } else if (data_type && keyword) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-  } else if (targetUserId && keyword) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-  } else if (data_type) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type}`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-  } else if (targetUserId) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId}`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-  } else if (keyword) {
-    countResult = await sql`SELECT COUNT(*) as count FROM files WHERE (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
-  } else {
-    countResult = await sql`SELECT COUNT(*) as count FROM files`;
-    filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+  // タグフィルタがある場合は、タグでフィルタリングされたファイルIDを取得
+  let tagFilteredFileIds: number[] | null = null;
+  if (tag) {
+    const tagResults = await sql`
+      SELECT DISTINCT ft.file_id
+      FROM file_tags ft
+      INNER JOIN tags t ON ft.tag_id = t.id
+      WHERE t.tag_name = ${tag}
+    `;
+    tagFilteredFileIds = tagResults.map((r: any) => r.file_id);
+
+    // タグに該当するファイルが存在しない場合は空の結果を返す
+    if (tagFilteredFileIds.length === 0) {
+      countResult = [{ count: 0 }];
+      filesList = [];
+    }
+  }
+
+  // タグフィルタで結果が空でない場合のみクエリを実行
+  if (!tag || (tagFilteredFileIds && tagFilteredFileIds.length > 0)) {
+    // WHERE条件の組み合わせに応じてクエリを実行
+    if (data_type && targetUserId && keyword && tag && tagFilteredFileIds) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) AND id = ANY(${tagFilteredFileIds})`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) AND id = ANY(${tagFilteredFileIds}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (data_type && targetUserId && keyword) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (data_type && targetUserId && tag && tagFilteredFileIds) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND id = ANY(${tagFilteredFileIds})`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} AND id = ANY(${tagFilteredFileIds}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (data_type && targetUserId) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId}`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND upload_user_id = ${targetUserId} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (data_type && keyword && tag && tagFilteredFileIds) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) AND id = ANY(${tagFilteredFileIds})`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) AND id = ANY(${tagFilteredFileIds}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (data_type && keyword) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (data_type && tag && tagFilteredFileIds) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type} AND id = ANY(${tagFilteredFileIds})`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} AND id = ANY(${tagFilteredFileIds}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (data_type) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE data_type = ${data_type}`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE data_type = ${data_type} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (targetUserId && keyword && tag && tagFilteredFileIds) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) AND id = ANY(${tagFilteredFileIds})`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) AND id = ANY(${tagFilteredFileIds}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (targetUserId && keyword) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} AND (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (targetUserId && tag && tagFilteredFileIds) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId} AND id = ANY(${tagFilteredFileIds})`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} AND id = ANY(${tagFilteredFileIds}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (targetUserId) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE upload_user_id = ${targetUserId}`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE upload_user_id = ${targetUserId} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (keyword && tag && tagFilteredFileIds) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) AND id = ANY(${tagFilteredFileIds})`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) AND id = ANY(${tagFilteredFileIds}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (keyword) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW())`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE (file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern}) AND (downloadable_at IS NULL OR downloadable_at <= NOW()) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else if (tag && tagFilteredFileIds) {
+      countResult = await sql`SELECT COUNT(*) as count FROM files WHERE id = ANY(${tagFilteredFileIds})`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files WHERE id = ANY(${tagFilteredFileIds}) ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    } else {
+      countResult = await sql`SELECT COUNT(*) as count FROM files`;
+      filesList = await sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    }
   }
 
   const total = parseInt(countResult[0].count as string);
