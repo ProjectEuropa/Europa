@@ -62,7 +62,7 @@ files.get('/', optionalAuthMiddleware, async (c) => {
 
     // タグに該当するファイルが存在しない場合は空の結果を返す
     if (tagFilteredFileIds.length === 0) {
-      countResult = [{ count: 0 }];
+      countResult = [{ count: '0' }];
       filesList = [];
     }
   }
