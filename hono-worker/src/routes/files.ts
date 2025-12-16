@@ -86,7 +86,8 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     }
 
     if (tagFilteredFileIds) {
-      whereConditions.push(sql`id = ANY(${tagFilteredFileIds})`);
+      // IN句を使用して安全に配列を処理
+      whereConditions.push(sql`id IN (${sql.join(tagFilteredFileIds.map(id => sql`${id}`), sql`, `)})`);
     }
 
     // WHERE句を構築（条件がない場合は空）
@@ -108,11 +109,12 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   let allTags: any[] = [];
 
   if (fileIds.length > 0) {
+    // IN句を使用して安全に配列を処理
     allTags = await sql`
       SELECT ft.file_id, t.tag_name
       FROM tags t
       INNER JOIN file_tags ft ON t.id = ft.tag_id
-      WHERE ft.file_id = ANY(${fileIds})
+      WHERE ft.file_id IN (${sql.join(fileIds.map(id => sql`${id}`), sql`, `)})
       ORDER BY ft.file_id, t.tag_name
     `;
   }
@@ -488,11 +490,11 @@ files.post('/bulk-download', optionalAuthMiddleware, async (c) => {
   // データベース接続
   const sql = neon(c.env.DATABASE_URL);
 
-  // ファイル情報を取得
+  // ファイル情報を取得（IN句を使用して安全に配列を処理）
   const filesList = await sql`
     SELECT id, file_name, file_path, file_size, downloadable_at
     FROM files
-    WHERE id = ANY(${fileIds})
+    WHERE id IN (${sql.join(fileIds.map(id => sql`${id}`), sql`, `)})
   `;
 
   if (filesList.length === 0) {
