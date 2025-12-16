@@ -12,6 +12,14 @@ import { maskFilesIfNotDownloadable } from '../utils/file-mask';
 const files = new Hono<{ Bindings: Env }>();
 
 /**
+ * キーワード検索条件を構築するヘルパー関数
+ */
+const buildKeywordSearchCondition = (keyword: string) => {
+  const keywordPattern = `%${keyword}%`;
+  return { keywordPattern };
+};
+
+/**
  * GET /api/v2/files
  * ファイル一覧取得（認証はオプショナル）
  */
@@ -42,7 +50,7 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   }
 
   // クエリを動的に構築（保守性を向上）
-  const keywordPattern = keyword ? `%${keyword}%` : '';
+  const { keywordPattern } = keyword ? buildKeywordSearchCondition(keyword) : { keywordPattern: '' };
 
   // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
   let countResult: any;
