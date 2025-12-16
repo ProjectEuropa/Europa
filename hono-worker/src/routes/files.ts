@@ -41,9 +41,6 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     targetUserId = user.userId;
   }
 
-  // キーワードパターンの構築
-  const keywordPattern = keyword ? `%${keyword}%` : '';
-
   // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
   let countResult: any;
   // biome-ignore lint/suspicious/noImplicitAnyLet: クエリ結果の型が動的なため
@@ -81,7 +78,8 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     }
 
     if (keyword) {
-      whereConditions.push(sql`(file_name ILIKE ${keywordPattern} OR file_comment ILIKE ${keywordPattern} OR upload_owner_name ILIKE ${keywordPattern})`);
+      // ILIKEパターンをSQL側で構築（ワイルドカードも含む）
+      whereConditions.push(sql`(file_name ILIKE '%' || ${keyword} || '%' OR file_comment ILIKE '%' || ${keyword} || '%' OR upload_owner_name ILIKE '%' || ${keyword} || '%')`);
       whereConditions.push(sql`(downloadable_at IS NULL OR downloadable_at <= NOW())`);
     }
 
