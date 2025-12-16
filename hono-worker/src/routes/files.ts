@@ -78,10 +78,9 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     }
 
     if (keyword) {
-      // SQLワイルドカード文字をエスケープ（%, _, \）
-      const escapedKeyword = keyword.replace(/[\\%_]/g, '\\$&');
-      // ILIKEパターンをSQL側で構築（ワイルドカードも含む）
-      whereConditions.push(sql`(file_name ILIKE '%' || ${escapedKeyword} || '%' OR file_comment ILIKE '%' || ${escapedKeyword} || '%' OR upload_owner_name ILIKE '%' || ${escapedKeyword} || '%')`);
+      // ILIKEパターンをSQL側で構築
+      // パラメータ化により${keyword}内の%や_は自動的にリテラル文字として扱われる
+      whereConditions.push(sql`(file_name ILIKE '%' || ${keyword} || '%' OR file_comment ILIKE '%' || ${keyword} || '%' OR upload_owner_name ILIKE '%' || ${keyword} || '%')`);
       whereConditions.push(sql`(downloadable_at IS NULL OR downloadable_at <= NOW())`);
     }
 
