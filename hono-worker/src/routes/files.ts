@@ -86,13 +86,23 @@ files.get('/', optionalAuthMiddleware, async (c) => {
 
     if (tagFilteredFileIds) {
       // IN句を使用して安全に配列を処理
-      whereConditions.push(sql`id IN (${sql.join(tagFilteredFileIds.map(id => sql`${id}`), sql`, `)})`);
+      // Note: Using array directly as Neon supports parameterized arrays
+      whereConditions.push(sql`id = ANY(${tagFilteredFileIds})`);
     }
 
     // WHERE句を構築（条件がない場合は空）
-    const whereClause = whereConditions.length > 0
-      ? sql`WHERE ${sql.join(whereConditions, sql` AND `)}`
-      : sql``;
+    // Note: Manually building the WHERE clause since Neon doesn't have sql.join
+    let whereClause;
+    if (whereConditions.length > 0) {
+      // Build the WHERE clause by combining conditions with AND
+      const combinedConditions = whereConditions.reduce((acc, condition, index) => {
+        if (index === 0) return condition;
+        return sql`${acc} AND ${condition}`;
+      });
+      whereClause = sql`WHERE ${combinedConditions}`;
+    } else {
+      whereClause = sql``;
+    }
 
     // 件数取得とリスト取得のクエリを並列実行
     [countResult, filesList] = await Promise.all([
@@ -109,11 +119,12 @@ files.get('/', optionalAuthMiddleware, async (c) => {
 
   if (fileIds.length > 0) {
     // IN句を使用して安全に配列を処理
+    // Note: Using array directly as Neon supports parameterized arrays
     allTags = await sql`
       SELECT ft.file_id, t.tag_name
       FROM tags t
       INNER JOIN file_tags ft ON t.id = ft.tag_id
-      WHERE ft.file_id IN (${sql.join(fileIds.map(id => sql`${id}`), sql`, `)})
+      WHERE ft.file_id = ANY(${fileIds})
       ORDER BY ft.file_id, t.tag_name
     `;
   }
@@ -490,10 +501,11 @@ files.post('/bulk-download', optionalAuthMiddleware, async (c) => {
   const sql = neon(c.env.DATABASE_URL);
 
   // ファイル情報を取得（IN句を使用して安全に配列を処理）
+  // Note: Using array directly as Neon supports parameterized arrays
   const filesList = await sql`
     SELECT id, file_name, file_path, file_size, downloadable_at
     FROM files
-    WHERE id IN (${sql.join(fileIds.map(id => sql`${id}`), sql`, `)})
+    WHERE id = ANY(${fileIds})
   `;
 
   if (filesList.length === 0) {
