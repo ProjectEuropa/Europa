@@ -8,6 +8,7 @@ import { fileQuerySchema, type FileQueryInput } from '../utils/validation';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth';
 import { generateDeletePassword, hashDeletePassword, verifyDeletePassword } from '../utils/password';
 import { maskFilesIfNotDownloadable } from '../utils/file-mask';
+import { buildFileQueryWhere } from '../utils/query-builder';
 
 const files = new Hono<{ Bindings: Env }>();
 
@@ -67,47 +68,20 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   // タグフィルタで結果が空でない場合のみクエリを実行
   if (!tag || (tagFilteredFileIds && tagFilteredFileIds.length > 0)) {
     // WHERE条件を動的に構築
-    const whereConditions = [];
-
-    if (data_type) {
-      whereConditions.push(sql`data_type = ${data_type}`);
-    }
-
-    if (targetUserId) {
-      whereConditions.push(sql`upload_user_id = ${targetUserId}`);
-    }
-
-    if (keyword) {
-      // ILIKEパターンをSQL側で構築
-      // パラメータ化により${keyword}内の%や_は自動的にリテラル文字として扱われる
-      whereConditions.push(sql`(file_name ILIKE '%' || ${keyword} || '%' OR file_comment ILIKE '%' || ${keyword} || '%' OR upload_owner_name ILIKE '%' || ${keyword} || '%')`);
-      whereConditions.push(sql`(downloadable_at IS NULL OR downloadable_at <= NOW())`);
-    }
-
-    if (tagFilteredFileIds) {
-      // IN句を使用して安全に配列を処理
-      // Note: Using array directly as Neon supports parameterized arrays
-      whereConditions.push(sql`id = ANY(${tagFilteredFileIds})`);
-    }
-
-    // WHERE句を構築（条件がない場合は空）
-    // Note: Manually building the WHERE clause since Neon doesn't have sql.join
-    let whereClause;
-    if (whereConditions.length > 0) {
-      // Build the WHERE clause by combining conditions with AND
-      const combinedConditions = whereConditions.reduce((acc, condition, index) => {
-        if (index === 0) return condition;
-        return sql`${acc} AND ${condition}`;
-      });
-      whereClause = sql`WHERE ${combinedConditions}`;
-    } else {
-      whereClause = sql``;
-    }
+    const { whereClause, whereParams } = buildFileQueryWhere({
+      data_type,
+      targetUserId,
+      keyword,
+      tagFilteredFileIds: tagFilteredFileIds || undefined,
+    });
 
     // 件数取得とリスト取得のクエリを並列実行
+    const countQuery = `SELECT COUNT(*) as count FROM files ${whereClause}`;
+    const listQuery = `SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files ${whereClause} ORDER BY created_at DESC LIMIT $${whereParams.length + 1} OFFSET $${whereParams.length + 2}`;
+
     [countResult, filesList] = await Promise.all([
-      sql`SELECT COUNT(*) as count FROM files ${whereClause}`,
-      sql`SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files ${whereClause} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`,
+      sql(countQuery, whereParams),
+      sql(listQuery, [...whereParams, limit, offset]),
     ]);
   }
 
