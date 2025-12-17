@@ -8,6 +8,7 @@ import { fileQuerySchema, type FileQueryInput } from '../utils/validation';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth';
 import { generateDeletePassword, hashDeletePassword, verifyDeletePassword } from '../utils/password';
 import { maskFilesIfNotDownloadable } from '../utils/file-mask';
+import { buildFileQueryWhere } from '../utils/query-builder';
 
 const files = new Hono<{ Bindings: Env }>();
 
@@ -67,35 +68,12 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   // タグフィルタで結果が空でない場合のみクエリを実行
   if (!tag || (tagFilteredFileIds && tagFilteredFileIds.length > 0)) {
     // WHERE条件を動的に構築
-    const whereConditions: string[] = [];
-    const whereParams: any[] = [];
-
-    if (data_type) {
-      whereConditions.push(`data_type = $${whereParams.length + 1}`);
-      whereParams.push(data_type);
-    }
-
-    if (targetUserId) {
-      whereConditions.push(`upload_user_id = $${whereParams.length + 1}`);
-      whereParams.push(targetUserId);
-    }
-
-    if (keyword) {
-      // ILIKEパターンをSQL側で構築
-      whereConditions.push(`(file_name ILIKE '%' || $${whereParams.length + 1} || '%' OR file_comment ILIKE '%' || $${whereParams.length + 1} || '%' OR upload_owner_name ILIKE '%' || $${whereParams.length + 1} || '%')`);
-      whereParams.push(keyword);
-      whereConditions.push(`(downloadable_at IS NULL OR downloadable_at <= NOW())`);
-    }
-
-    if (tagFilteredFileIds) {
-      whereConditions.push(`id = ANY($${whereParams.length + 1})`);
-      whereParams.push(tagFilteredFileIds);
-    }
-
-    // WHERE句を構築（条件がない場合は空）
-    const whereClause = whereConditions.length > 0
-      ? `WHERE ${whereConditions.join(' AND ')}`
-      : '';
+    const { whereClause, whereParams } = buildFileQueryWhere({
+      data_type,
+      targetUserId,
+      keyword,
+      tagFilteredFileIds: tagFilteredFileIds || undefined,
+    });
 
     // 件数取得とリスト取得のクエリを並列実行
     const countQuery = `SELECT COUNT(*) as count FROM files ${whereClause}`;
