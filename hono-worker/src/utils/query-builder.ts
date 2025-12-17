@@ -43,6 +43,9 @@ export function buildFileQueryWhere(filters: FileQueryFilters): QueryResult {
       `(file_name ILIKE '%' || $${keywordIdx1} || '%' OR file_comment ILIKE '%' || $${keywordIdx2} || '%' OR upload_owner_name ILIKE '%' || $${keywordIdx3} || '%')`
     );
     whereParams.push(filters.keyword, filters.keyword, filters.keyword);
+
+    // キーワード検索時は、ダウンロード可能な日時のチェックも追加
+    whereConditions.push(`(downloadable_at IS NULL OR downloadable_at <= NOW())`);
   }
 
   if (filters.tagFilteredFileIds && filters.tagFilteredFileIds.length > 0) {
