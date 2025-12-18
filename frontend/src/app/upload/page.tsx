@@ -40,23 +40,8 @@ const TeamUploadPage: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
-      <main
-        style={{
-          flex: 1,
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '32px 20px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1000px',
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '24px',
-          }}
-        >
+      <main className="flex-1 max-w-6xl mx-auto py-8 px-4 w-full">
+        <div className="max-w-4xl mx-auto flex flex-col gap-6">
           {/* アップロード進捗表示 */}
           {uploadProgress.status !== 'idle' && (
             <UploadProgress

@@ -7,7 +7,8 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { SearchForm } from '@/components/search/SearchForm';
 import { SearchResults } from '@/components/search/SearchResults';
-import { useTeamSearch } from '@/hooks/useSearch';
+import { TagCloud } from '@/components/search/TagCloud';
+import { useTeamSearch, usePopularTags } from '@/hooks/useSearch';
 import type { MatchFile, TeamFile } from '@/types/file';
 import type { SearchParams } from '@/types/search';
 import { tryDownloadTeamFile } from '@/utils/api';
@@ -37,9 +38,11 @@ export default function ClientTeamSearch() {
   const {
     data: searchResult,
     isLoading,
-    error,
     isError,
   } = useTeamSearch(searchParamsObj);
+
+  // 人気タグを取得
+  const { data: popularTags } = usePopularTags(10);
 
   // キーワード変更時のみページをリセット（ページ変更時はリセットしない）
   useEffect(() => {
@@ -85,83 +88,82 @@ export default function ClientTeamSearch() {
     [searchParams, router]
   );
 
-  // 検索処理
+  // 検索処理 (フォームからのコールバック)
   const handleSearch = useCallback((_params: SearchParams) => {
     setCurrentPage(1);
   }, []);
 
+  // タグクリック処理
+  const handleTagClick = useCallback((tag: string) => {
+    setCurrentPage(1);
+    const urlParams = new URLSearchParams(searchParams.toString());
+    urlParams.set('keyword', tag);
+    urlParams.set('page', '1');
+    router.push(`?${urlParams.toString()}`);
+  }, [searchParams, router]);
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        background: 'rgb(var(--background-rgb))',
-      }}
-    >
+    <div className="flex flex-col min-h-screen bg-[#0a0818] text-white selection:bg-cyan-500/30">
       <Header />
 
-      <div
-        style={{
-          flex: '1',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '40px 20px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1200px',
-            textAlign: 'center',
-            marginBottom: '40px',
-          }}
-        >
-          <h1
-            style={{
-              color: '#8CB4FF',
-              fontWeight: 'bold',
-              fontSize: '2.5rem',
-              marginBottom: '16px',
-            }}
-          >
-            Search Team
-          </h1>
-          <p
-            style={{
-              color: '#b0c4d8',
-              fontSize: '1.1rem',
-              marginBottom: '40px',
-            }}
-          >
-            チームデータの検索が可能です
-          </p>
+      <div className="flex-1 w-full overflow-x-hidden">
+        <div className="max-w-6xl mx-auto py-12 px-4 flex flex-col items-center">
+          <div className="w-full text-center mb-10">
+            <h1 className="
+              text-4xl md:text-5xl font-bold mb-4 
+              bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500
+              drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]
+            ">
+              Search Team
+            </h1>
+            <p className="text-slate-400 text-lg mb-8">
+              チームデータの検索が可能です
+            </p>
+
+            <div className="flex flex-col items-center w-full">
+              {/* 検索フォーム */}
+              <SearchForm
+                searchType="team"
+                placeholder="チーム名、オーナー名、タグで検索"
+                onSearch={handleSearch}
+              />
+
+              {/* 人気のタグ */}
+              <div className="mt-6 w-full max-w-3xl">
+                <div className="flex items-center justify-center gap-3 mb-2 text-sm text-slate-500 uppercase tracking-widest font-semibold">
+                  <span className="w-8 h-[1px] bg-slate-700"></span>
+                  Popular Tags
+                  <span className="w-8 h-[1px] bg-slate-700"></span>
+                </div>
+                <TagCloud
+                  tags={popularTags || []}
+                  onTagClick={handleTagClick}
+                  className="justify-center"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 検索結果 */}
+          <div className="w-full self-stretch">
+            <SearchResults
+              results={searchResult?.data || []}
+              meta={
+                searchResult?.meta || {
+                  currentPage: 1,
+                  lastPage: 1,
+                  perPage: 10,
+                  total: 0,
+                }
+              }
+              loading={isLoading}
+              error={isError ? 'チーム検索に失敗しました' : null}
+              onPageChange={handlePageChange}
+              onDownload={handleDownload}
+              onTagClick={handleTagClick}
+            />
+          </div>
         </div>
-
-        {/* 検索フォーム */}
-        <SearchForm
-          searchType="team"
-          placeholder="チーム名を入力してください"
-          onSearch={handleSearch}
-        />
-
-        {/* 検索結果 */}
-        <SearchResults
-          results={searchResult?.data || []}
-          meta={
-            searchResult?.meta || {
-              currentPage: 1,
-              lastPage: 1,
-              perPage: 10,
-              total: 0,
-            }
-          }
-          loading={isLoading}
-          error={isError ? 'チーム検索に失敗しました' : null}
-          onPageChange={handlePageChange}
-          onDownload={handleDownload}
-        />
       </div>
 
       <Footer />
