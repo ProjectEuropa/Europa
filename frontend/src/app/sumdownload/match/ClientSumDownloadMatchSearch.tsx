@@ -10,6 +10,7 @@ import {
 } from '@/components/features/sumdownload';
 import Header from '@/components/Header';
 import { useSumDownloadManager } from '@/hooks/useSumDownloadManager';
+import { AlertCircle } from 'lucide-react';
 
 const ClientSumDownloadMatchSearch: React.FC = () => {
   const {
@@ -30,211 +31,108 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
   } = useSumDownloadManager({ searchType: 'match' });
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        background: 'rgb(var(--background-rgb))',
-      }}
-    >
+    <div className="flex flex-col min-h-screen bg-background text-white selection:bg-cyan-500/30">
       <Header />
 
-      <main
-        style={{
-          flex: '1',
-          padding: '20px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-          }}
-        >
-          {/* ヘッダー */}
-          <div style={{ marginBottom: '32px', textAlign: 'center' }}>
-            <h1
-              style={{
-                color: '#00c8ff',
-                fontSize: '2rem',
-                fontWeight: 'bold',
-                marginBottom: '8px',
-              }}
-            >
-              マッチデータ一括ダウンロード
-            </h1>
-            <p
-              style={{
-                color: '#b0c4d8',
-                fontSize: '1rem',
-                marginBottom: '24px',
-              }}
-            >
-              複数のマッチデータを選択して一括ダウンロードできます。
-            </p>
-          </div>
-
-          {/* 検索フォーム */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginBottom: '32px',
-            }}
-          >
-            <SumDownloadForm
-              searchType="match"
-              onSearch={handleSearch}
-              loading={isSearchLoading}
-              initialQuery={searchQuery}
-            />
-          </div>
-
-          {/* エラー表示 */}
-          {searchError && (
-            <div
-              style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-                borderRadius: '12px',
-                padding: '16px',
-                marginBottom: '24px',
-              }}
-            >
-              <p style={{ color: '#ef4444' }}>
-                検索中にエラーが発生しました: {searchError.message}
+      <main className="flex-1 w-full overflow-x-hidden">
+        <div className="max-w-6xl mx-auto py-12 px-4 flex flex-col items-center">
+          <div className="w-full">
+            {/* ヘッダー */}
+            <div className="text-center mb-10">
+              <h1 className="
+                text-3xl md:text-4xl font-bold mb-4 
+                bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500
+                drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]
+              ">
+                マッチデータ一括ダウンロード
+              </h1>
+              <p className="text-slate-400 text-base">
+                複数のマッチデータを選択して一括ダウンロードできます。
               </p>
             </div>
-          )}
 
-          {/* 検索結果情報 */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '16px',
-            }}
-          >
-            <div
-              style={{
-                color: '#b0c4d8',
-                fontSize: '0.9rem',
-              }}
-            >
-              {total}件のマッチデータが見つかりました
-            </div>
-            {selectedCount > 0 && (
-              <div
-                style={{
-                  color: '#00c8ff',
-                  fontSize: '0.9rem',
-                }}
-              >
-                {selectedCount}件選択中
-              </div>
-            )}
-          </div>
-
-          {/* アクションボタン */}
-          <SumDownloadActions
-            selectedCount={selectedCount}
-            onDownload={handleDownload}
-            isDownloading={isDownloading}
-            maxSelectionCount={50}
-          />
-
-          {/* データテーブル */}
-          <SumDownloadTable
-            data={data}
-            selectedIds={selectedIds}
-            onSelectionChange={handleSelectionChange}
-            loading={isSearchLoading}
-            searchType="match"
-          />
-
-          {/* ページネーション */}
-          <SumDownloadPagination
-            currentPage={currentPage}
-            lastPage={lastPage}
-            onPageChange={handlePageChange}
-            loading={isSearchLoading}
-          />
-
-          {/* 下部ダウンロードボタン */}
-          {selectedCount > 0 && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginBottom: '32px',
-              }}
-            >
-              <SumDownloadActions
-                selectedCount={selectedCount}
-                onDownload={handleDownload}
-                isDownloading={isDownloading}
-                maxSelectionCount={50}
+            {/* 検索フォーム */}
+            <div className="flex justify-center mb-8">
+              <SumDownloadForm
+                searchType="match"
+                onSearch={handleSearch}
+                loading={isSearchLoading}
+                initialQuery={searchQuery}
               />
             </div>
-          )}
 
-          {/* 注意事項 */}
-          <div
-            style={{
-              background: '#0A1022',
-              borderRadius: '12px',
-              padding: '20px',
-              border: '1px solid #1E3A5F',
-            }}
-          >
-            <h2
-              style={{
-                color: '#00c8ff',
-                fontSize: '1.2rem',
-                fontWeight: 'bold',
-                marginBottom: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              <svg
-                style={{
-                  width: '20px',
-                  height: '20px',
-                }}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              ダウンロードに関する注意事項
-            </h2>
-            <ul
-              style={{
-                color: '#b0c4d8',
-                fontSize: '0.9rem',
-                lineHeight: '1.6',
-                paddingLeft: '20px',
-              }}
-            >
-              <li>一度に最大50件までのマッチデータをダウンロードできます。</li>
-              <li>
-                ダウンロードしたデータは自動的にZIPファイルに圧縮されます。
-              </li>
-              <li>ダウンロード履歴はアカウント設定ページで確認できます。</li>
-              <li>
-                ダウンロードに問題がある場合は、管理者にお問い合わせください。
-              </li>
-            </ul>
+            {/* エラー表示 */}
+            {searchError && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center gap-3 text-red-400">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <p>検索中にエラーが発生しました: {searchError.message}</p>
+              </div>
+            )}
+
+            {/* 検索結果情報 */}
+            <div className="flex justify-between items-center mb-4 px-2">
+              <div className="text-slate-400 text-sm">
+                {total}件のマッチデータが見つかりました
+              </div>
+              {selectedCount > 0 && (
+                <div className="text-cyan-400 text-sm">
+                  {selectedCount}件選択中
+                </div>
+              )}
+            </div>
+
+            {/* アクションボタン */}
+            <SumDownloadActions
+              selectedCount={selectedCount}
+              onDownload={handleDownload}
+              isDownloading={isDownloading}
+              maxSelectionCount={50}
+            />
+
+            {/* データテーブル */}
+            <SumDownloadTable
+              data={data}
+              selectedIds={selectedIds}
+              onSelectionChange={handleSelectionChange}
+              loading={isSearchLoading}
+              searchType="match"
+            />
+
+            {/* ページネーション */}
+            <SumDownloadPagination
+              currentPage={currentPage}
+              lastPage={lastPage}
+              onPageChange={handlePageChange}
+              loading={isSearchLoading}
+            />
+
+            {/* 下部アクションボタン */}
+            {selectedCount > 0 && (
+              <div className="flex justify-center my-8">
+                <div className="w-full">
+                  <SumDownloadActions
+                    selectedCount={selectedCount}
+                    onDownload={handleDownload}
+                    isDownloading={isDownloading}
+                    maxSelectionCount={50}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 注意事項 */}
+            <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-800">
+              <h2 className="text-cyan-400 font-bold text-lg mb-3 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5" />
+                ダウンロードに関する注意事項
+              </h2>
+              <ul className="text-slate-400 text-sm leading-relaxed list-disc pl-5 space-y-1">
+                <li>一度に最大50件までのマッチデータをダウンロードできます。</li>
+                <li>ダウンロードしたデータは自動的にZIPファイルに圧縮されます。</li>
+                <li>ダウンロード履歴はアカウント設定ページで確認できます。</li>
+                <li>ダウンロードに問題がある場合は、管理者にお問い合わせください。</li>
+              </ul>
+            </div>
           </div>
         </div>
       </main>
@@ -245,3 +143,4 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
 };
 
 export default ClientSumDownloadMatchSearch;
+

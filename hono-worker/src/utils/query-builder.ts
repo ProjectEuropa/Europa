@@ -8,6 +8,7 @@ export interface FileQueryFilters {
   targetUserId?: number;
   keyword?: string;
   tagFilteredFileIds?: number[];
+  keywordMatchedFileIds?: number[];
 }
 
 export interface QueryResult {
@@ -39,10 +40,20 @@ export function buildFileQueryWhere(filters: FileQueryFilters): QueryResult {
     const keywordIdx1 = whereParams.length + 1;
     const keywordIdx2 = whereParams.length + 2;
     const keywordIdx3 = whereParams.length + 3;
-    whereConditions.push(
-      `(file_name ILIKE '%' || $${keywordIdx1} || '%' OR file_comment ILIKE '%' || $${keywordIdx2} || '%' OR upload_owner_name ILIKE '%' || $${keywordIdx3} || '%')`
-    );
-    whereParams.push(filters.keyword, filters.keyword, filters.keyword);
+
+    // タグにマッチしたファイルIDがある場合は、それも検索条件に含める
+    if (filters.keywordMatchedFileIds && filters.keywordMatchedFileIds.length > 0) {
+      const tagFileIdsIdx = whereParams.length + 4;
+      whereConditions.push(
+        `(file_name ILIKE '%' || $${keywordIdx1} || '%' OR file_comment ILIKE '%' || $${keywordIdx2} || '%' OR upload_owner_name ILIKE '%' || $${keywordIdx3} || '%' OR id = ANY($${tagFileIdsIdx}))`
+      );
+      whereParams.push(filters.keyword, filters.keyword, filters.keyword, filters.keywordMatchedFileIds);
+    } else {
+      whereConditions.push(
+        `(file_name ILIKE '%' || $${keywordIdx1} || '%' OR file_comment ILIKE '%' || $${keywordIdx2} || '%' OR upload_owner_name ILIKE '%' || $${keywordIdx3} || '%')`
+      );
+      whereParams.push(filters.keyword, filters.keyword, filters.keyword);
+    }
 
     // キーワード検索時は、ダウンロード可能な日時のチェックも追加
     whereConditions.push(`(downloadable_at IS NULL OR downloadable_at <= NOW())`);
