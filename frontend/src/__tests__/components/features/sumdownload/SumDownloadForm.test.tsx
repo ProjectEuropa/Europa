@@ -3,9 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { SumDownloadForm } from '@/components/features/sumdownload/SumDownloadForm';
 
-// Searchアイコンをモック
+// lucide-reactアイコンをモック
 vi.mock('lucide-react', () => ({
   Search: () => <div data-testid="search-icon">🔍</div>,
+  X: () => <div data-testid="x-icon">✕</div>,
 }));
 
 describe('SumDownloadForm', () => {
@@ -199,11 +200,9 @@ describe('SumDownloadForm', () => {
 
     const input = screen.getByPlaceholderText('チーム名で検索');
 
-    // 新しいスタイルが適用されていることを確認
-    expect(input).toHaveStyle({
-      background: 'transparent',
-      color: '#fff',
-      fontSize: '1.1rem',
-    });
+    // Tailwind CSSクラスが適用されていることを確認
+    expect(input).toHaveClass('bg-transparent');
+    expect(input).toHaveClass('text-white');
+    expect(input).toHaveClass('text-lg');
   });
 });

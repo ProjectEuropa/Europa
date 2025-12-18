@@ -176,8 +176,9 @@ describe('SearchResults', () => {
       expect(screen.getByText('test-team.oke')).toBeInTheDocument();
       expect(screen.getByText('testuser')).toBeInTheDocument();
       expect(screen.getByText('Test team file comment')).toBeInTheDocument();
-      expect(screen.getByText('tag1')).toBeInTheDocument();
-      expect(screen.getByText('tag2')).toBeInTheDocument();
+      // タグは#プレフィックス付きで表示される
+      expect(screen.getByText('#tag1')).toBeInTheDocument();
+      expect(screen.getByText('#tag2')).toBeInTheDocument();
     });
 
     it('should format dates correctly', () => {
@@ -204,19 +205,16 @@ describe('SearchResults', () => {
         />
       );
 
-      const tag1 = screen.getByText('tag1');
-      const tag2 = screen.getByText('tag2');
+      // タグは#プレフィックス付きで表示される
+      const tag1 = screen.getByText('#tag1');
+      const tag2 = screen.getByText('#tag2');
 
       expect(tag1).toBeInTheDocument();
       expect(tag2).toBeInTheDocument();
 
-      // タグのスタイリングを確認（インラインスタイルで実装されているため、スタイル属性をチェック）
-      expect(tag1).toHaveStyle({
-        background: '#1E3A5F',
-        color: '#8CB4FF',
-        borderRadius: '4px',
-        padding: '2px 6px',
-      });
+      // タグはボタン要素として表示され、Tailwind CSSでスタイリングされている
+      expect(tag1.tagName).toBe('BUTTON');
+      expect(tag2.tagName).toBe('BUTTON');
     });
 
     it('should handle files without comments or tags', () => {

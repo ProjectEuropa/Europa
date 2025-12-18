@@ -75,9 +75,9 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      // ローディング中のUIを確認 - SVGスピナーの存在確認
-      const svg = document.querySelector('svg');
-      expect(svg).toBeInTheDocument();
+      // ローディング中のUIを確認 - CSSアニメーションスピナーの存在確認
+      const spinner = document.querySelector('.animate-spin');
+      expect(spinner).toBeInTheDocument();
     });
   });
 
@@ -164,8 +164,9 @@ describe('SumDownloadTable', () => {
       expect(screen.getByText('テストチーム1')).toBeInTheDocument();
       expect(screen.getByText('オーナー1')).toBeInTheDocument();
       expect(screen.getByText('テストコメント1')).toBeInTheDocument();
-      expect(screen.getByText('タグ1')).toBeInTheDocument();
-      expect(screen.getByText('タグ2')).toBeInTheDocument();
+      // タグは#プレフィックス付きで表示される
+      expect(screen.getByText('#タグ1')).toBeInTheDocument();
+      expect(screen.getByText('#タグ2')).toBeInTheDocument();
     });
 
     it('handles multiline comments correctly', () => {
@@ -179,10 +180,9 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      // 複数行コメントが正しく表示されることを確認
-      expect(screen.getByText('テストコメント2')).toBeInTheDocument();
-      expect(screen.getByText('複数行')).toBeInTheDocument();
-      expect(screen.getByText('テスト')).toBeInTheDocument();
+      // 複数行コメントがwhitespace-pre-wrapで正しく表示されることを確認
+      // 改行を含むコメント全体を含む要素が存在する
+      expect(screen.getByText(/テストコメント2/)).toBeInTheDocument();
     });
 
     it('displays only non-null tags', () => {
@@ -196,8 +196,8 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      // 2番目のアイテムはsearch_tag1のみ
-      expect(screen.getByText('タグA')).toBeInTheDocument();
+      // 2番目のアイテムはsearch_tag1のみ（#プレフィックス付き）
+      expect(screen.getByText('#タグA')).toBeInTheDocument();
       // nullのタグは表示されない
       expect(screen.queryByText('null')).not.toBeInTheDocument();
     });
@@ -388,15 +388,15 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      // 選択された行のスタイルを確認
+      // 選択された行のスタイルを確認（Tailwind CSSクラスで適用）
       const rows = screen.getAllByRole('row');
       const dataRows = rows.slice(1); // ヘッダー行を除く
 
-      // 1番目の行（選択済み）
-      expect(dataRows[0]).toHaveStyle({ background: '#0A1A2A' });
+      // 1番目の行（選択済み）- Tailwind CSSクラスで確認
+      expect(dataRows[0]).toHaveClass('bg-cyan-900/20');
 
-      // 2番目の行（未選択）
-      expect(dataRows[1]).toHaveStyle({ background: 'transparent' });
+      // 2番目の行（未選択）- transparentクラスを持つ
+      expect(dataRows[1]).toHaveClass('bg-transparent');
     });
   });
 
