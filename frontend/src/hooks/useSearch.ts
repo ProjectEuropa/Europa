@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { searchTeams, searchMatches, sumDLSearchTeam, sumDLSearchMatch, deleteSearchFile } from '@/lib/api/files';
+import { searchTeams, searchMatches, sumDLSearchTeam, sumDLSearchMatch, deleteSearchFile, fetchTags } from '@/lib/api/files';
 import type { FileDeleteRequest } from '@/types/file';
 import type { SearchParams } from '@/types/search';
 
@@ -138,5 +138,21 @@ export function usePrefetchSearch() {
     prefetchTeamSearch,
     prefetchMatchSearch,
   };
+}
+
+/**
+ * 人気タグ取得フック
+ * APIから使用回数順でソートされたタグを取得
+ */
+export function usePopularTags(limit = 10) {
+  return useQuery({
+    queryKey: ['tags', 'popular', limit],
+    queryFn: async () => {
+      const tags = await fetchTags();
+      return tags.slice(0, limit);
+    },
+    staleTime: 5 * 60 * 1000, // 5分間キャッシュ
+    gcTime: 10 * 60 * 1000, // 10分間保持
+  });
 }
 

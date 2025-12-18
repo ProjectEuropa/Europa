@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatDate } from '@/utils/dateFormatters';
+import { Check } from 'lucide-react';
 
 // 一括ダウンロード用の日付フォーマット関数
 const formatDownloadableDate = (dateString?: string | null): string => {
@@ -59,30 +60,23 @@ export const SumDownloadTable = ({
       item.search_tag2,
       item.search_tag3,
       item.search_tag4,
-    ].filter(Boolean);
+    ].filter((tag): tag is string => !!tag);
 
     return (
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '4px',
-          marginTop: '4px',
-        }}
-      >
+      <div className="flex flex-wrap gap-1.5 mt-2">
         {tags.map((tag, index) => (
           <span
             key={index}
-            style={{
-              background: '#1E3A5F',
-              color: '#8CB4FF',
-              borderRadius: '4px',
-              padding: '2px 6px',
-              fontSize: '0.75rem',
-              whiteSpace: 'nowrap',
-            }}
+            className="
+              px-2 py-0.5 
+              bg-slate-800/80 
+              border border-slate-700 
+              text-cyan-400/90 
+              text-xs 
+              rounded 
+            "
           >
-            {tag}
+            #{tag}
           </span>
         ))}
       </div>
@@ -92,54 +86,24 @@ export const SumDownloadTable = ({
   const renderComment = (comment: string) => {
     if (!comment) return '';
 
-    return comment.split(/\r?\n/).map((line, idx) => (
-      <span key={idx}>
-        {line}
-        {idx < comment.split(/\r?\n/).length - 1 && <br />}
-      </span>
-    ));
+    return (
+      <div className="whitespace-pre-wrap break-words text-slate-400">
+        {comment}
+      </div>
+    );
   };
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '32px 0',
-        }}
-      >
-        <svg
-          style={{
-            width: '24px',
-            height: '24px',
-            animation: 'spin 1s linear infinite',
-            color: '#00c8ff',
-          }}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <line x1="12" y1="2" x2="12" y2="6"></line>
-          <line x1="12" y1="18" x2="12" y2="22"></line>
-          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-          <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-          <line x1="2" y1="12" x2="6" y2="12"></line>
-          <line x1="18" y1="12" x2="22" y2="12"></line>
-          <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-          <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-        </svg>
+      <div className="flex justify-center items-center py-12">
+        <div className="w-8 h-8 border-2 border-transparent border-t-cyan-400 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (data.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '32px 0', color: '#b0c4d8' }}>
+      <div className="text-center py-12 text-slate-400">
         {searchType === 'team' ? 'チームデータ' : 'マッチデータ'}
         が見つかりませんでした
       </div>
@@ -147,150 +111,94 @@ export const SumDownloadTable = ({
   }
 
   return (
-    <div
-      style={{
-        border: '1px solid #1E3A5F',
-        borderRadius: '8px',
-        overflow: 'hidden',
-      }}
-    >
-      <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          background: '#020824',
-        }}
-      >
+    <div className="w-full overflow-x-auto mt-6 rounded-lg border border-slate-800 bg-slate-900/50 backdrop-blur-sm shadow-xl">
+      <table className="w-full min-w-[1000px] border-collapse bg-slate-900 table-fixed">
         <thead>
-          <tr
-            style={{ background: '#1E3A5F', borderBottom: '1px solid #2D4A6B' }}
-          >
-            <th
-              style={{ width: '50px', padding: '12px 16px', textAlign: 'left' }}
-            >
-              <input
-                type="checkbox"
-                checked={isAllSelected}
-                onChange={e => handleSelectAll(e.target.checked)}
-                disabled={loading}
-                aria-label="すべて選択"
-                style={{
-                  width: '16px',
-                  height: '16px',
-                  accentColor: '#00c8ff',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                }}
-                ref={el => {
-                  if (el && isIndeterminate) {
-                    el.indeterminate = true;
-                  }
-                }}
-              />
-            </th>
-            <th
-              style={{
-                padding: '12px 16px',
-                textAlign: 'left',
-                color: '#fff',
-                fontWeight: '600',
-              }}
-            >
-              {searchType === 'team' ? 'チーム名' : 'マッチ名'}
-            </th>
-            <th
-              style={{
-                padding: '12px 16px',
-                textAlign: 'left',
-                color: '#fff',
-                fontWeight: '600',
-              }}
-            >
-              オーナー
-            </th>
-            <th
-              style={{
-                padding: '12px 16px',
-                textAlign: 'left',
-                color: '#fff',
-                fontWeight: '600',
-              }}
-            >
-              アップロード日
-            </th>
-            <th
-              style={{
-                padding: '12px 16px',
-                textAlign: 'left',
-                color: '#fff',
-                fontWeight: '600',
-              }}
-            >
-              ダウンロード可能日
-            </th>
-            <th
-              style={{
-                padding: '12px 16px',
-                textAlign: 'left',
-                color: '#fff',
-                fontWeight: '600',
-              }}
-            >
-              コメント・タグ
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map(item => (
-            <tr
-              key={item.id}
-              style={{
-                background: selectedIds.includes(item.id)
-                  ? '#0A1A2A'
-                  : 'transparent',
-                borderBottom: '1px solid #1E3A5F',
-              }}
-            >
-              <td style={{ padding: '12px 16px' }}>
+          <tr className="bg-slate-900 border-b border-slate-800 text-slate-400 text-sm font-semibold text-left">
+            <th className="p-3 w-[50px]">
+              <div className="flex items-center justify-center">
                 <input
                   type="checkbox"
-                  checked={selectedIds.includes(item.id)}
-                  onChange={e => handleSelectItem(item.id, e.target.checked)}
+                  checked={isAllSelected}
+                  onChange={e => handleSelectAll(e.target.checked)}
                   disabled={loading}
-                  aria-label={`${item.file_name}を選択`}
-                  style={{
-                    width: '16px',
-                    height: '16px',
-                    accentColor: '#00c8ff',
-                    cursor: loading ? 'not-allowed' : 'pointer',
+                  aria-label="すべて選択"
+                  className="
+                    w-4 h-4 
+                    accent-cyan-500 
+                    bg-slate-800 border-slate-600 
+                    rounded 
+                    cursor-pointer
+                    disabled:opacity-50
+                  "
+                  ref={el => {
+                    if (el && isIndeterminate) {
+                      el.indeterminate = true;
+                    }
                   }}
                 />
-              </td>
-              <td
-                style={{
-                  padding: '12px 16px',
-                  color: '#fff',
-                  fontWeight: '500',
-                }}
+              </div>
+            </th>
+            <th className="p-3 font-semibold text-white">
+              {searchType === 'team' ? 'チーム名' : 'マッチ名'}
+            </th>
+            <th className="p-3 font-semibold text-white">オーナー</th>
+            <th className="p-3 font-semibold text-white">アップロード日</th>
+            <th className="p-3 font-semibold text-white">ダウンロード可能日</th>
+            <th className="p-3 font-semibold text-white w-[350px]">コメント・タグ</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-800">
+          {data.map(item => {
+            const isSelected = selectedIds.includes(item.id);
+            return (
+              <tr
+                key={item.id}
+                className={`
+                  transition-colors duration-150 items-center text-sm
+                  ${isSelected ? 'bg-cyan-900/20' : 'bg-transparent hover:bg-slate-800/50'}
+                `}
+                onClick={() => handleSelectItem(item.id, !isSelected)}
+                style={{ cursor: 'pointer' }}
               >
-                {item.file_name}
-              </td>
-              <td style={{ padding: '12px 16px', color: '#b0c4d8' }}>
-                {item.upload_owner_name}
-              </td>
-              <td style={{ padding: '12px 16px', color: '#b0c4d8' }}>
-                {formatDate(item.created_at)}
-              </td>
-              <td style={{ padding: '12px 16px', color: '#b0c4d8' }}>
-                {formatDownloadableDate(item.downloadable_at)}
-              </td>
-              <td style={{ padding: '12px 16px', color: '#b0c4d8' }}>
-                <div>
+                <td className="p-3" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-center h-full">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={e => handleSelectItem(item.id, e.target.checked)}
+                      disabled={loading}
+                      aria-label={`${item.file_name}を選択`}
+                      className="
+                        w-4 h-4 
+                        accent-cyan-500 
+                        bg-slate-800 border-slate-600 
+                        rounded 
+                        cursor-pointer
+                        disabled:opacity-50
+                      "
+                    />
+                  </div>
+                </td>
+                <td className="p-3 text-cyan-400 font-medium break-all font-mono">
+                  {item.file_name}
+                </td>
+                <td className="p-3 text-slate-300 break-words">
+                  {item.upload_owner_name}
+                </td>
+                <td className="p-3 text-slate-400 font-mono text-xs">
+                  {formatDate(item.created_at)}
+                </td>
+                <td className="p-3 text-slate-400 font-mono text-xs">
+                  {formatDownloadableDate(item.downloadable_at)}
+                </td>
+                <td className="p-3">
                   {renderComment(item.file_comment)}
                   {renderTags(item)}
-                </div>
-              </td>
-            </tr>
-          ))}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

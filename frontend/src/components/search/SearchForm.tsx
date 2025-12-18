@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePrefetchSearch } from '@/hooks/useSearch';
 import type { SearchParams } from '@/types/search';
+import { Search, X } from 'lucide-react';
 
 interface SearchFormProps {
   /** 検索タイプ（team または match） */
@@ -22,6 +23,7 @@ interface SearchFormProps {
  * - デバウンス機能付き
  * - プリフェッチ対応
  * - アクセシビリティ対応
+ * - Tailwind CSSによるスタイリング
  */
 export function SearchForm({
   searchType,
@@ -120,134 +122,83 @@ export function SearchForm({
   }, [searchParams, router]);
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ width: '100%', maxWidth: '800px', position: 'relative' }}
-      role="search"
-      aria-label={`${searchType === 'team' ? 'チーム' : 'マッチ'}検索フォーム`}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          background: '#111A2E',
-          borderRadius: '9999px',
-          border: '1px solid #1E3A5F',
-          overflow: 'hidden',
-          position: 'relative',
-        }}
+    <div className="w-full max-w-3xl relative">
+      <form
+        onSubmit={handleSubmit}
+        className="relative flex items-center w-full"
+        role="search"
+        aria-label={`${searchType === 'team' ? 'チーム' : 'マッチ'}検索フォーム`}
       >
-        <input
-          type="search"
-          value={query}
-          onChange={handleInputChange}
-          onCompositionStart={handleCompositionStart}
-          onCompositionEnd={handleCompositionEnd}
-          placeholder={placeholder}
-          style={{
-            width: '100%',
-            padding: '14px 24px',
-            background: 'transparent',
-            color: '#fff',
-            border: 'none',
-            outline: 'none',
-            fontSize: '1.1rem',
-            // ブラウザのデフォルトクリアボタンを非表示
-            WebkitAppearance: 'none',
-            appearance: 'none',
-          }}
-          aria-label="検索キーワード"
-          autoComplete="off"
-          spellCheck="false"
-        />
+        <div className="
+          w-full flex items-center 
+          bg-[#0a0818] 
+          border border-slate-700 
+          rounded-full 
+          overflow-hidden 
+          shadow-[0_0_10px_rgba(0,0,0,0.3)] 
+          focus-within:border-cyan-500 
+          focus-within:shadow-[0_0_15px_rgba(6,182,212,0.3)] 
+          transition-all duration-300
+        ">
+          <input
+            type="search"
+            value={query}
+            onChange={handleInputChange}
+            onCompositionStart={handleCompositionStart}
+            onCompositionEnd={handleCompositionEnd}
+            placeholder={placeholder}
+            className="
+              w-full px-6 py-3.5 
+              bg-transparent 
+              text-white text-lg 
+              placeholder-slate-400 
+              border-none outline-none 
+              appearance-none
+            "
+            aria-label="検索キーワード"
+            autoComplete="off"
+            spellCheck="false"
+          />
 
-        {/* クリアボタン */}
-        {query && (
-          <button
-            type="button"
-            onClick={handleClear}
-            style={{
-              padding: '8px',
-              color: '#4A6FA5',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'color 0.2s',
-            }}
-            aria-label="検索をクリア"
-            onMouseOver={e => {
-              e.currentTarget.style.color = '#fff';
-            }}
-            onMouseOut={e => {
-              e.currentTarget.style.color = '#4A6FA5';
-            }}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+          {/* クリアボタン */}
+          {query && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="
+                p-2 mr-1
+                text-slate-400 
+                hover:text-white 
+                transition-colors duration-200
+                focus:outline-none focus:text-white
+              "
+              aria-label="検索をクリア"
             >
-              <path
-                d="M15 5L5 15M5 5L15 15"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
+              <X size={20} />
+            </button>
+          )}
 
-        <button
-          type="submit"
-          aria-label="検索"
-          disabled={!query.trim()}
-          style={{
-            background: 'linear-gradient(90deg, #3B82F6, #00c8ff)',
-            border: 'none',
-            borderRadius: '50%',
-            width: 44,
-            height: 44,
-            marginLeft: 8,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: !query.trim() ? 'not-allowed' : 'pointer',
-            opacity: query.trim() ? 1 : 0.6,
-            transition: 'box-shadow .2s, opacity .2s',
-            boxShadow: query.trim() ? '0 0 0 2px #00c8ff33' : 'none',
-          }}
-          onMouseOver={e => {
-            if (query.trim())
-              e.currentTarget.style.boxShadow = '0 0 8px 2px #00c8ff88';
-          }}
-          onMouseOut={e => {
-            if (query.trim())
-              e.currentTarget.style.boxShadow = '0 0 0 2px #00c8ff33';
-          }}
-        >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 22 22"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+          <button
+            type="submit"
+            aria-label="検索"
+            disabled={!query.trim()}
+            className={`
+              flex items-center justify-center 
+              w-12 h-12 m-1.5 rounded-full 
+              border-none 
+              bg-gradient-to-r from-blue-600 to-cyan-500 
+              text-white 
+              transition-all duration-300 
+              ${!query.trim()
+                ? 'opacity-60 cursor-not-allowed'
+                : 'opacity-100 hover:shadow-[0_0_10px_rgba(6,182,212,0.6)] cursor-pointer'
+              }
+            `}
           >
-            <circle cx="10" cy="10" r="7" stroke="#fff" strokeWidth="2" />
-            <line
-              x1="16"
-              y1="16"
-              x2="20"
-              y2="20"
-              stroke="#fff"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
-        </button>
-      </div>
-    </form>
+            <Search size={22} strokeWidth={2.5} />
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

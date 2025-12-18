@@ -17,20 +17,13 @@ export const SumDownloadActions = ({
   const isOverLimit = selectedCount > maxSelectionCount;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '16px 0',
-      }}
-    >
-      <div style={{ fontSize: '0.875rem', color: '#b0c4d8' }}>
+    <div className="flex items-center justify-between py-4">
+      <div className="text-sm text-slate-400">
         {selectedCount > 0 && (
           <span>
             {selectedCount}件選択中
             {isOverLimit && (
-              <span style={{ color: '#ef4444', marginLeft: '8px' }}>
+              <span className="text-red-500 ml-2">
                 (上限{maxSelectionCount}件を超えています)
               </span>
             )}
@@ -41,33 +34,26 @@ export const SumDownloadActions = ({
       <button
         onClick={onDownload}
         disabled={isDisabled || isOverLimit}
-        style={{
-          padding: '0 24px',
-          background: isDownloading ? '#6b7280' : '#00c8ff',
-          color: isDownloading ? '#fff' : '#020824',
-          border: 'none',
-          borderRadius: '24px',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          cursor: isDisabled || isOverLimit ? 'not-allowed' : 'pointer',
-          opacity: isDisabled || isOverLimit ? 0.7 : 1,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          height: 48,
-        }}
+        className={`
+          px-6 h-12
+          rounded-full 
+          text-base font-bold
+          flex items-center gap-2
+          transition-all
+          ${isDisabled || isOverLimit
+            ? 'bg-slate-700 text-slate-400 cursor-not-allowed opacity-70'
+            : 'bg-cyan-500 text-slate-900 hover:bg-cyan-400 hover:shadow-[0_0_10px_rgba(6,182,212,0.4)] cursor-pointer'
+          }
+        `}
       >
         {isDownloading ? (
           <>
-            <Loader2
-              style={{ width: '20px', height: '20px' }}
-              className="animate-spin"
-            />
+            <Loader2 className="w-5 h-5 animate-spin" />
             ダウンロード中...
           </>
         ) : (
           <>
-            <Download style={{ width: '20px', height: '20px' }} />
+            <Download className="w-5 h-5" />
             ダウンロード ({selectedCount})
           </>
         )}

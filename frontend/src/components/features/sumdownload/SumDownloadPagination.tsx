@@ -31,43 +31,31 @@ export const SumDownloadPagination = ({
   const paginationRange = getPaginationRange(currentPage, lastPage);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 8,
-        margin: '24px 0',
-      }}
-    >
+    <div className="flex justify-center items-center gap-2 my-6">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1 || loading}
-        style={{
-          padding: '8px 18px',
-          borderRadius: 6,
-          border: 'none',
-          background: currentPage === 1 || loading ? '#1E3A5F' : '#3B82F6',
-          color: currentPage === 1 || loading ? '#8CB4FF' : '#fff',
-          fontWeight: 'bold',
-          cursor: currentPage === 1 || loading ? 'not-allowed' : 'pointer',
-          fontSize: '1rem',
-          marginRight: 8,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-        }}
+        className={`
+          px-4 py-2 rounded-md
+          flex items-center gap-1
+          font-bold text-base
+          transition-colors
+          ${currentPage === 1 || loading
+            ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+            : 'bg-blue-600 text-white hover:bg-blue-500 cursor-pointer'
+          }
+        `}
       >
-        <ChevronLeft style={{ width: '16px', height: '16px' }} />
+        <ChevronLeft className="w-4 h-4" />
         前へ
       </button>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+      <div className="flex items-center gap-1">
         {paginationRange.map((page, index) =>
           page === '...' ? (
             <span
               key={`ellipsis-${index}`}
-              style={{ color: '#8CB4FF', padding: '0 10px' }}
+              className="px-2 text-slate-400 select-none"
             >
               ...
             </span>
@@ -76,18 +64,15 @@ export const SumDownloadPagination = ({
               key={page}
               onClick={() => onPageChange(Number(page))}
               disabled={page === currentPage || loading}
-              style={{
-                minWidth: 40,
-                padding: '8px 0',
-                borderRadius: 6,
-                border: 'none',
-                background: page === currentPage ? '#00c8ff' : '#19223a',
-                color: page === currentPage ? '#020824' : '#8CB4FF',
-                fontWeight: 'bold',
-                cursor: page === currentPage || loading ? 'default' : 'pointer',
-                fontSize: '1rem',
-                marginRight: 4,
-              }}
+              className={`
+                min-w-[40px] py-2 rounded-md
+                font-bold text-base
+                transition-colors
+                ${page === currentPage
+                  ? 'bg-cyan-500 text-slate-900 cursor-default'
+                  : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 cursor-pointer'
+                }
+              `}
             >
               {page}
             </button>
@@ -98,25 +83,19 @@ export const SumDownloadPagination = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === lastPage || loading}
-        style={{
-          padding: '8px 18px',
-          borderRadius: 6,
-          border: 'none',
-          background:
-            currentPage === lastPage || loading ? '#1E3A5F' : '#3B82F6',
-          color: currentPage === lastPage || loading ? '#8CB4FF' : '#fff',
-          fontWeight: 'bold',
-          cursor:
-            currentPage === lastPage || loading ? 'not-allowed' : 'pointer',
-          fontSize: '1rem',
-          marginLeft: 8,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-        }}
+        className={`
+          px-4 py-2 rounded-md
+          flex items-center gap-1
+          font-bold text-base
+          transition-colors
+          ${currentPage === lastPage || loading
+            ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+            : 'bg-blue-600 text-white hover:bg-blue-500 cursor-pointer'
+          }
+        `}
       >
         次へ
-        <ChevronRight style={{ width: '16px', height: '16px' }} />
+        <ChevronRight className="w-4 h-4" />
       </button>
     </div>
   );

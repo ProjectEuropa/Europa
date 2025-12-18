@@ -65,6 +65,18 @@ files.get('/', optionalAuthMiddleware, async (c) => {
     }
   }
 
+  // キーワード検索時にタグも検索対象にする
+  let keywordMatchedFileIds: number[] | undefined;
+  if (keyword && !tag) {
+    const keywordTagResults = await sql`
+      SELECT DISTINCT ft.file_id
+      FROM file_tags ft
+      INNER JOIN tags t ON ft.tag_id = t.id
+      WHERE t.tag_name ILIKE ${'%' + keyword + '%'}
+    `;
+    keywordMatchedFileIds = keywordTagResults.map((r: any) => r.file_id);
+  }
+
   // タグフィルタで結果が空でない場合のみクエリを実行
   if (!tag || (tagFilteredFileIds && tagFilteredFileIds.length > 0)) {
     // WHERE条件を動的に構築
@@ -73,6 +85,7 @@ files.get('/', optionalAuthMiddleware, async (c) => {
       targetUserId,
       keyword,
       tagFilteredFileIds: tagFilteredFileIds || undefined,
+      keywordMatchedFileIds,
     });
 
     // 件数取得とリスト取得のクエリを並列実行
