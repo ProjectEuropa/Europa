@@ -263,25 +263,9 @@ describe('Utils Types', () => {
     it('should define environment variable structure', () => {
       const env: EnvironmentVariables = {
         NEXT_PUBLIC_API_BASE_URL: 'https://api.example.com',
-        NEXT_PUBLIC_BASIC_AUTH_USER: 'user',
-        NEXT_PUBLIC_BASIC_AUTH_PASSWORD: 'password',
       };
 
       expect(env.NEXT_PUBLIC_API_BASE_URL).toBe('https://api.example.com');
-      expect(env.NEXT_PUBLIC_BASIC_AUTH_USER).toBe('user');
-      expect(env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD).toBe('password');
-    });
-
-    it('should work with required fields only', () => {
-      const minimalEnv: EnvironmentVariables = {
-        NEXT_PUBLIC_API_BASE_URL: 'https://api.example.com',
-      };
-
-      expect(minimalEnv.NEXT_PUBLIC_API_BASE_URL).toBe(
-        'https://api.example.com'
-      );
-      expect(minimalEnv.NEXT_PUBLIC_BASIC_AUTH_USER).toBeUndefined();
-      expect(minimalEnv.NEXT_PUBLIC_BASIC_AUTH_PASSWORD).toBeUndefined();
     });
   });
 

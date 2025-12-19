@@ -56,6 +56,4 @@ export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
 // 環境変数
 export interface EnvironmentVariables {
   NEXT_PUBLIC_API_BASE_URL: string;
-  NEXT_PUBLIC_BASIC_AUTH_USER?: string;
-  NEXT_PUBLIC_BASIC_AUTH_PASSWORD?: string;
 }
