@@ -23,7 +23,7 @@ Next.js 15.xベースのフロントエンドアプリケーション
 *   **認証:** bcryptjs
 
 ### フロントエンド (frontend)
-*   **Next.js:** 15.4.8
+*   **Next.js:** 15.4.10
 *   **React:** 19.2.0
 *   **スタイリング:** TailwindCSS 4.1.7
 *   **UIコンポーネント:** shadcn/ui, Radix UI
@@ -222,7 +222,7 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph "Frontend技術"
-        NextJS[Next.js 15.4.8]
+        NextJS[Next.js 15.4.10]
         React[React 19.2.0]
         TailwindCSS[TailwindCSS 4.1.7]
         TanStack[TanStack Query v5.83.0]
