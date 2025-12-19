@@ -24,7 +24,7 @@ Next.js 15.xベースのフロントエンドアプリケーション
 
 ### フロントエンド (frontend)
 *   **Next.js:** 15.4.8
-*   **React:** 19.0.0
+*   **React:** 19.2.0
 *   **スタイリング:** TailwindCSS 4.1.7
 *   **UIコンポーネント:** shadcn/ui, Radix UI
 *   **状態管理:** Zustand
@@ -223,7 +223,7 @@ sequenceDiagram
 graph LR
     subgraph "Frontend技術"
         NextJS[Next.js 15.4.8]
-        React[React 19.0.0]
+        React[React 19.2.0]
         TailwindCSS[TailwindCSS 4.1.7]
         TanStack[TanStack Query v5.83.0]
         Zustand[Zustand]

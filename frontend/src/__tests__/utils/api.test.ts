@@ -20,8 +20,6 @@ describe('API Utils', () => {
     process.env = {
       ...originalEnv,
       NEXT_PUBLIC_API_BASE_URL: 'https://test-api.com',
-      NEXT_PUBLIC_BASIC_AUTH_USER: 'testuser',
-      NEXT_PUBLIC_BASIC_AUTH_PASSWORD: 'testpass',
     };
   });
 
@@ -33,11 +31,6 @@ describe('API Utils', () => {
   describe('Environment Configuration', () => {
     it('should use correct API base URL from environment', () => {
       expect(process.env.NEXT_PUBLIC_API_BASE_URL).toBe('https://test-api.com');
-    });
-
-    it('should have basic auth credentials configured', () => {
-      expect(process.env.NEXT_PUBLIC_BASIC_AUTH_USER).toBe('testuser');
-      expect(process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD).toBe('testpass');
     });
   });
 
@@ -79,16 +72,6 @@ describe('API Utils', () => {
       const encoded = encodeURIComponent(keyword);
 
       expect(encoded).toBe('test%40%23%24%25%5E%26*()');
-    });
-  });
-
-  describe('Basic Auth Encoding', () => {
-    it('should properly encode basic auth credentials', () => {
-      const username = 'testuser';
-      const password = 'testpass';
-      const encoded = btoa(`${username}:${password}`);
-
-      expect(encoded).toBe('dGVzdHVzZXI6dGVzdHBhc3M=');
     });
   });
 
