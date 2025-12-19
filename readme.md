@@ -29,7 +29,8 @@ Next.js 15.xベースのフロントエンドアプリケーション
 *   **UIコンポーネント:** shadcn/ui, Radix UI
 *   **状態管理:** Zustand
 *   **データフェッチング:** TanStack Query v5.83.0
-*   **フォーム:** React Hook Form + Zod
+*   **フォーム:** React Hook Form
+*   **バリデーション:** Zod v4.0.5
 *   **アニメーション:** Framer Motion
 
 ## 環境構築手順
