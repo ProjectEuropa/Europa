@@ -69,7 +69,13 @@ Next.js 15.xベースのフロントエンドアプリケーション
     npm install
     ```
 
-3.  **開発サーバーの起動:**
+3.  **環境変数の設定:**
+    ```bash
+    cp .env.local.example .env.local
+    ```
+    `.env.local`ファイルを編集して、必要な環境変数を設定してください。（例: `NEXT_PUBLIC_API_BASE_URL`）
+
+4.  **開発サーバーの起動:**
     ```bash
     npm run dev
     ```
@@ -135,7 +141,7 @@ npm run clean            # キャッシュクリア
 ## プロジェクト構成
 
 ```
-Europa/
+.
 ├── hono-worker/         # Cloudflare Workers + Hono バックエンド
 │   ├── src/
 │   ├── scripts/
@@ -147,4 +153,110 @@ Europa/
 │   ├── e2e/
 │   └── package.json
 └── readme.md
+```
+
+## アーキテクチャ
+
+### システム全体構成
+
+```mermaid
+graph TB
+    subgraph "クライアント"
+        Browser[Webブラウザ]
+    end
+
+    subgraph "Cloudflare CDN"
+        Frontend[Next.js Frontend<br/>React 19 + TailwindCSS 4]
+    end
+
+    subgraph "Cloudflare Workers"
+        API[Hono API Server<br/>v4.4.0]
+    end
+
+    subgraph "データ層"
+        DB[(Neon PostgreSQL)]
+        R2[Cloudflare R2<br/>オブジェクトストレージ]
+    end
+
+    Browser --> Frontend
+    Frontend --> API
+    API --> DB
+    API --> R2
+
+    style Frontend fill:#61dafb,stroke:#333,stroke-width:2px
+    style API fill:#ff6b35,stroke:#333,stroke-width:2px
+    style DB fill:#336791,stroke:#333,stroke-width:2px
+    style R2 fill:#f38020,stroke:#333,stroke-width:2px
+```
+
+### データフロー
+
+```mermaid
+sequenceDiagram
+    participant U as ユーザー
+    participant F as Frontend<br/>(Next.js)
+    participant A as API<br/>(Hono/Workers)
+    participant D as Database<br/>(Neon)
+    participant S as Storage<br/>(R2)
+
+    U->>F: ページアクセス
+    F->>A: API リクエスト
+    A->>D: データ取得
+    D-->>A: レスポンス
+    A-->>F: JSON レスポンス
+    F-->>U: ページ表示
+
+    Note over U,F: ファイルアップロード
+    U->>F: ファイル選択
+    F->>A: FormData送信
+    A->>S: ファイル保存
+    S-->>A: URL返却
+    A->>D: メタデータ保存
+    A-->>F: 成功レスポンス
+    F-->>U: 完了通知
+```
+
+### 技術スタック詳細
+
+```mermaid
+graph LR
+    subgraph "Frontend技術"
+        NextJS[Next.js 15.4.8]
+        React[React 19.0.0]
+        TailwindCSS[TailwindCSS 4.1.7]
+        TanStack[TanStack Query v5.83.0]
+        Zustand[Zustand]
+        RHF[React Hook Form]
+    end
+
+    subgraph "Backend技術"
+        Hono[Hono v4.4.0]
+        Workers[Cloudflare Workers]
+        Zod[Zod v4.1.13]
+        Bcrypt[bcryptjs]
+    end
+
+    subgraph "インフラ"
+        Neon[Neon PostgreSQL]
+        R2[Cloudflare R2]
+        CF[Cloudflare CDN]
+    end
+
+    NextJS --> React
+    NextJS --> TailwindCSS
+    React --> TanStack
+    React --> Zustand
+    React --> RHF
+
+    Hono --> Workers
+    Hono --> Zod
+    Hono --> Bcrypt
+
+    Workers --> Neon
+    Workers --> R2
+    NextJS --> CF
+
+    style NextJS fill:#000,color:#fff,stroke:#333,stroke-width:2px
+    style Hono fill:#ff6b35,stroke:#333,stroke-width:2px
+    style Neon fill:#336791,stroke:#333,stroke-width:2px
 ```
