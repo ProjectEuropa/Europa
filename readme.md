@@ -1,89 +1,80 @@
 # Project Europa
 
-このリポジトリは、LaravelバックエンドとNext.jsフロントエンドで構成されるProject Europaのコードベースを含んでいます。
+このリポジトリは、Cloudflare Workers (Hono) バックエンドとNext.jsフロントエンドで構成されるProject Europaのコードベースを含んでいます。
 
 ## 環境構築手順
 
 ### 技術スタック
 
-#### バックエンド
-*   **PHP:** 8.4
-*   **Laravel Framework:** 11.x
+#### バックエンド (hono-worker)
+*   **Cloudflare Workers:** サーバーレス実行環境
+*   **Hono:** 軽量Webフレームワーク (v4.4.0)
+*   **Neon:** サーバーレスPostgreSQLデータベース
+*   **R2:** Cloudflareオブジェクトストレージ
 
 #### フロントエンド
 *   **Next.js:** 15.x (frontendディレクトリにあります)
 *   **React:** 19.x
+*   **TailwindCSS:** 4.x
+*   **shadcn/ui:** UIコンポーネント
 
-### PHPビルトインサーバーで開発する場合
+### セットアップ
 
-1.  **プロジェクトルートに移動:**
-    ```bash
-    cd /workspace/Europa
-    ```
-2.  **PHP依存関係のインストール:**
-    ```bash
-    composer install
-    ```
-3.  **環境ファイルのコピー:**
-    ```bash
-    cp .env.example .env
-    ```
-4.  **アプリケーションキーの生成:**
-    ```bash
-    php artisan key:generate
-    ```
-5.  **データベースマイグレーションの実行 (必要であればシーダーも):**
-    ```bash
-    php artisan migrate --seed
-    ```
-6.  **フロントエンドの依存関係のインストール:**
-    ```bash
-    cd frontend
-    npm install
-    # または yarn install
-    # または pnpm install
-    # または bun install
-    cd ..
-    ```
-7.  **Laravel開発サーバーの起動:**
-    ```bash
-    php artisan serve --host 0.0.0.0 --port 50756
-    ```
-8.  **Next.js開発サーバーの起動 (新しいターミナルで):**
-    ```bash
-    cd frontend
-    npm run dev
-    ```
-    (通常、`http://localhost:3000` または `http://localhost:3002` で起動します)
+#### 1. hono-workerのセットアップ
 
-### Dockerを使う場合
-
-```console
-$ cp .env.example .env
-$ docker compose -f docker-compose.server.yml up -d --build
-$ docker compose -f docker-compose.server.yml run php-fpm composer install
-$ docker compose -f docker-compose.server.yml run php-fpm php artisan migrate
-$ docker compose -f docker-compose.server.yml run php-fpm npm i
-$ docker compose -f docker-compose.server.yml run php-fpm npm run dev
+```bash
+cd hono-worker
+npm install
 ```
 
-#### .envの記述例
+環境変数の設定（`wrangler.toml`と`.dev.vars`を適切に設定）
 
-```.env
-PG_USER=postgres
-DB_CONNECTION=pgsql
-DB_HOST=pg
-DB_PORT=5432
-DB_DATABASE=laravel
-DB_USERNAME=root
-DB_PASSWORD=password
+開発サーバーの起動:
+```bash
+npm run dev
 ```
 
-## /etc/hostsの設定例
+デプロイ:
+```bash
+# ステージング環境
+npm run deploy:staging
 
-
+# 本番環境
+npm run deploy:production
 ```
-127.0.0.1 local.europa.com #追加
+
+#### 2. フロントエンドのセットアップ
+
+```bash
+cd frontend
+npm install
 ```
 
+開発サーバーの起動:
+```bash
+npm run dev
+```
+(通常、`http://localhost:3002` で起動します)
 
+本番ビルド:
+```bash
+npm run build
+```
+
+### 開発用コマンド
+
+#### hono-worker
+*   `npm run dev` - 開発サーバー起動
+*   `npm run test` - テスト実行
+*   `npm run lint` - Lintチェック
+*   `npm run format` - コードフォーマット
+*   `npm run check:fix` - Lint + Format実行
+
+#### frontend
+*   `npm run dev` - 開発サーバー起動（Turbopack）
+*   `npm run build` - 本番ビルド
+*   `npm run test` - ユニットテスト実行
+*   `npm run test:e2e` - E2Eテスト実行（Playwright）
+*   `npm run lint` - Lintチェック
+*   `npm run format` - コードフォーマット
+*   `npm run type-check` - TypeScriptの型チェック
