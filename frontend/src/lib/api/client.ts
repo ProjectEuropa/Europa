@@ -46,9 +46,6 @@ export class ApiClient {
       ...this.processHeaders(options.headers),
     };
 
-    // Basic認証の処理
-    this.addBasicAuthIfNeeded(headers, endpoint);
-
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...options,
@@ -155,8 +152,6 @@ export class ApiClient {
     // FormDataの場合はContent-Typeを設定しない（自動設定される）
     delete headers['Content-Type'];
 
-    this.addBasicAuthIfNeeded(headers, endpoint);
-
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...options,
@@ -214,8 +209,6 @@ export class ApiClient {
     const headers = {
       ...this.defaultHeaders,
     };
-
-    this.addBasicAuthIfNeeded(headers, endpoint);
 
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
@@ -306,25 +299,6 @@ export class ApiClient {
     }
 
     return headers as Record<string, string>;
-  }
-
-  private addBasicAuthIfNeeded(
-    headers: Record<string, string>,
-    endpoint: string
-  ): void {
-    const basicAuthUser = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
-    const basicAuthPassword = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
-
-    // ステージング環境の場合、APIエンドポイント以外にBasic認証を追加
-    // APIエンドポイントはSanctumのCookieベース認証を使用
-    if (
-      this.baseURL.includes('stg.project-europa.work') &&
-      basicAuthUser &&
-      basicAuthPassword &&
-      !endpoint.startsWith('/api/') // APIエンドポイントは除外
-    ) {
-      headers.Authorization = `Basic ${btoa(`${basicAuthUser}:${basicAuthPassword}`)}`;
-    }
   }
 }
 
