@@ -29,8 +29,11 @@
   },
   "overrides": {
     "undici": "^6.0.0",
-    "esbuild": "0.21.4",
-    "path-to-regexp": "^6.2.1"
+    "esbuild": "^0.25.0",
+    "path-to-regexp": "^6.2.1",
+    "@cloudflare/next-on-pages": {
+      "cookie": "^0.7.2"
+    }
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
