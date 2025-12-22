@@ -1,9 +1,9 @@
 import React from 'react';
 import { formatDate } from '@/utils/dateFormatters';
-import { formatDownloadableDate } from './SumDownloadTable';
+import { formatDownloadableDate, SumDownloadItem } from './SumDownloadTable';
 
 interface TableViewProps {
-    data: any[];
+    data: SumDownloadItem[];
     selectedIds: number[];
     onSelectItem: (id: number, checked: boolean) => void;
     onSelectAll: (checked: boolean) => void;
@@ -12,7 +12,7 @@ interface TableViewProps {
     loading: boolean;
     searchType: 'team' | 'match';
     renderComment: (comment: string) => React.ReactNode;
-    renderTags: (item: any) => React.ReactNode;
+    renderTags: (item: SumDownloadItem) => React.ReactNode;
 }
 
 export const SumDownloadTableView = ({

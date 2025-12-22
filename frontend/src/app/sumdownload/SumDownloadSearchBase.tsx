@@ -137,7 +137,7 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
                         />
 
                         {/* アクションエリア */}
-                        {data && data.length > 0 && (
+                        {data.length > 0 && (
                             <div className="mt-8 pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-6">
                                 <div className="text-slate-400 text-sm">
                                     <span className="text-white font-bold text-lg mr-2">{selectedIds.length}</span>

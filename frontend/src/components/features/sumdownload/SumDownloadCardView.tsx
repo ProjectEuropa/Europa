@@ -1,9 +1,9 @@
 import React from 'react';
 import { formatDate } from '@/utils/dateFormatters';
-import { formatDownloadableDate } from './SumDownloadTable';
+import { formatDownloadableDate, SumDownloadItem } from './SumDownloadTable';
 
 interface CardViewProps {
-    data: any[];
+    data: SumDownloadItem[];
     selectedIds: number[];
     onSelectItem: (id: number, checked: boolean) => void;
     onSelectAll: (checked: boolean) => void;
@@ -11,7 +11,7 @@ interface CardViewProps {
     isIndeterminate: boolean;
     loading: boolean;
     renderComment: (comment: string) => React.ReactNode;
-    renderTags: (item: any) => React.ReactNode;
+    renderTags: (item: SumDownloadItem) => React.ReactNode;
 }
 
 export const SumDownloadCardView = ({
@@ -52,8 +52,8 @@ export const SumDownloadCardView = ({
                     <div
                         key={item.id}
                         className={`relative p-4 rounded-lg border transition-all duration-200 cursor-pointer ${isSelected
-                                ? 'bg-cyan-900/20 border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
-                                : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
+                            ? 'bg-cyan-900/20 border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+                            : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
                             }`}
                         onClick={() => onSelectItem(item.id, !isSelected)}
                     >
