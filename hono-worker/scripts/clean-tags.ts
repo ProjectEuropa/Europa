@@ -126,27 +126,25 @@ function analyzeCleanup(tags: Tag[]): CleanupResult {
     tagsToDelete: [],
     duplicatesToMerge: [],
   };
+  const singleTags: Tag[] = [];
 
-  // 1. スペース区切りタグを検出
+  // 1. タグを「削除」「分割」「単一」のいずれかに分類する
   for (const tag of tags) {
-    if (hasMultipleTags(tag.tag_name)) {
+    if (tag.tag_name.trim().length === 0) {
+      result.tagsToDelete.push(tag);
+    } else if (hasMultipleTags(tag.tag_name)) {
       result.tagsToSplit.push({
         original: tag,
         splitInto: splitTagName(tag.tag_name),
       });
+    } else {
+      singleTags.push(tag);
     }
   }
 
-  // 2. 空白のみ or 空のタグを検出
-  for (const tag of tags) {
-    if (tag.tag_name.trim().length === 0) {
-      result.tagsToDelete.push(tag);
-    }
-  }
-
-  // 3. 正規化後に重複するタグを検出
+  // 2. 「単一」タグの中から重複を検出する
   const normalizedMap = new Map<string, Tag[]>();
-  for (const tag of tags) {
+  for (const tag of singleTags) {
     const normalized = normalizeTagName(tag.tag_name);
     if (!normalizedMap.has(normalized)) {
       normalizedMap.set(normalized, []);
@@ -250,23 +248,14 @@ async function splitTags(
           const insertResult = await tx<{ id: number }[]>`
             INSERT INTO tags (tag_name)
             VALUES (${newTagName})
-            ON CONFLICT (tag_name) DO NOTHING
+            ON CONFLICT (tag_name) DO UPDATE SET tag_name = EXCLUDED.tag_name
             RETURNING id
           `;
 
-          let newTagId: number;
-          if (insertResult.length > 0) {
-            newTagId = insertResult[0].id;
-          } else {
-            // 既存のタグIDを取得
-            const existing = await tx<{ id: number }[]>`
-              SELECT id FROM tags WHERE tag_name = ${newTagName}
-            `;
-            if (!existing || existing.length === 0) {
-              throw new Error(`Failed to insert/retrieve tag: ${newTagName}`);
-            }
-            newTagId = existing[0].id;
+          if (!insertResult || insertResult.length === 0) {
+            throw new Error(`Failed to insert/retrieve tag: ${newTagName}`);
           }
+          const newTagId = insertResult[0].id;
 
           // ファイルとの関連を一括作成
           if (fileIds.length > 0) {
@@ -279,10 +268,7 @@ async function splitTags(
           console.log(`  → "${newTagName}" (ID: ${newTagId}) に関連付け完了`);
         }
 
-        // 元のタグとの関連を削除
-        await tx`DELETE FROM file_tags WHERE tag_id = ${item.original.id}`;
-
-        // 元のタグを削除
+        // 元のタグを削除（CASCADE制約により関連も自動削除）
         await tx`DELETE FROM tags WHERE id = ${item.original.id}`;
         console.log(`  → 元タグ "${item.original.tag_name}" を削除`);
       });
@@ -308,7 +294,7 @@ async function deleteEmptyTags(
 
     if (!dryRun) {
       await sql.transaction(async (tx) => {
-        await tx`DELETE FROM file_tags WHERE tag_id = ${tag.id}`;
+        // CASCADE制約により関連も自動削除
         await tx`DELETE FROM tags WHERE id = ${tag.id}`;
         console.log(`  → 削除完了`);
       });
@@ -344,10 +330,7 @@ async function mergeDuplicateTags(
             ON CONFLICT (file_id, tag_id) DO NOTHING
           `;
 
-          // 統合元のタグ関連を削除
-          await tx`DELETE FROM file_tags WHERE tag_id = ${remove.id}`;
-
-          // 統合元のタグを削除
+          // 統合元のタグを削除（CASCADE制約により関連も自動削除）
           await tx`DELETE FROM tags WHERE id = ${remove.id}`;
           console.log(`    → 統合完了・削除`);
         });
