@@ -72,6 +72,7 @@ interface CleanupResult {
 function normalizeTagName(tagName: string): string {
   return tagName
     .trim()
+    .normalize('NFKC') // Unicode正規化
     .toLowerCase()
     // 全角英数字を半角に
     .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) =>
@@ -86,7 +87,7 @@ function normalizeTagName(tagName: string): string {
  */
 function hasMultipleTags(tagName: string): boolean {
   const normalized = tagName.replace(/　/g, ' ').trim();
-  return normalized.includes(' ') && normalized.split(/\s+/).filter(t => t).length > 1;
+  return normalized.split(/\s+/).filter(t => t).length > 1;
 }
 
 /**
@@ -104,7 +105,7 @@ function splitTagName(tagName: string): string[] {
  * 現在のタグ一覧を取得（使用回数付き）
  */
 async function fetchAllTags(): Promise<Tag[]> {
-  const result = await sql`
+  return await sql<Tag[]>`
     SELECT
       t.id,
       t.tag_name,
@@ -114,7 +115,6 @@ async function fetchAllTags(): Promise<Tag[]> {
     GROUP BY t.id, t.tag_name
     ORDER BY t.tag_name
   `;
-  return result as Tag[];
 }
 
 /**
@@ -235,42 +235,57 @@ async function splitTags(
     console.log(`\n処理中: "${item.original.tag_name}"`);
 
     // 関連するファイルを取得
-    const fileTagsResult = await sql`
+    const fileTagsResult = await sql<FileTag[]>`
       SELECT file_id FROM file_tags WHERE tag_id = ${item.original.id}
     `;
-    const fileIds = (fileTagsResult as FileTag[]).map(ft => ft.file_id);
+    const fileIds = fileTagsResult.map(ft => ft.file_id);
 
     console.log(`  関連ファイル: ${fileIds.length}件`);
 
     if (!dryRun) {
-      // 各分割後タグを処理
-      for (const newTagName of item.splitInto) {
-        // 新しいタグを挿入（既存なら無視）
-        const insertResult = await sql`
-          INSERT INTO tags (tag_name)
-          VALUES (${newTagName})
-          ON CONFLICT (tag_name) DO UPDATE SET tag_name = EXCLUDED.tag_name
-          RETURNING id
-        `;
-        const newTagId = (insertResult[0] as { id: number }).id;
-
-        // ファイルとの関連を作成
-        for (const fileId of fileIds) {
-          await sql`
-            INSERT INTO file_tags (file_id, tag_id)
-            VALUES (${fileId}, ${newTagId})
-            ON CONFLICT (file_id, tag_id) DO NOTHING
+      await sql.transaction(async (tx) => {
+        // 各分割後タグを処理
+        for (const newTagName of item.splitInto) {
+          // 新しいタグを挿入（既存なら取得）
+          const insertResult = await tx<{ id: number }[]>`
+            INSERT INTO tags (tag_name)
+            VALUES (${newTagName})
+            ON CONFLICT (tag_name) DO NOTHING
+            RETURNING id
           `;
+
+          let newTagId: number;
+          if (insertResult.length > 0) {
+            newTagId = insertResult[0].id;
+          } else {
+            // 既存のタグIDを取得
+            const existing = await tx<{ id: number }[]>`
+              SELECT id FROM tags WHERE tag_name = ${newTagName}
+            `;
+            if (!existing || existing.length === 0) {
+              throw new Error(`Failed to insert/retrieve tag: ${newTagName}`);
+            }
+            newTagId = existing[0].id;
+          }
+
+          // ファイルとの関連を一括作成
+          if (fileIds.length > 0) {
+            await tx`
+              INSERT INTO file_tags (file_id, tag_id)
+              SELECT unnest(${fileIds}::int[]), ${newTagId}
+              ON CONFLICT (file_id, tag_id) DO NOTHING
+            `;
+          }
+          console.log(`  → "${newTagName}" (ID: ${newTagId}) に関連付け完了`);
         }
-        console.log(`  → "${newTagName}" (ID: ${newTagId}) に関連付け完了`);
-      }
 
-      // 元のタグとの関連を削除
-      await sql`DELETE FROM file_tags WHERE tag_id = ${item.original.id}`;
+        // 元のタグとの関連を削除
+        await tx`DELETE FROM file_tags WHERE tag_id = ${item.original.id}`;
 
-      // 元のタグを削除
-      await sql`DELETE FROM tags WHERE id = ${item.original.id}`;
-      console.log(`  → 元タグ "${item.original.tag_name}" を削除`);
+        // 元のタグを削除
+        await tx`DELETE FROM tags WHERE id = ${item.original.id}`;
+        console.log(`  → 元タグ "${item.original.tag_name}" を削除`);
+      });
     } else {
       console.log(`  [ドライラン] 分割先: ${item.splitInto.join(', ')}`);
     }
@@ -292,9 +307,11 @@ async function deleteEmptyTags(
     console.log(`処理中: "${tag.tag_name}" (ID: ${tag.id})`);
 
     if (!dryRun) {
-      await sql`DELETE FROM file_tags WHERE tag_id = ${tag.id}`;
-      await sql`DELETE FROM tags WHERE id = ${tag.id}`;
-      console.log(`  → 削除完了`);
+      await sql.transaction(async (tx) => {
+        await tx`DELETE FROM file_tags WHERE tag_id = ${tag.id}`;
+        await tx`DELETE FROM tags WHERE id = ${tag.id}`;
+        console.log(`  → 削除完了`);
+      });
     } else {
       console.log(`  [ドライラン] 削除予定`);
     }
@@ -319,25 +336,21 @@ async function mergeDuplicateTags(
       console.log(`  統合元: "${remove.tag_name}" (ID: ${remove.id})`);
 
       if (!dryRun) {
-        // 統合元のファイル関連を統合先に移動
-        const fileTagsResult = await sql`
-          SELECT file_id FROM file_tags WHERE tag_id = ${remove.id}
-        `;
-
-        for (const ft of fileTagsResult as FileTag[]) {
-          await sql`
+        await sql.transaction(async (tx) => {
+          // 統合元のファイル関連を統合先に一括移動
+          await tx`
             INSERT INTO file_tags (file_id, tag_id)
-            VALUES (${ft.file_id}, ${merge.keep.id})
+            SELECT file_id, ${merge.keep.id} FROM file_tags WHERE tag_id = ${remove.id}
             ON CONFLICT (file_id, tag_id) DO NOTHING
           `;
-        }
 
-        // 統合元のタグ関連を削除
-        await sql`DELETE FROM file_tags WHERE tag_id = ${remove.id}`;
+          // 統合元のタグ関連を削除
+          await tx`DELETE FROM file_tags WHERE tag_id = ${remove.id}`;
 
-        // 統合元のタグを削除
-        await sql`DELETE FROM tags WHERE id = ${remove.id}`;
-        console.log(`    → 統合完了・削除`);
+          // 統合元のタグを削除
+          await tx`DELETE FROM tags WHERE id = ${remove.id}`;
+          console.log(`    → 統合完了・削除`);
+        });
       } else {
         console.log(`    [ドライラン] 統合予定`);
       }
