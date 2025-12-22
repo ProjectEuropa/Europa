@@ -8,6 +8,7 @@ import { ViewToggleButton } from '@/components/search/ViewToggleButton';
 import { SumDownloadForm } from '@/components/features/sumdownload/SumDownloadForm';
 import { SumDownloadTable } from '@/components/features/sumdownload/SumDownloadTable';
 import { SumDownloadPagination } from '@/components/features/sumdownload/SumDownloadPagination';
+import Footer from '@/components/Footer';
 import { AlertCircle, LayoutGrid, LayoutList } from 'lucide-react';
 
 interface SumDownloadSearchBaseProps {
@@ -186,6 +187,8 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
                     </div>
                 </div>
             </main>
+
+            <Footer />
         </div>
     );
 };

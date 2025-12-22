@@ -69,7 +69,12 @@ export const SumDownloadTableView = ({
                                 onClick={() => onSelectItem(item.id, !isSelected)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <td className="p-3" onClick={e => e.stopPropagation()}>
+                                <td className="p-3" onClick={e => {
+                                    e.stopPropagation();
+                                    if ((e.target as HTMLElement).tagName !== 'INPUT') {
+                                        onSelectItem(item.id, !isSelected);
+                                    }
+                                }}>
                                     <div className="flex items-center justify-center h-full">
                                         <input
                                             type="checkbox"
