@@ -17,8 +17,8 @@ const mockTeamData: SumDownloadItem[] = [
     downloadable_at: '2024-01-01T10:00:00Z',
     search_tag1: 'タグ1',
     search_tag2: 'タグ2',
-    search_tag3: null,
-    search_tag4: null,
+    search_tag3: undefined,
+    search_tag4: undefined,
   },
   {
     id: 2,
@@ -28,9 +28,9 @@ const mockTeamData: SumDownloadItem[] = [
     file_comment: 'テストコメント2\n複数行\nテスト',
     downloadable_at: '2024-01-02T10:00:00Z',
     search_tag1: 'タグA',
-    search_tag2: null,
-    search_tag3: null,
-    search_tag4: null,
+    search_tag2: undefined,
+    search_tag3: undefined,
+    search_tag4: undefined,
   },
 ];
 
@@ -161,12 +161,12 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      expect(screen.getByText('テストチーム1')).toBeInTheDocument();
-      expect(screen.getByText('オーナー1')).toBeInTheDocument();
-      expect(screen.getByText('テストコメント1')).toBeInTheDocument();
+      expect(screen.getAllByText('テストチーム1').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('オーナー1').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('テストコメント1').length).toBeGreaterThan(0);
       // タグは#プレフィックス付きで表示される
-      expect(screen.getByText('#タグ1')).toBeInTheDocument();
-      expect(screen.getByText('#タグ2')).toBeInTheDocument();
+      expect(screen.getAllByText('#タグ1').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('#タグ2').length).toBeGreaterThan(0);
     });
 
     it('handles multiline comments correctly', () => {
@@ -181,8 +181,8 @@ describe('SumDownloadTable', () => {
       );
 
       // 複数行コメントがwhitespace-pre-wrapで正しく表示されることを確認
-      // 改行を含むコメント全体を含む要素が存在する
-      expect(screen.getByText(/テストコメント2/)).toBeInTheDocument();
+      // 改行を含むコメント全体を含む要素が存在する (both desktop and mobile)
+      expect(screen.getAllByText(/テストコメント2/).length).toBeGreaterThan(0);
     });
 
     it('displays only non-null tags', () => {
@@ -196,8 +196,8 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      // 2番目のアイテムはsearch_tag1のみ（#プレフィックス付き）
-      expect(screen.getByText('#タグA')).toBeInTheDocument();
+      // 2番目のアイテムはsearch_tag1のみ（#プレフィックス付き）(both desktop and mobile)
+      expect(screen.getAllByText('#タグA').length).toBeGreaterThan(0);
       // nullのタグは表示されない
       expect(screen.queryByText('null')).not.toBeInTheDocument();
     });
@@ -213,7 +213,8 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      expect(screen.getByText('即座にダウンロード可能')).toBeInTheDocument();
+      // Both desktop and mobile views exist, so multiple instances of the text
+      expect(screen.getAllByText('即座にダウンロード可能').length).toBeGreaterThan(0);
     });
   });
 
@@ -229,9 +230,9 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      // ヘッダーチェックボックス + 各行のチェックボックス
+      // Both desktop and mobile views: 2 select-all + 2*2 data rows = 6
       const checkboxes = screen.getAllByRole('checkbox');
-      expect(checkboxes).toHaveLength(3); // 1個のヘッダー + 2個のデータ行
+      expect(checkboxes).toHaveLength(6);
     });
 
     it('calls onSelectionChange when individual item is selected', async () => {
@@ -247,8 +248,8 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      const checkbox = screen.getByLabelText('テストチーム1を選択');
-      await user.click(checkbox);
+      const checkboxes = screen.getAllByLabelText('テストチーム1を選択');
+      await user.click(checkboxes[0]);
 
       expect(mockOnSelectionChange).toHaveBeenCalledWith([1]);
     });
@@ -266,8 +267,8 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      const checkbox = screen.getByLabelText('テストチーム1を選択');
-      await user.click(checkbox);
+      const checkboxes = screen.getAllByLabelText('テストチーム1を選択');
+      await user.click(checkboxes[0]);
 
       expect(mockOnSelectionChange).toHaveBeenCalledWith([2]);
     });
@@ -285,8 +286,8 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      const selectAllCheckbox = screen.getByLabelText('すべて選択');
-      await user.click(selectAllCheckbox);
+      const selectAllCheckboxes = screen.getAllByLabelText('すべて選択');
+      await user.click(selectAllCheckboxes[0]);
 
       expect(mockOnSelectionChange).toHaveBeenCalledWith([1, 2]);
     });
@@ -304,8 +305,8 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      const selectAllCheckbox = screen.getByLabelText('すべて選択');
-      await user.click(selectAllCheckbox);
+      const selectAllCheckboxes = screen.getAllByLabelText('すべて選択');
+      await user.click(selectAllCheckboxes[0]);
 
       expect(mockOnSelectionChange).toHaveBeenCalledWith([]);
     });
@@ -321,11 +322,11 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      const checkbox1 = screen.getByLabelText('テストチーム1を選択');
-      const checkbox2 = screen.getByLabelText('テストチーム2を選択');
+      const checkbox1List = screen.getAllByLabelText('テストチーム1を選択');
+      const checkbox2List = screen.getAllByLabelText('テストチーム2を選択');
 
-      expect(checkbox1).toBeChecked();
-      expect(checkbox2).not.toBeChecked();
+      expect(checkbox1List[0]).toBeChecked();
+      expect(checkbox2List[0]).not.toBeChecked();
     });
 
     it('shows correct select all state when all items are selected', () => {
@@ -339,8 +340,9 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      const selectAllCheckbox = screen.getByLabelText('すべて選択');
-      expect(selectAllCheckbox).toBeChecked();
+      // Both mobile and desktop "select all" checkboxes exist, get the first one
+      const selectAllCheckboxes = screen.getAllByLabelText('すべて選択');
+      expect(selectAllCheckboxes[0]).toBeChecked();
     });
 
     it('shows indeterminate state when some items are selected', () => {
@@ -354,10 +356,10 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      const selectAllCheckbox = screen.getByLabelText(
+      const selectAllCheckboxes = screen.getAllByLabelText(
         'すべて選択'
-      ) as HTMLInputElement;
-      expect(selectAllCheckbox.indeterminate).toBe(true);
+      ) as HTMLInputElement[];
+      expect(selectAllCheckboxes[0].indeterminate).toBe(true);
     });
 
     it('disables checkboxes when loading', () => {
@@ -412,9 +414,10 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      expect(screen.getByLabelText('すべて選択')).toBeInTheDocument();
-      expect(screen.getByLabelText('テストチーム1を選択')).toBeInTheDocument();
-      expect(screen.getByLabelText('テストチーム2を選択')).toBeInTheDocument();
+      // Both mobile and desktop views exist, so getAllByLabelText is used
+      expect(screen.getAllByLabelText('すべて選択').length).toBeGreaterThan(0);
+      expect(screen.getAllByLabelText('テストチーム1を選択').length).toBeGreaterThan(0);
+      expect(screen.getAllByLabelText('テストチーム2を選択').length).toBeGreaterThan(0);
     });
   });
 });

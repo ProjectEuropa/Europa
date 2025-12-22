@@ -35,24 +35,24 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
       <Header />
 
       <main className="flex-1 w-full overflow-x-hidden">
-        <div className="max-w-6xl mx-auto py-12 px-4 flex flex-col items-center">
+        <div className="max-w-6xl mx-auto py-8 sm:py-12 px-4 sm:px-6 flex flex-col items-center">
           <div className="w-full">
             {/* ヘッダー */}
-            <div className="text-center mb-10">
+            <div className="text-center mb-8 sm:mb-10">
               <h1 className="
-                text-3xl md:text-4xl font-bold mb-4 
+                text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 
                 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500
                 drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]
               ">
                 チームデータ一括ダウンロード
               </h1>
-              <p className="text-slate-400 text-base">
+              <p className="text-slate-400 text-sm sm:text-base">
                 複数のチームデータを選択して一括ダウンロードできます。
               </p>
             </div>
 
             {/* 検索フォーム */}
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-6 sm:mb-8">
               <SumDownloadForm
                 searchType="team"
                 onSearch={handleSearch}
@@ -71,7 +71,7 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
 
             {/* 検索結果情報 */}
             <div className="flex justify-between items-center mb-4 px-2">
-              <div className="text-slate-400 text-sm">
+              <div className="text-slate-400 text-xs sm:text-sm">
                 {total}件のチームデータが見つかりました
               </div>
             </div>
