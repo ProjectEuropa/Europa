@@ -32,9 +32,18 @@ const ClientSumDownloadTeamSearch: React.FC = () => {
   } = useSumDownloadManager({ searchType: 'team' });
 
   // View mode state management using hook
-  const { viewMode, setViewMode, isMobileOrTablet } = useViewMode({
+  const { viewMode, setViewMode, isMobileOrTablet, isMounted } = useViewMode({
     storageKey: 'sumDownloadViewMode'
   });
+
+  // クライアントサイドマウント前はローディング表示（UIちらつき防止）
+  if (!isMounted) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="w-8 h-8 border-2 border-transparent border-t-cyan-400 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-white selection:bg-cyan-500/30">

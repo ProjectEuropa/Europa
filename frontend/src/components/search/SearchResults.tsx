@@ -4,11 +4,16 @@ import { memo, useMemo, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DeleteModal } from '@/components/DeleteModal';
+import { ViewToggleButton } from '@/components/search/ViewToggleButton';
 import { useDeleteFile } from '@/hooks/useSearch';
 import type { MatchFile, TeamFile } from '@/types/file';
 import type { PaginationMeta } from '@/types/search';
 import { useViewMode } from '@/hooks/useViewMode';
 import { Download, Trash2, AlertCircle, SearchX, ChevronLeft, ChevronRight, LayoutGrid, LayoutList, User, Calendar, FileText, Tag } from 'lucide-react';
+
+// 定数定義
+const VIEW_MODE_STORAGE_KEY = 'searchViewMode';
+const TABLET_BREAKPOINT = 1024;
 
 interface SearchResultsProps {
   /** 検索結果データ */
@@ -50,8 +55,8 @@ export const SearchResults = memo<SearchResultsProps>(
       name: string;
     } | null>(null);
 
-    const { viewMode, setViewMode, isMobileOrTablet } = useViewMode({
-      storageKey: 'searchViewMode'
+    const { viewMode, setViewMode, isMobileOrTablet, isMounted } = useViewMode({
+      storageKey: VIEW_MODE_STORAGE_KEY
     });
 
     const deleteFileMutation = useDeleteFile();
@@ -159,6 +164,15 @@ export const SearchResults = memo<SearchResultsProps>(
       return buttons;
     }, [meta]);
 
+    // クライアントサイドマウント前はローディング表示（UIちらつき防止）
+    if (!isMounted) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <div className="w-8 h-8 border-2 border-transparent border-t-cyan-400 rounded-full animate-spin"></div>
+        </div>
+      );
+    }
+
     if (loading) {
       return (
         <div className="flex justify-center items-center py-12">
@@ -210,34 +224,20 @@ export const SearchResults = memo<SearchResultsProps>(
             {/* ビュー切り替えトグル（デスクトップのみ表示） */}
             {!isMobileOrTablet && (
               <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg p-1">
-                <button
+                <ViewToggleButton
+                  label="テーブル"
+                  icon={<LayoutList size={18} />}
+                  isActive={viewMode === 'table'}
                   onClick={() => setViewMode('table')}
-                  className={`
-                    flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
-                    ${viewMode === 'table'
-                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
-                      : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800'}
-                  `}
-                  aria-label="テーブル表示"
                   title="テーブル表示"
-                >
-                  <LayoutList size={18} />
-                  <span className="hidden sm:inline">テーブル</span>
-                </button>
-                <button
+                />
+                <ViewToggleButton
+                  label="カード"
+                  icon={<LayoutGrid size={18} />}
+                  isActive={viewMode === 'card'}
                   onClick={() => setViewMode('card')}
-                  className={`
-                  flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
-                  ${viewMode === 'card'
-                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
-                      : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800'}
-                `}
-                  aria-label="カード表示"
                   title="カード表示"
-                >
-                  <LayoutGrid size={18} />
-                  <span className="hidden sm:inline">カード</span>
-                </button>
+                />
               </div>
             )}
           </div>
