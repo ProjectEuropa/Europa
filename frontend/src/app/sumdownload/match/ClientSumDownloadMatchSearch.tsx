@@ -1,7 +1,6 @@
 'use client';
 
 import type React from 'react';
-import { useState, useEffect } from 'react';
 import Footer from '@/components/Footer';
 import {
   SumDownloadActions,
@@ -11,6 +10,7 @@ import {
 } from '@/components/features/sumdownload';
 import Header from '@/components/Header';
 import { useSumDownloadManager } from '@/hooks/useSumDownloadManager';
+import { useViewMode } from '@/hooks/useViewMode';
 import { AlertCircle, LayoutGrid, LayoutList } from 'lucide-react';
 
 const ClientSumDownloadMatchSearch: React.FC = () => {
@@ -31,32 +31,10 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
     searchQuery,
   } = useSumDownloadManager({ searchType: 'match' });
 
-  // View mode state management
-  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
-  const [userPreference, setUserPreference] = useState<'table' | 'card' | null>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('sumDownloadViewMode');
-      return (saved === 'card' || saved === 'table') ? saved : null;
-    }
-    return null;
+  // View mode state management using hook
+  const { viewMode, setViewMode, isMobileOrTablet } = useViewMode({
+    storageKey: 'sumDownloadViewMode'
   });
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobileOrTablet(window.innerWidth < 1024);
-    };
-
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
-
-  const viewMode = isMobileOrTablet ? 'card' : (userPreference ?? 'table');
-
-  const setViewMode = (mode: 'table' | 'card') => {
-    setUserPreference(mode);
-    localStorage.setItem('sumDownloadViewMode', mode);
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-white selection:bg-cyan-500/30">

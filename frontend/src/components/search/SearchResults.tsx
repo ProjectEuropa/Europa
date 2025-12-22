@@ -7,6 +7,7 @@ import { DeleteModal } from '@/components/DeleteModal';
 import { useDeleteFile } from '@/hooks/useSearch';
 import type { MatchFile, TeamFile } from '@/types/file';
 import type { PaginationMeta } from '@/types/search';
+import { useViewMode } from '@/hooks/useViewMode';
 import { Download, Trash2, AlertCircle, SearchX, ChevronLeft, ChevronRight, LayoutGrid, LayoutList, User, Calendar, FileText, Tag } from 'lucide-react';
 
 interface SearchResultsProps {
@@ -49,37 +50,9 @@ export const SearchResults = memo<SearchResultsProps>(
       name: string;
     } | null>(null);
 
-    // レスポンシブ判定（タブレット以下: 1024px未満）
-    const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
-
-    // ユーザーが手動で選択したビューモード（localStorageで永続化）
-    const [userPreference, setUserPreference] = useState<'table' | 'card' | null>(() => {
-      if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem('searchViewMode');
-        return (saved === 'card' || saved === 'table') ? saved : null;
-      }
-      return null;
+    const { viewMode, setViewMode, isMobileOrTablet } = useViewMode({
+      storageKey: 'searchViewMode'
     });
-
-    // 画面サイズの監視
-    useEffect(() => {
-      const checkScreenSize = () => {
-        setIsMobileOrTablet(window.innerWidth < 1024);
-      };
-
-      checkScreenSize();
-      window.addEventListener('resize', checkScreenSize);
-      return () => window.removeEventListener('resize', checkScreenSize);
-    }, []);
-
-    // 実際のビューモード（モバイル/タブレットでは強制カード、それ以外はユーザー設定優先）
-    const viewMode = isMobileOrTablet ? 'card' : (userPreference ?? 'table');
-
-    // ビューモード手動変更（デスクトップのみ有効）
-    const setViewMode = (mode: 'table' | 'card') => {
-      setUserPreference(mode);
-      localStorage.setItem('searchViewMode', mode);
-    };
 
     const deleteFileMutation = useDeleteFile();
 
@@ -253,17 +226,17 @@ export const SearchResults = memo<SearchResultsProps>(
                 </button>
                 <button
                   onClick={() => setViewMode('card')}
-                className={`
+                  className={`
                   flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
                   ${viewMode === 'card'
-                    ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
-                    : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800'}
+                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
+                      : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800'}
                 `}
-                aria-label="カード表示"
-                title="カード表示"
-              >
-                <LayoutGrid size={18} />
-                <span className="hidden sm:inline">カード</span>
+                  aria-label="カード表示"
+                  title="カード表示"
+                >
+                  <LayoutGrid size={18} />
+                  <span className="hidden sm:inline">カード</span>
                 </button>
               </div>
             )}
