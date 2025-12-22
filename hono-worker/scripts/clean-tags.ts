@@ -83,14 +83,6 @@ function normalizeTagName(tagName: string): string {
 }
 
 /**
- * タグにスペースが含まれているか判定
- */
-function hasMultipleTags(tagName: string): boolean {
-  const normalized = tagName.replace(/　/g, ' ').trim();
-  return normalized.split(/\s+/).filter(t => t).length > 1;
-}
-
-/**
  * タグを分割
  */
 function splitTagName(tagName: string): string[] {
@@ -132,13 +124,16 @@ function analyzeCleanup(tags: Tag[]): CleanupResult {
   for (const tag of tags) {
     if (tag.tag_name.trim().length === 0) {
       result.tagsToDelete.push(tag);
-    } else if (hasMultipleTags(tag.tag_name)) {
-      result.tagsToSplit.push({
-        original: tag,
-        splitInto: splitTagName(tag.tag_name),
-      });
     } else {
-      singleTags.push(tag);
+      const split = splitTagName(tag.tag_name);
+      if (split.length > 1) {
+        result.tagsToSplit.push({
+          original: tag,
+          splitInto: split,
+        });
+      } else {
+        singleTags.push(tag);
+      }
     }
   }
 
@@ -154,8 +149,8 @@ function analyzeCleanup(tags: Tag[]): CleanupResult {
 
   for (const [, duplicates] of normalizedMap) {
     if (duplicates.length > 1) {
-      // 使用回数が多いものを残す
-      const sorted = duplicates.sort((a, b) => b.file_count - a.file_count);
+      // 使用回数が多いものを残す（同数の場合はIDが小さいものを優先）
+      const sorted = duplicates.sort((a, b) => b.file_count - a.file_count || a.id - b.id);
       result.duplicatesToMerge.push({
         keep: sorted[0],
         remove: sorted.slice(1),
@@ -242,8 +237,8 @@ async function splitTags(
 
     if (!dryRun) {
       await sql.transaction(async (tx) => {
-        // 各分割後タグを処理
-        for (const newTagName of item.splitInto) {
+        // 各分割後タグを処理（重複を除去）
+        for (const newTagName of [...new Set(item.splitInto)]) {
           // 新しいタグを挿入（既存なら取得）
           const insertResult = await tx<{ id: number }[]>`
             INSERT INTO tags (tag_name)
