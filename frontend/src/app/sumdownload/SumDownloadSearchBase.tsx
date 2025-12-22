@@ -91,31 +91,63 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
                             </div>
                         )}
 
-                        {/* 検索結果情報 + ビュー切り替え */}
+                        {/* 検索結果情報 + ビュー切り替え + ダウンロードボタン */}
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 px-2">
-                            <div className="text-slate-400 text-xs sm:text-sm">
-                                {total}件の{typeLabel}データが見つかりました
+                            <div className="flex items-center gap-4">
+                                <div className="text-slate-400 text-xs sm:text-sm">
+                                    {total}件の{typeLabel}データが見つかりました
+                                </div>
+                                {data.length > 0 && (
+                                    <div className="text-cyan-400 text-xs sm:text-sm font-medium">
+                                        <span className="text-white font-bold">{selectedIds.length}</span>
+                                        件選択中
+                                    </div>
+                                )}
                             </div>
 
-                            {/* ビュー切り替えトグル */}
-                            {!isMobileOrTablet && (
-                                <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg p-1">
-                                    <ViewToggleButton
-                                        label="テーブル"
-                                        icon={<LayoutList size={18} />}
-                                        isActive={viewMode === 'table'}
-                                        onClick={() => setViewMode('table')}
-                                        title="テーブル表示"
-                                    />
-                                    <ViewToggleButton
-                                        label="カード"
-                                        icon={<LayoutGrid size={18} />}
-                                        isActive={viewMode === 'card'}
-                                        onClick={() => setViewMode('card')}
-                                        title="カード表示"
-                                    />
-                                </div>
-                            )}
+                            <div className="flex items-center gap-3">
+                                {/* ビュー切り替えトグル */}
+                                {!isMobileOrTablet && (
+                                    <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg p-1">
+                                        <ViewToggleButton
+                                            label="テーブル"
+                                            icon={<LayoutList size={18} />}
+                                            isActive={viewMode === 'table'}
+                                            onClick={() => setViewMode('table')}
+                                            title="テーブル表示"
+                                        />
+                                        <ViewToggleButton
+                                            label="カード"
+                                            icon={<LayoutGrid size={18} />}
+                                            isActive={viewMode === 'card'}
+                                            onClick={() => setViewMode('card')}
+                                            title="カード表示"
+                                        />
+                                    </div>
+                                )}
+
+                                {/* ダウンロードボタン */}
+                                {data.length > 0 && (
+                                    <button
+                                        onClick={handleDownload}
+                                        disabled={selectedIds.length === 0 || isSearchLoading}
+                                        className="
+                                            px-4 py-2 
+                                            bg-gradient-to-r from-cyan-600 to-blue-600 
+                                            hover:from-cyan-500 hover:to-blue-500 
+                                            disabled:from-slate-800 disabled:to-slate-800 
+                                            text-white font-bold text-sm
+                                            rounded-lg shadow-lg shadow-cyan-500/20 
+                                            transition-all duration-300 transform hover:scale-[1.02] active:scale-95
+                                            disabled:opacity-50 disabled:cursor-not-allowed
+                                            flex items-center justify-center gap-2
+                                            whitespace-nowrap
+                                        "
+                                    >
+                                        ダウンロード
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         {/* データテーブル/カード */}
@@ -136,33 +168,7 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
                             loading={isSearchLoading}
                         />
 
-                        {/* アクションエリア */}
-                        {data.length > 0 && (
-                            <div className="mt-8 pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-6">
-                                <div className="text-slate-400 text-sm">
-                                    <span className="text-white font-bold text-lg mr-2">{selectedIds.length}</span>
-                                    件選択中
-                                </div>
-                                <button
-                                    onClick={handleDownload}
-                                    disabled={selectedIds.length === 0 || isSearchLoading}
-                                    className="
-                    w-full sm:w-auto
-                    px-8 py-3 
-                    bg-gradient-to-r from-cyan-600 to-blue-600 
-                    hover:from-cyan-500 hover:to-blue-500 
-                    disabled:from-slate-800 disabled:to-slate-800 
-                    text-white font-bold 
-                    rounded-lg shadow-lg shadow-cyan-500/20 
-                    transition-all duration-300 transform hover:scale-[1.02] active:scale-95
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    flex items-center justify-center gap-2
-                  "
-                                >
-                                    選択したデータをダウンロード
-                                </button>
-                            </div>
-                        )}
+
                     </div>
                 </div>
             </main>
