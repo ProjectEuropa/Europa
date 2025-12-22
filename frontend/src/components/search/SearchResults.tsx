@@ -1,12 +1,18 @@
 'use client';
 
-import { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DeleteModal } from '@/components/DeleteModal';
+import { ViewToggleButton } from '@/components/search/ViewToggleButton';
 import { useDeleteFile } from '@/hooks/useSearch';
 import type { MatchFile, TeamFile } from '@/types/file';
 import type { PaginationMeta } from '@/types/search';
-import { Download, Trash2, AlertCircle, SearchX, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Download, Trash2, AlertCircle, SearchX, ChevronLeft, ChevronRight, LayoutGrid, LayoutList, User, Calendar, FileText, Tag } from 'lucide-react';
+
+// 定数定義
+const VIEW_MODE_STORAGE_KEY = 'searchViewMode';
+const TABLET_BREAKPOINT = 1024;
 
 interface SearchResultsProps {
   /** 検索結果データ */
@@ -47,6 +53,43 @@ export const SearchResults = memo<SearchResultsProps>(
       id: number;
       name: string;
     } | null>(null);
+
+    // クライアントサイドマウント状態の追跡
+    const [hasMounted, setHasMounted] = useState(false);
+
+    // レスポンシブ判定（タブレット以下: 1024px未満）
+    const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
+
+    // ユーザーが手動で選択したビューモード（localStorageで永続化）
+    const [userPreference, setUserPreference] = useState<'table' | 'card' | null>(null);
+
+    // クライアントサイドマウント後にlocalStorageを読み込み、画面サイズを監視
+    useEffect(() => {
+      // localStorageから設定を復元
+      const saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+      if (saved === 'card' || saved === 'table') {
+        setUserPreference(saved);
+      }
+
+      // 画面サイズチェック
+      const checkScreenSize = () => {
+        setIsMobileOrTablet(window.innerWidth < TABLET_BREAKPOINT);
+      };
+
+      checkScreenSize();
+      setHasMounted(true);
+      window.addEventListener('resize', checkScreenSize);
+      return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
+
+    // 実際のビューモード（モバイル/タブレットでは強制カード、それ以外はユーザー設定優先）
+    const viewMode = isMobileOrTablet ? 'card' : (userPreference ?? 'table');
+
+    // ビューモード手動変更（デスクトップのみ有効）
+    const setViewMode = (mode: 'table' | 'card') => {
+      setUserPreference(mode);
+      localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
+    };
 
     const deleteFileMutation = useDeleteFile();
 
@@ -153,6 +196,15 @@ export const SearchResults = memo<SearchResultsProps>(
       return buttons;
     }, [meta]);
 
+    // クライアントサイドマウント前はローディング表示（UIちらつき防止）
+    if (!hasMounted) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <div className="w-8 h-8 border-2 border-transparent border-t-cyan-400 rounded-full animate-spin"></div>
+        </div>
+      );
+    }
+
     if (loading) {
       return (
         <div className="flex justify-center items-center py-12">
@@ -195,112 +247,250 @@ export const SearchResults = memo<SearchResultsProps>(
         />
 
         <div className="w-full mt-8">
-          {/* 結果ヘッダー */}
-          <div className="flex justify-between items-center mb-4 px-4">
+          {/* 結果ヘッダー + ビュー切り替え */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 px-4">
             <div className="text-cyan-400 font-medium">
               {meta.total}件の結果 (ページ {meta.currentPage}/{meta.lastPage})
             </div>
+
+            {/* ビュー切り替えトグル（デスクトップのみ表示） */}
+            {!isMobileOrTablet && (
+              <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg p-1">
+                <ViewToggleButton
+                  label="テーブル"
+                  icon={<LayoutList size={18} />}
+                  isActive={viewMode === 'table'}
+                  onClick={() => setViewMode('table')}
+                  title="テーブル表示"
+                />
+                <ViewToggleButton
+                  label="カード"
+                  icon={<LayoutGrid size={18} />}
+                  isActive={viewMode === 'card'}
+                  onClick={() => setViewMode('card')}
+                  title="カード表示"
+                />
+              </div>
+            )}
           </div>
 
-          {/* テーブル表示 */}
-          <div className="w-full overflow-x-auto mt-4 rounded-lg border border-slate-800 bg-slate-900/50 backdrop-blur-sm">
-            <div className="w-full" style={{ minWidth: '1000px' }}>
-              {/* テーブルヘッダー */}
-              <div className="grid grid-cols-[80px_120px_1fr_180px_160px_160px_60px] bg-slate-900 border-b border-slate-800 text-slate-400 text-sm font-semibold sticky top-0">
-                <div className="p-3 text-center">DL</div>
-                <div className="p-3">オーナー名</div>
-                <div className="p-3">コメント・タグ</div>
-                <div className="p-3">ファイル名</div>
-                <div className="p-3 whitespace-nowrap">アップロード日時</div>
-                <div className="p-3 whitespace-nowrap">DL可能日時</div>
-                <div className="p-3 text-center">削除</div>
-              </div>
-
-              {/* テーブル本体 */}
-              <div className="divide-y divide-slate-800">
-                {processedResults.map(result => (
-                  <div
-                    key={result.id}
-                    className="grid grid-cols-[80px_120px_1fr_180px_160px_160px_60px] hover:bg-slate-800/50 transition-colors duration-150 items-center text-sm"
-                  >
-                    {/* ダウンロードボタン */}
-                    <div className="p-3 flex justify-center">
-                      <button
-                        onClick={() => onDownload(result)}
-                        className="p-2 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-900/30 rounded-full transition-all"
-                        aria-label={`${result.name}をダウンロード`}
-                        title="ダウンロード"
-                      >
-                        <Download size={20} />
-                      </button>
+          {/* アニメーション付きビュー切り替え */}
+          <AnimatePresence mode="wait">
+            {viewMode === 'table' ? (
+              <motion.div
+                key="table"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                {/* テーブル表示 */}
+                <div className="w-full overflow-x-auto mt-4 rounded-lg border border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+                  <div className="w-full" style={{ minWidth: '1000px' }}>
+                    {/* テーブルヘッダー */}
+                    <div className="grid grid-cols-[80px_120px_1fr_180px_160px_160px_60px] bg-slate-900 border-b border-slate-800 text-slate-400 text-sm font-semibold sticky top-0">
+                      <div className="p-3 text-center">DL</div>
+                      <div className="p-3">オーナー名</div>
+                      <div className="p-3">コメント・タグ</div>
+                      <div className="p-3">ファイル名</div>
+                      <div className="p-3 whitespace-nowrap">アップロード日時</div>
+                      <div className="p-3 whitespace-nowrap">DL可能日時</div>
+                      <div className="p-3 text-center">削除</div>
                     </div>
 
-                    {/* オーナー名 */}
-                    <div className="p-3 text-white break-words" title={result.ownerName}>
-                      {result.ownerName}
-                    </div>
-
-                    {/* コメント・タグ */}
-                    <div className="p-3 text-slate-400">
-                      <div className="whitespace-pre-wrap break-words mb-2">
-                        {result.comment}
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {result.tags.map((tag, i) => (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => onTagClick?.(tag)}
-                            className="
-                              px-2 py-0.5 
-                              bg-slate-800/80 
-                              border border-slate-700 
-                              text-cyan-400/90 
-                              text-xs 
-                              rounded 
-                              hover:bg-cyan-900/30 hover:border-cyan-500/50 hover:text-cyan-300
-                              transition-colors
-                            "
-                          >
-                            #{tag}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* ファイル名 */}
-                    <div className="p-3 text-cyan-400 break-all font-mono text-xs" title={result.name}>
-                      {result.name}
-                    </div>
-
-                    {/* アップロード日時 */}
-                    <div className="p-3 text-slate-300 text-xs font-mono whitespace-nowrap">
-                      {result.formattedCreatedAt}
-                    </div>
-
-                    {/* ダウンロード可能日時 */}
-                    <div className="p-3 text-slate-300 text-xs font-mono whitespace-nowrap">
-                      {result.formattedDownloadableAt}
-                    </div>
-
-                    {/* 削除ボタン */}
-                    <div className="p-3 flex justify-center">
-                      {result.upload_type === '2' && (
-                        <button
-                          onClick={() => handleDeleteClick(result)}
-                          className="p-2 text-red-400/70 hover:text-red-400 hover:bg-red-900/20 rounded-full transition-all"
-                          aria-label={`${result.name}を削除`}
-                          data-testid={`delete-button-${result.id}`}
+                    {/* テーブル本体 */}
+                    <div className="divide-y divide-slate-800">
+                      {processedResults.map(result => (
+                        <div
+                          key={result.id}
+                          className="grid grid-cols-[80px_120px_1fr_180px_160px_160px_60px] hover:bg-slate-800/50 transition-colors duration-150 items-center text-sm"
                         >
-                          <Trash2 size={18} />
-                        </button>
-                      )}
+                          {/* ダウンロードボタン */}
+                          <div className="p-3 flex justify-center">
+                            <button
+                              onClick={() => onDownload(result)}
+                              className="p-2 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-900/30 rounded-full transition-all"
+                              aria-label={`${result.name}をダウンロード`}
+                              title="ダウンロード"
+                            >
+                              <Download size={20} />
+                            </button>
+                          </div>
+
+                          {/* オーナー名 */}
+                          <div className="p-3 text-white break-words" title={result.ownerName}>
+                            {result.ownerName}
+                          </div>
+
+                          {/* コメント・タグ */}
+                          <div className="p-3 text-slate-400">
+                            <div className="whitespace-pre-wrap break-words mb-2">
+                              {result.comment}
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                              {result.tags.map((tag, i) => (
+                                <button
+                                  key={i}
+                                  type="button"
+                                  onClick={() => onTagClick?.(tag)}
+                                  className="
+                                    px-2 py-0.5
+                                    bg-slate-800/80
+                                    border border-slate-700
+                                    text-cyan-400/90
+                                    text-xs
+                                    rounded
+                                    hover:bg-cyan-900/30 hover:border-cyan-500/50 hover:text-cyan-300
+                                    transition-colors
+                                  "
+                                >
+                                  #{tag}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* ファイル名 */}
+                          <div className="p-3 text-cyan-400 break-all font-mono text-xs" title={result.name}>
+                            {result.name}
+                          </div>
+
+                          {/* アップロード日時 */}
+                          <div className="p-3 text-slate-300 text-xs font-mono whitespace-nowrap">
+                            {result.formattedCreatedAt}
+                          </div>
+
+                          {/* ダウンロード可能日時 */}
+                          <div className="p-3 text-slate-300 text-xs font-mono whitespace-nowrap">
+                            {result.formattedDownloadableAt}
+                          </div>
+
+                          {/* 削除ボタン */}
+                          <div className="p-3 flex justify-center">
+                            {result.upload_type === '2' && (
+                              <button
+                                onClick={() => handleDeleteClick(result)}
+                                className="p-2 text-red-400/70 hover:text-red-400 hover:bg-red-900/20 rounded-full transition-all"
+                                aria-label={`${result.name}を削除`}
+                                data-testid={`delete-button-${result.id}`}
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="card"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                {/* カード表示 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 px-2">
+                  {processedResults.map((result, index) => (
+                    <motion.div
+                      key={result.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      className="group relative bg-slate-900/80 border border-slate-700 rounded-xl overflow-hidden hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(0,200,255,0.15)] transition-all duration-300"
+                    >
+                      {/* カードヘッダー */}
+                      <div className="bg-gradient-to-r from-slate-800/80 to-slate-900/80 px-4 py-3 border-b border-slate-700/50">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-cyan-400 font-semibold text-sm truncate" title={result.name}>
+                              <FileText size={14} className="inline mr-1.5 opacity-70" />
+                              {result.name}
+                            </h3>
+                            <p className="text-slate-400 text-xs mt-1 flex items-center gap-1">
+                              <User size={12} className="opacity-70" />
+                              {result.ownerName}
+                            </p>
+                          </div>
+                          {/* アクションボタン */}
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => onDownload(result)}
+                              className="p-2 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20 rounded-lg transition-all"
+                              aria-label={`${result.name}をダウンロード`}
+                              title="ダウンロード"
+                            >
+                              <Download size={18} />
+                            </button>
+                            {result.upload_type === '2' && (
+                              <button
+                                onClick={() => handleDeleteClick(result)}
+                                className="p-2 text-red-400/70 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-all"
+                                aria-label={`${result.name}を削除`}
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* カードボディ */}
+                      <div className="p-4">
+                        {/* コメント */}
+                        {result.comment && (
+                          <p className="text-slate-300 text-sm leading-relaxed mb-3 line-clamp-3">
+                            {result.comment}
+                          </p>
+                        )}
+
+                        {/* タグ */}
+                        {result.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mb-3">
+                            {result.tags.map((tag, i) => (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => onTagClick?.(tag)}
+                                className="
+                                  inline-flex items-center gap-1 px-2 py-0.5
+                                  bg-slate-800/80 border border-slate-600
+                                  text-cyan-400/90 text-xs rounded-full
+                                  hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:text-cyan-300
+                                  transition-all duration-200
+                                "
+                              >
+                                <Tag size={10} />
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* 日時情報 */}
+                        <div className="space-y-1.5 text-xs text-slate-400 pt-2 border-t border-slate-700/50">
+                          <div className="flex items-center gap-2">
+                            <Calendar size={12} className="text-slate-500" />
+                            <span>アップロード: {result.formattedCreatedAt}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Download size={12} className="text-slate-500" />
+                            <span>DL可能: {result.formattedDownloadableAt}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* ホバー時のグロー効果 */}
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* ページネーション */}
           {meta.lastPage > 1 && (
