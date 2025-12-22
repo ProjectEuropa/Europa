@@ -7,6 +7,7 @@ import { useViewMode } from '@/hooks/useViewMode';
 import { ViewToggleButton } from '@/components/search/ViewToggleButton';
 import { SumDownloadForm } from '@/components/features/sumdownload/SumDownloadForm';
 import { SumDownloadTable } from '@/components/features/sumdownload/SumDownloadTable';
+import { SumDownloadPagination } from '@/components/features/sumdownload/SumDownloadPagination';
 import { AlertCircle, LayoutGrid, LayoutList } from 'lucide-react';
 
 interface SumDownloadSearchBaseProps {
@@ -28,6 +29,9 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
         selectedIds,
         handleSelectionChange,
         searchQuery,
+        currentPage,
+        lastPage,
+        handlePageChange,
     } = useSumDownloadManager({ searchType });
 
     // View mode state management using hook
@@ -122,6 +126,14 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
                             loading={isSearchLoading}
                             searchType={searchType}
                             viewMode={viewMode}
+                        />
+
+                        {/* ページネーション */}
+                        <SumDownloadPagination
+                            currentPage={currentPage}
+                            lastPage={lastPage}
+                            onPageChange={handlePageChange}
+                            loading={isSearchLoading}
                         />
 
                         {/* アクションエリア */}
