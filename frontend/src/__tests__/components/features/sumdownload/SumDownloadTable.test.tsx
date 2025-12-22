@@ -230,9 +230,9 @@ describe('SumDownloadTable', () => {
         />
       );
 
-      // Both desktop and mobile views: 2 select-all + 2*2 data rows = 6
+      // 1 select-all + 2 data rows = 3
       const checkboxes = screen.getAllByRole('checkbox');
-      expect(checkboxes).toHaveLength(6);
+      expect(checkboxes).toHaveLength(3);
     });
 
     it('calls onSelectionChange when individual item is selected', async () => {
@@ -418,6 +418,32 @@ describe('SumDownloadTable', () => {
       expect(screen.getAllByLabelText('すべて選択').length).toBeGreaterThan(0);
       expect(screen.getAllByLabelText('テストチーム1を選択').length).toBeGreaterThan(0);
       expect(screen.getAllByLabelText('テストチーム2を選択').length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Card View', () => {
+    it('renders card layout with grid classes when viewMode is card', () => {
+      const { container } = render(
+        <SumDownloadTable
+          data={mockTeamData}
+          selectedIds={[]}
+          onSelectionChange={mockOnSelectionChange}
+          loading={false}
+          searchType="team"
+          viewMode="card"
+        />
+      );
+
+      // Grid classes check
+      const gridContainer = container.querySelector('.grid');
+      expect(gridContainer).toHaveClass('grid-cols-1');
+      expect(gridContainer).toHaveClass('sm:grid-cols-2');
+      expect(gridContainer).toHaveClass('lg:grid-cols-3');
+
+      // Card-specific labels
+      expect(screen.getAllByText('オーナー:').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('アップロード:').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('DL可能:').length).toBeGreaterThan(0);
     });
   });
 });

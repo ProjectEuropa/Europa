@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { useState, useEffect } from 'react';
 import Footer from '@/components/Footer';
 import {
   SumDownloadActions,
@@ -10,7 +11,7 @@ import {
 } from '@/components/features/sumdownload';
 import Header from '@/components/Header';
 import { useSumDownloadManager } from '@/hooks/useSumDownloadManager';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, LayoutGrid, LayoutList } from 'lucide-react';
 
 const ClientSumDownloadMatchSearch: React.FC = () => {
   const {
@@ -29,6 +30,33 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
     handleDownload,
     searchQuery,
   } = useSumDownloadManager({ searchType: 'match' });
+
+  // View mode state management
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
+  const [userPreference, setUserPreference] = useState<'table' | 'card' | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('sumDownloadViewMode');
+      return (saved === 'card' || saved === 'table') ? saved : null;
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobileOrTablet(window.innerWidth < 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const viewMode = isMobileOrTablet ? 'card' : (userPreference ?? 'table');
+
+  const setViewMode = (mode: 'table' | 'card') => {
+    setUserPreference(mode);
+    localStorage.setItem('sumDownloadViewMode', mode);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-white selection:bg-cyan-500/30">
@@ -69,14 +97,43 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
               </div>
             )}
 
-            {/* 検索結果情報 */}
-            <div className="flex justify-between items-center mb-4 px-2">
+            {/* 検索結果情報 + ビュー切り替え */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 px-2">
               <div className="text-slate-400 text-xs sm:text-sm">
                 {total}件のマッチデータが見つかりました
               </div>
-              {selectedCount > 0 && (
-                <div className="text-cyan-400 text-sm">
-                  {selectedCount}件選択中
+
+              {/* ビュー切り替えトグル（デスクトップのみ表示） */}
+              {!isMobileOrTablet && (
+                <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('table')}
+                    className={`
+                      flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
+                      ${viewMode === 'table'
+                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
+                        : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800'}
+                    `}
+                    aria-label="テーブル表示"
+                    title="テーブル表示"
+                  >
+                    <LayoutList size={18} />
+                    <span className="hidden sm:inline">テーブル</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('card')}
+                    className={`
+                      flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200
+                      ${viewMode === 'card'
+                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50'
+                        : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800'}
+                    `}
+                    aria-label="カード表示"
+                    title="カード表示"
+                  >
+                    <LayoutGrid size={18} />
+                    <span className="hidden sm:inline">カード</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -96,6 +153,7 @@ const ClientSumDownloadMatchSearch: React.FC = () => {
               onSelectionChange={handleSelectionChange}
               loading={isSearchLoading}
               searchType="match"
+              viewMode={viewMode}
             />
 
             {/* ページネーション */}
