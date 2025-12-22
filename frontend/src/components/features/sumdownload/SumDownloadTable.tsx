@@ -242,7 +242,7 @@ export const SumDownloadTable = ({
               <div
                 key={item.id}
                 className={`
-                relative p-4 rounded-lg border transition-all duration-200
+                relative p-4 rounded-lg border transition-all duration-200 cursor-pointer
                 ${isSelected
                     ? 'bg-cyan-900/20 border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
                     : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
