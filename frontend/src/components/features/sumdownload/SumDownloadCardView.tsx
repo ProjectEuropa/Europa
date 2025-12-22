@@ -58,7 +58,12 @@ export const SumDownloadCardView = ({
                         onClick={() => onSelectItem(item.id, !isSelected)}
                     >
                         {/* チェックボックス（右上） */}
-                        <div className="absolute top-4 right-4" onClick={e => e.stopPropagation()}>
+                        <div className="absolute top-4 right-4" onClick={e => {
+                            e.stopPropagation();
+                            if ((e.target as HTMLElement).tagName !== 'INPUT') {
+                                onSelectItem(item.id, !isSelected);
+                            }
+                        }}>
                             <input
                                 type="checkbox"
                                 checked={isSelected}
