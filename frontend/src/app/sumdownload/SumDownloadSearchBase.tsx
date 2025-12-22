@@ -168,6 +168,20 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
                             loading={isSearchLoading}
                         />
 
+                        {/* 注意事項 */}
+                        <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-800 mt-8">
+                            <h2 className="text-cyan-400 font-bold text-lg mb-3 flex items-center gap-2">
+                                <AlertCircle className="w-5 h-5" />
+                                ダウンロードに関する注意事項
+                            </h2>
+                            <ul className="text-slate-400 text-sm leading-relaxed list-disc pl-5 space-y-1">
+                                <li>一度に最大50件までの{typeLabel}データをダウンロードできます。</li>
+                                <li>ダウンロードしたデータは自動的にZIPファイルに圧縮されます。</li>
+                                <li>ダウンロードに問題がある場合は、管理者にお問い合わせください。</li>
+                            </ul>
+                        </div>
+
+
 
                     </div>
                 </div>
