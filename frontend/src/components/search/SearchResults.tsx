@@ -8,6 +8,7 @@ import { ViewToggleButton } from '@/components/search/ViewToggleButton';
 import { useDeleteFile } from '@/hooks/useSearch';
 import type { MatchFile, TeamFile } from '@/types/file';
 import type { PaginationMeta } from '@/types/search';
+import { useViewMode } from '@/hooks/useViewMode';
 import { Download, Trash2, AlertCircle, SearchX, ChevronLeft, ChevronRight, LayoutGrid, LayoutList, User, Calendar, FileText, Tag } from 'lucide-react';
 
 // 定数定義
@@ -54,42 +55,9 @@ export const SearchResults = memo<SearchResultsProps>(
       name: string;
     } | null>(null);
 
-    // クライアントサイドマウント状態の追跡
-    const [hasMounted, setHasMounted] = useState(false);
-
-    // レスポンシブ判定（タブレット以下: 1024px未満）
-    const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
-
-    // ユーザーが手動で選択したビューモード（localStorageで永続化）
-    const [userPreference, setUserPreference] = useState<'table' | 'card' | null>(null);
-
-    // クライアントサイドマウント後にlocalStorageを読み込み、画面サイズを監視
-    useEffect(() => {
-      // localStorageから設定を復元
-      const saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
-      if (saved === 'card' || saved === 'table') {
-        setUserPreference(saved);
-      }
-
-      // 画面サイズチェック
-      const checkScreenSize = () => {
-        setIsMobileOrTablet(window.innerWidth < TABLET_BREAKPOINT);
-      };
-
-      checkScreenSize();
-      setHasMounted(true);
-      window.addEventListener('resize', checkScreenSize);
-      return () => window.removeEventListener('resize', checkScreenSize);
-    }, []);
-
-    // 実際のビューモード（モバイル/タブレットでは強制カード、それ以外はユーザー設定優先）
-    const viewMode = isMobileOrTablet ? 'card' : (userPreference ?? 'table');
-
-    // ビューモード手動変更（デスクトップのみ有効）
-    const setViewMode = (mode: 'table' | 'card') => {
-      setUserPreference(mode);
-      localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
-    };
+    const { viewMode, setViewMode, isMobileOrTablet, isMounted } = useViewMode({
+      storageKey: VIEW_MODE_STORAGE_KEY
+    });
 
     const deleteFileMutation = useDeleteFile();
 
@@ -197,7 +165,7 @@ export const SearchResults = memo<SearchResultsProps>(
     }, [meta]);
 
     // クライアントサイドマウント前はローディング表示（UIちらつき防止）
-    if (!hasMounted) {
+    if (!isMounted) {
       return (
         <div className="flex justify-center items-center py-12">
           <div className="w-8 h-8 border-2 border-transparent border-t-cyan-400 rounded-full animate-spin"></div>
