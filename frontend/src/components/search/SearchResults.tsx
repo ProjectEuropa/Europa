@@ -53,16 +53,17 @@ export const SearchResults = memo<SearchResultsProps>(
     const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
 
     // ユーザーが手動で選択したビューモード（localStorageで永続化）
-    const [userPreference, setUserPreference] = useState<'table' | 'card' | null>(() => {
-      if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem('searchViewMode');
-        return (saved === 'card' || saved === 'table') ? saved : null;
-      }
-      return null;
-    });
+    const [userPreference, setUserPreference] = useState<'table' | 'card' | null>(null);
 
-    // 画面サイズの監視
+    // クライアントサイドマウント後にlocalStorageを読み込み、画面サイズを監視
     useEffect(() => {
+      // localStorageから設定を復元
+      const saved = localStorage.getItem('searchViewMode');
+      if (saved === 'card' || saved === 'table') {
+        setUserPreference(saved);
+      }
+
+      // 画面サイズチェック
       const checkScreenSize = () => {
         setIsMobileOrTablet(window.innerWidth < 1024);
       };
