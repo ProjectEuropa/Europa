@@ -9,6 +9,10 @@ import type { MatchFile, TeamFile } from '@/types/file';
 import type { PaginationMeta } from '@/types/search';
 import { Download, Trash2, AlertCircle, SearchX, ChevronLeft, ChevronRight, LayoutGrid, LayoutList, User, Calendar, FileText, Tag } from 'lucide-react';
 
+// 定数定義
+const VIEW_MODE_STORAGE_KEY = 'searchViewMode';
+const TABLET_BREAKPOINT = 1024;
+
 interface SearchResultsProps {
   /** 検索結果データ */
   results: (TeamFile | MatchFile)[];
@@ -49,6 +53,9 @@ export const SearchResults = memo<SearchResultsProps>(
       name: string;
     } | null>(null);
 
+    // クライアントサイドマウント状態の追跡
+    const [hasMounted, setHasMounted] = useState(false);
+
     // レスポンシブ判定（タブレット以下: 1024px未満）
     const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
 
@@ -58,17 +65,18 @@ export const SearchResults = memo<SearchResultsProps>(
     // クライアントサイドマウント後にlocalStorageを読み込み、画面サイズを監視
     useEffect(() => {
       // localStorageから設定を復元
-      const saved = localStorage.getItem('searchViewMode');
+      const saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
       if (saved === 'card' || saved === 'table') {
         setUserPreference(saved);
       }
 
       // 画面サイズチェック
       const checkScreenSize = () => {
-        setIsMobileOrTablet(window.innerWidth < 1024);
+        setIsMobileOrTablet(window.innerWidth < TABLET_BREAKPOINT);
       };
 
       checkScreenSize();
+      setHasMounted(true);
       window.addEventListener('resize', checkScreenSize);
       return () => window.removeEventListener('resize', checkScreenSize);
     }, []);
@@ -79,7 +87,7 @@ export const SearchResults = memo<SearchResultsProps>(
     // ビューモード手動変更（デスクトップのみ有効）
     const setViewMode = (mode: 'table' | 'card') => {
       setUserPreference(mode);
-      localStorage.setItem('searchViewMode', mode);
+      localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
     };
 
     const deleteFileMutation = useDeleteFile();
@@ -186,6 +194,15 @@ export const SearchResults = memo<SearchResultsProps>(
 
       return buttons;
     }, [meta]);
+
+    // クライアントサイドマウント前はローディング表示（UIちらつき防止）
+    if (!hasMounted) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <div className="w-8 h-8 border-2 border-transparent border-t-cyan-400 rounded-full animate-spin"></div>
+        </div>
+      );
+    }
 
     if (loading) {
       return (
