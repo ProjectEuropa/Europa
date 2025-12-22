@@ -5,6 +5,14 @@ import { SearchResults } from '@/components/search/SearchResults';
 import type { MatchFile, TeamFile } from '@/types/file';
 import type { PaginationMeta } from '@/types/search';
 
+// framer-motionをモック
+vi.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <div {...props}>{children}</div>,
+  },
+  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
+}));
+
 // useDeleteFileフックをモック
 vi.mock('@/hooks/useSearch', () => ({
   useDeleteFile: vi.fn(() => ({
@@ -93,6 +101,14 @@ describe('SearchResults', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // デスクトップサイズ（1024px以上）をデフォルトに設定
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1200,
+    });
+    // localStorageをクリア
+    localStorage.clear();
   });
 
   describe('基本的なレンダリング', () => {
@@ -430,8 +446,12 @@ describe('SearchResults', () => {
         />
       );
 
-      // Tabキーでボタンにフォーカス
-      await user.tab();
+      // Tabキーでビュー切り替えボタンを通過してダウンロードボタンにフォーカス
+      // （デスクトップではビュー切り替えボタンが先に来る）
+      await user.tab(); // テーブル表示ボタン
+      await user.tab(); // カード表示ボタン
+      await user.tab(); // ダウンロードボタン
+
       const downloadButton = screen.getByLabelText(
         'test-team.okeをダウンロード'
       );
@@ -608,6 +628,115 @@ describe('SearchResults', () => {
 
       // 削除モーダルが表示される
       expect(screen.getByTestId('delete-modal')).toBeInTheDocument();
+    });
+  });
+
+  describe('ビュー切り替え機能', () => {
+    it('should show view toggle buttons on desktop', () => {
+      // デスクトップサイズを設定
+      Object.defineProperty(window, 'innerWidth', { value: 1200 });
+
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+        />
+      );
+
+      expect(screen.getByLabelText('テーブル表示')).toBeInTheDocument();
+      expect(screen.getByLabelText('カード表示')).toBeInTheDocument();
+    });
+
+    it('should hide view toggle buttons on mobile/tablet', () => {
+      // モバイルサイズを設定
+      Object.defineProperty(window, 'innerWidth', { value: 768 });
+
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+        />
+      );
+
+      // ビュー切り替えボタンは非表示
+      expect(screen.queryByLabelText('テーブル表示')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('カード表示')).not.toBeInTheDocument();
+    });
+
+    it('should switch to card view when card button is clicked', async () => {
+      const user = userEvent.setup();
+      Object.defineProperty(window, 'innerWidth', { value: 1200 });
+
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+        />
+      );
+
+      const cardButton = screen.getByLabelText('カード表示');
+      await user.click(cardButton);
+
+      // localStorageに保存されていることを確認
+      expect(localStorage.getItem('searchViewMode')).toBe('card');
+    });
+
+    it('should persist view mode preference in localStorage', async () => {
+      const user = userEvent.setup();
+      Object.defineProperty(window, 'innerWidth', { value: 1200 });
+
+      const { rerender } = render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+        />
+      );
+
+      // カードビューに切り替え
+      const cardButton = screen.getByLabelText('カード表示');
+      await user.click(cardButton);
+
+      expect(localStorage.getItem('searchViewMode')).toBe('card');
+
+      // 再レンダリングしても設定が維持されている
+      rerender(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+        />
+      );
+
+      // カードビューの設定が維持されていることを確認
+      expect(localStorage.getItem('searchViewMode')).toBe('card');
+    });
+
+    it('should display file data correctly in card view on mobile', () => {
+      // モバイルサイズを設定（カードビューが強制される）
+      Object.defineProperty(window, 'innerWidth', { value: 375 });
+
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+        />
+      );
+
+      // カードビューでもファイル情報が表示される
+      expect(screen.getByText('test-team.oke')).toBeInTheDocument();
+      expect(screen.getByText('testuser')).toBeInTheDocument();
+      expect(screen.getByText('Test team file comment')).toBeInTheDocument();
     });
   });
 });
