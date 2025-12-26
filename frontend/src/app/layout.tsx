@@ -11,12 +11,15 @@ export const metadata: Metadata = {
   title: 'EUROPA',
   description:
     'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work'),
   openGraph: {
     title: 'EUROPA',
     description:
       'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
     type: 'website',
     locale: 'ja_JP',
+    url: 'https://project-europa.work',
+    siteName: 'EUROPA',
   },
   twitter: {
     card: 'summary_large_image',
@@ -24,7 +27,6 @@ export const metadata: Metadata = {
     description:
       'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
   },
-  metadataBase: new URL('https://project-europa.work'),
 };
 
 export default function RootLayout({
@@ -34,34 +36,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className="scroll-smooth">
-      <head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="theme-color" content="#010220" />
-        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-        {/* OGP & Twitter meta tags */}
-        <meta property="og:title" content="EUROPA" />
-        <meta
-          property="og:description"
-          content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム"
-        />
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:image"
-          content="https://project-europa.work/icon.png"
-        />
-        <meta property="og:url" content="https://project-europa.work" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="EUROPA" />
-        <meta
-          name="twitter:description"
-          content="カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム"
-        />
-        <meta
-          name="twitter:image"
-          content="https://project-europa.work/icon.png"
-        />
-      </head>
       <body
         className={
           inter.className +
