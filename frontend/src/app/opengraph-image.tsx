@@ -18,10 +18,17 @@ export default async function Image(): Promise<ImageResponse> {
     const imageResponse = await fetch(imageUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
     // Edge Runtime互換のbase64エンコーディング（BufferではなくWeb標準APIを使用）
+    // reduceを使用してcall stack問題を回避
     const base64Image = btoa(
-        String.fromCharCode(...new Uint8Array(imageBuffer))
+        new Uint8Array(imageBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
     );
     const imageDataUrl = `data:image/jpeg;base64,${base64Image}`;
+
+    // Google FontsからInterフォントを取得
+    const fontResponse = await fetch(
+        new URL('https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff')
+    );
+    const fontData = await fontResponse.arrayBuffer();
 
     return new ImageResponse(
         (
@@ -34,7 +41,7 @@ export default async function Image(): Promise<ImageResponse> {
                     justifyContent: 'center',
                     position: 'relative',
                     overflow: 'hidden',
-                    fontFamily: 'sans-serif',
+                    fontFamily: 'Inter',
                 }}
             >
                 {/* 背景画像 */}
@@ -108,7 +115,7 @@ export default async function Image(): Promise<ImageResponse> {
                     <div style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
                         <div style={{ width: '40px', height: '40px', borderBottom: '2px solid rgba(255, 255, 255, 0.25)', borderLeft: '2px solid rgba(255, 255, 255, 0.25)' }} />
                         <div style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                            <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'monospace', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>JUPITER_IV // GALILEAN_MOON</div>
+                            <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'Inter', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>JUPITER_IV // GALILEAN_MOON</div>
                             <div style={{ fontSize: '10px', color: '#00c8ff', fontWeight: 800, marginTop: '5px', letterSpacing: '0.1em', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>© 2016~{new Date().getFullYear()} PROJECT EUROPA</div>
                         </div>
                     </div>
@@ -127,6 +134,14 @@ export default async function Image(): Promise<ImageResponse> {
         ),
         {
             ...size,
+            fonts: [
+                {
+                    name: 'Inter',
+                    data: fontData,
+                    style: 'normal',
+                    weight: 400,
+                },
+            ],
         }
     );
 }
