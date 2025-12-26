@@ -19,11 +19,12 @@ describe('SearchAutocomplete', () => {
     isLoading: false,
   };
 
-  // Helper function to find text that may be split across multiple elements
+  // Helper function to find text within list items
   const getByTextContent = (text: string) => {
-    return screen.getByText((content, element) => {
-      return element?.textContent === text;
-    });
+    const items = screen.getAllByRole('option');
+    const item = items.find((el) => el.textContent?.includes(text));
+    if (!item) throw new Error(`Could not find item with text: ${text}`);
+    return item;
   };
 
   describe('Rendering', () => {
