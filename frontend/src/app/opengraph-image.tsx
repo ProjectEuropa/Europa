@@ -13,27 +13,53 @@ export const size = {
 export const contentType = 'image/png';
 
 export default async function Image(): Promise<ImageResponse> {
-    // 背景画像をfetchで取得（Edge Runtime互換）
-    const imageUrl = new URL('/main.jpg', process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work');
-    const imageResponse = await fetch(imageUrl);
-    const imageBuffer = await imageResponse.arrayBuffer();
-    // Edge Runtime互換のbase64エンコーディング（BufferではなくWeb標準APIを使用）
-    // reduceを使用してcall stack問題を回避
-    const base64Image = btoa(
-        new Uint8Array(imageBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
-    );
-    const imageDataUrl = `data:image/jpeg;base64,${base64Image}`;
+    let imageDataUrl: string;
+    let fontData: ArrayBuffer;
 
-    // Google FontsからInterフォントを取得
-    const fontResponse = await fetch(
-        new URL('https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff')
-    );
-    const fontData = await fontResponse.arrayBuffer();
+    try {
+        // 背景画像をfetchで取得（Edge Runtime互換）
+        const imageUrl = new URL('/main.jpg', process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work');
+        const imageResponse = await fetch(imageUrl);
+
+        if (!imageResponse.ok) {
+            throw new Error(`Failed to fetch image: ${imageResponse.status}`);
+        }
+
+        const imageBuffer = await imageResponse.arrayBuffer();
+        // Edge Runtime互換のbase64エンコーディング（BufferではなくWeb標準APIを使用）
+        // reduceを使用してcall stack問題を回避
+        const base64Image = btoa(
+            new Uint8Array(imageBuffer).reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+        imageDataUrl = `data:image/jpeg;base64,${base64Image}`;
+    } catch (error) {
+        console.error('Failed to load background image:', error);
+        // フォールバック: 単色背景を使用
+        imageDataUrl = '';
+    }
+
+    try {
+        // Google FontsからInterフォントを取得
+        const fontResponse = await fetch(
+            new URL('https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff')
+        );
+
+        if (!fontResponse.ok) {
+            throw new Error(`Failed to fetch font: ${fontResponse.status}`);
+        }
+
+        fontData = await fontResponse.arrayBuffer();
+    } catch (error) {
+        console.error('Failed to load Inter font:', error);
+        // フォールバック: フォント無しで続行（システムフォントが使用される）
+        fontData = new ArrayBuffer(0);
+    }
 
     return new ImageResponse(
         (
             <div
                 style={{
+                    display: 'flex',
                     width: '100%',
                     height: '100%',
                     flexDirection: 'column',
@@ -45,23 +71,37 @@ export default async function Image(): Promise<ImageResponse> {
                 }}
             >
                 {/* 背景画像 */}
-                <img
-                    src={imageDataUrl}
-                    alt=""
-                    role="presentation"
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                    }}
-                />
+                {imageDataUrl ? (
+                    <img
+                        src={imageDataUrl}
+                        alt=""
+                        role="presentation"
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                        }}
+                    />
+                ) : (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                        }}
+                    />
+                )}
 
                 {/* UIオーバーレイ */}
                 <div
                     style={{
+                        display: 'flex',
                         position: 'absolute',
                         inset: 0,
                         padding: '60px',
@@ -71,8 +111,8 @@ export default async function Image(): Promise<ImageResponse> {
                     }}
                 >
                     {/* ヘッダー */}
-                    <div style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div style={{ flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <div style={{ fontSize: '12px', fontWeight: 900, color: '#00c8ff', letterSpacing: '0.4em', marginBottom: '8px', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>ORBITAL PHASE: ACTIVE</div>
                             <div style={{ height: '2px', width: '60px', background: 'linear-gradient(90deg, #00c8ff, transparent)' }} />
                         </div>
@@ -80,7 +120,7 @@ export default async function Image(): Promise<ImageResponse> {
                     </div>
 
                     {/* 中央ロゴ */}
-                    <div style={{ flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <div
                             style={{
                                 fontSize: '110px',
@@ -112,9 +152,9 @@ export default async function Image(): Promise<ImageResponse> {
                     </div>
 
                     {/* フッター */}
-                    <div style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                         <div style={{ width: '40px', height: '40px', borderBottom: '2px solid rgba(255, 255, 255, 0.25)', borderLeft: '2px solid rgba(255, 255, 255, 0.25)' }} />
-                        <div style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                             <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'Inter', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>JUPITER_IV // GALILEAN_MOON</div>
                             <div style={{ fontSize: '10px', color: '#00c8ff', fontWeight: 800, marginTop: '5px', letterSpacing: '0.1em', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>© 2016~{new Date().getFullYear()} PROJECT EUROPA</div>
                         </div>
@@ -134,14 +174,14 @@ export default async function Image(): Promise<ImageResponse> {
         ),
         {
             ...size,
-            fonts: [
+            fonts: fontData.byteLength > 0 ? [
                 {
                     name: 'Inter',
                     data: fontData,
                     style: 'normal',
                     weight: 400,
                 },
-            ],
+            ] : [],
         }
     );
 }
