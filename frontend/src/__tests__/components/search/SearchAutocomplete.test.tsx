@@ -19,13 +19,20 @@ describe('SearchAutocomplete', () => {
     isLoading: false,
   };
 
+  // Helper function to find text that may be split across multiple elements
+  const getByTextContent = (text: string) => {
+    return screen.getByText((content, element) => {
+      return element?.textContent === text;
+    });
+  };
+
   describe('Rendering', () => {
     it('should render suggestions correctly', () => {
       render(<SearchAutocomplete {...defaultProps} />);
 
-      expect(screen.getByText('React')).toBeInTheDocument();
-      expect(screen.getByText('TypeScript')).toBeInTheDocument();
-      expect(screen.getByText('JavaScript')).toBeInTheDocument();
+      expect(getByTextContent('React')).toBeInTheDocument();
+      expect(getByTextContent('TypeScript')).toBeInTheDocument();
+      expect(getByTextContent('JavaScript')).toBeInTheDocument();
     });
 
     it('should not render when isOpen is false', () => {
@@ -37,7 +44,7 @@ describe('SearchAutocomplete', () => {
     it('should highlight selected item', () => {
       render(<SearchAutocomplete {...defaultProps} selectedIndex={0} />);
 
-      const firstItem = screen.getByText('React').closest('li');
+      const firstItem = getByTextContent('React').closest('li');
       expect(firstItem).toHaveClass('bg-slate-700/50');
     });
 
@@ -69,7 +76,7 @@ describe('SearchAutocomplete', () => {
       const onSelect = vi.fn();
       render(<SearchAutocomplete {...defaultProps} onSelect={onSelect} />);
 
-      const reactItem = screen.getByText('React');
+      const reactItem = getByTextContent('React');
       fireEvent.click(reactItem);
 
       expect(onSelect).toHaveBeenCalledWith('React');
@@ -80,7 +87,7 @@ describe('SearchAutocomplete', () => {
       const onHover = vi.fn();
       render(<SearchAutocomplete {...defaultProps} onHover={onHover} />);
 
-      const reactItem = screen.getByText('React').closest('li')!;
+      const reactItem = getByTextContent('React').closest('li')!;
       fireEvent.mouseEnter(reactItem);
 
       expect(onHover).toHaveBeenCalledWith(0);
@@ -90,8 +97,8 @@ describe('SearchAutocomplete', () => {
       const onSelect = vi.fn();
       render(<SearchAutocomplete {...defaultProps} onSelect={onSelect} />);
 
-      fireEvent.click(screen.getByText('React'));
-      fireEvent.click(screen.getByText('TypeScript'));
+      fireEvent.click(getByTextContent('React'));
+      fireEvent.click(getByTextContent('TypeScript'));
 
       expect(onSelect).toHaveBeenCalledTimes(2);
       expect(onSelect).toHaveBeenNthCalledWith(1, 'React');
@@ -157,14 +164,14 @@ describe('SearchAutocomplete', () => {
     it('should mark selected item with aria-selected', () => {
       render(<SearchAutocomplete {...defaultProps} selectedIndex={1} />);
 
-      const selectedItem = screen.getByText('TypeScript').closest('li');
+      const selectedItem = getByTextContent('TypeScript').closest('li');
       expect(selectedItem).toHaveAttribute('aria-selected', 'true');
     });
 
     it('should mark non-selected items with aria-selected=false', () => {
       render(<SearchAutocomplete {...defaultProps} selectedIndex={1} />);
 
-      const nonSelectedItem = screen.getByText('React').closest('li');
+      const nonSelectedItem = getByTextContent('React').closest('li');
       expect(nonSelectedItem).toHaveAttribute('aria-selected', 'false');
     });
 
@@ -205,12 +212,10 @@ describe('SearchAutocomplete', () => {
         { value: 'Type-Script', type: 'tag' as const, score: 90 },
       ];
 
-      render(<SearchAutocomplete {...defaultProps} suggestions={specialSuggestions} />);
+      render(<SearchAutocomplete {...defaultProps} suggestions={specialSuggestions} query="" />);
 
       // highlightMatchがテキストを分割する可能性があるため、部分一致で検索
-      expect(screen.getByText((content, element) => {
-        return element?.textContent === 'React@18.0';
-      })).toBeInTheDocument();
+      expect(screen.getByText('React@18.0')).toBeInTheDocument();
       expect(screen.getByText('Type-Script')).toBeInTheDocument();
     });
 
