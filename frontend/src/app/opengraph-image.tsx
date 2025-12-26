@@ -17,7 +17,10 @@ export default async function Image(): Promise<ImageResponse> {
     const imageUrl = new URL('/main.jpg', process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work');
     const imageResponse = await fetch(imageUrl);
     const imageBuffer = await imageResponse.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString('base64');
+    // Edge Runtime互換のbase64エンコーディング（BufferではなくWeb標準APIを使用）
+    const base64Image = btoa(
+        String.fromCharCode(...new Uint8Array(imageBuffer))
+    );
     const imageDataUrl = `data:image/jpeg;base64,${base64Image}`;
 
     return new ImageResponse(
