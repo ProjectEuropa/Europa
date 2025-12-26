@@ -273,6 +273,7 @@ export const SumDownloadForm = ({
       {/* オートコンプリートドロップダウン */}
       {enableAutocomplete && (
         <SearchAutocomplete
+          id="sumdownload-suggestions"
           suggestions={suggestions}
           query={queryValue}
           isOpen={showAutocomplete}

@@ -26,6 +26,8 @@ interface SearchAutocompleteProps {
   onHover: (index: number) => void;
   /** ローディング状態 */
   isLoading?: boolean;
+  /** ARIA用のID（aria-controlsと連携） */
+  id?: string;
 }
 
 /**
@@ -39,6 +41,7 @@ export const SearchAutocomplete = memo(function SearchAutocomplete({
   onSelect,
   onHover,
   isLoading = false,
+  id,
 }: SearchAutocompleteProps) {
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -72,13 +75,11 @@ export const SearchAutocomplete = memo(function SearchAutocomplete({
   // アイコンを取得
   const getIcon = (type: Suggestion['type']) => {
     switch (type) {
-      case 'tag':
-        return <Tag size={10} className="text-slate-500" />;
       case 'popular':
         return <TrendingUp size={10} className="text-slate-500" />;
       case 'history':
         return <Search size={10} className="text-slate-500" />;
-      default:
+      default: // 'tag' and other types
         return <Tag size={10} className="text-slate-500" />;
     }
   };
@@ -91,6 +92,7 @@ export const SearchAutocomplete = memo(function SearchAutocomplete({
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          id={id}
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -4 }}

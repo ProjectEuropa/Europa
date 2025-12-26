@@ -317,6 +317,7 @@ export function SearchForm({
       {/* オートコンプリートドロップダウン */}
       {enableAutocomplete && (
         <SearchAutocomplete
+          id="search-suggestions"
           suggestions={suggestions}
           query={query}
           isOpen={showAutocomplete}

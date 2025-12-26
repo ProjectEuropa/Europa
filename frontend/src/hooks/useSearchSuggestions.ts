@@ -25,7 +25,7 @@ interface UseSearchSuggestionsOptions {
   minQueryLength?: number;
 }
 
-interface SearchSuggestion {
+export interface SearchSuggestion {
   /** サジェスションの値 */
   value: string;
   /** サジェスションのタイプ */
@@ -37,10 +37,11 @@ interface SearchSuggestion {
 /**
  * 全タグを取得するフック（キャッシュ付き）
  */
-export function useAllTags() {
+export function useAllTags(enabled = true) {
   return useQuery({
     queryKey: SUGGESTION_QUERY_KEYS.tags,
     queryFn: fetchTags,
+    enabled,
     staleTime: 5 * 60 * 1000, // 5分間キャッシュ
     gcTime: 10 * 60 * 1000, // 10分間保持
   });
@@ -56,10 +57,10 @@ export function useSearchSuggestions({
   limit = 8,
   minQueryLength = 1,
 }: UseSearchSuggestionsOptions) {
-  const { data: allTags = [], isLoading, error } = useAllTags();
+  const { data: allTags = [], isLoading, error } = useAllTags(enabled);
 
   // クエリに基づいてサジェスションをフィルタリング・生成
-  const suggestions = useMemo((): SearchSuggestion[] => {
+  const filteredSuggestions = useMemo((): SearchSuggestion[] => {
     const trimmedQuery = query.trim().toLowerCase();
 
     // 最小文字数未満は空配列
@@ -79,7 +80,7 @@ export function useSearchSuggestions({
         }
         // 前方一致は高スコア
         else if (lowerTag.startsWith(trimmedQuery)) {
-          score = 80 - trimmedQuery.length; // 短いクエリほど高スコア
+          score = 80 + trimmedQuery.length; // 長いクエリほど高スコア（より具体的）
         }
         // 部分一致
         else if (lowerTag.includes(trimmedQuery)) {
@@ -118,7 +119,7 @@ export function useSearchSuggestions({
 
   return {
     /** フィルタリングされたサジェスション */
-    suggestions: query.trim().length >= minQueryLength ? suggestions : popularSuggestions,
+    suggestions: query.trim().length >= minQueryLength ? filteredSuggestions : popularSuggestions,
     /** 人気タグ（フォーカス時に表示用） */
     popularSuggestions,
     /** ローディング状態 */
@@ -126,7 +127,7 @@ export function useSearchSuggestions({
     /** エラー */
     error,
     /** サジェスションが存在するか */
-    hasSuggestions: suggestions.length > 0 || popularSuggestions.length > 0,
+    hasSuggestions: filteredSuggestions.length > 0 || popularSuggestions.length > 0,
   };
 }
 
