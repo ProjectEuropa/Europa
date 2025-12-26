@@ -71,7 +71,7 @@ export default async function Image(): Promise<ImageResponse> {
                     }}
                 >
                     {/* ヘッダー */}
-                    <div style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div style={{ flexDirection: 'column' }}>
                             <div style={{ fontSize: '12px', fontWeight: 900, color: '#00c8ff', letterSpacing: '0.4em', marginBottom: '8px', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>ORBITAL PHASE: ACTIVE</div>
                             <div style={{ height: '2px', width: '60px', background: 'linear-gradient(90deg, #00c8ff, transparent)' }} />
@@ -112,7 +112,7 @@ export default async function Image(): Promise<ImageResponse> {
                     </div>
 
                     {/* フッター */}
-                    <div style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <div style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                         <div style={{ width: '40px', height: '40px', borderBottom: '2px solid rgba(255, 255, 255, 0.25)', borderLeft: '2px solid rgba(255, 255, 255, 0.25)' }} />
                         <div style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                             <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'Inter', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>JUPITER_IV // GALILEAN_MOON</div>
