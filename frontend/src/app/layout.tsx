@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   description:
     'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work'),
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
+    apple: '/apple-touch-icon.svg',
+  },
   openGraph: {
     title: 'EUROPA',
     description:
