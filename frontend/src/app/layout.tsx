@@ -18,7 +18,7 @@ export const metadata: Metadata = {
       'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
     type: 'website',
     locale: 'ja_JP',
-    url: 'https://project-europa.work',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work',
     siteName: 'EUROPA',
   },
   twitter: {

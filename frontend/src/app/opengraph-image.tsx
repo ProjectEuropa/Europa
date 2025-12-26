@@ -1,8 +1,8 @@
 import { ImageResponse } from 'next/og';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 export const dynamic = 'force-static';
+export const runtime = 'edge';
+export const revalidate = 0;
 
 export const alt = 'PROJECT EUROPA - OKE Sharing Platform';
 export const size = {
@@ -12,11 +12,12 @@ export const size = {
 
 export const contentType = 'image/png';
 
-export default function Image() {
-    // 背景画像をBase64エンコード
-    const imagePath = join(process.cwd(), 'public', 'main.jpg');
-    const imageBuffer = readFileSync(imagePath);
-    const base64Image = imageBuffer.toString('base64');
+export default async function Image(): Promise<ImageResponse> {
+    // 背景画像をfetchで取得（Edge Runtime互換）
+    const imageUrl = new URL('/main.jpg', process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work');
+    const imageResponse = await fetch(imageUrl);
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const base64Image = Buffer.from(imageBuffer).toString('base64');
     const imageDataUrl = `data:image/jpeg;base64,${base64Image}`;
 
     return new ImageResponse(
@@ -25,7 +26,6 @@ export default function Image() {
                 style={{
                     width: '100%',
                     height: '100%',
-                    display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -38,6 +38,7 @@ export default function Image() {
                 <img
                     src={imageDataUrl}
                     alt=""
+                    role="presentation"
                     style={{
                         position: 'absolute',
                         top: 0,
@@ -54,23 +55,22 @@ export default function Image() {
                         position: 'absolute',
                         inset: 0,
                         padding: '60px',
-                        display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
                         zIndex: 10,
                     }}
                 >
                     {/* ヘッダー */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <div style={{ fontSize: '12px', fontWeight: 900, color: '#00c8ff', letterSpacing: '0.4em', marginBottom: '8px', display: 'flex', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>ORBITAL PHASE: ACTIVE</div>
-                            <div style={{ height: '2px', width: '60px', background: 'linear-gradient(90deg, #00c8ff, transparent)', display: 'flex' }} />
+                    <div style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ flexDirection: 'column' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 900, color: '#00c8ff', letterSpacing: '0.4em', marginBottom: '8px', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>ORBITAL PHASE: ACTIVE</div>
+                            <div style={{ height: '2px', width: '60px', background: 'linear-gradient(90deg, #00c8ff, transparent)' }} />
                         </div>
-                        <div style={{ width: '40px', height: '40px', borderTop: '2px solid rgba(255, 255, 255, 0.25)', borderRight: '2px solid rgba(255, 255, 255, 0.25)', display: 'flex' }} />
+                        <div style={{ width: '40px', height: '40px', borderTop: '2px solid rgba(255, 255, 255, 0.25)', borderRight: '2px solid rgba(255, 255, 255, 0.25)' }} />
                     </div>
 
                     {/* 中央ロゴ */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{ flexDirection: 'column', alignItems: 'center' }}>
                         <div
                             style={{
                                 fontSize: '110px',
@@ -81,7 +81,6 @@ export default function Image() {
                                 textShadow: '0 4px 30px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 0, 0, 0.5)',
                                 paddingLeft: '0.5em',
                                 lineHeight: 1,
-                                display: 'flex',
                             }}
                         >
                             EUROPA
@@ -95,7 +94,6 @@ export default function Image() {
                                 marginTop: '25px',
                                 textTransform: 'uppercase',
                                 paddingLeft: '0.8em',
-                                display: 'flex',
                                 textShadow: '0 2px 10px rgba(0, 0, 0, 0.8)',
                             }}
                         >
@@ -104,11 +102,11 @@ export default function Image() {
                     </div>
 
                     {/* フッター */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <div style={{ width: '40px', height: '40px', borderBottom: '2px solid rgba(255, 255, 255, 0.25)', borderLeft: '2px solid rgba(255, 255, 255, 0.25)', display: 'flex' }} />
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                            <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'monospace', display: 'flex', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>JUPITER_IV // GALILEAN_MOON</div>
-                            <div style={{ fontSize: '10px', color: '#00c8ff', fontWeight: 800, marginTop: '5px', letterSpacing: '0.1em', display: 'flex', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>© 2016~{new Date().getFullYear()} PROJECT EUROPA</div>
+                    <div style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                        <div style={{ width: '40px', height: '40px', borderBottom: '2px solid rgba(255, 255, 255, 0.25)', borderLeft: '2px solid rgba(255, 255, 255, 0.25)' }} />
+                        <div style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                            <div style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)', fontFamily: 'monospace', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>JUPITER_IV // GALILEAN_MOON</div>
+                            <div style={{ fontSize: '10px', color: '#00c8ff', fontWeight: 800, marginTop: '5px', letterSpacing: '0.1em', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}>© 2016~{new Date().getFullYear()} PROJECT EUROPA</div>
                         </div>
                     </div>
                 </div>
@@ -120,7 +118,6 @@ export default function Image() {
                         inset: 0,
                         background: 'radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.4) 100%)',
                         pointerEvents: 'none',
-                        display: 'flex',
                     }}
                 />
             </div>
