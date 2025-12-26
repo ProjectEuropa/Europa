@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "next dev -p 3002 --turbopack",
     "build": "next build",
+    "generate:og": "node scripts/generate-og-image.mjs",
+    "prebuild": "node scripts/generate-og-image.mjs",
     "start": "next start",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint --write ./src",

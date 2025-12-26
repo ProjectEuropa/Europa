@@ -20,12 +20,21 @@ export const metadata: Metadata = {
     locale: 'ja_JP',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work',
     siteName: 'EUROPA',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'PROJECT EUROPA - OKE Sharing Platform',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'EUROPA',
     description:
       'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+    images: ['/og-image.jpg'],
   },
 };
 
