@@ -1,6 +1,7 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SumDownloadForm } from '@/components/features/sumdownload/SumDownloadForm';
 
 // lucide-reactアイコンをモック
@@ -8,6 +9,33 @@ vi.mock('lucide-react', () => ({
   Search: () => <div data-testid="search-icon">🔍</div>,
   X: () => <div data-testid="x-icon">✕</div>,
 }));
+
+// useSearchSuggestionsをモック
+vi.mock('@/hooks/useSearchSuggestions', () => ({
+  useSearchSuggestions: () => ({
+    suggestions: [],
+    isLoading: false,
+    updateQuery: vi.fn(),
+    clearSuggestions: vi.fn(),
+  }),
+  highlightMatch: (text: string) => [{ text, isMatch: false }],
+}));
+
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+const renderWithProviders = (ui: React.ReactElement) => {
+  const queryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+  );
+};
 
 describe('SumDownloadForm', () => {
   const mockOnSearch = vi.fn();
@@ -17,7 +45,7 @@ describe('SumDownloadForm', () => {
   });
 
   it('renders form with correct placeholder for team search', () => {
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -31,7 +59,7 @@ describe('SumDownloadForm', () => {
   });
 
   it('renders form with correct placeholder for match search', () => {
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="match"
         onSearch={mockOnSearch}
@@ -44,7 +72,7 @@ describe('SumDownloadForm', () => {
   });
 
   it('renders search button', () => {
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -58,7 +86,7 @@ describe('SumDownloadForm', () => {
   });
 
   it('disables form elements when loading', () => {
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -74,7 +102,7 @@ describe('SumDownloadForm', () => {
   });
 
   it('displays loading spinner when loading', () => {
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -90,7 +118,7 @@ describe('SumDownloadForm', () => {
   it('calls onSearch with correct query when form is submitted', async () => {
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -112,7 +140,7 @@ describe('SumDownloadForm', () => {
   it('calls onSearch when Enter key is pressed', async () => {
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -131,7 +159,7 @@ describe('SumDownloadForm', () => {
   });
 
   it('displays initial query when provided', () => {
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -147,7 +175,7 @@ describe('SumDownloadForm', () => {
   it('trims whitespace from search query', async () => {
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -169,7 +197,7 @@ describe('SumDownloadForm', () => {
   it('validates query submission', async () => {
     const user = userEvent.setup();
 
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}
@@ -190,7 +218,7 @@ describe('SumDownloadForm', () => {
   });
 
   it('applies correct styling', () => {
-    render(
+    renderWithProviders(
       <SumDownloadForm
         searchType="team"
         onSearch={mockOnSearch}

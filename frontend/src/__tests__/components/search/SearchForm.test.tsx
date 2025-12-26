@@ -23,6 +23,26 @@ vi.mock('@/hooks/useSearch', () => ({
   })),
 }));
 
+// useSearchSuggestionsフックをモック
+vi.mock('@/hooks/useSearchSuggestions', () => ({
+  useSearchSuggestions: vi.fn(() => ({
+    suggestions: [],
+    popularSuggestions: [],
+    isLoading: false,
+    error: null,
+    hasSuggestions: false,
+  })),
+  highlightMatch: vi.fn((text: string) => [{ text, isMatch: false }]),
+}));
+
+// framer-motionをモック
+vi.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <div {...props}>{children}</div>,
+  },
+  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
+}));
+
 describe('SearchForm', () => {
   const mockPush = vi.fn();
   const mockSearchParams = new URLSearchParams();
