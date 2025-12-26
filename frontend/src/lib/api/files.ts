@@ -342,8 +342,13 @@ export const deleteFile = async (
  * タグ一覧取得
  */
 export const fetchTags = async (): Promise<string[]> => {
-  const response = await apiClient.get<{ tags: string[] }>('/api/v2/files/tags');
-  return response.data?.tags || [];
+  try {
+    const response = await apiClient.get<{ tags?: string[] }>('/api/v2/files/tags');
+    return response.data?.tags || [];
+  } catch (error) {
+    console.error('Failed to fetch tags:', error);
+    return []; // Return empty array on error
+  }
 };
 
 export const filesApi = {
