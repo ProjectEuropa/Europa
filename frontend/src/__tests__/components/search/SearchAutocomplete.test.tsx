@@ -207,7 +207,10 @@ describe('SearchAutocomplete', () => {
 
       render(<SearchAutocomplete {...defaultProps} suggestions={specialSuggestions} />);
 
-      expect(screen.getByText('React@18.0')).toBeInTheDocument();
+      // highlightMatchがテキストを分割する可能性があるため、部分一致で検索
+      expect(screen.getByText((content, element) => {
+        return element?.textContent === 'React@18.0';
+      })).toBeInTheDocument();
       expect(screen.getByText('Type-Script')).toBeInTheDocument();
     });
 
