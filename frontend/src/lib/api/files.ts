@@ -343,7 +343,7 @@ export const deleteFile = async (
  */
 export const fetchTags = async (): Promise<string[]> => {
   try {
-    const response = await apiClient.get<{ data?: { tags?: string[] } }>('/api/v2/files/tags');
+    const response = await apiClient.get<{ tags?: string[] }>('/api/v2/files/tags');
     return response.data?.tags || [];
   } catch (error) {
     console.error('Failed to fetch tags:', error);
