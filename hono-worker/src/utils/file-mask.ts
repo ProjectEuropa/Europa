@@ -8,11 +8,14 @@
  * @returns マスク処理されたファイルオブジェクト
  */
 export function maskFileIfNotDownloadable(file: Record<string, unknown>): Record<string, unknown> {
-    const now = new Date();
+    // DBのdownloadable_atはJSTのローカル時刻として保存されている
+    // 現在時刻もJSTで比較する必要がある
+    const nowUtc = new Date();
+    const nowJst = new Date(nowUtc.getTime() + 9 * 60 * 60 * 1000);
     const downloadableAt = file.downloadable_at ? new Date(file.downloadable_at as string) : null;
 
     // downloadable_atが設定されていない、または過ぎている場合はそのまま返す
-    if (!downloadableAt || now >= downloadableAt) {
+    if (!downloadableAt || nowJst >= downloadableAt) {
         return file;
     }
 
