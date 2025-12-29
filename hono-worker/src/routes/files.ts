@@ -9,6 +9,7 @@ import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth';
 import { generateDeletePassword, hashDeletePassword, verifyDeletePassword } from '../utils/password';
 import { maskFilesIfNotDownloadable } from '../utils/file-mask';
 import { buildFileQueryWhere } from '../utils/query-builder';
+import { getCurrentJstTime } from '../utils/timezone';
 
 const files = new Hono<{ Bindings: Env }>();
 
@@ -209,9 +210,7 @@ files.get('/:id', async (c) => {
   if (file.downloadable_at) {
     // DBのdownloadable_atはJSTのローカル時刻として保存されている（タイムゾーン情報なし）
     // 現在時刻もJSTで比較する必要がある
-    const nowUtc = new Date();
-    // UTCからJSTへ変換（+9時間）
-    const nowJst = new Date(nowUtc.getTime() + 9 * 60 * 60 * 1000);
+    const nowJst = getCurrentJstTime();
 
     // DBの値を文字列として取得し、JSTローカル時刻としてパース
     const dateStr = (file.downloadable_at as unknown) instanceof Date
@@ -517,8 +516,7 @@ files.post('/bulk-download', optionalAuthMiddleware, async (c) => {
   let totalSize = 0;
 
   // 現在時刻をJSTで取得（ループ外で1回だけ計算）
-  const nowUtcForBulk = new Date();
-  const nowJstForBulk = new Date(nowUtcForBulk.getTime() + 9 * 60 * 60 * 1000);
+  const nowJstForBulk = getCurrentJstTime();
 
   for (const file of filesList) {
     // ダウンロード可能日時のチェック

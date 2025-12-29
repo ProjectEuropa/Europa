@@ -2,6 +2,8 @@
  * ファイルのダウンロード可能日時に基づくマスク処理ユーティリティ
  */
 
+import { getCurrentJstTime } from './timezone';
+
 /**
  * ダウンロード可能日時が過ぎていない場合、コメント・タグをマスクする
  * @param file ファイルオブジェクト
@@ -10,8 +12,7 @@
 export function maskFileIfNotDownloadable(file: Record<string, unknown>): Record<string, unknown> {
     // DBのdownloadable_atはJSTのローカル時刻として保存されている
     // 現在時刻もJSTで比較する必要がある
-    const nowUtc = new Date();
-    const nowJst = new Date(nowUtc.getTime() + 9 * 60 * 60 * 1000);
+    const nowJst = getCurrentJstTime();
     const downloadableAt = file.downloadable_at ? new Date(file.downloadable_at as string) : null;
 
     // downloadable_atが設定されていない、または過ぎている場合はそのまま返す
