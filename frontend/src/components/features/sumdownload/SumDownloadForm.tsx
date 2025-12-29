@@ -4,9 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Search, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSearchSuggestions } from '@/hooks/useSearchSuggestions';
+import { useAutocomplete } from '@/hooks/useAutocomplete';
 import { SearchAutocomplete } from '@/components/search/SearchAutocomplete';
 
 const sumDownloadSearchSchema = z.object({
@@ -30,11 +31,7 @@ export const SumDownloadForm = ({
   initialQuery = '',
   enableAutocomplete = true,
 }: SumDownloadFormProps) => {
-  const [isFocused, setIsFocused] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const formRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     register,
@@ -52,40 +49,41 @@ export const SumDownloadForm = ({
   const queryValue = watch('query');
   const debouncedQuery = useDebounce(queryValue, 200);
 
-  // オートコンプリートサジェスション
-  const { suggestions, isLoading: suggestionsLoading } = useSearchSuggestions({
-    query: debouncedQuery,
-    enabled: enableAutocomplete && isFocused,
-    limit: 8,
-  });
-
-  // オートコンプリート表示判定
-  const showAutocomplete = enableAutocomplete && isFocused && !isComposing && suggestions.length > 0;
-
-  // 外側クリックでオートコンプリートを閉じる
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        setIsFocused(false);
-        setSelectedIndex(-1);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   // 検索実行
   const executeSearch = useCallback(
     (query: string) => {
       const trimmed = query.trim();
       setValue('query', trimmed);
       onSearch(trimmed);
-      setIsFocused(false);
-      setSelectedIndex(-1);
     },
     [onSearch, setValue]
   );
+
+  // オートコンプリートサジェスション
+  const { suggestions, isLoading: suggestionsLoading } = useSearchSuggestions({
+    query: debouncedQuery,
+    enabled: enableAutocomplete,
+    limit: 8,
+  });
+
+  // オートコンプリート機能
+  const {
+    isFocused,
+    selectedIndex,
+    showAutocomplete,
+    formRef,
+    inputRef,
+    handleFocus,
+    handleKeyDown: handleAutocompleteKeyDown,
+    handleSuggestionSelect: handleAutocompleteSelect,
+    handleSuggestionHover,
+    resetSelectedIndex,
+  } = useAutocomplete({
+    suggestions,
+    enabled: enableAutocomplete,
+    isComposing,
+    onExecuteSearch: executeSearch,
+  });
 
   const onSubmit = (data: SumDownloadSearchFormData) => {
     executeSearch(data.query);
@@ -94,13 +92,9 @@ export const SumDownloadForm = ({
   const handleClear = () => {
     setValue('query', '');
     onSearch('');
+    resetSelectedIndex();
     inputRef.current?.focus();
   };
-
-  // フォーカス処理
-  const handleFocus = useCallback(() => {
-    setIsFocused(true);
-  }, []);
 
   // IME入力処理
   const handleCompositionStart = useCallback(() => {
@@ -111,65 +105,13 @@ export const SumDownloadForm = ({
     setIsComposing(false);
   }, []);
 
-  // キーボードナビゲーション
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (!showAutocomplete) return;
-
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev < suggestions.length - 1 ? prev + 1 : 0
-          );
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : suggestions.length - 1
-          );
-          break;
-        case 'Enter':
-          if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-            e.preventDefault();
-            executeSearch(suggestions[selectedIndex].value);
-          }
-          break;
-        case 'Escape':
-          e.preventDefault();
-          setIsFocused(false);
-          setSelectedIndex(-1);
-          inputRef.current?.blur();
-          break;
-        case 'Tab':
-          setIsFocused(false);
-          setSelectedIndex(-1);
-          break;
-      }
-    },
-    [showAutocomplete, suggestions, selectedIndex, executeSearch]
-  );
-
-  // サジェスション選択
-  const handleSuggestionSelect = useCallback(
-    (value: string) => {
-      executeSearch(value);
-    },
-    [executeSearch]
-  );
-
-  // サジェスションホバー
-  const handleSuggestionHover = useCallback((index: number) => {
-    setSelectedIndex(index);
-  }, []);
-
   // 入力変更時に選択をリセット
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setValue('query', e.target.value);
-      setSelectedIndex(-1);
+      resetSelectedIndex();
     },
-    [setValue]
+    [setValue, resetSelectedIndex]
   );
 
   const placeholderText =
@@ -206,7 +148,7 @@ export const SumDownloadForm = ({
             disabled={loading}
             onChange={handleInputChange}
             onFocus={handleFocus}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleAutocompleteKeyDown}
             onCompositionStart={handleCompositionStart}
             onCompositionEnd={handleCompositionEnd}
             className="
@@ -278,7 +220,7 @@ export const SumDownloadForm = ({
           query={queryValue}
           isOpen={showAutocomplete}
           selectedIndex={selectedIndex}
-          onSelect={handleSuggestionSelect}
+          onSelect={handleAutocompleteSelect}
           onHover={handleSuggestionHover}
           isLoading={suggestionsLoading}
         />
