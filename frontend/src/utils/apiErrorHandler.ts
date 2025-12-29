@@ -149,14 +149,6 @@ function handleStatusError(status: number): ProcessedError {
     };
   }
 
-  if (status === 409) {
-    return {
-      ...defaultError,
-      message: 'このメールアドレスは既に使用されています。',
-      isValidationError: true,
-    };
-  }
-
   if (status === 429) {
     return {
       ...defaultError,
@@ -185,6 +177,17 @@ function handleApiError(error: ApiErrorClass): ProcessedError {
 
   if (status === 422) {
     return handleValidationError(error);
+  }
+
+  // 409 Conflict: バックエンドのメッセージを翻訳して返す
+  if (status === 409) {
+    const message =
+      error.data?.message || error.message || 'Email already exists';
+    return {
+      ...defaultError,
+      message: translateErrorMessage(message),
+      isValidationError: true,
+    };
   }
 
   const statusError = handleStatusError(status);
