@@ -136,21 +136,6 @@ export async function mockRegisterSuccess(page: Page, user: TestUser) {
 }
 
 /**
- * 登録失敗のAPIモックを設定
- */
-export async function mockRegisterFailure(page: Page, errors: Record<string, string[]>) {
-  await page.route('**/api/v2/auth/register', async (route) => {
-    await route.fulfill({
-      status: 422,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        errors,
-      }),
-    });
-  });
-}
-
-/**
  * フォームにログイン情報を入力
  */
 export async function fillLoginForm(page: Page, email: string, password: string) {

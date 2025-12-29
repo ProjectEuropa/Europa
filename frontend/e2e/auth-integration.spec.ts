@@ -6,7 +6,6 @@ import {
   mockLoginSuccess,
   mockLoginFailure,
   mockRegisterSuccess,
-  mockRegisterFailure,
   fillLoginForm,
   fillRegisterForm,
   expectAuthenticated,
@@ -75,17 +74,23 @@ test.describe('Authentication Integration Tests', () => {
       await expectAuthenticated(page);
     });
 
-    // TODO: API mock not working correctly in E2E, needs investigation
-    test.skip('should show error for existing email', async ({ page }) => {
-      await mockRegisterFailure(page, {
-        email: ['このメールアドレスは既に使用されています'],
+    test('should show error for existing email', async ({ page }) => {
+      // Honoバックエンドのレスポンス形式に合わせたモック (409 Conflict)
+      await page.route('**/api/v2/auth/register', async (route) => {
+        await route.fulfill({
+          status: 409,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            message: 'Email already exists',
+          }),
+        });
       });
 
       await page.goto('/register');
       await fillRegisterForm(page, testUsers.existing);
       await page.getByRole('button', { name: /アカウント作成/ }).click();
 
-      // エラーメッセージが表示されることを確認
+      // エラーメッセージが表示されることを確認（トーストで表示される）
       await expect(page.locator('text=このメールアドレスは既に使用されています')).toBeVisible({ timeout: 5000 });
 
       // 登録ページに留まることを確認

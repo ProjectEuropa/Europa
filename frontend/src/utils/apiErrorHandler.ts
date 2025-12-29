@@ -32,8 +32,7 @@ const ERROR_TRANSLATIONS = {
     '有効なメールアドレスを入力してください。',
   'The email has already been taken.':
     'このメールアドレスは既に使用されています。',
-  'メールアドレスの値は既に存在しています。':
-    'このメールアドレスは既に使用されています。',
+  'Email already exists': 'このメールアドレスは既に使用されています。',
 
   'The password field is required.': 'パスワードは必須です。',
   'The password must be at least 6 characters.':
@@ -176,6 +175,17 @@ function handleApiError(error: ApiErrorClass): ProcessedError {
 
   if (status === 422) {
     return handleValidationError(error);
+  }
+
+  // 409 Conflict: バックエンドのメッセージを翻訳して返す
+  if (status === 409) {
+    const message =
+      error.data?.message || error.message || 'Email already exists';
+    return {
+      ...defaultError,
+      message: translateErrorMessage(message),
+      isValidationError: true,
+    };
   }
 
   const statusError = handleStatusError(status);
