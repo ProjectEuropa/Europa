@@ -172,7 +172,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [setup, build]
+    needs: [setup]
     defaults:
       run:
         working-directory: ./frontend
@@ -194,26 +194,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-build-${{ github.sha }}
-          path: frontend/.next/
-
-      - name: Verify build artifacts
-        run: |
-          echo "=== Checking build artifacts ==="
-          echo "Current directory: $(pwd)"
-          ls -la
-          echo ""
-          if [ -f ".next/BUILD_ID" ]; then
-            echo "✅ BUILD_ID found: $(cat .next/BUILD_ID)"
-            ls -la .next/
-          else
-            echo "❌ BUILD_ID not found"
-            ls -la .next/ 2>/dev/null || echo ".next directory does not exist"
-            exit 1
-          fi
+      - name: Build application
+        run: npm run build
 
       - name: Run E2E tests
         run: npx playwright test
