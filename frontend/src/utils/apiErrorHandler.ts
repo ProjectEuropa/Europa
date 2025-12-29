@@ -32,8 +32,6 @@ const ERROR_TRANSLATIONS = {
     '有効なメールアドレスを入力してください。',
   'The email has already been taken.':
     'このメールアドレスは既に使用されています。',
-  'メールアドレスの値は既に存在しています。':
-    'このメールアドレスは既に使用されています。',
   'Email already exists': 'このメールアドレスは既に使用されています。',
 
   'The password field is required.': 'パスワードは必須です。',
