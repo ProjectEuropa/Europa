@@ -20,7 +20,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: isCI ? 'npm run start' : 'npm run dev',
+    // output: 'export' の静的ビルドには serve を使用
+    command: isCI ? 'npx serve out -l 3000' : 'npm run dev',
     url: isCI ? 'http://localhost:3000' : 'http://localhost:3002',
     reuseExistingServer: !isCI,
     timeout: 120000,
