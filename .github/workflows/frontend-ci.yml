@@ -191,7 +191,15 @@ jobs:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
 
       - name: Build application
@@ -199,8 +207,6 @@ jobs:
 
       - name: Run E2E tests
         run: npx playwright test
-        env:
-          CI: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
