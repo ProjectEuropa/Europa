@@ -7,7 +7,7 @@
 /**
  * 現在時刻をJST（日本標準時）で取得
  *
- * toLocaleStringを使用してタイムゾーン変換を行うため、
+ * Intl.DateTimeFormatを使用してタイムゾーン変換を行うため、
  * システムのタイムゾーン設定に依存せず、常に正確なJST時刻を返します。
  *
  * @returns 現在時刻のJST表現
@@ -21,12 +21,32 @@
  * @remarks
  * この関数は以下の手順でJST時刻を取得します：
  * 1. 現在のUTC時刻を取得
- * 2. toLocaleStringでAsia/Tokyoタイムゾーンに変換
- * 3. 変換された文字列からDateオブジェクトを再構築
+ * 2. Intl.DateTimeFormatでAsia/Tokyoタイムゾーンに変換
+ * 3. formatToPartsで各時刻要素を取得し、ISO形式の文字列を構築
+ * 4. 構築された文字列からDateオブジェクトを生成
  *
- * これにより、手動でのオフセット計算（+9時間）による潜在的なバグを回避し、
- * より堅牢で保守しやすいコードを実現します。
+ * hourCycle: 'h23'により、時刻は常に00-23の範囲でフォーマットされ、
+ * 深夜0時が'24'になることによるInvalid Dateエラーを防ぎます。
  */
 export function getCurrentJstTime(): Date {
-  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    hourCycle: 'h23'
+  });
+
+  const parts = formatter.formatToParts(new Date());
+  const values = Object.fromEntries(
+    parts
+      .filter(({ type }) => type !== 'literal')
+      .map(({ type, value }) => [type, value])
+  );
+
+  return new Date(`${values.year}-${values.month}-${values.day}T${values.hour}:${values.minute}:${values.second}`);
 }
