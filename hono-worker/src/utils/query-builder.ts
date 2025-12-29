@@ -56,7 +56,8 @@ export function buildFileQueryWhere(filters: FileQueryFilters): QueryResult {
     }
 
     // キーワード検索時は、ダウンロード可能な日時のチェックも追加
-    whereConditions.push(`(downloadable_at IS NULL OR downloadable_at <= NOW())`);
+    // DBのdownloadable_atはJSTのローカル時刻として保存されているため、NOW() AT TIME ZONE 'Asia/Tokyo'で比較
+    whereConditions.push(`(downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo')`);
   }
 
   if (filters.tagFilteredFileIds && filters.tagFilteredFileIds.length > 0) {
