@@ -5,49 +5,47 @@ import { test as playwrightTest, expect as playwrightExpect } from '@playwright/
 playwrightTest('Navigation between pages', async ({ page }) => {
   // ホームページから開始
   await page.goto('/');
-  await playwrightExpect(page.getByRole('link', { name: 'EUROPA' })).toBeVisible();
+  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
 
   // ログインページへ移動
-  await page.getByRole('navigation').getByRole('link', { name: 'ログイン' }).click();
+  await page.getByRole('navigation').getByRole('link', { name: 'ログインページに移動' }).click();
   await playwrightExpect(page).toHaveURL(/.*login/);
   await playwrightExpect(page.getByRole('heading', { name: 'ログイン' })).toBeVisible();
 
   // 新規登録ページへ移動
-  await page.getByRole('link', { name: '新規登録' }).first().click();
+  await page.getByRole('link', { name: '新規登録ページに移動' }).first().click();
   await playwrightExpect(page).toHaveURL(/.*register/);
   await playwrightExpect(page.getByRole('heading', { name: '新規登録' })).toBeVisible();
 
   // ホームページに戻る
   await page.goto('/');
-  await playwrightExpect(page.getByRole('link', { name: 'EUROPA' })).toBeVisible();
+  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
 });
 
 playwrightTest('Header navigation', async ({ page }) => {
   await page.goto('/');
 
   // ヘッダーの要素を確認
-  await playwrightExpect(page.getByRole('link', { name: 'EUROPA' })).toBeVisible();
+  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
 
-  // ナビゲーションメニューがある場合の確認
-  const navigation = page.locator('nav');
-  if (await navigation.isVisible()) {
-    await playwrightExpect(navigation).toBeVisible();
-  }
+  // メインナビゲーションメニューがある場合の確認
+  const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
+  await playwrightExpect(navigation).toBeVisible();
 });
 
 playwrightTest('Responsive design', async ({ page }) => {
   // デスクトップサイズ
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto('/');
-  await playwrightExpect(page.getByRole('link', { name: 'EUROPA' })).toBeVisible();
+  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
 
   // タブレットサイズ
   await page.setViewportSize({ width: 768, height: 1024 });
   await page.reload();
-  await playwrightExpect(page.getByRole('link', { name: 'EUROPA' })).toBeVisible();
+  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
 
   // モバイルサイズ
   await page.setViewportSize({ width: 375, height: 667 });
   await page.reload();
-  await playwrightExpect(page.getByRole('link', { name: 'EUROPA' })).toBeVisible();
+  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
 });
