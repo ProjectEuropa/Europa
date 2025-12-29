@@ -36,8 +36,8 @@ export function buildFileQueryWhere(filters: FileQueryFilters): QueryResult {
   }
 
   if (filters.keyword) {
-    // ILIKE用の特殊文字（%, _）をエスケープ
-    const escapedKeyword = filters.keyword.replace(/[%_]/g, '\\$&');
+    // ILIKE用の特殊文字（\, %, _）をエスケープ
+    const escapedKeyword = filters.keyword.replace(/[\\%_]/g, '\\$&');
 
     // ILIKEパターンをSQL側で構築 - keywordパラメータを3回使用するため3回pushする
     const keywordIdx1 = whereParams.length + 1;

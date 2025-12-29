@@ -68,8 +68,8 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   // キーワード検索時にタグも検索対象にする
   let keywordMatchedFileIds: number[] | undefined;
   if (keyword && !tag) {
-    // ILIKE用の特殊文字（%, _）をエスケープ
-    const escapedKeyword = keyword.replace(/[%_]/g, '\\$&');
+    // ILIKE用の特殊文字（\, %, _）をエスケープ
+    const escapedKeyword = keyword.replace(/[\\%_]/g, '\\$&');
     const keywordTagResults = await sql`
       SELECT DISTINCT ft.file_id
       FROM file_tags ft

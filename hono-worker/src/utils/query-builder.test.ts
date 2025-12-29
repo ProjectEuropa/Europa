@@ -67,6 +67,30 @@ describe('buildFileQueryWhere', () => {
       expect(result.whereParams).toEqual(['\\%\\_test\\%', '\\%\\_test\\%', '\\%\\_test\\%']);
     });
 
+    it('keywordにバックスラッシュが含まれる場合はエスケープされる', () => {
+      const filters: FileQueryFilters = { keyword: 'C:\\Users\\test' };
+      const result = buildFileQueryWhere(filters);
+
+      // バックスラッシュはエスケープされる
+      expect(result.whereParams).toEqual([
+        'C:\\\\Users\\\\test',
+        'C:\\\\Users\\\\test',
+        'C:\\\\Users\\\\test',
+      ]);
+    });
+
+    it('keywordにバックスラッシュとワイルドカードが混在する場合', () => {
+      const filters: FileQueryFilters = { keyword: 'test\\%file_name' };
+      const result = buildFileQueryWhere(filters);
+
+      // すべての特殊文字がエスケープされる
+      expect(result.whereParams).toEqual([
+        'test\\\\\\%file\\_name',
+        'test\\\\\\%file\\_name',
+        'test\\\\\\%file\\_name',
+      ]);
+    });
+
     it('keywordが空文字列の場合は条件に含まれない', () => {
       const filters: FileQueryFilters = { keyword: '' };
       const result = buildFileQueryWhere(filters);
