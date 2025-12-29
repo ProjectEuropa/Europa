@@ -197,6 +197,8 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -207,6 +209,8 @@ jobs:
 
       - name: Run E2E tests
         run: npx playwright test
+        env:
+          CI: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
