@@ -163,10 +163,10 @@ jobs:
         with:
           name: frontend-build-${{ github.sha }}
           path: |
-            frontend/out/
             frontend/.next/
           retention-days: 1
-          compression-level: 9
+          compression-level: 6
+          include-hidden-files: true
 
   # E2E tests job
   e2e:
@@ -199,6 +199,36 @@ jobs:
         with:
           name: frontend-build-${{ github.sha }}
           path: frontend/
+
+      - name: Verify build artifacts
+        run: |
+          echo "=== Checking build artifacts ==="
+          echo "Current directory: $(pwd)"
+          echo ""
+          echo "=== Contents of current directory ==="
+          ls -la
+          echo ""
+          echo "=== Looking for .next directory ==="
+          if [ -d ".next" ]; then
+            echo "✅ .next directory found"
+            ls -la .next/
+            if [ -f ".next/BUILD_ID" ]; then
+              echo "✅ BUILD_ID found: $(cat .next/BUILD_ID)"
+            else
+              echo "❌ BUILD_ID not found in .next/"
+              ls -la .next/
+              exit 1
+            fi
+          else
+            echo "❌ .next directory not found in $(pwd)"
+            echo ""
+            echo "=== Checking parent directory structure ==="
+            ls -la ../
+            echo ""
+            echo "=== Checking if .next exists elsewhere ==="
+            find .. -name ".next" -type d 2>/dev/null | head -5 || echo "No .next found"
+            exit 1
+          fi
 
       - name: Run E2E tests
         run: npx playwright test
