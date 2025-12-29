@@ -34,6 +34,7 @@ const ERROR_TRANSLATIONS = {
     'このメールアドレスは既に使用されています。',
   'メールアドレスの値は既に存在しています。':
     'このメールアドレスは既に使用されています。',
+  'Email already exists': 'このメールアドレスは既に使用されています。',
 
   'The password field is required.': 'パスワードは必須です。',
   'The password must be at least 6 characters.':
@@ -145,6 +146,14 @@ function handleStatusError(status: number): ProcessedError {
     return {
       ...defaultError,
       message: '要求されたリソースが見つかりません。',
+    };
+  }
+
+  if (status === 409) {
+    return {
+      ...defaultError,
+      message: 'このメールアドレスは既に使用されています。',
+      isValidationError: true,
     };
   }
 
