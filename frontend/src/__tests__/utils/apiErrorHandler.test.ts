@@ -11,7 +11,7 @@ describe('processApiError', () => {
     const error = new ApiErrorClass(422, {
       message: 'The given data was invalid.',
       errors: {
-        email: ['メールアドレスの値は既に存在しています。'],
+        email: ['The email has already been taken.'],
         password: ['The password must be at least 8 characters.'],
       },
     });
@@ -64,11 +64,11 @@ describe('processApiError', () => {
     );
   });
 
-  it('should translate Japanese error messages correctly', () => {
+  it('should translate Hono backend error messages correctly', () => {
     const error = new ApiErrorClass(422, {
       message: 'The given data was invalid.',
       errors: {
-        email: ['メールアドレスの値は既に存在しています。'],
+        email: ['Email already exists'],
       },
     });
 
