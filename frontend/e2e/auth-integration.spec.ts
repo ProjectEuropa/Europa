@@ -75,8 +75,7 @@ test.describe('Authentication Integration Tests', () => {
       await expectAuthenticated(page);
     });
 
-    // TODO: API mock not working correctly in E2E, needs investigation
-    test.skip('should show error for existing email', async ({ page }) => {
+    test('should show error for existing email', async ({ page }) => {
       await mockRegisterFailure(page, {
         email: ['このメールアドレスは既に使用されています'],
       });
