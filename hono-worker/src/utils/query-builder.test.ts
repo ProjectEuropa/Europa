@@ -42,7 +42,7 @@ describe('buildFileQueryWhere', () => {
       const result = buildFileQueryWhere(filters);
 
       expect(result.whereClause).toBe(
-        "WHERE (file_name ILIKE '%' || $1 || '%' OR file_comment ILIKE '%' || $2 || '%' OR upload_owner_name ILIKE '%' || $3 || '%') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo')"
+        "WHERE (file_name ILIKE '%' || $1 || '%' ESCAPE '\\' OR file_comment ILIKE '%' || $2 || '%' ESCAPE '\\' OR upload_owner_name ILIKE '%' || $3 || '%' ESCAPE '\\') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo')"
       );
       expect(result.whereParams).toEqual(['test', 'test', 'test']);
       expect(result.whereParams.length).toBe(3);
@@ -59,11 +59,12 @@ describe('buildFileQueryWhere', () => {
       ]);
     });
 
-    it('keywordにSQLワイルドカード文字が含まれる場合もそのまま渡される', () => {
+    it('keywordにSQLワイルドカード文字が含まれる場合はエスケープされる', () => {
       const filters: FileQueryFilters = { keyword: '%_test%' };
       const result = buildFileQueryWhere(filters);
 
-      expect(result.whereParams).toEqual(['%_test%', '%_test%', '%_test%']);
+      // %, _ はエスケープされる
+      expect(result.whereParams).toEqual(['\\%\\_test\\%', '\\%\\_test\\%', '\\%\\_test\\%']);
     });
 
     it('keywordが空文字列の場合は条件に含まれない', () => {
@@ -95,7 +96,7 @@ describe('buildFileQueryWhere', () => {
       const result = buildFileQueryWhere(filters);
 
       expect(result.whereClause).toBe(
-        "WHERE data_type = $1 AND (file_name ILIKE '%' || $2 || '%' OR file_comment ILIKE '%' || $3 || '%' OR upload_owner_name ILIKE '%' || $4 || '%') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo')"
+        "WHERE data_type = $1 AND (file_name ILIKE '%' || $2 || '%' ESCAPE '\\' OR file_comment ILIKE '%' || $3 || '%' ESCAPE '\\' OR upload_owner_name ILIKE '%' || $4 || '%' ESCAPE '\\') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo')"
       );
       expect(result.whereParams).toEqual(['1', 'search', 'search', 'search']);
       expect(result.whereParams.length).toBe(4);
@@ -109,7 +110,7 @@ describe('buildFileQueryWhere', () => {
       const result = buildFileQueryWhere(filters);
 
       expect(result.whereClause).toBe(
-        "WHERE upload_user_id = $1 AND (file_name ILIKE '%' || $2 || '%' OR file_comment ILIKE '%' || $3 || '%' OR upload_owner_name ILIKE '%' || $4 || '%') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo')"
+        "WHERE upload_user_id = $1 AND (file_name ILIKE '%' || $2 || '%' ESCAPE '\\' OR file_comment ILIKE '%' || $3 || '%' ESCAPE '\\' OR upload_owner_name ILIKE '%' || $4 || '%' ESCAPE '\\') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo')"
       );
       expect(result.whereParams).toEqual([789, 'test', 'test', 'test']);
       expect(result.whereParams.length).toBe(4);
