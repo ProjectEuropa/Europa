@@ -165,7 +165,7 @@ export function SearchForm({
     urlParams.delete('page');
     router.push(`?${urlParams.toString()}`);
     inputRef.current?.focus();
-  }, [searchParams, router, resetSelectedIndex, inputRef]);
+  }, [searchParams, router, resetSelectedIndex]);
 
   return (
     <div ref={formRef} className="w-full max-w-3xl relative">

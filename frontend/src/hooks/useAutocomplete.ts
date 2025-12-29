@@ -20,9 +20,9 @@ export interface UseAutocompleteReturn {
   /** オートコンプリート表示フラグ */
   showAutocomplete: boolean;
   /** フォームのref */
-  formRef: React.RefObject<HTMLDivElement | null>;
+  formRef: React.RefObject<HTMLDivElement>;
   /** 入力欄のref */
-  inputRef: React.RefObject<HTMLInputElement | null>;
+  inputRef: React.RefObject<HTMLInputElement>;
   /** フォーカスハンドラ */
   handleFocus: () => void;
   /** キーボードナビゲーションハンドラ */
@@ -77,28 +77,27 @@ export function useAutocomplete({
   // オートコンプリート表示判定
   const showAutocomplete = enabled && isFocused && !isComposing && suggestions.length > 0;
 
+  // フォーカスを閉じる
+  const closeFocus = useCallback(() => {
+    setIsFocused(false);
+    setSelectedIndex(-1);
+  }, []);
+
   // 外側クリックでオートコンプリートを閉じる
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        setIsFocused(false);
-        setSelectedIndex(-1);
+        closeFocus();
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [closeFocus]);
 
   // フォーカス処理
   const handleFocus = useCallback(() => {
     setIsFocused(true);
-  }, []);
-
-  // フォーカスを閉じる
-  const closeFocus = useCallback(() => {
-    setIsFocused(false);
-    setSelectedIndex(-1);
   }, []);
 
   // 選択インデックスをリセット
@@ -129,34 +128,30 @@ export function useAutocomplete({
             e.preventDefault();
             const selected = suggestions[selectedIndex].value;
             onExecuteSearch(selected);
-            setIsFocused(false);
-            setSelectedIndex(-1);
+            closeFocus();
           }
           break;
         case 'Escape':
           e.preventDefault();
-          setIsFocused(false);
-          setSelectedIndex(-1);
+          closeFocus();
           inputRef.current?.blur();
           break;
         case 'Tab':
           // Tabキーでオートコンプリートを閉じる
-          setIsFocused(false);
-          setSelectedIndex(-1);
+          closeFocus();
           break;
       }
     },
-    [showAutocomplete, suggestions, selectedIndex, onExecuteSearch]
+    [showAutocomplete, suggestions, selectedIndex, onExecuteSearch, closeFocus]
   );
 
   // サジェスション選択
   const handleSuggestionSelect = useCallback(
     (value: string) => {
       onExecuteSearch(value);
-      setIsFocused(false);
-      setSelectedIndex(-1);
+      closeFocus();
     },
-    [onExecuteSearch]
+    [onExecuteSearch, closeFocus]
   );
 
   // サジェスションホバー
