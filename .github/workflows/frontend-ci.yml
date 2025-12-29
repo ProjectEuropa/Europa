@@ -198,35 +198,20 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-build-${{ github.sha }}
-          path: frontend/
+          path: frontend/.next/
 
       - name: Verify build artifacts
         run: |
           echo "=== Checking build artifacts ==="
           echo "Current directory: $(pwd)"
-          echo ""
-          echo "=== Contents of current directory ==="
           ls -la
           echo ""
-          echo "=== Looking for .next directory ==="
-          if [ -d ".next" ]; then
-            echo "✅ .next directory found"
+          if [ -f ".next/BUILD_ID" ]; then
+            echo "✅ BUILD_ID found: $(cat .next/BUILD_ID)"
             ls -la .next/
-            if [ -f ".next/BUILD_ID" ]; then
-              echo "✅ BUILD_ID found: $(cat .next/BUILD_ID)"
-            else
-              echo "❌ BUILD_ID not found in .next/"
-              ls -la .next/
-              exit 1
-            fi
           else
-            echo "❌ .next directory not found in $(pwd)"
-            echo ""
-            echo "=== Checking parent directory structure ==="
-            ls -la ../
-            echo ""
-            echo "=== Checking if .next exists elsewhere ==="
-            find .. -name ".next" -type d 2>/dev/null | head -5 || echo "No .next found"
+            echo "❌ BUILD_ID not found"
+            ls -la .next/ 2>/dev/null || echo ".next directory does not exist"
             exit 1
           fi
 
@@ -265,7 +250,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-build-${{ github.sha }}
-          path: frontend/
+          path: frontend/.next/
 
       - name: Analyze build output
         run: |
@@ -276,12 +261,12 @@ jobs:
           else
             echo "⚠️ Build manifest not found"
           fi
-          
+
           if [ -d ".next/static" ]; then
             echo "📦 Static assets:"
             du -sh .next/static/* 2>/dev/null || echo "No static assets found"
           fi
-          
+
           if [ -f ".next/BUILD_ID" ]; then
             echo "🔖 Build ID: $(cat .next/BUILD_ID)"
           fi
