@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   description:
     'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work'),
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
+    apple: '/apple-touch-icon.svg',
+  },
   openGraph: {
     title: 'EUROPA',
     description:
@@ -20,12 +28,21 @@ export const metadata: Metadata = {
     locale: 'ja_JP',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work',
     siteName: 'EUROPA',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'PROJECT EUROPA - OKE Sharing Platform',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'EUROPA',
     description:
       'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+    images: ['/og-image.jpg'],
   },
 };
 
