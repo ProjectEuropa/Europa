@@ -7,11 +7,11 @@ playwrightTest('Homepage should load correctly', async ({ page }) => {
   await page.goto('/');
 
   // EUROPAロゴが表示されることを確認
-  await playwrightExpect(page.getByRole('link', { name: 'EUROPA' })).toBeVisible();
+  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
 
   // ログインリンクが表示されることを確認
-  await playwrightExpect(page.getByRole('navigation').getByRole('link', { name: 'ログイン' })).toBeVisible();
+  await playwrightExpect(page.getByRole('navigation').getByRole('link', { name: 'ログインページに移動' })).toBeVisible();
 
   // 新規登録リンクが表示されることを確認
-  await playwrightExpect(page.getByRole('navigation').getByRole('link', { name: '新規登録' })).toBeVisible();
+  await playwrightExpect(page.getByRole('navigation').getByRole('link', { name: '新規登録ページに移動' })).toBeVisible();
 });
