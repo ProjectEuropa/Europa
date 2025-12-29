@@ -144,6 +144,7 @@ export async function mockRegisterFailure(page: Page, errors: Record<string, str
       status: 422,
       contentType: 'application/json',
       body: JSON.stringify({
+        message: 'The given data was invalid.',
         errors,
       }),
     });
