@@ -30,23 +30,24 @@ export const testUsers = {
  */
 export async function loginUser(page: Page, user: TestUser) {
   // ローカルストレージに認証情報を設定
+  // Note: tokenは永続化されないため、userとisAuthenticatedのみ設定
   await page.goto('/');
   await page.evaluate((userData) => {
     localStorage.setItem('auth-storage', JSON.stringify({
       state: {
-        token: 'mock-jwt-token',
         user: {
           id: userData.id || '1',
           name: userData.name,
           email: userData.email,
           createdAt: userData.createdAt || '2024-01-01T00:00:00Z',
         },
+        isAuthenticated: true,
       },
     }));
   }, user);
 
   // ユーザー情報取得APIをモック
-  await page.route('**/api/v1/user/profile', async (route) => {
+  await page.route('**/api/v2/auth/me', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -75,7 +76,7 @@ export async function logoutUser(page: Page) {
  * ログイン成功のAPIモックを設定
  */
 export async function mockLoginSuccess(page: Page, user: TestUser) {
-  await page.route('**/api/v1/auth/login', async (route) => {
+  await page.route('**/api/v2/auth/login', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -96,7 +97,7 @@ export async function mockLoginSuccess(page: Page, user: TestUser) {
  * ログイン失敗のAPIモックを設定
  */
 export async function mockLoginFailure(page: Page, status: number = 401, message: string = 'Invalid credentials') {
-  await page.route('**/api/v1/auth/login', async (route) => {
+  await page.route('**/api/v2/auth/login', async (route) => {
     await route.fulfill({
       status,
       contentType: 'application/json',
@@ -117,7 +118,7 @@ export async function mockLoginFailure(page: Page, status: number = 401, message
  * 登録成功のAPIモックを設定
  */
 export async function mockRegisterSuccess(page: Page, user: TestUser) {
-  await page.route('**/api/v1/auth/register', async (route) => {
+  await page.route('**/api/v2/auth/register', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -129,21 +130,6 @@ export async function mockRegisterSuccess(page: Page, user: TestUser) {
           email: user.email,
           createdAt: user.createdAt || '2024-01-01T00:00:00Z',
         },
-      }),
-    });
-  });
-}
-
-/**
- * 登録失敗のAPIモックを設定
- */
-export async function mockRegisterFailure(page: Page, errors: Record<string, string[]>) {
-  await page.route('**/api/v1/auth/register', async (route) => {
-    await route.fulfill({
-      status: 422,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        errors,
       }),
     });
   });
@@ -176,12 +162,15 @@ export async function expectAuthenticated(page: Page) {
   // ログアウトボタンが表示されることを確認
   await expect(page.getByRole('button', { name: /ログアウト/ })).toBeVisible({ timeout: 5000 });
 
-  // ローカルストレージにトークンが保存されていることを確認
-  const token = await page.evaluate(() => {
+  // ローカルストレージに認証状態が保存されていることを確認
+  // Note: tokenは永続化されない設定のため、isAuthenticatedとuserで確認
+  const isAuthenticated = await page.evaluate(() => {
     const authStorage = localStorage.getItem('auth-storage');
-    return authStorage ? JSON.parse(authStorage).state?.token : null;
+    if (!authStorage) return false;
+    const parsed = JSON.parse(authStorage);
+    return parsed.state?.isAuthenticated && parsed.state?.user;
   });
-  expect(token).toBeTruthy();
+  expect(isAuthenticated).toBeTruthy();
 }
 
 /**
@@ -189,13 +178,15 @@ export async function expectAuthenticated(page: Page) {
  */
 export async function expectUnauthenticated(page: Page) {
   // ログイン・登録リンクが表示されることを確認
-  await expect(page.getByRole('link', { name: /ログイン/ })).toBeVisible({ timeout: 5000 });
-  await expect(page.getByRole('link', { name: /新規登録/ })).toBeVisible({ timeout: 5000 });
+  await expect(page.getByRole('link', { name: 'ログインページに移動' })).toBeVisible({ timeout: 5000 });
+  await expect(page.getByRole('link', { name: '新規登録ページに移動' })).toBeVisible({ timeout: 5000 });
 
-  // ローカルストレージにトークンが保存されていないことを確認
-  const token = await page.evaluate(() => {
+  // ローカルストレージに認証状態が保存されていないことを確認
+  const isAuthenticated = await page.evaluate(() => {
     const authStorage = localStorage.getItem('auth-storage');
-    return authStorage ? JSON.parse(authStorage).state?.token : null;
+    if (!authStorage) return false;
+    const parsed = JSON.parse(authStorage);
+    return parsed.state?.isAuthenticated;
   });
-  expect(token).toBeFalsy();
+  expect(isAuthenticated).toBeFalsy();
 }

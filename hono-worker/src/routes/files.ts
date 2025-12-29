@@ -68,11 +68,13 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   // キーワード検索時にタグも検索対象にする
   let keywordMatchedFileIds: number[] | undefined;
   if (keyword && !tag) {
+    // ILIKE用の特殊文字（\, %, _）をエスケープ
+    const escapedKeyword = keyword.replace(/[\\%_]/g, '\\$&');
     const keywordTagResults = await sql`
       SELECT DISTINCT ft.file_id
       FROM file_tags ft
       INNER JOIN tags t ON ft.tag_id = t.id
-      WHERE t.tag_name ILIKE ${'%' + keyword + '%'}
+      WHERE t.tag_name ILIKE ${'%' + escapedKeyword + '%'} ESCAPE '\\'
     `;
     keywordMatchedFileIds = keywordTagResults.map((r: any) => r.file_id);
   }
@@ -207,18 +209,26 @@ files.get('/:id', async (c) => {
 
   // ダウンロード可能日時のチェック
   if (file.downloadable_at) {
-    const now = new Date();
-    const downloadableDate = new Date(file.downloadable_at);
+    // DBのdownloadable_atはJSTのローカル時刻として保存されている（タイムゾーン情報なし）
+    // 現在時刻もJSTで比較する必要がある
+    const nowUtc = new Date();
+    // UTCからJSTへ変換（+9時間）
+    const nowJst = new Date(nowUtc.getTime() + 9 * 60 * 60 * 1000);
 
-    if (now < downloadableDate) {
-      // ISO 8601形式の文字列をそのままフォーマット（変換しない）
-      // "2025-12-21T23:59:00.000Z" → "2025-12-21 23:59:00"
-      // ISO 8601形式の文字列をそのままフォーマット（変換しない）
-      // "2025-12-21T23:59:00.000Z" → "2025-12-21 23:59:00"
-      const dateStr = (file.downloadable_at as unknown) instanceof Date
-        ? (file.downloadable_at as unknown as Date).toISOString()
-        : String(file.downloadable_at);
+    // DBの値を文字列として取得し、JSTローカル時刻としてパース
+    const dateStr = (file.downloadable_at as unknown) instanceof Date
+      ? (file.downloadable_at as unknown as Date).toISOString()
+      : String(file.downloadable_at);
 
+    // DBからの日時文字列をパース（タイムゾーン情報がない場合はUTCとして解釈される）
+    // "2025-12-21T23:59:00" or "2025-12-21T23:59:00.000Z" → Date
+    const downloadableDate = new Date(dateStr);
+
+    // JSTの現在時刻と比較（downloadableDateはDBに保存されたJST時刻がUTCとして解釈されているので、
+    // nowJstのUTC表現と比較するために調整不要）
+    // 例: DBに "2024-12-29 10:00:00" (JST) → new Date()で 2024-12-29T10:00:00Z (UTC) として解釈
+    // nowJst = 現在のJST時刻のUTC表現（例: JST 10:00 → nowJst.getTime() = UTC 10:00のタイムスタンプ）
+    if (nowJst < downloadableDate) {
       const formatted = dateStr
         .replace(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*/, '$1 $2');
 
@@ -508,13 +518,20 @@ files.post('/bulk-download', optionalAuthMiddleware, async (c) => {
   const skippedFiles: string[] = []; // ダウンロード不可のファイル
   let totalSize = 0;
 
+  // 現在時刻をJSTで取得（ループ外で1回だけ計算）
+  const nowUtcForBulk = new Date();
+  const nowJstForBulk = new Date(nowUtcForBulk.getTime() + 9 * 60 * 60 * 1000);
+
   for (const file of filesList) {
     // ダウンロード可能日時のチェック
     if (file.downloadable_at) {
-      const now = new Date();
-      const downloadableDate = new Date(file.downloadable_at);
+      // DBの値を文字列として取得
+      const dateStr = (file.downloadable_at as unknown) instanceof Date
+        ? (file.downloadable_at as unknown as Date).toISOString()
+        : String(file.downloadable_at);
+      const downloadableDate = new Date(dateStr);
 
-      if (now < downloadableDate) {
+      if (nowJstForBulk < downloadableDate) {
         // ダウンロード可能日時前のファイルはスキップ
         skippedFiles.push(file.file_name);
         continue;
