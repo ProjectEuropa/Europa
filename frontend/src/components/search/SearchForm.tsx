@@ -1,10 +1,11 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePrefetchSearch } from '@/hooks/useSearch';
 import { useSearchSuggestions } from '@/hooks/useSearchSuggestions';
+import { useAutocomplete } from '@/hooks/useAutocomplete';
 import { SearchAutocomplete } from '@/components/search/SearchAutocomplete';
 import type { SearchParams } from '@/types/search';
 import { Search, X } from 'lucide-react';
@@ -41,10 +42,6 @@ export function SearchForm({
   const searchParams = useSearchParams();
   const [query, setQuery] = useState('');
   const [isComposing, setIsComposing] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const formRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // デバウンス処理
   const debouncedQuery = useDebounce(query, debounceDelay);
@@ -52,15 +49,56 @@ export function SearchForm({
   // プリフェッチ機能
   const { prefetchTeamSearch, prefetchMatchSearch } = usePrefetchSearch();
 
+  // 検索実行
+  const executeSearch = useCallback(
+    (keyword: string) => {
+      if (!keyword.trim()) return;
+
+      const params: SearchParams = {
+        keyword: keyword.trim(),
+        page: 1,
+      };
+
+      // URLを更新
+      const urlParams = new URLSearchParams(searchParams.toString());
+      urlParams.set('keyword', params.keyword);
+      urlParams.set('page', '1');
+      router.push(`?${urlParams.toString()}`);
+
+      // コールバック実行
+      onSearch?.(params);
+    },
+    [searchParams, router, onSearch]
+  );
+
   // オートコンプリートサジェスション
   const { suggestions, isLoading: suggestionsLoading } = useSearchSuggestions({
     query: debouncedQuery,
-    enabled: enableAutocomplete && isFocused,
+    enabled: enableAutocomplete,
     limit: 8,
   });
 
-  // オートコンプリート表示判定
-  const showAutocomplete = enableAutocomplete && isFocused && !isComposing && suggestions.length > 0;
+  // オートコンプリート機能
+  const {
+    isFocused,
+    selectedIndex,
+    showAutocomplete,
+    formRef,
+    inputRef,
+    handleFocus,
+    handleKeyDown: handleAutocompleteKeyDown,
+    handleSuggestionSelect: handleAutocompleteSelect,
+    handleSuggestionHover,
+    resetSelectedIndex,
+  } = useAutocomplete({
+    suggestions,
+    enabled: enableAutocomplete,
+    isComposing,
+    onExecuteSearch: (value) => {
+      setQuery(value);
+      executeSearch(value);
+    },
+  });
 
   // URLパラメータから初期値を設定
   useEffect(() => {
@@ -91,45 +129,6 @@ export function SearchForm({
     isComposing,
   ]);
 
-  // 外側クリックでオートコンプリートを閉じる
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        setIsFocused(false);
-        setSelectedIndex(-1);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // 検索実行
-  const executeSearch = useCallback(
-    (keyword: string) => {
-      if (!keyword.trim()) return;
-
-      const params: SearchParams = {
-        keyword: keyword.trim(),
-        page: 1,
-      };
-
-      // URLを更新
-      const urlParams = new URLSearchParams(searchParams.toString());
-      urlParams.set('keyword', params.keyword);
-      urlParams.set('page', '1');
-      router.push(`?${urlParams.toString()}`);
-
-      // オートコンプリートを閉じる
-      setIsFocused(false);
-      setSelectedIndex(-1);
-
-      // コールバック実行
-      onSearch?.(params);
-    },
-    [searchParams, router, onSearch]
-  );
-
   // フォーム送信
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -143,15 +142,10 @@ export function SearchForm({
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(e.target.value);
-      setSelectedIndex(-1); // 選択をリセット
+      resetSelectedIndex(); // 選択をリセット
     },
-    []
+    [resetSelectedIndex]
   );
-
-  // フォーカス処理
-  const handleFocus = useCallback(() => {
-    setIsFocused(true);
-  }, []);
 
   // IME入力処理
   const handleCompositionStart = useCallback(() => {
@@ -162,72 +156,16 @@ export function SearchForm({
     setIsComposing(false);
   }, []);
 
-  // キーボードナビゲーション
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (!showAutocomplete) return;
-
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev < suggestions.length - 1 ? prev + 1 : 0
-          );
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : suggestions.length - 1
-          );
-          break;
-        case 'Enter':
-          if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-            e.preventDefault();
-            const selected = suggestions[selectedIndex].value;
-            setQuery(selected);
-            executeSearch(selected);
-          }
-          break;
-        case 'Escape':
-          e.preventDefault();
-          setIsFocused(false);
-          setSelectedIndex(-1);
-          inputRef.current?.blur();
-          break;
-        case 'Tab':
-          // Tabキーでオートコンプリートを閉じる
-          setIsFocused(false);
-          setSelectedIndex(-1);
-          break;
-      }
-    },
-    [showAutocomplete, suggestions, selectedIndex, executeSearch]
-  );
-
-  // サジェスション選択
-  const handleSuggestionSelect = useCallback(
-    (value: string) => {
-      setQuery(value);
-      executeSearch(value);
-    },
-    [executeSearch]
-  );
-
-  // サジェスションホバー
-  const handleSuggestionHover = useCallback((index: number) => {
-    setSelectedIndex(index);
-  }, []);
-
   // クリア処理
   const handleClear = useCallback(() => {
     setQuery('');
-    setSelectedIndex(-1);
+    resetSelectedIndex();
     const urlParams = new URLSearchParams(searchParams.toString());
     urlParams.delete('keyword');
     urlParams.delete('page');
     router.push(`?${urlParams.toString()}`);
     inputRef.current?.focus();
-  }, [searchParams, router]);
+  }, [searchParams, router, resetSelectedIndex, inputRef]);
 
   return (
     <div ref={formRef} className="w-full max-w-3xl relative">
@@ -254,7 +192,7 @@ export function SearchForm({
             value={query}
             onChange={handleInputChange}
             onFocus={handleFocus}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleAutocompleteKeyDown}
             onCompositionStart={handleCompositionStart}
             onCompositionEnd={handleCompositionEnd}
             placeholder={placeholder}
@@ -322,7 +260,7 @@ export function SearchForm({
           query={query}
           isOpen={showAutocomplete}
           selectedIndex={selectedIndex}
-          onSelect={handleSuggestionSelect}
+          onSelect={handleAutocompleteSelect}
           onHover={handleSuggestionHover}
           isLoading={suggestionsLoading}
         />
