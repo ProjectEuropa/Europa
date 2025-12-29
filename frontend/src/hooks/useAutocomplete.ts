@@ -20,9 +20,9 @@ export interface UseAutocompleteReturn {
   /** オートコンプリート表示フラグ */
   showAutocomplete: boolean;
   /** フォームのref */
-  formRef: React.RefObject<HTMLDivElement>;
+  formRef: React.RefObject<HTMLDivElement | null>;
   /** 入力欄のref */
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   /** フォーカスハンドラ */
   handleFocus: () => void;
   /** キーボードナビゲーションハンドラ */
