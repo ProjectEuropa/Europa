@@ -124,7 +124,7 @@ describe('buildFileQueryWhere', () => {
       const result = buildFileQueryWhere(filters);
 
       expect(result.whereClause).toBe(
-        "WHERE (file_name ILIKE '%' || $1 || '%' OR file_comment ILIKE '%' || $2 || '%' OR upload_owner_name ILIKE '%' || $3 || '%') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo') AND id = ANY($4)"
+        "WHERE (file_name ILIKE '%' || $1 || '%' ESCAPE '\\' OR file_comment ILIKE '%' || $2 || '%' ESCAPE '\\' OR upload_owner_name ILIKE '%' || $3 || '%' ESCAPE '\\') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo') AND id = ANY($4)"
       );
       expect(result.whereParams).toEqual(['example', 'example', 'example', [10, 20, 30]]);
       expect(result.whereParams.length).toBe(4);
@@ -140,7 +140,7 @@ describe('buildFileQueryWhere', () => {
       const result = buildFileQueryWhere(filters);
 
       expect(result.whereClause).toBe(
-        "WHERE data_type = $1 AND upload_user_id = $2 AND (file_name ILIKE '%' || $3 || '%' OR file_comment ILIKE '%' || $4 || '%' OR upload_owner_name ILIKE '%' || $5 || '%') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo') AND id = ANY($6)"
+        "WHERE data_type = $1 AND upload_user_id = $2 AND (file_name ILIKE '%' || $3 || '%' ESCAPE '\\' OR file_comment ILIKE '%' || $4 || '%' ESCAPE '\\' OR upload_owner_name ILIKE '%' || $5 || '%' ESCAPE '\\') AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo') AND id = ANY($6)"
       );
       expect(result.whereParams).toEqual(['1', 100, 'full', 'full', 'full', [1, 2]]);
       expect(result.whereParams.length).toBe(6);
