@@ -97,29 +97,24 @@ export default function EventRegistrationForm({
   };
 
   return (
-    <div className="max-w-[800px] mx-auto">
-      <h1 className="text-[#00c8ff] text-3xl font-bold mb-2">イベント登録</h1>
-      <p className="text-[#b0c4d8] text-base mb-6">
-        新しいイベント情報を登録することができます
-      </p>
-
+    <div>
       {/* イベント登録フォーム */}
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="bg-[#0A1022] rounded-xl p-6 border border-[#1E3A5F] mb-6">
+        <div className="space-y-5">
           {/* イベント名 */}
-          <div className="mb-5">
+          <div>
             <label
               htmlFor="event-name"
-              className="block text-[#00c8ff] text-base mb-2"
+              className="block text-cyan-400 text-sm font-medium mb-2"
             >
-              イベント名 <span className="text-red-500">*</span>
+              イベント名 <span className="text-red-400">*</span>
             </label>
             <input
               id="event-name"
               type="text"
               {...register('name')}
               placeholder="イベント名を入力してください"
-              className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
+              className="w-full p-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg text-white text-base focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors placeholder:text-slate-500"
             />
             {errors.name && (
               <p
@@ -131,18 +126,18 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント詳細情報 */}
-          <div className="mb-5">
+          <div>
             <label
               htmlFor="event-details"
-              className="block text-[#00c8ff] text-base mb-2"
+              className="block text-cyan-400 text-sm font-medium mb-2"
             >
-              イベント詳細情報 <span className="text-red-500">*</span>
+              イベント詳細情報 <span className="text-red-400">*</span>
             </label>
             <textarea
               id="event-details"
               {...register('details')}
               placeholder="イベントの詳細情報を入力してください"
-              className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base min-h-[150px] resize-y"
+              className="w-full p-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg text-white text-base min-h-[150px] resize-y focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors placeholder:text-slate-500"
             />
             {errors.details && (
               <p
@@ -154,10 +149,10 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント詳細URL */}
-          <div className="mb-5">
+          <div>
             <label
               htmlFor="event-url"
-              className="block text-[#00c8ff] text-base mb-2"
+              className="block text-cyan-400 text-sm font-medium mb-2"
             >
               イベント詳細URL
             </label>
@@ -166,7 +161,7 @@ export default function EventRegistrationForm({
               type="url"
               {...register('url')}
               placeholder="https://example.com"
-              className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
+              className="w-full p-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg text-white text-base focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors placeholder:text-slate-500"
             />
             {errors.url && (
               <p
@@ -178,12 +173,12 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント受付締切日 */}
-          <div className="mb-5">
+          <div>
             <label
               htmlFor="event-deadline"
-              className="block text-[#00c8ff] text-base mb-2"
+              className="block text-cyan-400 text-sm font-medium mb-2"
             >
-              イベント受付締切日 <span className="text-red-500">*</span>
+              イベント受付締切日 <span className="text-red-400">*</span>
             </label>
             <div className="relative">
               <div className="flex items-center">
@@ -192,13 +187,13 @@ export default function EventRegistrationForm({
                   type="text"
                   {...register('deadline')}
                   placeholder="YYYY-MM-DD"
-                  className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
+                  className="w-full p-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg text-white text-base focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors placeholder:text-slate-500"
                   readOnly
                 />
                 <button
                   type="button"
                   onClick={() => setShowDeadlineCalendar(!showDeadlineCalendar)}
-                  className="bg-transparent border-none text-[#00c8ff] -ml-10 cursor-pointer z-[1]"
+                  className="bg-transparent border-none text-cyan-400 -ml-10 cursor-pointer z-[1] hover:text-cyan-300 transition-colors"
                 >
                   <svg
                     width="24"
@@ -227,16 +222,16 @@ export default function EventRegistrationForm({
 
               {showDeadlineCalendar && (
                 <div
-                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A1022] p-5 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[#1E3A5F] z-[1000]"
+                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0d1124]/95 backdrop-blur-md p-5 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-cyan-500/30 z-[1000]"
                 >
                   <div
                     className="flex justify-between items-center mb-4"
                   >
-                    <h3 className="text-[#00c8ff] m-0">日付を選択</h3>
+                    <h3 className="text-cyan-400 font-medium m-0">日付を選択</h3>
                     <button
                       type="button"
                       onClick={() => setShowDeadlineCalendar(false)}
-                      className="bg-transparent border-none text-[#00c8ff] text-2xl cursor-pointer flex items-center justify-center w-[30px] h-[30px]"
+                      className="bg-transparent border-none text-cyan-400 text-2xl cursor-pointer flex items-center justify-center w-[30px] h-[30px] hover:text-cyan-300 transition-colors"
                     >
                       ×
                     </button>
@@ -247,7 +242,7 @@ export default function EventRegistrationForm({
             </div>
             {errors.deadline && (
               <p
-                className="text-red-500 text-sm mt-1"
+                className="text-red-400 text-sm mt-1"
               >
                 {errors.deadline.message}
               </p>
@@ -255,12 +250,12 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント表示最終日 */}
-          <div className="mb-5">
+          <div>
             <label
               htmlFor="event-end-date"
-              className="block text-[#00c8ff] text-base mb-2"
+              className="block text-cyan-400 text-sm font-medium mb-2"
             >
-              イベント表示最終日 <span className="text-red-500">*</span>
+              イベント表示最終日 <span className="text-red-400">*</span>
             </label>
             <div className="relative">
               <div className="flex items-center">
@@ -269,13 +264,13 @@ export default function EventRegistrationForm({
                   type="text"
                   {...register('endDisplayDate')}
                   placeholder="YYYY-MM-DD"
-                  className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
+                  className="w-full p-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg text-white text-base focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors placeholder:text-slate-500"
                   readOnly
                 />
                 <button
                   type="button"
                   onClick={() => setShowEndDateCalendar(!showEndDateCalendar)}
-                  className="bg-transparent border-none text-[#00c8ff] -ml-10 cursor-pointer z-[1]"
+                  className="bg-transparent border-none text-cyan-400 -ml-10 cursor-pointer z-[1] hover:text-cyan-300 transition-colors"
                 >
                   <svg
                     width="24"
@@ -304,16 +299,16 @@ export default function EventRegistrationForm({
 
               {showEndDateCalendar && (
                 <div
-                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A1022] p-5 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[#1E3A5F] z-[1000]"
+                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0d1124]/95 backdrop-blur-md p-5 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-cyan-500/30 z-[1000]"
                 >
                   <div
                     className="flex justify-between items-center mb-4"
                   >
-                    <h3 className="text-[#00c8ff] m-0">日付を選択</h3>
+                    <h3 className="text-cyan-400 font-medium m-0">日付を選択</h3>
                     <button
                       type="button"
                       onClick={() => setShowEndDateCalendar(false)}
-                      className="bg-transparent border-none text-[#00c8ff] text-2xl cursor-pointer flex items-center justify-center w-[30px] h-[30px]"
+                      className="bg-transparent border-none text-cyan-400 text-2xl cursor-pointer flex items-center justify-center w-[30px] h-[30px] hover:text-cyan-300 transition-colors"
                     >
                       ×
                     </button>
@@ -324,7 +319,7 @@ export default function EventRegistrationForm({
             </div>
             {errors.endDisplayDate && (
               <p
-                className="text-red-500 text-sm mt-1"
+                className="text-red-400 text-sm mt-1"
               >
                 {errors.endDisplayDate.message}
               </p>
@@ -332,26 +327,19 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント種別 */}
-          <div className="mb-5">
+          <div>
             <label
               htmlFor="event-type"
-              className="block text-[#00c8ff] text-base mb-2"
+              className="block text-cyan-400 text-sm font-medium mb-2"
             >
-              イベント種別 <span className="text-red-500">*</span>
+              イベント種別 <span className="text-red-400">*</span>
             </label>
             <select
               id="event-type"
               {...register('type')}
+              className="w-full p-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg text-white text-base focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors appearance-none cursor-pointer"
               style={{
-                width: '100%',
-                padding: '12px',
-                background: '#0F1A2E',
-                border: '1px solid #1E3A5F',
-                borderRadius: '6px',
-                color: 'white',
-                fontSize: '1rem',
-                appearance: 'none',
-                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300c8ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'right 12px center',
                 backgroundSize: '16px',
@@ -365,7 +353,7 @@ export default function EventRegistrationForm({
             </select>
             {errors.type && (
               <p
-                className="text-red-500 text-sm mt-1"
+                className="text-red-400 text-sm mt-1"
               >
                 {errors.type.message}
               </p>
@@ -374,13 +362,12 @@ export default function EventRegistrationForm({
         </div>
 
         {/* 送信ボタン */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mt-8">
           <button
             type="submit"
             disabled={isPending}
-            className={`px-10 py-4 bg-[#00c8ff] text-[#020824] border-none rounded-md text-base font-bold flex items-center gap-2 ${
-              isPending ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
-            }`}
+            className={`px-10 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white border-none rounded-lg text-base font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all duration-300 ${isPending ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:scale-105'
+              }`}
           >
             {isPending ? (
               <>
