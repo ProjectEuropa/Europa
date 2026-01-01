@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type React from 'react';
+import { useState, useEffect } from 'react';
 import Icons from '@/components/Icons';
 
 interface FooterProps {
@@ -13,6 +14,12 @@ const Footer: React.FC<FooterProps> = ({
   className = '',
   variant = 'default',
 }) => {
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer
       className={className}
@@ -62,8 +69,7 @@ const Footer: React.FC<FooterProps> = ({
             OKE共有とチームコラボレーションのための非公式カルネージハートEXAプラットフォーム。
           </div>
           <div style={{ fontSize: '12px', opacity: 0.7 }}>
-            {' '}
-            Team Project Europa 2016-{new Date().getFullYear()}
+            Team Project Europa 2016-{currentYear ?? 2025}
           </div>
         </div>
 
