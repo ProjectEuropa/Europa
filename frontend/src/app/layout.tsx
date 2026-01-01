@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: 'EUROPA',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.jpg?v=2026',
         width: 1200,
         height: 630,
         alt: 'PROJECT EUROPA - OKE Sharing Platform',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     title: 'EUROPA',
     description:
       'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
-    images: ['/og-image.jpg'],
+    images: ['/og-image.jpg?v=2026'],
   },
 };
 
