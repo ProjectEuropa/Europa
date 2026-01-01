@@ -109,14 +109,20 @@ export function FAQItem({
 export function ActionButton({
     href,
     children,
+    external = false,
 }: {
     href: string;
     children: React.ReactNode;
+    external?: boolean;
 }) {
     return (
         <a
             href={href}
             className="inline-block px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-bold no-underline transition-all duration-300 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:scale-105"
+            {...(external && {
+                target: '_blank',
+                rel: 'noopener noreferrer',
+            })}
         >
             {children}
         </a>

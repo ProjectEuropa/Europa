@@ -91,7 +91,7 @@ export default function ExternalLinksPage() {
         <Paragraph>
           他にも役立つリンクがあれば、お気軽にお知らせください。
         </Paragraph>
-        <ActionButton href="https://hp.project-europa.work/contact">
+        <ActionButton href="https://hp.project-europa.work/contact" external>
           お問い合わせ
         </ActionButton>
       </div>
