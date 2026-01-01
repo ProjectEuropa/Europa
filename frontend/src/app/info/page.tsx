@@ -1,7 +1,8 @@
 'use client';
 
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import Calendar from '@/components/Calendar';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -12,14 +13,28 @@ import { fetchEvents } from '@/utils/api';
 const InformationPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { isMobile } = useBreakpoint();
 
-  useEffect(() => {
-    fetchEvents()
-      .then(events => setEvents(events)) // 配列を直接使用
-      .catch(() => alert('イベント情報の取得に失敗しました'))
-      .finally(() => setLoading(false));
+  const loadEvents = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchEvents();
+      setEvents(data);
+    } catch (err) {
+      const message = 'イベント情報の取得に失敗しました';
+      console.error('[InformationPage] Failed to fetch events:', err);
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0818] text-white selection:bg-cyan-500/30">
@@ -89,6 +104,16 @@ const InformationPage: React.FC = () => {
                 {loading ? (
                   <div className="flex items-center justify-center py-12 text-slate-400 animate-pulse">
                     Loading...
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-8 border border-dashed border-red-800/50 rounded-xl bg-red-900/10">
+                    <p className="text-red-400 mb-4">{error}</p>
+                    <button
+                      onClick={loadEvents}
+                      className="px-4 py-2 bg-cyan-500/20 border border-cyan-500/50 rounded-lg text-cyan-400 hover:bg-cyan-500/30 transition-colors"
+                    >
+                      再試行
+                    </button>
                   </div>
                 ) : events.length === 0 ? (
                   <div className="text-center py-12 text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-900/50">
