@@ -13,6 +13,8 @@ const Footer: React.FC<FooterProps> = ({
   className = '',
   variant = 'default',
 }) => {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer
       className={className}
@@ -62,8 +64,7 @@ const Footer: React.FC<FooterProps> = ({
             OKE共有とチームコラボレーションのための非公式カルネージハートEXAプラットフォーム。
           </div>
           <div style={{ fontSize: '12px', opacity: 0.7 }}>
-            {' '}
-            Team Project Europa 2016-{new Date().getFullYear()}
+            Team Project Europa 2016-{currentYear}
           </div>
         </div>
 
