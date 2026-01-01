@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DeleteModal } from '@/components/DeleteModal';
+import { Z_INDEX } from '@/lib/utils';
 
 // lucide-reactのモック
 vi.mock('lucide-react', () => ({
@@ -245,7 +246,7 @@ describe('DeleteModal', () => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        zIndex: '10000',
+        zIndex: String(Z_INDEX.modal),
       });
     });
 
