@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import Calendar from '@/components/Calendar';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
+import { Z_INDEX } from '@/lib/utils';
 import {
   EVENT_TYPE_OPTIONS,
   EVENT_TYPES,
@@ -298,7 +299,7 @@ export default function EventRegistrationForm({
                     color: '#00c8ff',
                     marginLeft: '-40px',
                     cursor: 'pointer',
-                    zIndex: 1,
+                    zIndex: Z_INDEX.base,
                   }}
                 >
                   <svg
@@ -333,7 +334,7 @@ export default function EventRegistrationForm({
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    zIndex: 1000,
+                    zIndex: Z_INDEX.modal,
                     background: '#0A1022',
                     padding: '20px',
                     borderRadius: '12px',
@@ -426,7 +427,7 @@ export default function EventRegistrationForm({
                     color: '#00c8ff',
                     marginLeft: '-40px',
                     cursor: 'pointer',
-                    zIndex: 1,
+                    zIndex: Z_INDEX.base,
                   }}
                 >
                   <svg
@@ -461,7 +462,7 @@ export default function EventRegistrationForm({
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    zIndex: 1000,
+                    zIndex: Z_INDEX.modal,
                     background: '#0A1022',
                     padding: '20px',
                     borderRadius: '12px',

@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { DateTimeInput } from '@/components/ui/datetime-input';
 import { Icons } from '@/icons';
 import { fetchTags } from '@/lib/api/files';
+import { Z_INDEX } from '@/lib/utils';
 
 export interface FileUploadOptions {
   ownerName: string;
@@ -62,7 +63,6 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     const loadTags = async () => {
       try {
         const tags = await fetchTags();
-        console.log('Fetched tags:', tags);
         setAvailableTags(tags);
       } catch (error) {
         console.error('Failed to fetch tags:', error);
@@ -319,16 +319,32 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
           }}
         >
           <Icons.Upload size={24} color="#00c8ff" />
-          <h1
-            style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#00c8ff',
-              margin: 0,
-            }}
-          >
-            {title}
-          </h1>
+          <div style={{ flex: 1 }}>
+            <h1
+              style={{
+                fontSize: '28px',
+                fontWeight: '900',
+                color: '#fff',
+                marginBottom: '4px',
+                textShadow: '0 0 10px rgba(0, 200, 255, 0.4)',
+              }}
+            >
+              {title}
+            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ height: '1px', width: '20px', background: 'rgba(0, 200, 255, 0.5)' }} />
+              <p style={{
+                fontSize: '12px',
+                color: '#00c8ff',
+                fontWeight: '700',
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                margin: 0
+              }}>
+                {fileType === 'team' ? 'TEAM DATA UPLOAD' : 'MATCH DATA UPLOAD'}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* サブタイトル */}
@@ -630,7 +646,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                   position: 'absolute',
                   top: '100%',
                   left: 0,
-                  zIndex: 11,
+                  zIndex: Z_INDEX.dropdown,
                   marginTop: '4px',
                   width: '100%',
                   maxWidth: '500px',
@@ -1109,7 +1125,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 50,
+            zIndex: Z_INDEX.sticky,
           }}
         >
           <div

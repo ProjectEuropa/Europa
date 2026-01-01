@@ -1,6 +1,7 @@
 'use client';
 import { Lock } from 'lucide-react';
 import * as React from 'react';
+import { Z_INDEX } from '@/lib/utils';
 
 export function DeleteModal({
   open,
@@ -21,17 +22,30 @@ export function DeleteModal({
     onOpenChange(false);
   };
 
+  // ESCキーでモーダルを閉じる
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setPassword('');
+      onOpenChange(false);
+    }
+  };
+
   return open ? (
     <dialog
       open
+      role="dialog"
+      aria-labelledby="delete-modal-title"
+      aria-describedby="delete-modal-description"
+      aria-modal="true"
       className="cyber-dialog m-auto rounded-2xl border-2 border-cyan-400 text-white w-full dialog-animation"
+      onKeyDown={handleKeyDown}
       style={{
         maxWidth: '560px',
         position: 'fixed',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        zIndex: 10000,
+        zIndex: Z_INDEX.modal,
         background: 'linear-gradient(135deg, #0a1022 0%, #0a0818 100%)',
         boxShadow: '0 0 32px 8px rgba(0, 200, 255, 0.3), 0 0 0 2px #00c8ff',
         backdropFilter: 'blur(4px)',
@@ -52,6 +66,7 @@ export function DeleteModal({
         }}
       >
         <h2
+          id="delete-modal-title"
           style={{
             color: '#ffffff',
             fontSize: '28px',
@@ -64,6 +79,7 @@ export function DeleteModal({
           {fileName}を本当に削除しますか？
         </h2>
         <p
+          id="delete-modal-description"
           style={{
             color: '#ffffff',
             fontSize: '18px',

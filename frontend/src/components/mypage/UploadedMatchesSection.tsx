@@ -3,6 +3,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Z_INDEX } from '@/lib/utils';
 import { deleteMyFile } from '@/utils/api';
 
 interface MatchData {
@@ -287,6 +288,10 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({
       {/* モーダル */}
       {modalOpen && (
         <div
+          role="dialog"
+          aria-labelledby="match-detail-modal-title"
+          aria-describedby="match-detail-modal-content"
+          aria-modal="true"
           style={{
             position: 'fixed',
             top: 0,
@@ -297,7 +302,13 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: Z_INDEX.modal,
+          }}
+          onClick={() => setModalOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setModalOpen(false);
+            }
           }}
         >
           <div
@@ -310,12 +321,14 @@ const UploadedMatchesSection: React.FC<UploadedMatchesSectionProps> = ({
               maxWidth: '90vw',
               boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ marginBottom: '16px' }}>マッチ詳細</h3>
-            <div style={{ marginBottom: '24px', whiteSpace: 'pre-line' }}>
+            <h3 id="match-detail-modal-title" style={{ marginBottom: '16px' }}>マッチ詳細</h3>
+            <div id="match-detail-modal-content" style={{ marginBottom: '24px', whiteSpace: 'pre-line' }}>
               {modalComment}
             </div>
             <button
+              aria-label="モーダルを閉じる"
               onClick={() => setModalOpen(false)}
               style={{
                 background: '#00c8ff',

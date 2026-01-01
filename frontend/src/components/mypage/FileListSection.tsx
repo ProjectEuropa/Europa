@@ -7,6 +7,7 @@ import {
   useMyMatchFiles,
   useMyTeamFiles,
 } from '@/hooks/api/useMyPage';
+import { Z_INDEX } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import type { MyPageFile } from '@/types/user';
 import {
@@ -569,6 +570,10 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
       {/* コメントモーダル */}
       {modalOpen && selectedFile && (
         <div
+          role="dialog"
+          aria-labelledby="comment-modal-title"
+          aria-describedby="comment-modal-content"
+          aria-modal="true"
           style={{
             position: 'fixed',
             top: 0,
@@ -579,9 +584,14 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: Z_INDEX.modal,
           }}
           onClick={() => setModalOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setModalOpen(false);
+            }
+          }}
         >
           <div
             style={{
@@ -597,6 +607,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
             onClick={e => e.stopPropagation()}
           >
             <h3
+              id="comment-modal-title"
               style={{
                 color: '#00c8ff',
                 fontSize: '1.2rem',
@@ -607,6 +618,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
               {selectedFile.name} のコメント
             </h3>
             <div
+              id="comment-modal-content"
               style={{
                 background: '#0F1A2E',
                 borderRadius: '6px',
@@ -623,6 +635,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
             </div>
             <div style={{ textAlign: 'right' }}>
               <button
+                aria-label="モーダルを閉じる"
                 onClick={() => setModalOpen(false)}
                 style={{
                   background: '#00c8ff',

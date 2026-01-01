@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import Icons from '@/components/Icons';
 import { useBreakpoint } from '@/components/layout/responsive';
 import { useAuth } from '@/hooks/useAuth';
+import { Z_INDEX } from '@/lib/utils';
 import SideMenu from './SideMenu';
 
 interface HeaderProps {
@@ -54,7 +55,7 @@ const Header: React.FC<HeaderProps> = ({
         style={{
           padding: variant === 'minimal' ? '16px 5%' : '20px 5%',
           borderBottom: '1px solid rgba(0, 200, 255, 0.3)',
-          zIndex: 10,
+          zIndex: Z_INDEX.dropdown,
           position: 'relative',
           background: '#0a0818',
         }}
