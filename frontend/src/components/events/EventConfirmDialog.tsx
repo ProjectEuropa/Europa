@@ -33,171 +33,82 @@ export default function EventConfirmDialog({
       aria-labelledby="confirm-modal-title"
       aria-describedby="confirm-modal-content"
       aria-modal="true"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: Z_INDEX.modal,
-      }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center"
+      style={{ zIndex: Z_INDEX.modal }}
       onClick={isLoading ? undefined : onClose}
       onKeyDown={handleKeyDown}
     >
       <div
-        style={{
-          backgroundColor: '#0A1022',
-          border: '1px solid #1E3A5F',
-          borderRadius: '8px',
-          padding: '24px',
-          maxWidth: '500px',
-          width: '90%',
-          maxHeight: '80vh',
-          overflow: 'auto',
-        }}
+        className="bg-[#0A1022] border border-[#1E3A5F] rounded-lg p-6 max-w-[500px] w-[90%] max-h-[80vh] overflow-auto"
         onClick={e => e.stopPropagation()}
       >
         <h2
           id="confirm-modal-title"
-          style={{
-            color: '#00c8ff',
-            fontSize: '1.25rem',
-            fontWeight: 'bold',
-            marginBottom: '16px',
-            textAlign: 'center',
-          }}
+          className="text-[#00c8ff] text-xl font-bold mb-4 text-center"
         >
           イベント登録内容の確認
         </h2>
 
-        <div id="confirm-modal-content" style={{ marginBottom: '20px' }}>
-          <div style={{ marginBottom: '12px' }}>
-            <span
-              style={{
-                color: '#00c8ff',
-                fontWeight: 'bold',
-                display: 'block',
-                marginBottom: '4px',
-              }}
-            >
+        <div id="confirm-modal-content" className="mb-5">
+          <div className="mb-3">
+            <span className="text-[#00c8ff] font-bold block mb-1">
               イベント名:
             </span>
-            <span style={{ color: '#ffffff' }}>{data.name}</span>
+            <span className="text-white">{data.name}</span>
           </div>
 
-          <div style={{ marginBottom: '12px' }}>
-            <span
-              style={{
-                color: '#00c8ff',
-                fontWeight: 'bold',
-                display: 'block',
-                marginBottom: '4px',
-              }}
-            >
+          <div className="mb-3">
+            <span className="text-[#00c8ff] font-bold block mb-1">
               イベントタイプ:
             </span>
-            <span style={{ color: '#ffffff' }}>
+            <span className="text-white">
               {getEventTypeDisplay(data.type)}
             </span>
           </div>
 
-          <div style={{ marginBottom: '12px' }}>
-            <span
-              style={{
-                color: '#00c8ff',
-                fontWeight: 'bold',
-                display: 'block',
-                marginBottom: '4px',
-              }}
-            >
+          <div className="mb-3">
+            <span className="text-[#00c8ff] font-bold block mb-1">
               詳細:
             </span>
-            <div
-              style={{
-                color: '#ffffff',
-                whiteSpace: 'pre-wrap',
-                maxHeight: '120px',
-                overflow: 'auto',
-                padding: '8px',
-                backgroundColor: '#1E3A5F',
-                borderRadius: '4px',
-              }}
-            >
+            <div className="text-white whitespace-pre-wrap max-h-[120px] overflow-auto p-2 bg-[#1E3A5F] rounded">
               {data.details}
             </div>
           </div>
 
           {data.url && (
-            <div style={{ marginBottom: '12px' }}>
-              <span
-                style={{
-                  color: '#00c8ff',
-                  fontWeight: 'bold',
-                  display: 'block',
-                  marginBottom: '4px',
-                }}
-              >
+            <div className="mb-3">
+              <span className="text-[#00c8ff] font-bold block mb-1">
                 URL:
               </span>
-              <span style={{ color: '#ffffff', wordBreak: 'break-all' }}>
+              <span className="text-white break-all">
                 {data.url}
               </span>
             </div>
           )}
 
-          <div style={{ marginBottom: '12px' }}>
-            <span
-              style={{
-                color: '#00c8ff',
-                fontWeight: 'bold',
-                display: 'block',
-                marginBottom: '4px',
-              }}
-            >
+          <div className="mb-3">
+            <span className="text-[#00c8ff] font-bold block mb-1">
               申込締切日:
             </span>
-            <span style={{ color: '#ffffff' }}>{data.deadline}</span>
+            <span className="text-white">{data.deadline}</span>
           </div>
 
-          <div style={{ marginBottom: '12px' }}>
-            <span
-              style={{
-                color: '#00c8ff',
-                fontWeight: 'bold',
-                display: 'block',
-                marginBottom: '4px',
-              }}
-            >
+          <div className="mb-3">
+            <span className="text-[#00c8ff] font-bold block mb-1">
               表示終了日:
             </span>
-            <span style={{ color: '#ffffff' }}>{data.endDisplayDate}</span>
+            <span className="text-white">{data.endDisplayDate}</span>
           </div>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            gap: '12px',
-            justifyContent: 'center',
-          }}
-        >
+        <div className="flex gap-3 justify-center">
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#1E3A5F',
-              color: '#ffffff',
-              border: '1px solid #1E3A5F',
-              borderRadius: '4px',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.6 : 1,
-            }}
+            className={`py-2.5 px-5 bg-[#1E3A5F] text-white border border-[#1E3A5F] rounded ${
+              isLoading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+            }`}
           >
             キャンセル
           </button>
@@ -205,16 +116,9 @@ export default function EventConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#00c8ff',
-              color: '#0A1022',
-              border: '1px solid #00c8ff',
-              borderRadius: '4px',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.6 : 1,
-              fontWeight: 'bold',
-            }}
+            className={`py-2.5 px-5 bg-[#00c8ff] text-[#0A1022] border border-[#00c8ff] rounded font-bold ${
+              isLoading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+            }`}
           >
             {isLoading ? '登録中...' : '登録する'}
           </button>

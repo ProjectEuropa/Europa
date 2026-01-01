@@ -150,10 +150,10 @@ const Header: React.FC<HeaderProps> = ({
                     </span>
                     <Link
                       href="/mypage"
-                      className="text-[#8CB4FF] font-medium text-[15px] no-underline flex items-center gap-1"
+                      className="!text-[#8CB4FF] font-medium text-[15px] no-underline flex items-center gap-1"
                       aria-label="マイページに移動"
                     >
-                      <Icons.Register size={18} /> マイページ
+                      <Icons.Register size={18} color="#8CB4FF" /> マイページ
                     </Link>
                     <button
                       onClick={() => {
@@ -166,7 +166,7 @@ const Header: React.FC<HeaderProps> = ({
                       className="text-[#8CB4FF] bg-transparent border-none text-[15px] font-medium cursor-pointer flex items-center gap-1"
                       aria-label="ログアウト"
                     >
-                      <Icons.Logout size={18} /> ログアウト
+                      <Icons.Logout size={18} color="#8CB4FF" /> ログアウト
                     </button>
                   </div>
                 );

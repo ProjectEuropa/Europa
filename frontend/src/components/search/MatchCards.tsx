@@ -26,141 +26,62 @@ const MatchCards: React.FC<MatchCardsProps> = ({
   onDelete,
 }) => {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '16px',
-        padding: '16px',
-      }}
-    >
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 p-4">
       {matches.map(match => (
         <div
           key={match.id}
-          style={{
-            background: '#050A14',
-            border: '1px solid #1E3A5F',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            transition: 'all 0.3s ease',
-          }}
+          className="bg-[#050A14] border border-[#1E3A5F] rounded-lg overflow-hidden transition-all duration-300"
         >
-          <div style={{ padding: '20px' }}>
+          <div className="p-5">
             {/* カードヘッダー */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: '12px',
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: 'bold',
-                  color: '#8CB4FF',
-                  fontSize: '1.1rem',
-                  whiteSpace: 'nowrap',
-                  wordBreak: 'keep-all',
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight: 'bold',
-                    color: '#8CB4FF',
-                    marginBottom: '4px',
-                    whiteSpace: 'nowrap',
-                    wordBreak: 'keep-all',
-                  }}
-                >
+            <div className="flex justify-between items-start mb-3">
+              <div className="font-bold text-[#8CB4FF] text-[1.1rem] whitespace-nowrap break-keep">
+                <div className="font-bold text-[#8CB4FF] mb-1 whitespace-nowrap break-keep">
                   ■{match.date}
                 </div>
-                <span style={{ whiteSpace: 'nowrap', wordBreak: 'keep-all' }}>
+                <span className="whitespace-nowrap break-keep">
                   {match.title}
                 </span>
               </div>
-              <div
-                style={{
-                  fontSize: '0.9rem',
-                  color: '#00c8ff',
-                  whiteSpace: 'nowrap',
-                  wordBreak: 'keep-all',
-                }}
-              >
+              <div className="text-[0.9rem] text-[#00c8ff] whitespace-nowrap break-keep">
                 {match.filename}
               </div>
             </div>
 
             {/* マッチ情報 */}
-            <div
-              style={{
-                fontSize: '0.9rem',
-                color: 'white',
-                marginBottom: '8px',
-              }}
-            >
-              <div style={{ marginBottom: '4px' }}>
-                <span style={{ color: '#b0c4d8' }}>時間: </span>
+            <div className="text-[0.9rem] text-white mb-2">
+              <div className="mb-1">
+                <span className="text-[#b0c4d8]">時間: </span>
                 {match.time}
               </div>
-              <div style={{ marginBottom: '4px' }}>
-                <span style={{ color: '#b0c4d8' }}>参加チーム: </span>
+              <div className="mb-1">
+                <span className="text-[#b0c4d8]">参加チーム: </span>
                 {match.teams.join(', ')}
               </div>
-              <div style={{ marginBottom: '4px' }}>
-                <span style={{ color: '#b0c4d8' }}>結果: </span>
+              <div className="mb-1">
+                <span className="text-[#b0c4d8]">結果: </span>
                 {match.result}
               </div>
             </div>
 
             {/* コメント */}
-            <div
-              style={{
-                fontSize: '0.9rem',
-                color: '#b0c4d8',
-                marginBottom: '12px',
-                background: 'rgba(14, 22, 40, 0.5)',
-                padding: '8px',
-                borderRadius: '4px',
-                maxHeight: '80px',
-                overflow: 'auto',
-              }}
-            >
+            <div className="text-[0.9rem] text-[#b0c4d8] mb-3 bg-[rgba(14,22,40,0.5)] p-2 rounded max-h-20 overflow-auto">
               {match.comment.split('\n').map((line, i) => (
                 <div key={i}>{line}</div>
               ))}
             </div>
 
             {/* アップロード情報とアクション */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '0.8rem',
-                color: '#6A7A8C',
-              }}
-            >
+            <div className="flex justify-between items-center text-[0.8rem] text-[#6A7A8C]">
               <div>
                 アップロード: {match.uploadDate} {match.uploadTime}
               </div>
 
               {/* アクションボタン */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '8px',
-                }}
-              >
+              <div className="flex gap-2">
                 <button
                   onClick={() => onDownload(match)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#00c8ff',
-                    cursor: 'pointer',
-                    padding: '5px',
-                  }}
+                  className="bg-transparent border-none text-[#00c8ff] cursor-pointer p-[5px]"
                 >
                   <svg
                     width="24"
@@ -187,13 +108,7 @@ const MatchCards: React.FC<MatchCardsProps> = ({
                 </button>
                 <button
                   onClick={() => onDelete(match)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#00c8ff',
-                    cursor: 'pointer',
-                    padding: '5px',
-                  }}
+                  className="bg-transparent border-none text-[#00c8ff] cursor-pointer p-[5px]"
                 >
                   <svg
                     width="24"

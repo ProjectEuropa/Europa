@@ -26,7 +26,7 @@ const LoginPage: React.FC = () => {
           <div className="flex justify-center mt-4">
             <Link
               href="/forgot-password"
-              className="text-[#00c8ff] text-sm no-underline hover:underline"
+              className="!text-[#00c8ff] text-sm no-underline hover:underline"
             >
               パスワードをお忘れですか？
             </Link>
@@ -36,7 +36,7 @@ const LoginPage: React.FC = () => {
             アカウントをお持ちでないですか？{' '}
             <Link
               href="/register"
-              className="text-[#00c8ff] no-underline font-bold hover:underline"
+              className="!text-[#00c8ff] no-underline font-bold hover:underline"
             >
               新規登録
             </Link>

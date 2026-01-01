@@ -118,18 +118,13 @@ export function RegisterForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+      className="flex flex-col gap-4"
     >
       {/* 名前フィールド */}
       <div>
         <label
           htmlFor="name"
-          style={{
-            display: 'block',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-            marginBottom: '6px',
-          }}
+          className="block text-[#b0c4d8] text-[0.9rem] mb-1.5"
         >
           名前*
         </label>
@@ -139,19 +134,12 @@ export function RegisterForm({
           placeholder="山田太郎"
           {...register('name')}
           disabled={isSubmitting}
-          style={{
-            width: '100%',
-            padding: '12px',
-            borderRadius: '6px',
-            border: errors.name ? '1px solid #ef4444' : '1px solid #374151',
-            backgroundColor: '#1f2937',
-            color: '#f9fafb',
-            fontSize: '1rem',
-            outline: 'none',
-          }}
+          className={`w-full p-3 rounded-md border ${
+            errors.name ? 'border-red-500' : 'border-gray-700'
+          } bg-gray-800 text-gray-50 text-base outline-none`}
         />
         {errors.name && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.name.message}
           </p>
         )}
@@ -161,12 +149,7 @@ export function RegisterForm({
       <div>
         <label
           htmlFor="email"
-          style={{
-            display: 'block',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-            marginBottom: '6px',
-          }}
+          className="block text-[#b0c4d8] text-[0.9rem] mb-1.5"
         >
           メールアドレス*
         </label>
@@ -176,19 +159,12 @@ export function RegisterForm({
           placeholder="example@example.com"
           {...register('email')}
           disabled={isSubmitting}
-          style={{
-            width: '100%',
-            padding: '12px',
-            borderRadius: '6px',
-            border: errors.email ? '1px solid #ef4444' : '1px solid #374151',
-            backgroundColor: '#1f2937',
-            color: '#f9fafb',
-            fontSize: '1rem',
-            outline: 'none',
-          }}
+          className={`w-full p-3 rounded-md border ${
+            errors.email ? 'border-red-500' : 'border-gray-700'
+          } bg-gray-800 text-gray-50 text-base outline-none`}
         />
         {errors.email && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.email.message}
           </p>
         )}
@@ -198,57 +174,31 @@ export function RegisterForm({
       <div>
         <label
           htmlFor="password"
-          style={{
-            display: 'block',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-            marginBottom: '6px',
-          }}
+          className="block text-[#b0c4d8] text-[0.9rem] mb-1.5"
         >
           パスワード*
         </label>
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <input
             id="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="パスワードを入力"
             {...register('password')}
             disabled={isSubmitting}
-            style={{
-              width: '100%',
-              padding: '12px',
-              paddingRight: '48px',
-              borderRadius: '6px',
-              border: errors.password
-                ? '1px solid #ef4444'
-                : '1px solid #374151',
-              backgroundColor: '#1f2937',
-              color: '#f9fafb',
-              fontSize: '1rem',
-              outline: 'none',
-            }}
+            className={`w-full p-3 pr-12 rounded-md border ${
+              errors.password ? 'border-red-500' : 'border-gray-700'
+            } bg-gray-800 text-gray-50 text-base outline-none`}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              color: '#b0c4d8',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              padding: '4px',
-            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#b0c4d8] cursor-pointer text-base p-1"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
         {errors.password && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.password.message}
           </p>
         )}
@@ -258,53 +208,27 @@ export function RegisterForm({
       <div>
         <label
           htmlFor="passwordConfirmation"
-          style={{
-            display: 'block',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-            marginBottom: '6px',
-          }}
+          className="block text-[#b0c4d8] text-[0.9rem] mb-1.5"
         >
           パスワード確認*
         </label>
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <input
             id="passwordConfirmation"
             type={showPasswordConfirmation ? 'text' : 'password'}
             placeholder="パスワードを再入力"
             {...register('passwordConfirmation')}
             disabled={isSubmitting}
-            style={{
-              width: '100%',
-              padding: '12px',
-              paddingRight: '48px',
-              borderRadius: '6px',
-              border: errors.passwordConfirmation
-                ? '1px solid #ef4444'
-                : '1px solid #374151',
-              backgroundColor: '#1f2937',
-              color: '#f9fafb',
-              fontSize: '1rem',
-              outline: 'none',
-            }}
+            className={`w-full p-3 pr-12 rounded-md border ${
+              errors.passwordConfirmation ? 'border-red-500' : 'border-gray-700'
+            } bg-gray-800 text-gray-50 text-base outline-none`}
           />
           <button
             type="button"
             onClick={() =>
               setShowPasswordConfirmation(!showPasswordConfirmation)
             }
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              color: '#b0c4d8',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              padding: '4px',
-            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#b0c4d8] cursor-pointer text-base p-1"
           >
             {showPasswordConfirmation ? (
               <EyeOff size={20} />
@@ -314,7 +238,7 @@ export function RegisterForm({
           </button>
         </div>
         {errors.passwordConfirmation && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.passwordConfirmation.message}
           </p>
         )}
@@ -324,19 +248,11 @@ export function RegisterForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        style={{
-          width: '100%',
-          padding: '12px',
-          backgroundColor: isSubmitting ? '#374151' : '#00c8ff',
-          color: '#ffffff',
-          border: 'none',
-          borderRadius: '6px',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          cursor: isSubmitting ? 'not-allowed' : 'pointer',
-          marginTop: '8px',
-          opacity: isSubmitting ? 0.6 : 1,
-        }}
+        className={`w-full p-3 border-none rounded-md text-base font-bold mt-2 ${
+          isSubmitting
+            ? 'bg-gray-700 text-white cursor-not-allowed opacity-60'
+            : 'bg-[#00c8ff] text-white cursor-pointer'
+        }`}
       >
         {isSubmitting ? '登録中...' : 'アカウント作成'}
       </button>

@@ -40,20 +40,11 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
 
   if (isSuccess) {
     return (
-      <div
-        style={{
-          background: 'rgba(0, 200, 83, 0.1)',
-          border: '1px solid rgba(0, 200, 83, 0.3)',
-          borderRadius: '4px',
-          padding: '16px',
-          marginBottom: '20px',
-          color: '#00c853',
-        }}
-      >
-        <p style={{ marginBottom: '10px', fontWeight: 'bold' }}>
+      <div className="bg-[rgba(0,200,83,0.1)] border border-[rgba(0,200,83,0.3)] rounded p-4 mb-5 text-[#00c853]">
+        <p className="mb-2.5 font-bold">
           リセット用のメールを送信しました！
         </p>
-        <p style={{ fontSize: '0.9rem' }}>
+        <p className="text-[0.9rem]">
           {successEmail}{' '}
           宛にパスワードリセット用のリンクを送信しました。メールをご確認ください。
         </p>
@@ -64,17 +55,12 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+      className="flex flex-col gap-5"
     >
       <div>
         <label
           htmlFor="email"
-          style={{
-            display: 'block',
-            marginBottom: '8px',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-          }}
+          className="block mb-2 text-[#b0c4d8] text-[0.9rem]"
         >
           メールアドレス*
         </label>
@@ -84,20 +70,12 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           placeholder="example@europa.com"
           {...register('email')}
           disabled={isLoading}
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            background: '#111A2E',
-            border: errors.email ? '1px solid #ef4444' : '1px solid #1E3A5F',
-            borderRadius: '6px',
-            color: 'white',
-            fontSize: '1rem',
-            outline: 'none',
-            transition: 'border-color 0.2s',
-          }}
+          className={`w-full py-3 px-4 bg-[#111A2E] border ${
+            errors.email ? 'border-red-500' : 'border-[#1E3A5F]'
+          } rounded-md text-white text-base outline-none transition-colors`}
         />
         {errors.email && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.email.message}
           </p>
         )}
@@ -106,37 +84,19 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
       <button
         type="submit"
         disabled={isLoading}
-        style={{
-          width: '100%',
-          padding: '14px',
-          background: isLoading ? '#374151' : '#00c8ff',
-          color: isLoading ? '#9ca3af' : '#020824',
-          border: 'none',
-          borderRadius: '6px',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          cursor: isLoading ? 'not-allowed' : 'pointer',
-          opacity: isLoading ? 0.7 : 1,
-          transition: 'all 0.2s',
-        }}
+        className={`w-full py-3.5 border-none rounded-md text-base font-bold transition-all ${
+          isLoading
+            ? 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-70'
+            : 'bg-[#00c8ff] text-[#020824] cursor-pointer'
+        }`}
       >
         {isLoading ? '送信中...' : 'リセットリンクを送信'}
       </button>
 
-      <div
-        style={{
-          textAlign: 'center',
-          color: '#b0c4d8',
-          fontSize: '0.9rem',
-        }}
-      >
+      <div className="text-center text-[#b0c4d8] text-[0.9rem]">
         <Link
           href="/login"
-          style={{
-            color: '#00c8ff',
-            textDecoration: 'none',
-            fontWeight: 'bold',
-          }}
+          className="!text-[#00c8ff] no-underline font-bold"
         >
           ログインページに戻る
         </Link>

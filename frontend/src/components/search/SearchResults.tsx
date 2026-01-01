@@ -254,7 +254,7 @@ export const SearchResults = memo<SearchResultsProps>(
               >
                 {/* テーブル表示 */}
                 <div className="w-full overflow-x-auto mt-4 rounded-lg border border-slate-800 bg-slate-900/50 backdrop-blur-sm">
-                  <div className="w-full" style={{ minWidth: '1000px' }}>
+                  <div className="w-full min-w-[1000px]">
                     {/* テーブルヘッダー */}
                     <div className="grid grid-cols-[80px_120px_1fr_180px_160px_160px_60px] bg-slate-900 border-b border-slate-800 text-slate-400 text-sm font-semibold sticky top-0">
                       <div className="p-3 text-center">DL</div>

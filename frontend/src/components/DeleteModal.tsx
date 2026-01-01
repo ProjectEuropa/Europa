@@ -37,18 +37,12 @@ export function DeleteModal({
       aria-labelledby="delete-modal-title"
       aria-describedby="delete-modal-description"
       aria-modal="true"
-      className="cyber-dialog m-auto rounded-2xl border-2 border-cyan-400 text-white w-full dialog-animation"
+      className="cyber-dialog m-auto rounded-2xl border-2 border-cyan-400 text-white w-full max-w-[560px] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm dialog-animation"
       onKeyDown={handleKeyDown}
       style={{
-        maxWidth: '560px',
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
         zIndex: Z_INDEX.modal,
         background: 'linear-gradient(135deg, #0a1022 0%, #0a0818 100%)',
         boxShadow: '0 0 32px 8px rgba(0, 200, 255, 0.3), 0 0 0 2px #00c8ff',
-        backdropFilter: 'blur(4px)',
         backgroundImage:
           'radial-gradient(circle at 20% 30%, rgba(29, 78, 216, 0.15) 0%, transparent 80%), radial-gradient(circle at 80% 70%, rgba(0, 200, 255, 0.1) 0%, transparent 80%)',
       }}
@@ -58,57 +52,23 @@ export function DeleteModal({
           e.preventDefault();
           handleDelete();
         }}
-        style={{
-          padding: '36px 40px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '28px',
-        }}
+        className="py-9 px-10 flex flex-col gap-7"
       >
         <h2
           id="delete-modal-title"
-          style={{
-            color: '#ffffff',
-            fontSize: '28px',
-            fontWeight: 'bold',
-            marginBottom: '16px',
-            textShadow: '0 0 8px #00c8ff',
-            lineHeight: 1.4,
-          }}
+          className="text-white text-[28px] font-bold mb-4 leading-[1.4]"
+          style={{ textShadow: '0 0 8px #00c8ff' }}
         >
           {fileName}を本当に削除しますか？
         </h2>
         <p
           id="delete-modal-description"
-          style={{
-            color: '#ffffff',
-            fontSize: '18px',
-            lineHeight: 1.7,
-            marginBottom: '8px',
-          }}
+          className="text-white text-lg leading-[1.7] mb-2"
         >
           削除する場合は、削除パスワードを入力してください。
         </p>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-            marginTop: '8px',
-            marginBottom: '8px',
-          }}
-        >
-          <label
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              color: '#ffffff',
-              fontSize: '18px',
-              fontWeight: 600,
-              marginBottom: '8px',
-            }}
-          >
+        <div className="flex flex-col gap-4 mt-2 mb-2">
+          <label className="flex items-center gap-3 text-white text-lg font-semibold mb-2">
             <Lock className="w-6 h-6" color="#00c8ff" />
             削除パスワード
           </label>
@@ -119,54 +79,17 @@ export function DeleteModal({
             onChange={e => setPassword(e.target.value)}
             maxLength={100}
             autoComplete="off"
-            style={{
-              width: '100%',
-              padding: '18px 20px',
-              borderRadius: '12px',
-              border: '1.5px solid #00c8ff',
-              background: '#0a1022',
-              color: '#fff',
-              fontSize: '17px',
-              marginTop: '4px',
-              marginBottom: '8px',
-              boxShadow: '0 0 8px rgba(0, 200, 255, 0.2)',
-            }}
+            className="w-full py-[18px] px-5 rounded-xl border-[1.5px] border-[#00c8ff] bg-[#0a1022] text-white text-[17px] mt-1 mb-2 shadow-[0_0_8px_rgba(0,200,255,0.2)]"
           />
-          <div
-            style={{
-              textAlign: 'right',
-              color: '#aaa',
-              fontSize: '14px',
-              marginTop: '4px',
-            }}
-          >
+          <div className="text-right text-[#aaa] text-sm mt-1">
             {password.length} / 100
           </div>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            width: '100%',
-            marginTop: '32px',
-            padding: '0',
-          }}
-        >
-          <div style={{ textAlign: 'left' }}>
+        <div className="flex justify-between w-full mt-8 p-0">
+          <div className="text-left">
             <button
               type="button"
-              style={{
-                background: 'transparent',
-                color: '#b0c4d8',
-                fontWeight: 600,
-                padding: '14px 24px',
-                border: '1px solid #485870',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                minWidth: '130px',
-                fontSize: '16px',
-              }}
+              className="bg-transparent text-[#b0c4d8] font-semibold py-3.5 px-6 border border-[#485870] rounded-lg cursor-pointer transition-all duration-200 min-w-[130px] text-base"
               onClick={() => {
                 setPassword('');
                 onOpenChange(false);
@@ -175,21 +98,10 @@ export function DeleteModal({
               キャンセル
             </button>
           </div>
-          <div style={{ textAlign: 'right' }}>
+          <div className="text-right">
             <button
               type="submit"
-              style={{
-                background: '#00c8ff',
-                color: '#0a0818',
-                fontWeight: 600,
-                padding: '14px 24px',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                minWidth: '130px',
-                fontSize: '16px',
-              }}
+              className="bg-[#00c8ff] text-[#0a0818] font-semibold py-3.5 px-6 border-none rounded-lg cursor-pointer transition-all duration-200 min-w-[130px] text-base"
             >
               削除実行
             </button>
