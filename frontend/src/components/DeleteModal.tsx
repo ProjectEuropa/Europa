@@ -1,6 +1,7 @@
 'use client';
 import { Lock } from 'lucide-react';
 import * as React from 'react';
+import { Z_INDEX } from '@/lib/utils';
 
 export function DeleteModal({
   open,
@@ -31,7 +32,7 @@ export function DeleteModal({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        zIndex: 10000,
+        zIndex: Z_INDEX.modal,
         background: 'linear-gradient(135deg, #0a1022 0%, #0a0818 100%)',
         boxShadow: '0 0 32px 8px rgba(0, 200, 255, 0.3), 0 0 0 2px #00c8ff',
         backdropFilter: 'blur(4px)',

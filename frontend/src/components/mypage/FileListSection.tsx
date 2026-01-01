@@ -7,6 +7,7 @@ import {
   useMyMatchFiles,
   useMyTeamFiles,
 } from '@/hooks/api/useMyPage';
+import { Z_INDEX } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import type { MyPageFile } from '@/types/user';
 import {
@@ -579,7 +580,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: Z_INDEX.modal,
           }}
           onClick={() => setModalOpen(false)}
         >

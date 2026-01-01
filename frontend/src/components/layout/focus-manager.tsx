@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { Z_INDEX } from '@/lib/utils';
 
 /**
  * フォーカス管理のためのユーティリティフック
@@ -124,7 +125,7 @@ export function SkipLink({ href, children, className = '' }: SkipLinkProps) {
       style={{
         position: 'absolute',
         left: '-9999px',
-        zIndex: 999999,
+        zIndex: Z_INDEX.focus,
         padding: '8px 16px',
         background: '#000',
         color: '#fff',

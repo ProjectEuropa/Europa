@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { DateTimeInput } from '@/components/ui/datetime-input';
 import { Icons } from '@/icons';
 import { fetchTags } from '@/lib/api/files';
+import { Z_INDEX } from '@/lib/utils';
 
 export interface FileUploadOptions {
   ownerName: string;
@@ -646,7 +647,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                   position: 'absolute',
                   top: '100%',
                   left: 0,
-                  zIndex: 11,
+                  zIndex: Z_INDEX.dropdown,
                   marginTop: '4px',
                   width: '100%',
                   maxWidth: '500px',
@@ -1125,7 +1126,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 50,
+            zIndex: Z_INDEX.sticky,
           }}
         >
           <div

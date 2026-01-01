@@ -3,6 +3,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { useDeleteEvent, useMyEvents } from '@/hooks/api/useMyPage';
+import { Z_INDEX } from '@/lib/utils';
 import { getEventTypeDisplay } from '@/schemas/event';
 import type { MyPageEvent } from '@/types/user';
 
@@ -355,7 +356,7 @@ const RegisteredEventsSection: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: Z_INDEX.modal,
           }}
         >
           <div

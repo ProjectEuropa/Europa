@@ -3,6 +3,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { Z_INDEX } from '@/lib/utils';
 import { deleteMyFile } from '@/utils/api';
 
 interface TeamData {
@@ -297,7 +298,7 @@ const UploadedTeamsSection: React.FC<UploadedTeamsSectionProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: Z_INDEX.modal,
           }}
         >
           <div

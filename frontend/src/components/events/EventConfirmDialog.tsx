@@ -1,5 +1,6 @@
 import type { EventFormData } from '@/schemas/event';
 import { getEventTypeDisplay } from '@/schemas/event';
+import { Z_INDEX } from '@/lib/utils';
 
 interface EventConfirmDialogProps {
   isOpen: boolean;
@@ -30,7 +31,7 @@ export default function EventConfirmDialog({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1000,
+        zIndex: Z_INDEX.modal,
       }}
       onClick={onClose}
     >

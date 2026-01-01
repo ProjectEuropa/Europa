@@ -1,7 +1,9 @@
 'use client';
 
 import type React from 'react';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight, X, ExternalLink } from 'lucide-react';
 
 interface CalendarEvent {
   date: string; // ISO形式
@@ -12,7 +14,7 @@ interface CalendarEvent {
 
 interface CalendarProps {
   initialDate?: Date;
-  onSelect?: (date: Date, b: boolean) => void;
+  onSelect?: (date: Date, shouldClose: boolean) => void;
   size?: 'small' | 'large';
   showTimeSelect?: boolean;
   events?: CalendarEvent[];
@@ -26,7 +28,6 @@ const Calendar: React.FC<CalendarProps> = ({
   events = [],
 }) => {
   const [modalEvent, setModalEvent] = useState<CalendarEvent | null>(null);
-
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedHour, setSelectedHour] = useState<number>(
@@ -36,28 +37,7 @@ const Calendar: React.FC<CalendarProps> = ({
     initialDate ? initialDate.getMinutes() : 0
   );
 
-  // フォントサイズを計算
-  const fontSize = {
-    yearMonth: size === 'small' ? '1rem' : '2rem',
-    weekday: size === 'small' ? '0.75rem' : '1.5rem',
-    day: size === 'small' ? '0.85rem' : '1.5rem',
-    button: size === 'small' ? '0.75rem' : '1.3rem',
-    timeSelect: size === 'small' ? '0.8rem' : '1.1rem',
-  };
-
-  // パディングを計算
-  const padding = {
-    container: size === 'small' ? '10px' : '30px',
-    cell: size === 'small' ? '4px' : '15px',
-    button: size === 'small' ? '6px 10px' : '12px 25px',
-    timeSelect: size === 'small' ? '6px' : '10px',
-  };
-
-  // 間隔を計算
-  const gap = size === 'small' ? '4px' : '15px';
-
-  // セルの高さを計算
-  const cellHeight = size === 'small' ? '45px' : '80px';
+  const isSmall = size === 'small';
 
   // 年月の表示用フォーマット
   const formatYearMonth = (date: Date): string => {
@@ -91,13 +71,12 @@ const Calendar: React.FC<CalendarProps> = ({
     setSelectedDate(today);
     if (onSelect) {
       if (showTimeSelect) {
-        // 時間が選択されている場合は、今日の日付に時間を設定
         const newDate = new Date(today);
         newDate.setHours(selectedHour);
         newDate.setMinutes(selectedMinute);
-        onSelect(newDate, false); // 今日ボタン押下時はカレンダーを閉じない
+        onSelect(newDate, false);
       } else {
-        onSelect(today, false); // 今日ボタン押下時はカレンダーを閉じない
+        onSelect(today, false);
       }
     }
   };
@@ -107,7 +86,7 @@ const Calendar: React.FC<CalendarProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setSelectedDate(date);
-    // その日に該当するイベントがあればモーダル表示
+
     const dayEvents = events.filter(ev => {
       const evDate = new Date(ev.date);
       return (
@@ -116,9 +95,11 @@ const Calendar: React.FC<CalendarProps> = ({
         evDate.getDate() === date.getDate()
       );
     });
+
     if (dayEvents.length > 0) {
-      setModalEvent(dayEvents[0]); // 1日1件想定、複数対応ならリスト化
+      setModalEvent(dayEvents[0]);
     }
+
     if (onSelect) {
       if (showTimeSelect) {
         const newDate = new Date(date);
@@ -139,7 +120,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const newDate = new Date(baseDate);
     newDate.setHours(hour);
     newDate.setMinutes(selectedMinute);
-    if (onSelect) onSelect(newDate, false); // 時間変更時はカレンダーを閉じない
+    if (onSelect) onSelect(newDate, false);
   };
 
   const handleMinuteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -149,10 +130,9 @@ const Calendar: React.FC<CalendarProps> = ({
     const newDate = new Date(baseDate);
     newDate.setHours(selectedHour);
     newDate.setMinutes(minute);
-    if (onSelect) onSelect(newDate, false); // 時間変更時はカレンダーを閉じない
+    if (onSelect) onSelect(newDate, false);
   };
 
-  // 時・分どちらかが変わったら常にonSelectを呼ぶ（最新値で）
   // 時間設定ボタンハンドラー
   const handleTimeSet = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -164,7 +144,7 @@ const Calendar: React.FC<CalendarProps> = ({
     newDate.setMinutes(selectedMinute);
 
     if (onSelect) {
-      onSelect(newDate, true); // カレンダーを閉じる
+      onSelect(newDate, true);
     }
   };
 
@@ -177,20 +157,33 @@ const Calendar: React.FC<CalendarProps> = ({
     );
   };
 
+  // イベントマップを事前計算（パフォーマンス最適化）
+  const eventDateMap = useMemo(() => {
+    const map = new Map<string, CalendarEvent>();
+    for (const ev of events) {
+      const evDate = new Date(ev.date);
+      const key = `${evDate.getFullYear()}-${evDate.getMonth()}-${evDate.getDate()}`;
+      if (!map.has(key)) {
+        map.set(key, ev);
+      }
+    }
+    return map;
+  }, [events]);
+
+  // 日付にイベントがあるかチェック
+  const hasEventOnDate = (date: Date): boolean => {
+    const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    return eventDateMap.has(key);
+  };
+
   // カレンダーの日付を生成
   const generateCalendarDays = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
 
-    // 月の最初の日
     const firstDayOfMonth = new Date(year, month, 1);
-    // 月の最後の日
     const lastDayOfMonth = new Date(year, month + 1, 0);
-
-    // 先月の最後の日
     const lastDayOfLastMonth = new Date(year, month, 0);
-
-    // 月の最初の日の曜日（0: 日曜日, 1: 月曜日, ..., 6: 土曜日）
     const firstDayOfWeek = firstDayOfMonth.getDay();
 
     const days = [];
@@ -233,8 +226,6 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   const days = generateCalendarDays();
-
-  // 曜日の表示
   const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
 
   // カレンダー全体のクリックイベントを停止
@@ -244,122 +235,59 @@ const Calendar: React.FC<CalendarProps> = ({
 
   return (
     <div
-      style={{
-        background: '#050A14',
-        border: '1px solid #1E3A5F',
-        borderRadius: size === 'small' ? '8px' : '12px',
-        padding: padding.container,
-        color: 'white',
-        width: '100%',
-        maxWidth: '100%',
-        minWidth: 0,
-        margin: '0 auto',
-        overflow: 'hidden',
-      }}
+      className={cn(
+        'bg-[#050A14] border border-[#1E3A5F] text-white w-full max-w-full min-w-0 mx-auto overflow-hidden',
+        isSmall ? 'rounded-lg p-2.5' : 'rounded-xl p-[30px]'
+      )}
       onClick={handleCalendarClick}
     >
       {/* ヘッダー部分 */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: padding.container,
-        }}
-      >
+      <div className={cn(
+        'flex justify-between items-center',
+        isSmall ? 'mb-2.5' : 'mb-[30px]'
+      )}>
         <button
           onClick={goToPreviousMonth}
-          style={{
-            background: '#111A2E',
-            border: '1px solid #1E3A5F',
-            color: '#00c8ff',
-            cursor: 'pointer',
-            padding: size === 'small' ? '10px 15px' : '15px 20px',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className={cn(
+            'bg-[#111A2E] border border-[#1E3A5F] text-cyan-400 cursor-pointer rounded-lg flex items-center justify-center',
+            'hover:bg-[#1a2540] transition-colors',
+            isSmall ? 'p-2.5 px-4' : 'p-4 px-5'
+          )}
         >
-          <svg
-            width={size === 'small' ? '24' : '30'}
-            height={size === 'small' ? '24' : '30'}
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M15 18L9 12L15 6"
-              stroke="#00c8ff"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ChevronLeft className={isSmall ? 'w-6 h-6' : 'w-[30px] h-[30px]'} />
         </button>
 
-        <div
-          style={{
-            fontSize: fontSize.yearMonth,
-            fontWeight: 'bold',
-            color: '#00c8ff',
-          }}
-        >
+        <div className={cn(
+          'font-bold text-cyan-400',
+          isSmall ? 'text-base' : 'text-2xl'
+        )}>
           {formatYearMonth(currentDate)}
         </div>
 
         <button
           onClick={goToNextMonth}
-          style={{
-            background: '#111A2E',
-            border: '1px solid #1E3A5F',
-            color: '#00c8ff',
-            cursor: 'pointer',
-            padding: size === 'small' ? '10px 15px' : '15px 20px',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          className={cn(
+            'bg-[#111A2E] border border-[#1E3A5F] text-cyan-400 cursor-pointer rounded-lg flex items-center justify-center',
+            'hover:bg-[#1a2540] transition-colors',
+            isSmall ? 'p-2.5 px-4' : 'p-4 px-5'
+          )}
         >
-          <svg
-            width={size === 'small' ? '24' : '30'}
-            height={size === 'small' ? '24' : '30'}
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M9 6L15 12L9 18"
-              stroke="#00c8ff"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ChevronRight className={isSmall ? 'w-6 h-6' : 'w-[30px] h-[30px]'} />
         </button>
       </div>
 
       {/* 今日ボタン */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: padding.container,
-        }}
-      >
+      <div className={cn(
+        'flex justify-center',
+        isSmall ? 'mb-2.5' : 'mb-[30px]'
+      )}>
         <button
           onClick={goToToday}
-          style={{
-            background: '#111A2E',
-            border: '1px solid #1E3A5F',
-            borderRadius: '8px',
-            color: '#00c8ff',
-            padding: padding.button,
-            cursor: 'pointer',
-            fontSize: fontSize.button,
-            fontWeight: 'bold',
-          }}
+          className={cn(
+            'bg-[#111A2E] border border-[#1E3A5F] rounded-lg text-cyan-400 cursor-pointer font-bold',
+            'hover:bg-[#1a2540] transition-colors',
+            isSmall ? 'py-1.5 px-2.5 text-xs' : 'py-3 px-6 text-lg'
+          )}
         >
           今日
         </button>
@@ -367,43 +295,24 @@ const Calendar: React.FC<CalendarProps> = ({
 
       {/* 時間選択 */}
       {showTimeSelect && (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '10px',
-            marginBottom: padding.container,
-            padding: padding.timeSelect,
-            background: 'rgba(0, 200, 255, 0.05)',
-            borderRadius: '8px',
-            border: '1px solid #1E3A5F',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              width: '100%',
-              justifyContent: 'center',
-            }}
-          >
-            <div style={{ fontSize: fontSize.timeSelect, color: '#00c8ff' }}>
+        <div className={cn(
+          'flex flex-col items-center gap-2.5 bg-cyan-500/5 rounded-lg border border-[#1E3A5F]',
+          isSmall ? 'mb-2.5 p-1.5' : 'mb-[30px] p-2.5'
+        )}>
+          <div className="flex items-center gap-2.5 w-full justify-center">
+            <div className={cn(
+              'text-cyan-400',
+              isSmall ? 'text-xs' : 'text-base'
+            )}>
               時間:
             </div>
             <select
               value={selectedHour}
               onChange={handleHourChange}
-              style={{
-                background: '#0F172A',
-                color: '#fff',
-                border: '1px solid #1E3A5F',
-                borderRadius: '4px',
-                padding: '4px 8px',
-                fontSize: fontSize.timeSelect,
-                cursor: 'pointer',
-              }}
+              className={cn(
+                'bg-slate-900 text-white border border-[#1E3A5F] rounded px-2 py-1 cursor-pointer',
+                isSmall ? 'text-xs' : 'text-base'
+              )}
             >
               {Array.from({ length: 24 }, (_, i) => (
                 <option key={`hour-${i}`} value={i}>
@@ -411,19 +320,14 @@ const Calendar: React.FC<CalendarProps> = ({
                 </option>
               ))}
             </select>
-            <div style={{ color: '#00c8ff' }}>:</div>
+            <div className="text-cyan-400">:</div>
             <select
               value={selectedMinute}
               onChange={handleMinuteChange}
-              style={{
-                background: '#0F172A',
-                color: '#fff',
-                border: '1px solid #1E3A5F',
-                borderRadius: '4px',
-                padding: '4px 8px',
-                fontSize: fontSize.timeSelect,
-                cursor: 'pointer',
-              }}
+              className={cn(
+                'bg-slate-900 text-white border border-[#1E3A5F] rounded px-2 py-1 cursor-pointer',
+                isSmall ? 'text-xs' : 'text-base'
+              )}
             >
               {Array.from({ length: 60 }, (_, i) => (
                 <option key={`minute-${i}`} value={i}>
@@ -436,20 +340,11 @@ const Calendar: React.FC<CalendarProps> = ({
           {/* 設定ボタン */}
           <button
             onClick={handleTimeSet}
-            style={{
-              background: '#00c8ff',
-              border: 'none',
-              borderRadius: '8px',
-              color: '#020824',
-              padding: '8px 16px',
-              cursor: 'pointer',
-              fontSize: fontSize.timeSelect,
-              fontWeight: 'bold',
-              marginTop: '10px',
-              width: '100%',
-              maxWidth: '200px',
-              transition: 'all 0.2s',
-            }}
+            className={cn(
+              'bg-cyan-400 border-none rounded-lg text-[#020824] cursor-pointer font-bold mt-2.5 w-full max-w-[200px]',
+              'hover:bg-cyan-300 transition-all',
+              isSmall ? 'py-1.5 px-3 text-xs' : 'py-2 px-4 text-base'
+            )}
           >
             時間を設定して閉じる
           </button>
@@ -457,25 +352,20 @@ const Calendar: React.FC<CalendarProps> = ({
       )}
 
       {/* 曜日表示 */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(7, 1fr)',
-          gap: gap,
-          marginBottom: gap,
-          textAlign: 'center',
-        }}
-      >
+      <div className={cn(
+        'grid grid-cols-7 text-center',
+        isSmall ? 'gap-1 mb-1' : 'gap-4 mb-4'
+      )}>
         {weekdays.map((day, index) => (
           <div
             key={index}
-            style={{
-              padding: size === 'small' ? '10px' : '15px',
-              fontWeight: 'bold',
-              fontSize: fontSize.weekday,
-              color:
-                index === 0 ? '#ff6b6b' : index === 6 ? '#00c8ff' : '#b0c4d8',
-            }}
+            className={cn(
+              'font-bold',
+              isSmall ? 'p-2.5 text-xs' : 'p-4 text-2xl',
+              index === 0 && 'text-red-400',
+              index === 6 && 'text-cyan-400',
+              index !== 0 && index !== 6 && 'text-[#b0c4d8]'
+            )}
           >
             {day}
           </div>
@@ -483,230 +373,106 @@ const Calendar: React.FC<CalendarProps> = ({
       </div>
 
       {/* 日付表示 */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(7, 1fr)',
-          gap: gap,
-        }}
-      >
+      <div className={cn(
+        'grid grid-cols-7',
+        isSmall ? 'gap-1' : 'gap-4'
+      )}>
         {days.map((day, index) => {
-          // イベント該当日かどうか判定
-          const hasEvent = events.some(ev => {
-            const evDate = new Date(ev.date);
-            return (
-              evDate.getFullYear() === day.date.getFullYear() &&
-              evDate.getMonth() === day.date.getMonth() &&
-              evDate.getDate() === day.date.getDate()
-            );
-          });
+          const hasEvent = hasEventOnDate(day.date);
+          const dayOfWeek = day.date.getDay();
+
           return (
             <div
               key={index}
               onClick={e => handleDateClick(day.date, e)}
-              style={{
-                padding: padding.cell,
-                textAlign: 'center',
-                cursor: 'pointer',
-                position: 'relative',
-                background: day.isSelected
-                  ? 'rgba(0, 200, 255, 0.15)'
-                  : 'transparent',
-                borderRadius: '8px',
-                color: !day.isCurrentMonth
-                  ? '#4A6FA5'
-                  : day.date.getDay() === 0
-                    ? '#ff6b6b'
-                    : day.date.getDay() === 6
-                      ? '#00c8ff'
-                      : '#fff',
-                height: cellHeight,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+              className={cn(
+                'text-center cursor-pointer relative rounded-lg flex flex-col justify-center items-center',
+                'hover:bg-cyan-500/10 transition-colors',
+                isSmall ? 'p-1 h-[45px]' : 'p-4 h-20',
+                day.isSelected && 'bg-cyan-500/15',
+                !day.isCurrentMonth && 'text-[#4A6FA5]',
+                day.isCurrentMonth && dayOfWeek === 0 && 'text-red-400',
+                day.isCurrentMonth && dayOfWeek === 6 && 'text-cyan-400',
+                day.isCurrentMonth && dayOfWeek !== 0 && dayOfWeek !== 6 && 'text-white'
+              )}
             >
-              <div
-                style={{
-                  fontSize: fontSize.day,
-                  fontWeight: day.isToday ? 'bold' : 'normal',
-                }}
-              >
+              <div className={cn(
+                isSmall ? 'text-sm' : 'text-2xl',
+                day.isToday && 'font-bold'
+              )}>
                 {day.date.getDate()}
               </div>
+
               {/* イベントがある日に印を表示 */}
               {hasEvent && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: size === 'small' ? '2px' : '4px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '0px',
-                  }}
-                >
-                  {/* カレンダーアイコン */}
-                  <span
-                    style={{
-                      fontSize: size === 'small' ? '0.6em' : '1em',
-                      lineHeight: 1,
-                    }}
-                  >
+                <div className={cn(
+                  'absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-0',
+                  isSmall ? 'bottom-0.5' : 'bottom-1'
+                )}>
+                  <span className={isSmall ? 'text-[0.6em] leading-none' : 'text-base leading-none'}>
                     📅
                   </span>
-                  {/* EVENTラベル */}
-                  <span
-                    style={{
-                      background:
-                        'linear-gradient(90deg, #3B82F6 60%, #8CB4FF 100%)',
-                      color: '#fff',
-                      fontSize: size === 'small' ? '0.4em' : '0.65em',
-                      padding: size === 'small' ? '0px 2px' : '1px 4px',
-                      borderRadius: size === 'small' ? '2px' : '4px',
-                      fontWeight: 600,
-                      letterSpacing: '0.02em',
-                      boxShadow: '0 1px 2px #0003',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
+                  <span className={cn(
+                    'bg-gradient-to-r from-blue-500 to-blue-300 text-white font-semibold tracking-tight shadow-sm whitespace-nowrap',
+                    isSmall ? 'text-[0.4em] px-0.5 rounded-sm' : 'text-[0.65em] px-1 py-px rounded'
+                  )}>
                     EVENT
                   </span>
                 </div>
               )}
+
               {/* 今日の日付に青い丸を表示 */}
               {day.isToday && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: size === 'small' ? '8px' : '10px',
-                    right: size === 'small' ? '8px' : '10px',
-                    width: size === 'small' ? '8px' : '12px',
-                    height: size === 'small' ? '8px' : '12px',
-                    borderRadius: '50%',
-                    background: '#00c8ff',
-                  }}
-                ></div>
+                <div className={cn(
+                  'absolute bg-cyan-400 rounded-full',
+                  isSmall ? 'top-2 right-2 w-2 h-2' : 'top-2.5 right-2.5 w-3 h-3'
+                )} />
               )}
+
               {/* 選択された日付に青い枠線を表示 */}
               {day.isSelected && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    border:
-                      size === 'small'
-                        ? '2px solid #00c8ff'
-                        : '3px solid #00c8ff',
-                    borderRadius: '8px',
-                    pointerEvents: 'none',
-                  }}
-                ></div>
+                <div className={cn(
+                  'absolute inset-0 border-cyan-400 rounded-lg pointer-events-none',
+                  isSmall ? 'border-2' : 'border-[3px]'
+                )} />
               )}
             </div>
           );
         })}
       </div>
+
       {/* イベント詳細モーダル */}
       {modalEvent && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            background: 'rgba(0,0,0,0.7)',
-            backdropFilter: 'blur(4px)',
-            zIndex: 99999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-          }}
+          className="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-sm z-[99999] flex items-center justify-center p-5"
           onClick={() => setModalEvent(null)}
         >
           <div
-            style={{
-              background: 'linear-gradient(135deg, #0A1022 0%, #0d1830 100%)',
-              borderRadius: '16px',
-              padding: '32px',
-              minWidth: '320px',
-              maxWidth: '500px',
-              width: '100%',
-              border: '2px solid #00c8ff',
-              color: '#fff',
-              boxShadow: '0 8px 32px rgba(0, 200, 255, 0.2), 0 0 60px rgba(0, 200, 255, 0.1)',
-              position: 'relative',
-            }}
+            className="bg-gradient-to-br from-[#0A1022] to-[#0d1830] rounded-2xl p-8 min-w-[320px] max-w-[500px] w-full border-2 border-cyan-400 text-white shadow-[0_8px_32px_rgba(0,200,255,0.2),0_0_60px_rgba(0,200,255,0.1)] relative"
             onClick={e => e.stopPropagation()}
           >
             <button
-              style={{
-                position: 'absolute',
-                top: 12,
-                right: 12,
-                background: 'rgba(0, 200, 255, 0.1)',
-                border: '1px solid rgba(0, 200, 255, 0.3)',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                color: '#00c8ff',
-                fontSize: '1.2rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s',
-              }}
+              className="absolute top-3 right-3 bg-cyan-500/10 border border-cyan-500/30 rounded-full w-8 h-8 text-cyan-400 text-xl cursor-pointer flex items-center justify-center hover:bg-cyan-500/20 transition-all"
               onClick={() => setModalEvent(null)}
             >
-              ×
+              <X className="w-4 h-4" />
             </button>
-            <h3
-              style={{
-                color: '#00c8ff',
-                fontSize: '1.4rem',
-                fontWeight: 'bold',
-                marginBottom: '16px',
-                paddingRight: '40px',
-              }}
-            >
+            <h3 className="text-cyan-400 text-xl font-bold mb-4 pr-10">
               {modalEvent.title || 'イベント詳細'}
             </h3>
-            <div style={{
-              marginBottom: '16px',
-              color: '#b0c4d8',
-              lineHeight: 1.6,
-              whiteSpace: 'pre-wrap',
-            }}>
+            <div className="mb-4 text-[#b0c4d8] leading-relaxed whitespace-pre-wrap">
               {modalEvent.details}
             </div>
             {modalEvent.url && (
-              <div style={{ marginTop: '16px' }}>
+              <div className="mt-4">
                 <a
                   href={modalEvent.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    color: '#00c8ff',
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 16px',
-                    background: 'rgba(0, 200, 255, 0.1)',
-                    border: '1px solid rgba(0, 200, 255, 0.3)',
-                    borderRadius: '8px',
-                    transition: 'all 0.2s',
-                  }}
+                  className="text-cyan-400 no-underline inline-flex items-center gap-1.5 py-2 px-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg hover:bg-cyan-500/20 transition-all"
                 >
-                  🔗 参考リンクを開く
+                  <ExternalLink className="w-4 h-4" />
+                  参考リンクを開く
                 </a>
               </div>
             )}
