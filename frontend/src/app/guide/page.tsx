@@ -1,118 +1,138 @@
 'use client';
 
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
+import StaticPageLayout from '@/components/layout/StaticPageLayout';
+import { Paragraph, SectionTitle } from '@/components/layout/StaticPageContent';
 
 export default function GuidePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
-      <div className="w-full">
-        {/* Header */}
-        <Header />
+    <StaticPageLayout
+      titleEn="USER GUIDE"
+      titleJa="利用ガイド"
+      description="Project Europaの使い方をご紹介します"
+    >
+      <SectionTitle>はじめに</SectionTitle>
+      <Paragraph>
+        Project
+        Europaへようこそ！このガイドでは、プラットフォームの主要機能と使い方について説明します。
+        初めての方もベテランユーザーも、このガイドを参考にしてProject
+        Europaを最大限に活用してください。
+      </Paragraph>
 
-        {/* Main Content */}
-        <div className="max-w-[1200px] mx-auto my-10 px-[5%] text-[#b0c4d8]">
-          <h1 className="text-4xl font-bold text-[#00c8ff] mb-6 text-center">
-            利用ガイド
-          </h1>
-
-          <div className="bg-[#0a1022] rounded-xl p-8 border border-[#07324a] leading-relaxed text-base">
-            <h2 className="text-2xl text-[#00c8ff] mb-4">
-              はじめに
-            </h2>
-            <p className="mb-6">
-              Project
-              Europaへようこそ！このガイドでは、プラットフォームの主要機能と使い方について説明します。
-              初めての方もベテランユーザーも、このガイドを参考にしてProject
-              Europaを最大限に活用してください。
-            </p>
-
-            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
-              アカウント登録
-            </h2>
-            <p className="mb-6">
-              1. トップページの「登録」ボタンをクリックします。
-              <br />
-              2. ユーザー名、メールアドレス、パスワードを入力します。
-              <br />
-              3. 「アカウント作成」ボタンをクリックして登録を完了します。
-              <br />
-            </p>
-
-            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
-              チームデータのアップロード
-            </h2>
-            <p className="mb-6">
-              1.
-              「アップロード」メニューからチームデータアップロードページにアクセスします。
-              <br />
-              2. 必要な情報（オーナー名、コメント、タグなど）を入力します。
-              <br />
-              3. チームデータファイルを選択します。
-              <br />
-              4. 「チームデータアップロード」ボタンをクリックして完了です。
-              <br />
-              5. アップロードが成功すると、確認メッセージが表示されます。
-            </p>
-
-            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
-              チームデータの検索
-            </h2>
-            <p className="mb-6">
-              1. 「検索」メニューからチーム検索ページにアクセスします。
-              <br />
-              2.
-              「キーワード」「タグ」「オーナー名」などの検索条件を入力します。
-              <br />
-              3. 「検索」ボタンをクリックして結果を表示します。
-              <br />
-              4.
-              「ダウンロード」ボタンをクリックしてチームデータをダウンロードできます。
-            </p>
-
-            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
-              マッチデータの分析
-            </h2>
-            <p className="mb-6">
-              1. 「検索」メニューからマッチ検索ページにアクセスします。
-              <br />
-              2. 「対戦日」「プレイヤー名」などの検索条件を入力します。
-              <br />
-              3. 「検索」ボタンをクリックして結果を表示します。
-              <br />
-            </p>
-
-            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
-              コミュニティ参加
-            </h2>
-            <p className="mb-6">
-              1.
-              「イベント」ページで最新の大会やオンライン対戦会の情報をチェックしましょう。
-              <br />
-              2.
-              「マイページ」から自分のアップロードしたデータや活動履歴を確認できます。
-              <br />
-            </p>
-
-            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
-              トラブルシューティング
-            </h2>
-            <p>
-              •
-              ログインできない場合は、「パスワードを忘れた方」リンクからパスワードをリセットしてください。
-              <br />•
-              アップロードに失敗する場合は、ファイル形式と容量を確認してください。
-              <br />•
-              検索結果が表示されない場合は、検索条件を変更してみてください。
-              <br />•
-              その他の問題がある場合は、「お問い合わせ」フォームからサポートチームにご連絡ください。
-            </p>
-          </div>
+      <SectionTitle>アカウント登録</SectionTitle>
+      <div className="bg-slate-900/50 border border-cyan-500/20 rounded-lg p-4 md:p-5 text-slate-300 space-y-2">
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">1.</span>
+          <span>トップページの「登録」ボタンをクリックします。</span>
         </div>
-
-        {/* Footer */}
-        <Footer />
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">2.</span>
+          <span>ユーザー名、メールアドレス、パスワードを入力します。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">3.</span>
+          <span>「アカウント作成」ボタンをクリックして登録を完了します。</span>
+        </div>
       </div>
-    </main>
+
+      <SectionTitle>チームデータのアップロード</SectionTitle>
+      <div className="bg-slate-900/50 border border-cyan-500/20 rounded-lg p-4 md:p-5 text-slate-300 space-y-2">
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">1.</span>
+          <span>「アップロード」メニューからチームデータアップロードページにアクセスします。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">2.</span>
+          <span>必要な情報（オーナー名、コメント、タグなど）を入力します。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">3.</span>
+          <span>チームデータファイルを選択します。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">4.</span>
+          <span>「チームデータアップロード」ボタンをクリックして完了です。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">5.</span>
+          <span>アップロードが成功すると、確認メッセージが表示されます。</span>
+        </div>
+      </div>
+
+      <SectionTitle>チームデータの検索</SectionTitle>
+      <div className="bg-slate-900/50 border border-cyan-500/20 rounded-lg p-4 md:p-5 text-slate-300 space-y-2">
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">1.</span>
+          <span>「検索」メニューからチーム検索ページにアクセスします。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">2.</span>
+          <span>「キーワード」「タグ」「オーナー名」などの検索条件を入力します。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">3.</span>
+          <span>「検索」ボタンをクリックして結果を表示します。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">4.</span>
+          <span>「ダウンロード」ボタンをクリックしてチームデータをダウンロードできます。</span>
+        </div>
+      </div>
+
+      <SectionTitle>マッチデータの分析</SectionTitle>
+      <div className="bg-slate-900/50 border border-cyan-500/20 rounded-lg p-4 md:p-5 text-slate-300 space-y-2">
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">1.</span>
+          <span>「検索」メニューからマッチ検索ページにアクセスします。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">2.</span>
+          <span>「対戦日」「プレイヤー名」などの検索条件を入力します。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">3.</span>
+          <span>「検索」ボタンをクリックして結果を表示します。</span>
+        </div>
+      </div>
+
+      <SectionTitle>コミュニティ参加</SectionTitle>
+      <div className="bg-slate-900/50 border border-cyan-500/20 rounded-lg p-4 md:p-5 text-slate-300 space-y-2">
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">1.</span>
+          <span>「イベント」ページで最新の大会やオンライン対戦会の情報をチェックしましょう。</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-cyan-500 font-mono font-bold">2.</span>
+          <span>「マイページ」から自分のアップロードしたデータや活動履歴を確認できます。</span>
+        </div>
+      </div>
+
+      <SectionTitle>トラブルシューティング</SectionTitle>
+      <div className="bg-slate-900/50 border border-cyan-500/20 rounded-lg p-4 md:p-5 text-slate-300 space-y-3">
+        <div className="flex items-start gap-3">
+          <span className="text-amber-400">•</span>
+          <span>
+            ログインできない場合は、「パスワードを忘れた方」リンクからパスワードをリセットしてください。
+          </span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-amber-400">•</span>
+          <span>
+            アップロードに失敗する場合は、ファイル形式と容量を確認してください。
+          </span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-amber-400">•</span>
+          <span>
+            検索結果が表示されない場合は、検索条件を変更してみてください。
+          </span>
+        </div>
+        <div className="flex items-start gap-3">
+          <span className="text-amber-400">•</span>
+          <span>
+            その他の問題がある場合は、「お問い合わせ」フォームからサポートチームにご連絡ください。
+          </span>
+        </div>
+      </div>
+    </StaticPageLayout>
   );
 }
