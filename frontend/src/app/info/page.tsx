@@ -121,61 +121,54 @@ const InformationPage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-3 md:gap-4 max-h-[400px] md:max-h-[600px] overflow-y-auto pr-1 md:pr-2 custom-scrollbar">
-                    {events.map(ev => (
-                      <div
-                        key={ev.id}
-                        className="group bg-slate-900/50 border border-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 hover:border-cyan-500/40 hover:bg-cyan-900/10 transition-all duration-300"
-                      >
-                        <div className="flex items-center gap-2 md:gap-3 mb-2">
-                          <div className="flex items-center gap-1 md:gap-2 text-cyan-400 font-bold text-xs md:text-sm bg-cyan-950/30 px-2 md:px-3 py-1 rounded border border-cyan-900/50 font-mono shadow-[0_0_10px_rgba(6,182,212,0.1)]">
-                            <span className="text-cyan-600 text-[10px] md:text-xs">締切</span>
-                            <span className="text-cyan-300">
-                              {ev.deadline
-                                ? (() => {
-                                  const d = new Date(ev.deadline);
-                                  // UTC日付を使用（登録時の意図した日付）
-                                  return `${d.getUTCFullYear()}.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${String(d.getUTCDate()).padStart(2, '0')}`;
-                                })()
-                                : ''}
-                            </span>
-                            <span className="text-cyan-700">|</span>
-                            <span className="text-cyan-500">
-                              {ev.deadline
-                                ? (() => {
-                                  const d = new Date(ev.deadline);
-                                  // UTC時間を使用（登録時の意図した時間）
-                                  const hours = String(d.getUTCHours()).padStart(2, '0');
-                                  const minutes = String(d.getUTCMinutes()).padStart(2, '0');
-                                  return `${hours}:${minutes}`;
-                                })()
-                                : ''}
-                            </span>
+                    {events.map(ev => {
+                      // Dateオブジェクトを1回だけ作成して再利用（パフォーマンス最適化）
+                      const deadlineDate = ev.deadline ? new Date(ev.deadline) : null;
+                      const dateString = deadlineDate
+                        ? `${deadlineDate.getUTCFullYear()}.${String(deadlineDate.getUTCMonth() + 1).padStart(2, '0')}.${String(deadlineDate.getUTCDate()).padStart(2, '0')}`
+                        : '';
+                      const timeString = deadlineDate
+                        ? `${String(deadlineDate.getUTCHours()).padStart(2, '0')}:${String(deadlineDate.getUTCMinutes()).padStart(2, '0')}`
+                        : '';
+
+                      return (
+                        <div
+                          key={ev.id}
+                          className="group bg-slate-900/50 border border-slate-800 rounded-lg md:rounded-xl p-3 md:p-4 hover:border-cyan-500/40 hover:bg-cyan-900/10 transition-all duration-300"
+                        >
+                          <div className="flex items-center gap-2 md:gap-3 mb-2">
+                            <div className="flex items-center gap-1 md:gap-2 text-cyan-400 font-bold text-xs md:text-sm bg-cyan-950/30 px-2 md:px-3 py-1 rounded border border-cyan-900/50 font-mono shadow-[0_0_10px_rgba(6,182,212,0.1)]">
+                              <span className="text-cyan-600 text-[10px] md:text-xs">締切</span>
+                              <span className="text-cyan-300">{dateString}</span>
+                              <span className="text-cyan-700">|</span>
+                              <span className="text-cyan-500">{timeString}</span>
+                            </div>
                           </div>
+
+                          <h3 className="text-white font-bold mb-2 group-hover:text-cyan-300 transition-colors">
+                            {ev.name}
+                          </h3>
+
+                          <p className="text-sm text-slate-400 mb-3 line-clamp-3">
+                            {ev.details}
+                          </p>
+
+                          {ev.url && (
+                            <a
+                              href={ev.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center text-xs text-blue-400 hover:text-blue-300 hover:underline gap-1 transition-colors"
+                            >
+                              詳細リンク
+                              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          )}
                         </div>
-
-                        <h3 className="text-white font-bold mb-2 group-hover:text-cyan-300 transition-colors">
-                          {ev.name}
-                        </h3>
-
-                        <p className="text-sm text-slate-400 mb-3 line-clamp-3">
-                          {ev.details}
-                        </p>
-
-                        {ev.url && (
-                          <a
-                            href={ev.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center text-xs text-blue-400 hover:text-blue-300 hover:underline gap-1 transition-colors"
-                          >
-                            詳細リンク
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </a>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
