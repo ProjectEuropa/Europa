@@ -12,7 +12,7 @@ const OG_IMAGE_VERSION = process.env.NEXT_PUBLIC_OG_IMAGE_VERSION || '2026';
 export const metadata: Metadata = {
   title: 'EUROPA',
   description:
-    'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+    'カルネージハート エクサのためのOKE共有・分析・コラボレーションプラットフォーム',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work'),
   icons: {
     icon: [
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'EUROPA',
     description:
-      'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+      'カルネージハート エクサのためのOKE共有・分析・コラボレーションプラットフォーム',
     type: 'website',
     locale: 'ja_JP',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'EUROPA',
     description:
-      'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+      'カルネージハート エクサのためのOKE共有・分析・コラボレーションプラットフォーム',
     images: [`/og-image.jpg?v=${OG_IMAGE_VERSION}`],
   },
 };
@@ -66,6 +66,6 @@ export default function RootLayout({
           <ToastProvider />
         </QueryProvider>
       </body>
-    </html>
+    </html >
   );
 }

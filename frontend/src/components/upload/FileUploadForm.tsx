@@ -319,16 +319,32 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
           }}
         >
           <Icons.Upload size={24} color="#00c8ff" />
-          <h1
-            style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: '#00c8ff',
-              margin: 0,
-            }}
-          >
-            {title}
-          </h1>
+          <div style={{ flex: 1 }}>
+            <h1
+              style={{
+                fontSize: '28px',
+                fontWeight: '900',
+                color: '#fff',
+                marginBottom: '4px',
+                textShadow: '0 0 10px rgba(0, 200, 255, 0.4)',
+              }}
+            >
+              {title}
+            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ height: '1px', width: '20px', background: 'rgba(0, 200, 255, 0.5)' }} />
+              <p style={{
+                fontSize: '12px',
+                color: '#00c8ff',
+                fontWeight: '700',
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                margin: 0
+              }}>
+                {fileType === 'team' ? 'TEAM DATA UPLOAD' : 'MATCH DATA UPLOAD'}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* サブタイトル */}

@@ -6,7 +6,7 @@ const HeaderLogo = () => (
       <Icons.Logo size={32} color="#03C6F9" />
       <div className="text-2xl font-bold text-white leading-tight">EUROPA</div>
     </div>
-    <div className="text-sm text-gray-400 ml-10">カルネージハート EXA</div>
+    <div className="text-sm text-gray-400 ml-10">カルネージハート エクサ</div>
   </div>
 );
 
