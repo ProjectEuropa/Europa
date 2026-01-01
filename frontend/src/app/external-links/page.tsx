@@ -106,7 +106,7 @@ export default function ExternalLinksPage() {
                 href="https://hp.project-europa.work/contact"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block px-6 py-3 bg-[#00c8ff] text-[#020824] rounded-md font-bold no-underline transition-all hover:bg-[#00a0ff]"
+className="inline-block px-6 py-3 bg-[#00c8ff] text-[#020824] rounded-md font-bold no-underline transition-all duration-200 hover:bg-[#00a0ff]"
               >
                 お問い合わせ
               </Link>
