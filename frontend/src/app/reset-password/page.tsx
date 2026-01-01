@@ -22,45 +22,15 @@ const ResetPasswordFormWrapper = () => {
 
   if (!token) {
     return (
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          background: '#0A1022',
-          borderRadius: '12px',
-          padding: '32px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-          border: '1px solid #1E3A5F',
-          textAlign: 'center',
-          color: '#00c8ff',
-        }}
-      >
+      <div className="w-full max-w-[400px] bg-[#0A1022] rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#1E3A5F] text-center text-[#00c8ff]">
         読み込み中...
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '400px',
-        background: '#0A1022',
-        borderRadius: '12px',
-        padding: '32px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-        border: '1px solid #1E3A5F',
-      }}
-    >
-      <h1
-        style={{
-          color: '#00c8ff',
-          fontSize: '1.8rem',
-          fontWeight: 'bold',
-          marginBottom: '16px',
-          textAlign: 'center',
-        }}
-      >
+    <div className="w-full max-w-[400px] bg-[#0A1022] rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#1E3A5F]">
+      <h1 className="text-[#00c8ff] text-3xl font-bold mb-4 text-center">
         パスワードリセット
       </h1>
 
@@ -72,40 +42,13 @@ const ResetPasswordFormWrapper = () => {
 // メインページコンポーネント
 const ResetPasswordPage: React.FC = () => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        background: 'rgb(var(--background-rgb))',
-      }}
-    >
+    <div className="flex flex-col min-h-screen bg-[rgb(var(--background-rgb))]">
       <Header />
 
-      <main
-        style={{
-          flex: '1',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '40px 20px',
-        }}
-      >
+      <main className="flex-1 flex justify-center items-center px-5 py-10">
         <Suspense
           fallback={
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '400px',
-                background: '#0A1022',
-                borderRadius: '12px',
-                padding: '32px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-                border: '1px solid #1E3A5F',
-                textAlign: 'center',
-                color: '#00c8ff',
-              }}
-            >
+            <div className="w-full max-w-[400px] bg-[#0A1022] rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#1E3A5F] text-center text-[#00c8ff]">
               読み込み中...
             </div>
           }

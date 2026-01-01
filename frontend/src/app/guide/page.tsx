@@ -11,63 +11,26 @@ export default function GuidePage() {
         <Header />
 
         {/* Main Content */}
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '40px auto',
-            padding: '0 5%',
-            color: '#b0c4d8',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '36px',
-              fontWeight: 'bold',
-              color: '#00c8ff',
-              marginBottom: '24px',
-              textAlign: 'center',
-            }}
-          >
+        <div className="max-w-[1200px] mx-auto my-10 px-[5%] text-[#b0c4d8]">
+          <h1 className="text-4xl font-bold text-[#00c8ff] mb-6 text-center">
             利用ガイド
           </h1>
 
-          <div
-            style={{
-              background: '#0a1022',
-              borderRadius: '12px',
-              padding: '32px',
-              border: '1px solid #07324a',
-              lineHeight: '1.8',
-              fontSize: '16px',
-            }}
-          >
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-              }}
-            >
+          <div className="bg-[#0a1022] rounded-xl p-8 border border-[#07324a] leading-relaxed text-base">
+            <h2 className="text-2xl text-[#00c8ff] mb-4">
               はじめに
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               Project
               Europaへようこそ！このガイドでは、プラットフォームの主要機能と使い方について説明します。
               初めての方もベテランユーザーも、このガイドを参考にしてProject
               Europaを最大限に活用してください。
             </p>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               アカウント登録
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               1. トップページの「登録」ボタンをクリックします。
               <br />
               2. ユーザー名、メールアドレス、パスワードを入力します。
@@ -76,17 +39,10 @@ export default function GuidePage() {
               <br />
             </p>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               チームデータのアップロード
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               1.
               「アップロード」メニューからチームデータアップロードページにアクセスします。
               <br />
@@ -99,17 +55,10 @@ export default function GuidePage() {
               5. アップロードが成功すると、確認メッセージが表示されます。
             </p>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               チームデータの検索
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               1. 「検索」メニューからチーム検索ページにアクセスします。
               <br />
               2.
@@ -121,17 +70,10 @@ export default function GuidePage() {
               「ダウンロード」ボタンをクリックしてチームデータをダウンロードできます。
             </p>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               マッチデータの分析
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               1. 「検索」メニューからマッチ検索ページにアクセスします。
               <br />
               2. 「対戦日」「プレイヤー名」などの検索条件を入力します。
@@ -140,17 +82,10 @@ export default function GuidePage() {
               <br />
             </p>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               コミュニティ参加
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               1.
               「イベント」ページで最新の大会やオンライン対戦会の情報をチェックしましょう。
               <br />
@@ -159,14 +94,7 @@ export default function GuidePage() {
               <br />
             </p>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               トラブルシューティング
             </h2>
             <p>

@@ -23,83 +23,33 @@ const TeamCards: React.FC<TeamCardsProps> = ({
   onDelete,
 }) => {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: '16px',
-        padding: '16px',
-      }}
-    >
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4 p-4">
       {teams.map(team => (
         <div
           key={team.id}
-          style={{
-            background: '#050A14',
-            border: '1px solid #1E3A5F',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            transition: 'all 0.3s ease',
-          }}
+          className="bg-[#050A14] border border-[#1E3A5F] rounded-lg overflow-hidden transition-all duration-300"
         >
-          <div style={{ padding: '20px' }}>
+          <div className="p-5">
             {/* カードヘッダー */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: '12px',
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: 'bold',
-                  color: '#8CB4FF',
-                  fontSize: '1.1rem',
-                }}
-              >
-                <div
-                  style={{
-                    fontWeight: 'bold',
-                    color: '#8CB4FF',
-                    marginBottom: '4px',
-                  }}
-                >
+            <div className="flex justify-between items-start mb-3">
+              <div className="font-bold text-[#8CB4FF] text-[1.1rem]">
+                <div className="font-bold text-[#8CB4FF] mb-1">
                   ■中小CPUハンデ戦
                 </div>
                 {team.name}
               </div>
-              <div
-                style={{
-                  fontSize: '0.9rem',
-                  color: '#00c8ff',
-                }}
-              >
+              <div className="text-[0.9rem] text-[#00c8ff]">
                 {team.file_name}
               </div>
             </div>
 
             {/* オーナー情報 */}
-            <div
-              style={{
-                fontSize: '0.9rem',
-                color: 'white',
-                marginBottom: '8px',
-              }}
-            >
+            <div className="text-[0.9rem] text-white mb-2">
               オーナー名: {team.owner}
             </div>
 
             {/* コメント */}
-            <div
-              style={{
-                fontSize: '0.9rem',
-                color: '#b0c4d8',
-                marginBottom: '16px',
-                lineHeight: '1.4',
-              }}
-            >
+            <div className="text-[0.9rem] text-[#b0c4d8] mb-4 leading-[1.4]">
               コメント:{' '}
               {team.name === 'GrayGhost'
                 ? '中チップアラクネー\n音の機体を小修整'
@@ -109,15 +59,7 @@ const TeamCards: React.FC<TeamCardsProps> = ({
             </div>
 
             {/* カードフッター */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '0.8rem',
-                color: '#b0c4d8',
-              }}
-            >
+            <div className="flex justify-between items-center text-[0.8rem] text-[#b0c4d8]">
               {/* 日時情報 */}
               <div>
                 <div>
@@ -129,21 +71,10 @@ const TeamCards: React.FC<TeamCardsProps> = ({
               </div>
 
               {/* アクションボタン */}
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '8px',
-                }}
-              >
+              <div className="flex gap-2">
                 <button
                   onClick={() => onDownload(team)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#00c8ff',
-                    cursor: 'pointer',
-                    padding: '5px',
-                  }}
+                  className="bg-transparent border-none text-[#00c8ff] cursor-pointer p-[5px]"
                 >
                   <svg
                     width="24"
@@ -170,13 +101,7 @@ const TeamCards: React.FC<TeamCardsProps> = ({
                 </button>
                 <button
                   onClick={() => onDelete(team)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#00c8ff',
-                    cursor: 'pointer',
-                    padding: '5px',
-                  }}
+                  className="bg-transparent border-none text-[#00c8ff] cursor-pointer p-[5px]"
                 >
                   <svg
                     width="24"

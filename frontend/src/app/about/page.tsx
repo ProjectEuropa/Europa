@@ -12,77 +12,25 @@ export default function AboutPage() {
         <Header />
 
         {/* Main Content */}
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '40px auto',
-            padding: '0 5%',
-            color: '#b0c4d8',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '36px',
-              fontWeight: 'bold',
-              color: '#00c8ff',
-              marginBottom: '24px',
-              textAlign: 'center',
-            }}
-          >
+        <div className="max-w-[1200px] mx-auto my-10 px-[5%] text-[#b0c4d8]">
+          <h1 className="text-4xl font-bold text-[#00c8ff] mb-6 text-center">
             私たちについて
           </h1>
 
-          <div
-            style={{
-              background: '#0a1022',
-              borderRadius: '12px',
-              padding: '32px',
-              border: '1px solid #07324a',
-              lineHeight: '1.8',
-              fontSize: '16px',
-            }}
-          >
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-              }}
-            >
+          <div className="bg-[#0a1022] rounded-xl p-8 border border-[#07324a] leading-relaxed text-base">
+            <h2 className="text-2xl text-[#00c8ff] mb-4">
               Project Europaとは
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               Project Europaは、カルネージハート
               EXAのコミュニティをサポートするために2016年に設立された非公式プロジェクトです。
               プレイヤーの皆様がゲーム体験を最大限に楽しめるよう、チームデータの共有やマッチデータの共有などのサービスを提供しています。
               最新のテクノロジーを活用し、直感的なインターフェースで誰でも簡単に利用できるプラットフォームを目指しています。
             </p>
 
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '20px',
-                margin: '40px 0',
-              }}
-            >
-              <div
-                style={{
-                  flex: '1 1 300px',
-                  background: '#071527',
-                  borderRadius: '8px',
-                  padding: '24px',
-                  border: '1px solid #07324a',
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: '20px',
-                    color: '#00c8ff',
-                    marginBottom: '12px',
-                  }}
-                >
+            <div className="flex justify-between flex-wrap gap-5 my-10">
+              <div className="flex-[1_1_300px] bg-[#071527] rounded-lg p-6 border border-[#07324a]">
+                <h3 className="text-xl text-[#00c8ff] mb-3">
                   データ共有
                 </h3>
                 <p>
@@ -91,22 +39,8 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div
-                style={{
-                  flex: '1 1 300px',
-                  background: '#071527',
-                  borderRadius: '8px',
-                  padding: '24px',
-                  border: '1px solid #07324a',
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: '20px',
-                    color: '#00c8ff',
-                    marginBottom: '12px',
-                  }}
-                >
+              <div className="flex-[1_1_300px] bg-[#071527] rounded-lg p-6 border border-[#07324a]">
+                <h3 className="text-xl text-[#00c8ff] mb-3">
                   マッチ分析
                 </h3>
                 <p>
@@ -114,22 +48,8 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div
-                style={{
-                  flex: '1 1 300px',
-                  background: '#071527',
-                  borderRadius: '8px',
-                  padding: '24px',
-                  border: '1px solid #07324a',
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: '20px',
-                    color: '#00c8ff',
-                    marginBottom: '12px',
-                  }}
-                >
+              <div className="flex-[1_1_300px] bg-[#071527] rounded-lg p-6 border border-[#07324a]">
+                <h3 className="text-xl text-[#00c8ff] mb-3">
                   コミュニティ
                 </h3>
                 <p>
@@ -139,96 +59,43 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               ミッション
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               私たちのミッションは、カルネージハート
               EXAのプレイヤーコミュニティを活性化し、
               プレイヤー同士の交流を促進することです。データの共有と分析を通じて、
               より戦略的で楽しいゲームプレイを支援します。
             </p>
 
-            <div
-              style={{
-                background: '#071527',
-                borderRadius: '8px',
-                padding: '20px',
-                border: '1px solid #07324a',
-                margin: '20px 0',
-                textAlign: 'center',
-                fontSize: '18px',
-                fontStyle: 'italic',
-              }}
-            >
+            <div className="bg-[#071527] rounded-lg p-5 border border-[#07324a] my-5 text-center text-lg italic">
               「テクノロジーの力でゲーム体験を豊かに、コミュニティの絆を深める」
             </div>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               チーム
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               Project Europaは、カルネージハート
               EXAを愛する有志のプレイヤーによって運営されています。
               開発、デザイン、コミュニティマネジメントなど、様々な分野の専門家がボランティアとして参加しています。
               私たちは常に新しいメンバーを歓迎しており、プロジェクトに貢献したい方はお気軽にご連絡ください。
             </p>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               歴史
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               2016年の設立以来、Project
               Europaは継続的にサービスを拡充し、コミュニティのニーズに応えてきました。
               最初はシンプルなデータ共有サイトとして始まりましたが、現在では検索機能、分析ツール、
               コミュニティフォーラムなど、多様な機能を提供しています。
             </p>
 
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                margin: '30px 0',
-                flexWrap: 'wrap',
-                gap: '10px',
-              }}
-            >
-              <div
-                style={{
-                  flex: '1 1 200px',
-                  textAlign: 'center',
-                  padding: '15px',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    color: '#00c8ff',
-                    marginBottom: '5px',
-                  }}
-                >
+            <div className="flex justify-between my-8 flex-wrap gap-2.5">
+              <div className="flex-[1_1_200px] text-center p-4">
+                <div className="text-2xl font-bold text-[#00c8ff] mb-1">
                   2016
                 </div>
                 <p>
@@ -238,21 +105,8 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div
-                style={{
-                  flex: '1 1 200px',
-                  textAlign: 'center',
-                  padding: '15px',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    color: '#00c8ff',
-                    marginBottom: '5px',
-                  }}
-                >
+              <div className="flex-[1_1_200px] text-center p-4">
+                <div className="text-2xl font-bold text-[#00c8ff] mb-1">
                   2018
                 </div>
                 <p>
@@ -262,21 +116,8 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div
-                style={{
-                  flex: '1 1 200px',
-                  textAlign: 'center',
-                  padding: '15px',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    color: '#00c8ff',
-                    marginBottom: '5px',
-                  }}
-                >
+              <div className="flex-[1_1_200px] text-center p-4">
+                <div className="text-2xl font-bold text-[#00c8ff] mb-1">
                   2020
                 </div>
                 <p>
@@ -286,21 +127,8 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div
-                style={{
-                  flex: '1 1 200px',
-                  textAlign: 'center',
-                  padding: '15px',
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: '24px',
-                    fontWeight: 'bold',
-                    color: '#00c8ff',
-                    marginBottom: '5px',
-                  }}
-                >
+              <div className="flex-[1_1_200px] text-center p-4">
+                <div className="text-2xl font-bold text-[#00c8ff] mb-1">
                   2025
                 </div>
                 <p>
@@ -311,68 +139,33 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <h2
-              style={{
-                fontSize: '24px',
-                color: '#00c8ff',
-                marginBottom: '16px',
-                marginTop: '32px',
-              }}
-            >
+            <h2 className="text-2xl text-[#00c8ff] mb-4 mt-8">
               今後の展望
             </h2>
-            <p style={{ marginBottom: '24px' }}>
+            <p className="mb-6">
               私たちは今後も新機能の開発や既存機能の改善を続け、より使いやすく価値のあるプラットフォームを
               目指しています。コミュニティからのフィードバックを大切にし、プレイヤーの皆様と共に成長していきたいと考えています。
             </p>
 
-            <div
-              style={{
-                background: '#071527',
-                borderRadius: '8px',
-                padding: '24px',
-                border: '1px solid #07324a',
-                marginTop: '30px',
-              }}
-            >
-              <h3
-                style={{
-                  fontSize: '20px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="bg-[#071527] rounded-lg p-6 border border-[#07324a] mt-8">
+              <h3 className="text-xl text-[#00c8ff] mb-4">
                 今後の開発予定
               </h3>
-              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-                <li style={{ marginBottom: '10px' }}>
+              <ul className="list-disc pl-5">
+                <li className="mb-2.5">
                   AIを活用した戦術分析機能
                 </li>
-                <li style={{ marginBottom: '10px' }}>
+                <li className="mb-2.5">
                   コミュニティイベント管理システム
                 </li>
                 <li>デスクトップアプリとモバイルアプリの開発</li>
               </ul>
             </div>
 
-            <div
-              style={{
-                marginTop: '40px',
-                textAlign: 'center',
-              }}
-            >
+            <div className="mt-10 text-center">
               <Link
                 href="/guide"
-                style={{
-                  display: 'inline-block',
-                  padding: '12px 24px',
-                  background: '#00c8ff',
-                  color: '#020824',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                  textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
+className="inline-block px-6 py-3 bg-[#00c8ff] text-[#020824] rounded-md font-bold no-underline transition-all duration-200 hover:opacity-80"
               >
                 利用ガイドを見る
               </Link>

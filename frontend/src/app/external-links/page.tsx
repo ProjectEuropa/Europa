@@ -35,133 +35,49 @@ export default function ExternalLinksPage() {
   ];
 
   return (
-    <main
-      style={{
-        display: 'flex',
-        minHeight: '100vh',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}
-    >
-      <div style={{ width: '100%' }}>
+    <main className="flex min-h-screen flex-col items-center justify-between">
+      <div className="w-full">
         {/* Header */}
         <Header />
 
         {/* Main Content */}
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '40px auto',
-            padding: '0 5%',
-            color: '#b0c4d8',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '36px',
-              fontWeight: 'bold',
-              color: '#00c8ff',
-              marginBottom: '24px',
-              textAlign: 'center',
-            }}
-          >
+        <div className="max-w-[1200px] mx-auto my-10 px-[5%] text-[#b0c4d8]">
+          <h1 className="text-4xl font-bold text-[#00c8ff] mb-6 text-center">
             外部リンク集
           </h1>
 
-          <div
-            style={{
-              background: '#0a1022',
-              borderRadius: '12px',
-              padding: '32px',
-              border: '1px solid #07324a',
-              lineHeight: '1.8',
-              fontSize: '16px',
-            }}
-          >
-            <p
-              style={{
-                marginBottom: '32px',
-                textAlign: 'center',
-              }}
-            >
+          <div className="bg-[#0a1022] rounded-xl p-8 border border-[#07324a] leading-relaxed text-base">
+            <p className="mb-8 text-center">
               カルネージハートEXAに関連する公式・非公式の外部サイトへのリンク集です。
               <br />
               最新情報の確認・コミュニティへの参加にご活用ください。
             </p>
 
-            <div style={{ display: 'grid', gap: '24px' }}>
+            <div className="grid gap-6">
               {links.map(link => (
                 <div
                   key={link.url}
                   role="article"
-                  style={{
-                    background: '#071527',
-                    borderRadius: '8px',
-                    padding: '24px',
-                    border: '1px solid #07324a',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.border = '1px solid #00c8ff';
-                    e.currentTarget.style.boxShadow =
-                      '0 0 15px rgba(0, 200, 255, 0.2)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.border = '1px solid #07324a';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
+                  className="bg-[#071527] rounded-lg p-6 border border-[#07324a] transition-all duration-300 hover:border-[#00c8ff] hover:shadow-[0_0_15px_rgba(0,200,255,0.2)]"
                 >
-                  <h2
-                    style={{
-                      fontSize: '20px',
-                      color: '#00c8ff',
-                      fontWeight: '500',
-                      marginBottom: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <span
-                      style={{ marginRight: '8px', display: 'inline-flex' }}
-                    >
+                  <h2 className="text-xl text-[#00c8ff] font-medium mb-2 flex items-center">
+                    <span className="mr-2 inline-flex">
                       <ExternalLink size={20} />
                     </span>
                     {link.title}
                   </h2>
-                  <p
-                    style={{
-                      color: '#b0c4d8',
-                      marginBottom: '16px',
-                      fontSize: '14px',
-                    }}
-                  >
+                  <p className="text-[#b0c4d8] mb-4 text-sm">
                     {link.description}
                   </p>
                   <Link
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      color: '#00c8ff',
-                      transition: 'color 0.2s ease',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.color = 'white';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.color = '#00c8ff';
-                    }}
+                    className="inline-flex items-center text-[#00c8ff] transition-colors duration-200 hover:text-white"
                   >
                     <span>サイトを訪問</span>
                     <svg
-                      style={{
-                        width: '16px',
-                        height: '16px',
-                        marginLeft: '4px',
-                      }}
+                      className="w-4 h-4 ml-1"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -182,35 +98,15 @@ export default function ExternalLinksPage() {
               ))}
             </div>
 
-            <div
-              style={{
-                marginTop: '40px',
-                textAlign: 'center',
-              }}
-            >
-              <p style={{ marginBottom: '16px' }}>
+            <div className="mt-10 text-center">
+              <p className="mb-4">
                 他にも役立つリンクがあれば、お気軽にお知らせください。
               </p>
               <Link
                 href="https://hp.project-europa.work/contact"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  display: 'inline-block',
-                  padding: '12px 24px',
-                  background: '#00c8ff',
-                  color: '#020824',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                  textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = '#00a0ff';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = '#00c8ff';
-                }}
+className="inline-block px-6 py-3 bg-[#00c8ff] text-[#020824] rounded-md font-bold no-underline transition-all duration-200 hover:bg-[#00a0ff]"
               >
                 お問い合わせ
               </Link>

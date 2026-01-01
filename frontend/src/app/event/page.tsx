@@ -22,15 +22,7 @@ const EventPage: React.FC = () => {
   // ハイドレーション中またはローディング中は待機
   if (!hasHydrated || loading) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          background: 'rgb(var(--background-rgb))',
-        }}
-      >
+      <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--background-rgb))]">
         <div>Loading...</div>
       </div>
     );
@@ -40,28 +32,11 @@ const EventPage: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        background: 'rgb(var(--background-rgb))',
-      }}
-    >
+    <div className="flex flex-col min-h-screen bg-[rgb(var(--background-rgb))]">
       <Header />
 
-      <main
-        style={{
-          flex: '1',
-          padding: '20px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '800px',
-            margin: '0 auto',
-          }}
-        >
+      <main className="flex-1 p-5">
+        <div className="max-w-[800px] mx-auto">
           <EventRegistrationForm />
           <EventRegistrationNotice />
         </div>

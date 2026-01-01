@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import Calendar from '@/components/Calendar';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
-import { Z_INDEX } from '@/lib/utils';
 import {
   EVENT_TYPE_OPTIONS,
   EVENT_TYPES,
@@ -98,78 +97,33 @@ export default function EventRegistrationForm({
   };
 
   return (
-    <div
-      style={{
-        maxWidth: '800px',
-        margin: '0 auto',
-      }}
-    >
-      <h1
-        style={{
-          color: '#00c8ff',
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          marginBottom: '8px',
-        }}
-      >
-        イベント登録
-      </h1>
-      <p
-        style={{
-          color: '#b0c4d8',
-          fontSize: '1rem',
-          marginBottom: '24px',
-        }}
-      >
+    <div className="max-w-[800px] mx-auto">
+      <h1 className="text-[#00c8ff] text-3xl font-bold mb-2">イベント登録</h1>
+      <p className="text-[#b0c4d8] text-base mb-6">
         新しいイベント情報を登録することができます
       </p>
 
       {/* イベント登録フォーム */}
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div
-          style={{
-            background: '#0A1022',
-            borderRadius: '12px',
-            padding: '24px',
-            border: '1px solid #1E3A5F',
-            marginBottom: '24px',
-          }}
-        >
+        <div className="bg-[#0A1022] rounded-xl p-6 border border-[#1E3A5F] mb-6">
           {/* イベント名 */}
-          <div style={{ marginBottom: '20px' }}>
+          <div className="mb-5">
             <label
               htmlFor="event-name"
-              style={{
-                display: 'block',
-                color: '#00c8ff',
-                fontSize: '1rem',
-                marginBottom: '8px',
-              }}
+              className="block text-[#00c8ff] text-base mb-2"
             >
-              イベント名 <span style={{ color: '#ff4d4d' }}>*</span>
+              イベント名 <span className="text-red-500">*</span>
             </label>
             <input
               id="event-name"
               type="text"
               {...register('name')}
               placeholder="イベント名を入力してください"
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#0F1A2E',
-                border: '1px solid #1E3A5F',
-                borderRadius: '6px',
-                color: 'white',
-                fontSize: '1rem',
-              }}
+              className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
             />
             {errors.name && (
               <p
-                style={{
-                  color: '#ff4d4d',
-                  fontSize: '0.875rem',
-                  marginTop: '4px',
-                }}
+                className="text-red-500 text-sm mt-1"
               >
                 {errors.name.message}
               </p>
@@ -177,41 +131,22 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント詳細情報 */}
-          <div style={{ marginBottom: '20px' }}>
+          <div className="mb-5">
             <label
               htmlFor="event-details"
-              style={{
-                display: 'block',
-                color: '#00c8ff',
-                fontSize: '1rem',
-                marginBottom: '8px',
-              }}
+              className="block text-[#00c8ff] text-base mb-2"
             >
-              イベント詳細情報 <span style={{ color: '#ff4d4d' }}>*</span>
+              イベント詳細情報 <span className="text-red-500">*</span>
             </label>
             <textarea
               id="event-details"
               {...register('details')}
               placeholder="イベントの詳細情報を入力してください"
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#0F1A2E',
-                border: '1px solid #1E3A5F',
-                borderRadius: '6px',
-                color: 'white',
-                fontSize: '1rem',
-                minHeight: '150px',
-                resize: 'vertical',
-              }}
+              className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base min-h-[150px] resize-y"
             />
             {errors.details && (
               <p
-                style={{
-                  color: '#ff4d4d',
-                  fontSize: '0.875rem',
-                  marginTop: '4px',
-                }}
+                className="text-red-500 text-sm mt-1"
               >
                 {errors.details.message}
               </p>
@@ -219,15 +154,10 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント詳細URL */}
-          <div style={{ marginBottom: '20px' }}>
+          <div className="mb-5">
             <label
               htmlFor="event-url"
-              style={{
-                display: 'block',
-                color: '#00c8ff',
-                fontSize: '1rem',
-                marginBottom: '8px',
-              }}
+              className="block text-[#00c8ff] text-base mb-2"
             >
               イベント詳細URL
             </label>
@@ -236,23 +166,11 @@ export default function EventRegistrationForm({
               type="url"
               {...register('url')}
               placeholder="https://example.com"
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: '#0F1A2E',
-                border: '1px solid #1E3A5F',
-                borderRadius: '6px',
-                color: 'white',
-                fontSize: '1rem',
-              }}
+              className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
             />
             {errors.url && (
               <p
-                style={{
-                  color: '#ff4d4d',
-                  fontSize: '0.875rem',
-                  marginTop: '4px',
-                }}
+                className="text-red-500 text-sm mt-1"
               >
                 {errors.url.message}
               </p>
@@ -260,47 +178,27 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント受付締切日 */}
-          <div style={{ marginBottom: '20px' }}>
+          <div className="mb-5">
             <label
               htmlFor="event-deadline"
-              style={{
-                display: 'block',
-                color: '#00c8ff',
-                fontSize: '1rem',
-                marginBottom: '8px',
-              }}
+              className="block text-[#00c8ff] text-base mb-2"
             >
-              イベント受付締切日 <span style={{ color: '#ff4d4d' }}>*</span>
+              イベント受付締切日 <span className="text-red-500">*</span>
             </label>
-            <div style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="relative">
+              <div className="flex items-center">
                 <input
                   id="event-deadline"
                   type="text"
                   {...register('deadline')}
                   placeholder="YYYY-MM-DD"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: '#0F1A2E',
-                    border: '1px solid #1E3A5F',
-                    borderRadius: '6px',
-                    color: 'white',
-                    fontSize: '1rem',
-                  }}
+                  className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
                   readOnly
                 />
                 <button
                   type="button"
                   onClick={() => setShowDeadlineCalendar(!showDeadlineCalendar)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#00c8ff',
-                    marginLeft: '-40px',
-                    cursor: 'pointer',
-                    zIndex: Z_INDEX.base,
-                  }}
+                  className="bg-transparent border-none text-[#00c8ff] -ml-10 cursor-pointer z-[1]"
                 >
                   <svg
                     width="24"
@@ -329,43 +227,16 @@ export default function EventRegistrationForm({
 
               {showDeadlineCalendar && (
                 <div
-                  style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: Z_INDEX.modal,
-                    background: '#0A1022',
-                    padding: '20px',
-                    borderRadius: '12px',
-                    boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
-                    border: '1px solid #1E3A5F',
-                  }}
+                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A1022] p-5 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[#1E3A5F] z-[1000]"
                 >
                   <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '16px',
-                    }}
+                    className="flex justify-between items-center mb-4"
                   >
-                    <h3 style={{ color: '#00c8ff', margin: 0 }}>日付を選択</h3>
+                    <h3 className="text-[#00c8ff] m-0">日付を選択</h3>
                     <button
                       type="button"
                       onClick={() => setShowDeadlineCalendar(false)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#00c8ff',
-                        fontSize: '1.5rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30px',
-                        height: '30px',
-                      }}
+                      className="bg-transparent border-none text-[#00c8ff] text-2xl cursor-pointer flex items-center justify-center w-[30px] h-[30px]"
                     >
                       ×
                     </button>
@@ -376,11 +247,7 @@ export default function EventRegistrationForm({
             </div>
             {errors.deadline && (
               <p
-                style={{
-                  color: '#ff4d4d',
-                  fontSize: '0.875rem',
-                  marginTop: '4px',
-                }}
+                className="text-red-500 text-sm mt-1"
               >
                 {errors.deadline.message}
               </p>
@@ -388,47 +255,27 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント表示最終日 */}
-          <div style={{ marginBottom: '20px' }}>
+          <div className="mb-5">
             <label
               htmlFor="event-end-date"
-              style={{
-                display: 'block',
-                color: '#00c8ff',
-                fontSize: '1rem',
-                marginBottom: '8px',
-              }}
+              className="block text-[#00c8ff] text-base mb-2"
             >
-              イベント表示最終日 <span style={{ color: '#ff4d4d' }}>*</span>
+              イベント表示最終日 <span className="text-red-500">*</span>
             </label>
-            <div style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="relative">
+              <div className="flex items-center">
                 <input
                   id="event-end-date"
                   type="text"
                   {...register('endDisplayDate')}
                   placeholder="YYYY-MM-DD"
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: '#0F1A2E',
-                    border: '1px solid #1E3A5F',
-                    borderRadius: '6px',
-                    color: 'white',
-                    fontSize: '1rem',
-                  }}
+                  className="w-full p-3 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
                   readOnly
                 />
                 <button
                   type="button"
                   onClick={() => setShowEndDateCalendar(!showEndDateCalendar)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#00c8ff',
-                    marginLeft: '-40px',
-                    cursor: 'pointer',
-                    zIndex: Z_INDEX.base,
-                  }}
+                  className="bg-transparent border-none text-[#00c8ff] -ml-10 cursor-pointer z-[1]"
                 >
                   <svg
                     width="24"
@@ -457,43 +304,16 @@ export default function EventRegistrationForm({
 
               {showEndDateCalendar && (
                 <div
-                  style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: Z_INDEX.modal,
-                    background: '#0A1022',
-                    padding: '20px',
-                    borderRadius: '12px',
-                    boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)',
-                    border: '1px solid #1E3A5F',
-                  }}
+                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A1022] p-5 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[#1E3A5F] z-[1000]"
                 >
                   <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '16px',
-                    }}
+                    className="flex justify-between items-center mb-4"
                   >
-                    <h3 style={{ color: '#00c8ff', margin: 0 }}>日付を選択</h3>
+                    <h3 className="text-[#00c8ff] m-0">日付を選択</h3>
                     <button
                       type="button"
                       onClick={() => setShowEndDateCalendar(false)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#00c8ff',
-                        fontSize: '1.5rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '30px',
-                        height: '30px',
-                      }}
+                      className="bg-transparent border-none text-[#00c8ff] text-2xl cursor-pointer flex items-center justify-center w-[30px] h-[30px]"
                     >
                       ×
                     </button>
@@ -504,11 +324,7 @@ export default function EventRegistrationForm({
             </div>
             {errors.endDisplayDate && (
               <p
-                style={{
-                  color: '#ff4d4d',
-                  fontSize: '0.875rem',
-                  marginTop: '4px',
-                }}
+                className="text-red-500 text-sm mt-1"
               >
                 {errors.endDisplayDate.message}
               </p>
@@ -516,17 +332,12 @@ export default function EventRegistrationForm({
           </div>
 
           {/* イベント種別 */}
-          <div style={{ marginBottom: '20px' }}>
+          <div className="mb-5">
             <label
               htmlFor="event-type"
-              style={{
-                display: 'block',
-                color: '#00c8ff',
-                fontSize: '1rem',
-                marginBottom: '8px',
-              }}
+              className="block text-[#00c8ff] text-base mb-2"
             >
-              イベント種別 <span style={{ color: '#ff4d4d' }}>*</span>
+              イベント種別 <span className="text-red-500">*</span>
             </label>
             <select
               id="event-type"
@@ -554,11 +365,7 @@ export default function EventRegistrationForm({
             </select>
             {errors.type && (
               <p
-                style={{
-                  color: '#ff4d4d',
-                  fontSize: '0.875rem',
-                  marginTop: '4px',
-                }}
+                className="text-red-500 text-sm mt-1"
               >
                 {errors.type.message}
               </p>
@@ -567,39 +374,18 @@ export default function EventRegistrationForm({
         </div>
 
         {/* 送信ボタン */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginBottom: '24px',
-          }}
-        >
+        <div className="flex justify-center mb-6">
           <button
             type="submit"
             disabled={isPending}
-            style={{
-              padding: '16px 40px',
-              background: '#00c8ff',
-              color: '#020824',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              cursor: isPending ? 'not-allowed' : 'pointer',
-              opacity: isPending ? 0.7 : 1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
+            className={`px-10 py-4 bg-[#00c8ff] text-[#020824] border-none rounded-md text-base font-bold flex items-center gap-2 ${
+              isPending ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'
+            }`}
           >
             {isPending ? (
               <>
                 <svg
-                  style={{
-                    width: '20px',
-                    height: '20px',
-                    animation: 'spin 1s linear infinite',
-                  }}
+                  className="w-5 h-5 animate-spin"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -621,10 +407,7 @@ export default function EventRegistrationForm({
             ) : (
               <>
                 <svg
-                  style={{
-                    width: '20px',
-                    height: '20px',
-                  }}
+                  className="w-5 h-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"

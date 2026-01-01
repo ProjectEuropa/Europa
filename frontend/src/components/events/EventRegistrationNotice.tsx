@@ -1,29 +1,9 @@
 export default function EventRegistrationNotice() {
   return (
-    <div
-      style={{
-        background: '#0A1022',
-        borderRadius: '12px',
-        padding: '20px',
-        border: '1px solid #1E3A5F',
-      }}
-    >
-      <h2
-        style={{
-          color: '#00c8ff',
-          fontSize: '1.2rem',
-          fontWeight: 'bold',
-          marginBottom: '12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-        }}
-      >
+    <div className="bg-[#0A1022] rounded-xl p-5 border border-[#1E3A5F]">
+      <h2 className="text-[#00c8ff] text-[1.2rem] font-bold mb-3 flex items-center gap-2">
         <svg
-          style={{
-            width: '20px',
-            height: '20px',
-          }}
+          className="w-5 h-5"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -37,14 +17,7 @@ export default function EventRegistrationNotice() {
         </svg>
         イベント登録に関する注意事項
       </h2>
-      <ul
-        style={{
-          color: '#b0c4d8',
-          fontSize: '0.9rem',
-          lineHeight: '1.6',
-          paddingLeft: '20px',
-        }}
-      >
+      <ul className="text-[#b0c4d8] text-[0.9rem] leading-[1.6] pl-5">
         <li>登録されたイベントは管理者の承認後に公開されます。</li>
         <li>イベント表示最終日を過ぎると自動的に表示が終了します。</li>
         <li>イベント詳細URLは正確に入力してください。</li>

@@ -24,7 +24,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
     switch (status) {
       case 'uploading':
         return (
-          <div style={{ animation: 'spin 1s linear infinite' }}>
+          <div className="animate-spin">
             <Icons.Loader2 size={20} color="#00c8ff" />
           </div>
         );
@@ -50,16 +50,16 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
     }
   };
 
-  const getStatusColor = () => {
+  const getStatusColorClass = () => {
     switch (status) {
       case 'success':
-        return '#10b981';
+        return 'text-[#10b981]';
       case 'error':
-        return '#ef4444';
+        return 'text-[#ef4444]';
       case 'uploading':
-        return '#00c8ff';
+        return 'text-[#00c8ff]';
       default:
-        return '#8CB4FF';
+        return 'text-[#8CB4FF]';
     }
   };
 
@@ -69,43 +69,19 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 
   return (
     <div
-      className={className}
-      style={{
-        width: '100%',
-        background: '#0a0e1a',
-        border: '1px solid #1E3A5F',
-        borderRadius: '12px',
-        padding: '16px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-      }}
+      className={`w-full bg-[#0a0e1a] border border-[#1E3A5F] rounded-xl p-4 shadow-[0_4px_20px_rgba(0,0,0,0.3)] ${className || ''}`}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="flex flex-col gap-3">
         {/* ファイル情報 */}
         {fileName && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="flex items-center gap-3">
             <Icons.FileText size={16} color="#8CB4FF" />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p
-                style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#b0c4d8',
-                  margin: 0,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-[#b0c4d8] m-0 overflow-hidden text-ellipsis whitespace-nowrap">
                 {fileName}
               </p>
               {fileSize && (
-                <p
-                  style={{
-                    fontSize: '12px',
-                    color: '#8CB4FF',
-                    margin: '2px 0 0 0',
-                  }}
-                >
+                <p className="text-xs text-[#8CB4FF] mt-0.5 mb-0">
                   {(fileSize / 1024).toFixed(2)} KB
                 </p>
               )}
@@ -116,38 +92,20 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 
         {/* プログレスバー */}
         {status === 'uploading' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="flex flex-col gap-2">
             <div
               role="progressbar"
               aria-valuenow={progress}
               aria-valuemin={0}
               aria-valuemax={100}
-              style={{
-                width: '100%',
-                height: '8px',
-                background: '#1E3A5F',
-                borderRadius: '4px',
-                overflow: 'hidden',
-              }}
+              className="w-full h-2 bg-[#1E3A5F] rounded overflow-hidden"
             >
               <div
-                style={{
-                  height: '100%',
-                  background: '#00c8ff',
-                  borderRadius: '4px',
-                  width: `${progress}%`,
-                  transition: 'width 0.3s ease',
-                }}
+                className="h-full bg-[#00c8ff] rounded transition-[width] duration-300"
+                style={{ width: `${progress}%` }}
               />
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontSize: '12px',
-                color: '#8CB4FF',
-              }}
-            >
+            <div className="flex justify-between text-xs text-[#8CB4FF]">
               <span>{Math.round(progress)}%</span>
               <span>進行中</span>
             </div>
@@ -156,13 +114,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 
         {/* ステータス表示 */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '14px',
-            color: getStatusColor(),
-          }}
+          className={`flex items-center gap-2 text-sm ${getStatusColorClass()}`}
         >
           {getStatusIcon()}
           <span>{getStatusText()}</span>
@@ -170,15 +122,8 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 
         {/* エラーメッセージ */}
         {status === 'error' && error && (
-          <div
-            style={{
-              padding: '12px',
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
-              borderRadius: '8px',
-            }}
-          >
-            <p style={{ fontSize: '14px', color: '#ef4444', margin: 0 }}>
+          <div className="p-3 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] rounded-lg">
+            <p className="text-sm text-[#ef4444] m-0">
               {error}
             </p>
           </div>
@@ -186,15 +131,8 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 
         {/* 成功メッセージ */}
         {status === 'success' && (
-          <div
-            style={{
-              padding: '12px',
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.2)',
-              borderRadius: '8px',
-            }}
-          >
-            <p style={{ fontSize: '14px', color: '#10b981', margin: 0 }}>
+          <div className="p-3 bg-[rgba(16,185,129,0.1)] border border-[rgba(16,185,129,0.2)] rounded-lg">
+            <p className="text-sm text-[#10b981] m-0">
               ファイルが正常にアップロードされました。
             </p>
           </div>

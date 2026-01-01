@@ -289,58 +289,19 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
   }, []);
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '1000px',
-        margin: '0 auto',
-        background: '#0a0e1a',
-        border: '1px solid #1E3A5F',
-        borderRadius: '12px',
-        padding: '32px',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-      }}
-    >
+    <div className="w-full max-w-[1000px] mx-auto bg-[#0a0e1a] border border-[#1E3A5F] rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
       {/* ヘッダーセクション */}
-      <div
-        style={{
-          marginBottom: '32px',
-          paddingBottom: '24px',
-          borderBottom: '1px solid #1E3A5F',
-        }}
-      >
+      <div className="mb-8 pb-6 border-b border-[#1E3A5F]">
         {/* タイトル */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: subtitle ? '12px' : '0',
-          }}
-        >
+        <div className={`flex items-center gap-3 ${subtitle ? 'mb-3' : ''}`}>
           <Icons.Upload size={24} color="#00c8ff" />
-          <div style={{ flex: 1 }}>
-            <h1
-              style={{
-                fontSize: '28px',
-                fontWeight: '900',
-                color: '#fff',
-                marginBottom: '4px',
-                textShadow: '0 0 10px rgba(0, 200, 255, 0.4)',
-              }}
-            >
+          <div className="flex-1">
+            <h1 className="text-[28px] font-black text-white mb-1 [text-shadow:0_0_10px_rgba(0,200,255,0.4)]">
               {title}
             </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ height: '1px', width: '20px', background: 'rgba(0, 200, 255, 0.5)' }} />
-              <p style={{
-                fontSize: '12px',
-                color: '#00c8ff',
-                fontWeight: '700',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                margin: 0
-              }}>
+            <div className="flex items-center gap-2">
+              <div className="h-px w-5 bg-[rgba(0,200,255,0.5)]" />
+              <p className="text-xs text-[#00c8ff] font-bold tracking-[0.15em] uppercase m-0">
                 {fileType === 'team' ? 'TEAM DATA UPLOAD' : 'MATCH DATA UPLOAD'}
               </p>
             </div>
@@ -349,91 +310,38 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
         {/* サブタイトル */}
         {subtitle && (
-          <p
-            style={{
-              fontSize: '16px',
-              color: '#8CB4FF',
-              margin: '0 0 24px 36px',
-              lineHeight: 1.5,
-            }}
-          >
+          <p className="text-base text-[#8CB4FF] ml-9 mb-6 leading-normal">
             {subtitle}
           </p>
         )}
 
         {/* 使用方法の説明 */}
-        <div
-          style={{
-            background: 'rgba(30, 58, 95, 0.3)',
-            borderRadius: '8px',
-            padding: '20px',
-            marginTop: '16px',
-          }}
-        >
-          <h3
-            style={{
-              fontSize: '16px',
-              fontWeight: '600',
-              color: '#00c8ff',
-              margin: '0 0 16px 0',
-            }}
-          >
+        <div className="bg-[rgba(30,58,95,0.3)] rounded-lg p-5 mt-4">
+          <h3 className="text-base font-semibold text-[#00c8ff] mb-4">
             アップロード方法
           </h3>
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns:
-                fileType === 'match'
-                  ? 'repeat(auto-fit, minmax(200px, 1fr))'
-                  : 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '20px',
-              fontSize: '14px',
-            }}
+            className={`grid gap-5 text-sm ${
+              fileType === 'match'
+                ? 'grid-cols-[repeat(auto-fit,minmax(200px,1fr))]'
+                : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'
+            }`}
           >
             <div>
-              <h4
-                style={{
-                  fontWeight: '600',
-                  color: '#b0c4d8',
-                  margin: '0 0 8px 0',
-                }}
-              >
+              <h4 className="font-semibold text-[#b0c4d8] mb-2">
                 ファイル要件
               </h4>
-              <ul
-                style={{
-                  listStyle: 'none',
-                  padding: 0,
-                  margin: 0,
-                  color: '#8CB4FF',
-                  lineHeight: 1.6,
-                }}
-              >
+              <ul className="list-none p-0 m-0 text-[#8CB4FF] leading-relaxed">
                 <li>• ファイル形式: .CHE</li>
                 <li>• 最大サイズ: {maxFileSize}KB</li>
                 <li>• 1回につき1ファイル</li>
               </ul>
             </div>
             <div>
-              <h4
-                style={{
-                  fontWeight: '600',
-                  color: '#b0c4d8',
-                  margin: '0 0 8px 0',
-                }}
-              >
+              <h4 className="font-semibold text-[#b0c4d8] mb-2">
                 アップロード方法
               </h4>
-              <ul
-                style={{
-                  listStyle: 'none',
-                  padding: 0,
-                  margin: 0,
-                  color: '#8CB4FF',
-                  lineHeight: 1.6,
-                }}
-              >
+              <ul className="list-none p-0 m-0 text-[#8CB4FF] leading-relaxed">
                 <li>• ドラッグ&ドロップ</li>
                 <li>• クリックしてファイル選択</li>
                 <li>• 必要な情報を入力して送信</li>
@@ -443,22 +351,12 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
         </div>
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         {/* オーナー名 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="flex flex-col gap-2">
           <label
             htmlFor="ownerName"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#b0c4d8',
-            }}
+            className="flex items-center gap-2 text-sm font-semibold text-[#b0c4d8]"
           >
             <Icons.User size={16} color="#00c8ff" />
             オーナー名
@@ -495,24 +393,17 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             }}
           />
           {fieldErrors.ownerName && (
-            <p style={{ fontSize: '12px', color: '#ef4444', margin: 0 }}>
+            <p className="text-xs text-red-500 m-0">
               {fieldErrors.ownerName[0]}
             </p>
           )}
         </div>
 
         {/* コメント */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="flex flex-col gap-2">
           <label
             htmlFor="comment"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#b0c4d8',
-            }}
+            className="flex items-center gap-2 text-sm font-semibold text-[#b0c4d8]"
           >
             <Icons.MessageSquare size={16} color="#00c8ff" />
             コメント
@@ -553,31 +444,24 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             }}
           />
           {fieldErrors[`${fileType}Comment`] && (
-            <p style={{ fontSize: '12px', color: '#ef4444', margin: 0 }}>
+            <p className="text-xs text-red-500 m-0">
               {fieldErrors[`${fileType}Comment`][0]}
             </p>
           )}
         </div>
 
         {/* タグ */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="flex flex-col gap-2">
           <label
             htmlFor="tagInput"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#b0c4d8',
-            }}
+            className="flex items-center gap-2 text-sm font-semibold text-[#b0c4d8]"
           >
             <Icons.Tag size={16} color="#00c8ff" />
             タグ
           </label>
 
-          <div style={{ position: 'relative' }}>
-            <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="relative">
+            <div className="flex gap-2">
               <input
                 id="tagInput"
                 ref={tagInputRef}
@@ -733,7 +617,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
           {/* タグ表示 */}
           {formData.tags.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <div className="flex flex-wrap gap-2">
               {formData.tags.map(tag => (
                 <div
                   key={tag}
@@ -776,14 +660,14 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             </div>
           )}
 
-          <p style={{ fontSize: '12px', color: '#8CB4FF', margin: 0 }}>
+          <p className="text-xs text-[#8CB4FF] m-0">
             タグは最大4つまで入力できます。カンマで区切るか、Enterキーで追加します。
           </p>
         </div>
 
         {/* 削除パスワード（非認証時のみ） */}
         {!isAuthenticated && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="flex flex-col gap-2">
             <label
               htmlFor="deletePassword"
               style={{
@@ -798,7 +682,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
               <Icons.Lock size={16} color="#00c8ff" />
               削除パスワード
             </label>
-            <div style={{ position: 'relative' }}>
+            <div className="relative">
               <input
                 id="deletePassword"
                 type={showPassword ? 'text' : 'password'}
@@ -865,11 +749,11 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
               </button>
             </div>
             {fieldErrors[`${fileType}DeletePassWord`] && (
-              <p style={{ fontSize: '12px', color: '#ef4444', margin: 0 }}>
+              <p className="text-xs text-red-500 m-0">
                 {fieldErrors[`${fileType}DeletePassWord`][0]}
               </p>
             )}
-            <p style={{ fontSize: '12px', color: '#8CB4FF', margin: 0 }}>
+            <p className="text-xs text-[#8CB4FF] m-0">
               このパスワードは{fileType === 'team' ? 'チーム' : 'マッチ'}
               データを削除する際に必要です。
             </p>
@@ -877,16 +761,9 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
         )}
 
         {/* ファイルアップロード */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="flex flex-col gap-2">
           <label
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#b0c4d8',
-            }}
+            className="flex items-center gap-2 text-sm font-semibold text-[#b0c4d8]"
           >
             <Icons.FileText size={16} color="#00c8ff" />
             OKEアップロード
@@ -897,7 +774,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             type="file"
             onChange={handleFileChange}
             accept=".CHE"
-            style={{ display: 'none' }}
+            className="hidden"
           />
 
           <div
@@ -958,7 +835,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                   >
                     {selectedFile.name}
                   </p>
-                  <p style={{ fontSize: '14px', color: '#8CB4FF', margin: 0 }}>
+                  <p className="text-sm text-[#8CB4FF] m-0">
                     {(selectedFile.size / 1024).toFixed(2)} KB
                   </p>
                 </div>
@@ -1012,7 +889,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                   >
                     CHEファイルをドラッグ&ドロップ
                   </p>
-                  <p style={{ fontSize: '14px', color: '#8CB4FF', margin: 0 }}>
+                  <p className="text-sm text-[#8CB4FF] m-0">
                     またはクリックしてファイルを選択
                   </p>
                 </div>
@@ -1034,17 +911,10 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
         </div>
 
         {/* ダウンロード可能日時 */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div className="flex flex-col gap-2">
           <label
             htmlFor="downloadDate"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#b0c4d8',
-            }}
+            className="flex items-center gap-2 text-sm font-semibold text-[#b0c4d8]"
           >
             <Icons.Calendar size={16} color="#00c8ff" />
             ダウンロード可能日時
@@ -1058,7 +928,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
           />
           <p
             id="datetime-help"
-            style={{ fontSize: '12px', color: '#8CB4FF', margin: 0 }}
+            className="text-xs text-[#8CB4FF] m-0"
           >
             設定しない場合は即座にダウンロード可能になります
           </p>
@@ -1098,7 +968,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
         >
           {isUploading ? (
             <>
-              <div style={{ animation: 'spin 1s linear infinite' }}>
+              <div className="animate-spin">
                 <Icons.Loader2 size={16} color="currentColor" />
               </div>
               アップロード中...
@@ -1198,19 +1068,19 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
               >
                 {/* ファイル情報 */}
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                  className="flex justify-between"
                 >
-                  <span style={{ color: '#8CB4FF' }}>ファイル名:</span>
+                  <span className="text-[#8CB4FF]">ファイル名:</span>
                   <span style={{ color: '#b0c4d8', fontWeight: '500' }}>
                     {selectedFile?.name || '未選択'}
                   </span>
                 </div>
 
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                  className="flex justify-between"
                 >
-                  <span style={{ color: '#8CB4FF' }}>ファイルサイズ:</span>
-                  <span style={{ color: '#b0c4d8' }}>
+                  <span className="text-[#8CB4FF]">ファイルサイズ:</span>
+                  <span className="text-[#b0c4d8]">
                     {selectedFile
                       ? `${(selectedFile.size / 1024).toFixed(2)} KB`
                       : '0 KB'}
@@ -1219,9 +1089,9 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
                 {/* オーナー名 */}
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                  className="flex justify-between"
                 >
-                  <span style={{ color: '#8CB4FF' }}>オーナー名:</span>
+                  <span className="text-[#8CB4FF]">オーナー名:</span>
                   <span style={{ color: '#b0c4d8', fontWeight: '500' }}>
                     {formData.ownerName || '未入力'}
                   </span>
@@ -1236,7 +1106,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                       gap: '4px',
                     }}
                   >
-                    <span style={{ color: '#8CB4FF' }}>コメント:</span>
+                    <span className="text-[#8CB4FF]">コメント:</span>
                     <div
                       style={{
                         color: '#b0c4d8',
@@ -1263,9 +1133,9 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                       gap: '4px',
                     }}
                   >
-                    <span style={{ color: '#8CB4FF' }}>タグ:</span>
+                    <span className="text-[#8CB4FF]">タグ:</span>
                     <div
-                      style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}
+                      className="flex flex-wrap gap-1"
                     >
                       {formData.tags.map(tag => (
                         <span
@@ -1288,22 +1158,22 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                 {/* 削除パスワード（非認証時のみ） */}
                 {!isAuthenticated && formData.deletePassword && (
                   <div
-                    style={{ display: 'flex', justifyContent: 'space-between' }}
+                    className="flex justify-between"
                   >
-                    <span style={{ color: '#8CB4FF' }}>削除パスワード:</span>
-                    <span style={{ color: '#b0c4d8' }}>設定済み</span>
+                    <span className="text-[#8CB4FF]">削除パスワード:</span>
+                    <span className="text-[#b0c4d8]">設定済み</span>
                   </div>
                 )}
 
                 {/* ダウンロード可能日時 */}
                 {formData.downloadDate && (
                   <div
-                    style={{ display: 'flex', justifyContent: 'space-between' }}
+                    className="flex justify-between"
                   >
-                    <span style={{ color: '#8CB4FF' }}>
+                    <span className="text-[#8CB4FF]">
                       ダウンロード可能日時:
                     </span>
-                    <span style={{ color: '#b0c4d8' }}>
+                    <span className="text-[#b0c4d8]">
                       {new Date(formData.downloadDate).toLocaleString('ja-JP')}
                     </span>
                   </div>

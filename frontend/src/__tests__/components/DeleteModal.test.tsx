@@ -2,7 +2,6 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DeleteModal } from '@/components/DeleteModal';
-import { Z_INDEX } from '@/lib/utils';
 
 // lucide-reactのモック
 vi.mock('lucide-react', () => ({
@@ -241,13 +240,11 @@ describe('DeleteModal', () => {
       const dialog = screen.getByRole('dialog');
 
       expect(dialog).toHaveClass('cyber-dialog');
-      expect(dialog).toHaveStyle({
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: String(Z_INDEX.modal),
-      });
+      expect(dialog).toHaveClass('fixed');
+      expect(dialog).toHaveClass('top-1/2');
+      expect(dialog).toHaveClass('left-1/2');
+      expect(dialog).toHaveClass('-translate-x-1/2');
+      expect(dialog).toHaveClass('-translate-y-1/2');
     });
 
     it('should have proper form structure', () => {
@@ -256,12 +253,11 @@ describe('DeleteModal', () => {
       const form = screen.getByRole('dialog').querySelector('form');
 
       expect(form).toBeInTheDocument();
-      expect(form).toHaveStyle({
-        padding: '36px 40px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '28px',
-      });
+      expect(form).toHaveClass('py-9');
+      expect(form).toHaveClass('px-10');
+      expect(form).toHaveClass('flex');
+      expect(form).toHaveClass('flex-col');
+      expect(form).toHaveClass('gap-7');
     });
   });
 

@@ -37,33 +37,16 @@ const ProfileSection: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div
-        style={{
-          background: '#0A1022',
-          borderRadius: '12px',
-          padding: '24px',
-          border: '1px solid #1E3A5F',
-          marginBottom: '24px',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ color: '#b0c4d8' }}>プロフィール情報を読み込み中...</div>
+      <div className="bg-[#0A1022] rounded-xl p-6 border border-[#1E3A5F] mb-6 text-center">
+        <div className="text-[#b0c4d8]">プロフィール情報を読み込み中...</div>
       </div>
     );
   }
 
   if (error || !profile) {
     return (
-      <div
-        style={{
-          background: '#0A1022',
-          borderRadius: '12px',
-          padding: '24px',
-          border: '1px solid #1E3A5F',
-          marginBottom: '24px',
-        }}
-      >
-        <p style={{ color: '#ff6b6b', margin: 0 }}>
+      <div className="bg-[#0A1022] rounded-xl p-6 border border-[#1E3A5F] mb-6">
+        <p className="text-[#ff6b6b] m-0">
           プロフィール情報の読み込みに失敗しました
         </p>
       </div>
@@ -71,124 +54,57 @@ const ProfileSection: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        background: '#0A1022',
-        borderRadius: '12px',
-        padding: '24px',
-        border: '1px solid #1E3A5F',
-        marginBottom: '24px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '20px',
-        }}
-      >
-        <h2
-          style={{
-            color: '#00c8ff',
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            margin: 0,
-          }}
-        >
+    <div className="bg-[#0A1022] rounded-xl p-6 border border-[#1E3A5F] mb-6">
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-[#00c8ff] text-2xl font-bold m-0">
           プロフィール情報
         </h2>
         <button
           onClick={handleEditToggle}
-          style={{
-            background: 'transparent',
-            border: '1px solid #00c8ff',
-            borderRadius: '6px',
-            color: '#00c8ff',
-            padding: '8px 16px',
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-          }}
+          className="bg-transparent border border-[#00c8ff] rounded-md text-[#00c8ff] py-2 px-4 text-[0.9rem] cursor-pointer"
         >
           {isEditing ? 'キャンセル' : '編集'}
         </button>
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 2fr',
-          gap: '16px',
-          marginBottom: '20px',
-        }}
-      >
-        <div style={{ color: '#8CB4FF', fontSize: '1rem' }}>名前</div>
+      <div className="grid grid-cols-[1fr_2fr] gap-4 mb-5">
+        <div className="text-[#8CB4FF] text-base">名前</div>
         {isEditing ? (
           <input
             type="text"
             value={tempName}
             onChange={handleNameChange}
             placeholder="名前を入力してください"
-            style={{
-              background: '#0F1A2E',
-              border: '1px solid #1E3A5F',
-              borderRadius: '6px',
-              color: 'white',
-              padding: '8px 12px',
-              fontSize: '1rem',
-              width: '100%',
-            }}
+            className="bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white py-2 px-3 text-base w-full"
           />
         ) : (
-          <div style={{ color: 'white', fontSize: '1rem' }}>{profile.name}</div>
+          <div className="text-white text-base">{profile.name}</div>
         )}
 
-        <div style={{ color: '#8CB4FF', fontSize: '1rem' }}>メールアドレス</div>
-        <div style={{ color: 'white', fontSize: '1rem' }}>{profile.email}</div>
+        <div className="text-[#8CB4FF] text-base">メールアドレス</div>
+        <div className="text-white text-base">{profile.email}</div>
 
-        <div style={{ color: '#8CB4FF', fontSize: '1rem' }}>登録日</div>
-        <div style={{ color: 'white', fontSize: '1rem' }}>
+        <div className="text-[#8CB4FF] text-base">登録日</div>
+        <div className="text-white text-base">
           {profile.joinDate}
         </div>
       </div>
 
       {isEditing && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
+        <div className="flex justify-end">
           <button
             onClick={handleSave}
             disabled={updateProfileMutation.isPending || !tempName.trim()}
-            style={{
-              background: '#00c8ff',
-              border: 'none',
-              borderRadius: '6px',
-              color: '#020824',
-              padding: '10px 20px',
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              cursor:
-                updateProfileMutation.isPending || !tempName.trim()
-                  ? 'not-allowed'
-                  : 'pointer',
-              opacity:
-                updateProfileMutation.isPending || !tempName.trim() ? 0.7 : 1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
+            className={`bg-[#00c8ff] border-none rounded-md text-[#020824] py-2.5 px-5 text-base font-bold flex items-center gap-2 ${
+              updateProfileMutation.isPending || !tempName.trim()
+                ? 'cursor-not-allowed opacity-70'
+                : 'cursor-pointer'
+            }`}
           >
             {updateProfileMutation.isPending ? (
               <>
                 <svg
-                  style={{
-                    width: '20px',
-                    height: '20px',
-                    animation: 'spin 1s linear infinite',
-                  }}
+                  className="w-5 h-5 animate-spin"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
