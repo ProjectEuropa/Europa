@@ -27,33 +27,16 @@ const RegisteredEventsSection: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div
-        style={{
-          background: '#0A1022',
-          borderRadius: '12px',
-          padding: '24px',
-          border: '1px solid #1E3A5F',
-          marginBottom: '24px',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ color: '#b0c4d8' }}>イベント情報を読み込み中...</div>
+      <div className="bg-[#0A1022] rounded-xl p-6 border border-[#1E3A5F] mb-6 text-center">
+        <div className="text-[#b0c4d8]">イベント情報を読み込み中...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        style={{
-          background: '#0A1022',
-          borderRadius: '12px',
-          padding: '24px',
-          border: '1px solid #1E3A5F',
-          marginBottom: '24px',
-        }}
-      >
-        <p style={{ color: '#ff6b6b', margin: 0 }}>
+      <div className="bg-[#0A1022] rounded-xl p-6 border border-[#1E3A5F] mb-6">
+        <p className="text-[#ff6b6b] m-0">
           イベント情報の読み込みに失敗しました
         </p>
       </div>
@@ -61,67 +44,23 @@ const RegisteredEventsSection: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        background: '#0A1022',
-        borderRadius: '12px',
-        padding: '24px',
-        border: '1px solid #1E3A5F',
-        marginBottom: '24px',
-      }}
-    >
-      <h2
-        style={{
-          color: '#00c8ff',
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-          marginBottom: '20px',
-        }}
-      >
+    <div className="bg-[#0A1022] rounded-xl p-6 border border-[#1E3A5F] mb-6">
+      <h2 className="text-[#00c8ff] text-2xl font-bold mb-5">
         登録したイベント
       </h2>
 
       {/* 検索・フィルター */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '16px',
-          marginBottom: '20px',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div
-          style={{
-            position: 'relative',
-            flex: '1',
-            minWidth: '200px',
-          }}
-        >
+      <div className="flex gap-4 mb-5 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
           <input
             type="text"
             value={searchQuery}
             onChange={handleSearchChange}
             placeholder="イベント名で検索"
-            style={{
-              width: '100%',
-              padding: '12px 16px 12px 40px',
-              background: '#0F1A2E',
-              border: '1px solid #1E3A5F',
-              borderRadius: '6px',
-              color: 'white',
-              fontSize: '1rem',
-            }}
+            className="w-full py-3 pl-10 pr-4 bg-[#0F1A2E] border border-[#1E3A5F] rounded-md text-white text-base"
           />
           <svg
-            style={{
-              position: 'absolute',
-              left: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: '20px',
-              height: '20px',
-              color: '#8CB4FF',
-            }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8CB4FF]"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -136,72 +75,23 @@ const RegisteredEventsSection: React.FC = () => {
       </div>
 
       {/* イベントデータテーブル */}
-      <div
-        style={{
-          overflowX: 'auto',
-        }}
-      >
-        <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-          }}
-        >
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
           <thead>
-            <tr
-              style={{
-                background: '#0F1A2E',
-                borderBottom: '1px solid #1E3A5F',
-              }}
-            >
-              <th
-                style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal',
-                }}
-              >
+            <tr className="bg-[#0F1A2E] border-b border-[#1E3A5F]">
+              <th className="p-4 text-left text-[#b0c4d8] font-normal">
                 イベント名
               </th>
-              <th
-                style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal',
-                }}
-              >
+              <th className="p-4 text-left text-[#b0c4d8] font-normal">
                 種別
               </th>
-              <th
-                style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal',
-                }}
-              >
+              <th className="p-4 text-left text-[#b0c4d8] font-normal">
                 締切日
               </th>
-              <th
-                style={{
-                  padding: '16px',
-                  textAlign: 'left',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal',
-                }}
-              >
+              <th className="p-4 text-left text-[#b0c4d8] font-normal">
                 表示最終日
               </th>
-              <th
-                style={{
-                  padding: '16px',
-                  textAlign: 'center',
-                  color: '#b0c4d8',
-                  fontWeight: 'normal',
-                }}
-              >
+              <th className="p-4 text-center text-[#b0c4d8] font-normal">
                 操作
               </th>
             </tr>
@@ -211,35 +101,15 @@ const RegisteredEventsSection: React.FC = () => {
               filteredEvents.map(event => (
                 <tr
                   key={event.id}
-                  style={{
-                    borderBottom: '1px solid #1E3A5F',
-                  }}
+                  className="border-b border-[#1E3A5F]"
                 >
-                  <td
-                    style={{
-                      padding: '16px',
-                      textAlign: 'left',
-                      color: 'white',
-                    }}
-                  >
+                  <td className="p-4 text-left text-white">
                     {event.name}
                   </td>
-                  <td
-                    style={{
-                      padding: '16px',
-                      textAlign: 'left',
-                      color: '#b0c4d8',
-                    }}
-                  >
+                  <td className="p-4 text-left text-[#b0c4d8]">
                     {getEventTypeDisplay(event.type)}
                   </td>
-                  <td
-                    style={{
-                      padding: '16px',
-                      textAlign: 'left',
-                      color: '#b0c4d8',
-                    }}
-                  >
+                  <td className="p-4 text-left text-[#b0c4d8]">
                     {(() => {
                       if (!event.deadline) return '';
                       const d = new Date(event.deadline);
@@ -248,13 +118,7 @@ const RegisteredEventsSection: React.FC = () => {
                       return `${d.getUTCFullYear()}/${d.getUTCMonth() + 1}/${d.getUTCDate()} ${hours}:${minutes}`;
                     })()}
                   </td>
-                  <td
-                    style={{
-                      padding: '16px',
-                      textAlign: 'left',
-                      color: '#b0c4d8',
-                    }}
-                  >
+                  <td className="p-4 text-left text-[#b0c4d8]">
                     {(() => {
                       if (!event.endDisplayDate) return '';
                       const d = new Date(event.endDisplayDate);
@@ -264,29 +128,10 @@ const RegisteredEventsSection: React.FC = () => {
                     })()}
                   </td>
 
-                  <td
-                    style={{
-                      padding: '16px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        gap: '8px',
-                      }}
-                    >
+                  <td className="p-4 text-center">
+                    <div className="flex justify-center gap-2">
                       <button
-                        style={{
-                          background: 'transparent',
-                          border: '1px solid #00c8ff',
-                          borderRadius: '4px',
-                          color: '#00c8ff',
-                          padding: '6px 10px',
-                          fontSize: '0.8rem',
-                          cursor: 'pointer',
-                        }}
+                        className="bg-transparent border border-[#00c8ff] rounded text-[#00c8ff] py-1.5 px-2.5 text-[0.8rem] cursor-pointer"
                         onClick={() => {
                           setModalDetails(event.details);
                           setModalOpen(true);
@@ -295,15 +140,7 @@ const RegisteredEventsSection: React.FC = () => {
                         詳細
                       </button>
                       <button
-                        style={{
-                          background: 'transparent',
-                          border: '1px solid #ff4d4d',
-                          borderRadius: '4px',
-                          color: '#ff4d4d',
-                          padding: '6px 10px',
-                          fontSize: '0.8rem',
-                          cursor: 'pointer',
-                        }}
+                        className="bg-transparent border border-[#ff4d4d] rounded text-[#ff4d4d] py-1.5 px-2.5 text-[0.8rem] cursor-pointer"
                         onClick={async () => {
                           if (
                             !window.confirm(
@@ -328,11 +165,7 @@ const RegisteredEventsSection: React.FC = () => {
               <tr>
                 <td
                   colSpan={6}
-                  style={{
-                    padding: '32px',
-                    textAlign: 'center',
-                    color: '#b0c4d8',
-                  }}
+                  className="p-8 text-center text-[#b0c4d8]"
                 >
                   {searchQuery
                     ? '検索条件に一致するイベントが見つかりませんでした'
@@ -350,18 +183,8 @@ const RegisteredEventsSection: React.FC = () => {
           aria-labelledby="event-detail-modal-title"
           aria-describedby="event-detail-modal-content"
           aria-modal="true"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: Z_INDEX.modal,
-          }}
+          className="fixed inset-0 w-screen h-screen bg-black/50 flex items-center justify-center"
+          style={{ zIndex: Z_INDEX.modal }}
           onClick={() => setModalOpen(false)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
@@ -370,33 +193,17 @@ const RegisteredEventsSection: React.FC = () => {
           }}
         >
           <div
-            style={{
-              background: '#1E293B',
-              color: 'white',
-              borderRadius: '10px',
-              padding: '32px',
-              minWidth: '320px',
-              maxWidth: '90vw',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-            }}
+            className="bg-[#1E293B] text-white rounded-[10px] p-8 min-w-[320px] max-w-[90vw] shadow-[0_8px_32px_rgba(0,0,0,0.18)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 id="event-detail-modal-title" style={{ marginBottom: '16px' }}>イベント詳細</h3>
-            <div id="event-detail-modal-content" style={{ marginBottom: '24px', whiteSpace: 'pre-line' }}>
+            <h3 id="event-detail-modal-title" className="mb-4">イベント詳細</h3>
+            <div id="event-detail-modal-content" className="mb-6 whitespace-pre-line">
               {modalDetails || '詳細情報がありません'}
             </div>
             <button
               aria-label="モーダルを閉じる"
               onClick={() => setModalOpen(false)}
-              style={{
-                background: '#00c8ff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '8px 24px',
-                fontSize: '1rem',
-                cursor: 'pointer',
-              }}
+              className="bg-[#00c8ff] text-white border-none rounded-md py-2 px-6 text-base cursor-pointer"
             >
               閉じる
             </button>

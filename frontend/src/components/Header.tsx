@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuButtonAnimated, setIsMenuButtonAnimated] = useState(false);
-  const { isMobile, isTablet } = useBreakpoint();
+  const { isMobile } = useBreakpoint();
   const router = useRouter();
 
   // ページ読み込み時にボタンをハイライトするアニメーション
@@ -48,65 +48,47 @@ const Header: React.FC<HeaderProps> = ({
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const getMenuButtonClasses = () => {
+    const base = 'cursor-pointer flex items-center justify-center rounded-lg transition-all duration-300';
+    const padding = isMobile ? 'px-2 py-1.5 mr-2' : 'px-3 py-2 mr-4';
+    const border = isMenuOpen
+      ? 'border-2 border-[#00c8ff]'
+      : 'border-2 border-[rgba(0,200,255,0.3)]';
+    const background = isMenuOpen
+      ? 'bg-[rgba(0,200,255,0.2)]'
+      : 'bg-[rgba(0,200,255,0.05)]';
+    const shadow = isMenuOpen
+      ? 'shadow-[0_0_10px_rgba(0,200,255,0.3)]'
+      : isMenuButtonAnimated
+        ? 'shadow-[0_0_15px_rgba(0,200,255,0.5)]'
+        : '';
+    const scale = isMenuOpen
+      ? 'scale-105'
+      : isMenuButtonAnimated
+        ? 'scale-[1.08]'
+        : 'scale-100';
+    const animation = isMenuButtonAnimated ? 'animate-pulse' : '';
+
+    return `${base} ${padding} ${border} ${background} ${shadow} ${scale} ${animation}`;
+  };
+
   return (
     <>
       <header
-        className={className}
-        style={{
-          padding: variant === 'minimal' ? '16px 5%' : '20px 5%',
-          borderBottom: '1px solid rgba(0, 200, 255, 0.3)',
-          zIndex: Z_INDEX.dropdown,
-          position: 'relative',
-          background: '#0a0818',
-        }}
+        className={`${variant === 'minimal' ? 'py-4' : 'py-5'} px-[5%] border-b border-[rgba(0,200,255,0.3)] relative bg-[#0a0818] ${className}`}
+        style={{ zIndex: Z_INDEX.dropdown }}
         aria-label="サイトヘッダー"
       >
         <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: isMobile ? 'wrap' : 'nowrap',
-          }}
+          className={`max-w-[1200px] mx-auto flex justify-between items-center ${isMobile ? 'flex-wrap' : 'flex-nowrap'}`}
         >
           {/* メニューボタンとロゴをグループ化 */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="flex items-center">
             {/* ハンバーガーメニューボタン */}
             {showMenu && (
               <div
                 onClick={toggleMenu}
-                style={{
-                  cursor: 'pointer',
-                  marginRight: isMobile ? '8px' : '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: isMobile ? '6px 8px' : '8px 12px',
-                  borderRadius: '8px',
-                  background: isMenuOpen
-                    ? 'rgba(0, 200, 255, 0.2)'
-                    : 'rgba(0, 200, 255, 0.05)',
-                  transition:
-                    'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                  border: isMenuOpen
-                    ? '2px solid #00c8ff'
-                    : '2px solid rgba(0, 200, 255, 0.3)',
-                  boxShadow: isMenuOpen
-                    ? '0 0 10px rgba(0, 200, 255, 0.3)'
-                    : isMenuButtonAnimated
-                      ? '0 0 15px rgba(0, 200, 255, 0.5)'
-                      : 'none',
-                  transform: isMenuOpen
-                    ? 'scale(1.05)'
-                    : isMenuButtonAnimated
-                      ? 'scale(1.08)'
-                      : 'scale(1)',
-                  animation: isMenuButtonAnimated
-                    ? 'pulse 1.5s infinite'
-                    : 'none',
-                }}
+                className={getMenuButtonClasses()}
                 aria-label="メニューを開く"
                 role="button"
                 tabIndex={0}
@@ -116,22 +98,14 @@ const Header: React.FC<HeaderProps> = ({
                   }
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="flex items-center">
                   {isMenuOpen ? (
                     <Icons.Close size={24} color="#00c8ff" />
                   ) : (
                     <Icons.Menu size={24} color="#00c8ff" />
                   )}
                   <span
-                    style={{
-                      marginLeft: isMobile ? '4px' : '8px',
-                      fontSize: isMobile ? '12px' : '14px',
-                      fontWeight: 600,
-                      color: '#00c8ff',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      display: isMobile ? 'none' : 'inline',
-                    }}
+                    className={`${isMobile ? 'ml-1 hidden' : 'ml-2 inline'} text-sm font-semibold text-[#00c8ff] uppercase tracking-wide`}
                   >
                     {isMenuOpen ? '閉じる' : 'メニュー'}
                   </span>
@@ -142,18 +116,11 @@ const Header: React.FC<HeaderProps> = ({
             {/* EUROPAテキスト（ホームへのリンク） */}
             <Link
               href="/"
-              style={{
-                textDecoration: 'none',
-              }}
+              className="no-underline"
               aria-label="ホームページに戻る"
             >
               <span
-                style={{
-                  color: '#00c8ff',
-                  fontSize: variant === 'minimal' ? '18px' : '20px',
-                  fontWeight: 700,
-                  letterSpacing: '0.5px',
-                }}
+                className={`text-[#00c8ff] ${variant === 'minimal' ? 'text-lg' : 'text-xl'} font-bold tracking-wide`}
               >
                 EUROPA
               </span>
@@ -161,17 +128,11 @@ const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* 右側のスペース */}
-          <div style={{ flex: 1 }}></div>
+          <div className="flex-1"></div>
 
           {/* ナビゲーション */}
           <nav
-            style={{
-              display: 'flex',
-              gap: isMobile ? '8px' : '16px',
-              alignItems: 'center',
-              marginLeft: isMobile ? '16px' : '32px',
-              flexWrap: isMobile ? 'wrap' : 'nowrap',
-            }}
+            className={`flex ${isMobile ? 'gap-2 ml-4 flex-wrap' : 'gap-4 ml-8 flex-nowrap'} items-center`}
             aria-label="メインナビゲーション"
           >
             {/* 認証リンク or ユーザー名 */}
@@ -180,38 +141,16 @@ const Header: React.FC<HeaderProps> = ({
               if (loading) return null;
               if (user) {
                 return (
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '16px',
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: '#00c8ff',
-                        fontWeight: 600,
-                        fontSize: '15px',
-                        display: 'flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <span style={{ marginRight: '4px' }}>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[#00c8ff] font-semibold text-[15px] flex items-center">
+                      <span className="mr-1">
                         <Icons.Register size={18} />
                       </span>
                       {user.name} さん
                     </span>
                     <Link
                       href="/mypage"
-                      style={{
-                        color: '#8CB4FF',
-                        fontWeight: 500,
-                        fontSize: '15px',
-                        textDecoration: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}
+                      className="text-[#8CB4FF] font-medium text-[15px] no-underline flex items-center gap-1"
                       aria-label="マイページに移動"
                     >
                       <Icons.Register size={18} /> マイページ
@@ -224,17 +163,7 @@ const Header: React.FC<HeaderProps> = ({
                           console.error('ログアウトエラー:', error);
                         }
                       }}
-                      style={{
-                        color: '#8CB4FF',
-                        background: 'none',
-                        border: 'none',
-                        fontSize: '15px',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}
+                      className="text-[#8CB4FF] bg-transparent border-none text-[15px] font-medium cursor-pointer flex items-center gap-1"
                       aria-label="ログアウト"
                     >
                       <Icons.Logout size={18} /> ログアウト
@@ -246,35 +175,14 @@ const Header: React.FC<HeaderProps> = ({
                 <>
                   <Link
                     href="/login"
-                    style={{
-                      color: '#b0c4d8',
-                      textDecoration: 'none',
-                      fontSize: '15px',
-                      fontWeight: 500,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      transition: 'color 0.2s',
-                    }}
+                    className="text-[#b0c4d8] no-underline text-[15px] font-medium flex items-center gap-1 transition-colors duration-200 hover:text-[#00c8ff]"
                     aria-label="ログインページに移動"
                   >
                     <Icons.Login size={18} /> ログイン
                   </Link>
                   <Link
                     href="/register"
-                    style={{
-                      color: '#00c8ff',
-                      border: '1px solid #00c8ff',
-                      padding: '6px 12px',
-                      borderRadius: '4px',
-                      textDecoration: 'none',
-                      fontSize: '15px',
-                      fontWeight: 600,
-                      transition: 'background-color 0.2s',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                    }}
+                    className="text-[#00c8ff] border border-[#00c8ff] px-3 py-1.5 rounded no-underline text-[15px] font-semibold transition-colors duration-200 flex items-center gap-1 hover:bg-[rgba(0,200,255,0.1)]"
                     aria-label="新規登録ページに移動"
                   >
                     <Icons.Register size={18} /> 新規登録

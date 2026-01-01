@@ -83,57 +83,24 @@ const SideMenu: React.FC<SideMenuProps> = ({
   if (!isOpen && animationClass === '') return null;
 
   // リンクのスタイルを生成する関数
-  const getLinkStyle = (path: string) => {
+  const getLinkClassName = (path: string) => {
     const isActive = pathname === path;
-    return {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '12px 16px',
-      color: isActive ? '#00c8ff' : '#b0c4d8',
-      marginBottom: '8px',
-      fontSize: '1rem',
-      borderRadius: '6px',
-      backgroundColor: isActive ? 'rgba(0, 200, 255, 0.1)' : 'transparent',
-      transition: 'all 0.2s ease',
-      textDecoration: 'none',
-      width: '100%',
-    };
+    return `flex items-center px-4 py-3 mb-2 text-base rounded-md transition-all duration-200 no-underline w-full ${
+      isActive
+        ? 'text-[#00c8ff] bg-[rgba(0,200,255,0.1)]'
+        : 'text-[#b0c4d8] bg-transparent'
+    }`;
   };
 
-  // カテゴリヘッダーのスタイル
-  const categoryStyle = {
-    color: '#00c8ff',
-    fontSize: '0.9rem',
-    fontWeight: 'bold' as const,
-    marginTop: '20px',
-    marginBottom: '10px',
-    paddingLeft: '16px',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1px',
-  };
+  // カテゴリヘッダーのクラス
+  const categoryClassName = 'text-[#00c8ff] text-sm font-bold mt-5 mb-2.5 pl-4 uppercase tracking-wide';
 
   return (
     <div
-      className={className}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: Z_INDEX.modal,
-        display: 'flex',
-        justifyContent: 'flex-start',
-        opacity:
-          animationClass === 'menu-open'
-            ? 1
-            : animationClass === 'menu-close'
-              ? 0
-              : 0,
-        transition: 'opacity 0.3s ease',
-        visibility: animationClass ? 'visible' : 'hidden',
-      }}
+      className={`fixed top-0 left-0 w-full h-full bg-black/50 flex justify-start transition-opacity duration-300 ${
+        animationClass === 'menu-open' ? 'opacity-100' : 'opacity-0'
+      } ${animationClass ? 'visible' : 'invisible'} ${className}`}
+      style={{ zIndex: Z_INDEX.modal }}
       role="dialog"
       aria-modal="true"
       aria-label="サイドメニュー"
@@ -141,73 +108,34 @@ const SideMenu: React.FC<SideMenuProps> = ({
       <FocusTrap active={isOpen}>
         <div
           ref={menuRef}
-          style={{
-            width: isMobile ? '280px' : '300px',
-            height: '100%',
-            backgroundColor: '#020824',
-            borderRight: '1px solid #1E3A5F',
-            transition: 'transform 0.3s ease',
-            transform:
-              animationClass === 'menu-open'
-                ? 'translateX(0)'
-                : 'translateX(-100%)',
-            padding: isMobile ? '16px 0' : '20px 0',
-            display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '2px 0 10px rgba(0, 0, 0, 0.5)',
-            overflowY: 'auto',
-          }}
+          className={`h-full bg-[#020824] border-r border-[#1E3A5F] transition-transform duration-300 flex flex-col shadow-[2px_0_10px_rgba(0,0,0,0.5)] overflow-y-auto ${
+            isMobile ? 'w-[280px] py-4' : 'w-[300px] py-5'
+          } ${animationClass === 'menu-open' ? 'translate-x-0' : '-translate-x-full'}`}
           onTransitionEnd={handleTransitionEnd}
           role="navigation"
           aria-label="メインナビゲーション"
         >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '0 20px 20px',
-              borderBottom: '1px solid #1E3A5F',
-            }}
-          >
-            <h2
-              style={{
-                color: '#00c8ff',
-                fontSize: '1.2rem',
-                margin: 0,
-              }}
-            >
-              メニュー
-            </h2>
+          <div className="flex justify-between items-center px-5 pb-5 border-b border-[#1E3A5F]">
+            <h2 className="text-[#00c8ff] text-xl m-0">メニュー</h2>
             <button
               onClick={onClose}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#00c8ff',
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                padding: '5px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              className="bg-transparent border-none text-[#00c8ff] text-2xl cursor-pointer p-1 flex items-center justify-center"
               aria-label="メニューを閉じる"
             >
               ✕
             </button>
           </div>
 
-          <div style={{ flex: 1, padding: isMobile ? '16px' : '20px' }}>
+          <div className={`flex-1 ${isMobile ? 'p-4' : 'p-5'}`}>
             {/* ホーム */}
-            <Link href="/" style={getLinkStyle('/')} onClick={onClose}>
+            <Link href="/" className={getLinkClassName('/')} onClick={onClose}>
               <svg
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15"
@@ -223,7 +151,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
             {!loading && user && (
               <Link
                 href="#"
-                style={getLinkStyle('/logout')}
+                className={getLinkClassName('/logout')}
                 onClick={() => {
                   try {
                     logout(() => router.push('/'));
@@ -240,7 +168,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
-                  style={{ marginRight: '12px' }}
+                  className="mr-3"
                 >
                   <path
                     d="M16 17L21 12L16 7"
@@ -269,11 +197,11 @@ const SideMenu: React.FC<SideMenuProps> = ({
             )}
 
             {/* 検索カテゴリ */}
-            <div style={categoryStyle}>検索</div>
+            <div className={categoryClassName}>検索</div>
 
             <Link
               href="/search/team"
-              style={getLinkStyle('/search/team')}
+              className={getLinkClassName('/search/team')}
               onClick={onClose}
               aria-label="チームデータ検索"
             >
@@ -283,7 +211,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
@@ -298,7 +226,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
             <Link
               href="/search/match"
-              style={getLinkStyle('/search/match')}
+              className={getLinkClassName('/search/match')}
               onClick={onClose}
               aria-label="マッチデータ検索"
             >
@@ -308,7 +236,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
@@ -322,11 +250,11 @@ const SideMenu: React.FC<SideMenuProps> = ({
             </Link>
 
             {/* アップロードカテゴリ */}
-            <div style={categoryStyle}>アップロード</div>
+            <div className={categoryClassName}>アップロード</div>
 
             <Link
               href="/upload"
-              style={getLinkStyle('/upload')}
+              className={getLinkClassName('/upload')}
               onClick={onClose}
               aria-label="チームアップロード"
             >
@@ -336,7 +264,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M12 16L12 8M12 8L8 12M12 8L16 12"
@@ -358,7 +286,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
             <Link
               href="/upload/match"
-              style={getLinkStyle('/upload/match')}
+              className={getLinkClassName('/upload/match')}
               onClick={onClose}
               aria-label="マッチアップロード"
             >
@@ -368,7 +296,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M12 16L12 8M12 8L8 12M12 8L16 12"
@@ -389,11 +317,11 @@ const SideMenu: React.FC<SideMenuProps> = ({
             </Link>
 
             {/* ダウンロードカテゴリ */}
-            <div style={categoryStyle}>ダウンロード</div>
+            <div className={categoryClassName}>ダウンロード</div>
 
             <Link
               href="/sumdownload/team"
-              style={getLinkStyle('/sumdownload/team')}
+              className={getLinkClassName('/sumdownload/team')}
               onClick={onClose}
               aria-label="チームデータ一括ダウンロード"
             >
@@ -403,7 +331,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M12 8L12 16M12 16L16 12M12 16L8 12"
@@ -429,7 +357,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
             <Link
               href="/sumdownload/match"
-              style={getLinkStyle('/sumdownload/match')}
+              className={getLinkClassName('/sumdownload/match')}
               onClick={onClose}
               aria-label="マッチデータ一括ダウンロード"
             >
@@ -439,7 +367,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M12 8L12 16M12 16L16 12M12 16L8 12"
@@ -464,11 +392,11 @@ const SideMenu: React.FC<SideMenuProps> = ({
             </Link>
 
             {/* アカウントカテゴリ */}
-            <div style={categoryStyle}>アカウント</div>
+            <div className={categoryClassName}>アカウント</div>
 
             <Link
               href="/login"
-              style={getLinkStyle('/login')}
+              className={getLinkClassName('/login')}
               onClick={onClose}
               aria-label="ログイン"
             >
@@ -478,7 +406,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M11 16L7 12M7 12L11 8M7 12H21M16 16V17C16 18.6569 14.6569 20 13 20H6C4.34315 20 3 18.6569 3 17V7C3 5.34315 4.34315 4 6 4H13C14.6569 4 16 5.34315 16 7V8"
@@ -493,7 +421,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
             <Link
               href="/register"
-              style={getLinkStyle('/register')}
+              className={getLinkClassName('/register')}
               onClick={onClose}
               aria-label="新規登録"
             >
@@ -503,7 +431,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
@@ -525,7 +453,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
             <Link
               href="/forgot-password"
-              style={getLinkStyle('/forgot-password')}
+              className={getLinkClassName('/forgot-password')}
               onClick={onClose}
               aria-label="パスワード再設定"
             >
@@ -535,7 +463,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M15 7C16.1046 7 17 7.89543 17 9V15C17 16.1046 16.1046 17 15 17H9C7.89543 17 7 16.1046 7 15V9C7 7.89543 7.89543 7 9 7"
@@ -569,11 +497,11 @@ const SideMenu: React.FC<SideMenuProps> = ({
             </Link>
 
             {/* 情報カテゴリ */}
-            <div style={categoryStyle}>情報</div>
+            <div className={categoryClassName}>情報</div>
 
             <Link
               href="/info"
-              style={getLinkStyle('/info')}
+              className={getLinkClassName('/info')}
               onClick={onClose}
               aria-label="Information"
             >
@@ -583,7 +511,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <circle
                   cx="12"
@@ -610,7 +538,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
             <Link
               href="/event"
-              style={getLinkStyle('/event')}
+              className={getLinkClassName('/event')}
               onClick={onClose}
               aria-label="イベント登録"
             >
@@ -620,7 +548,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <rect
                   x="3"
@@ -666,7 +594,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
             <Link
               href="/mypage"
-              style={getLinkStyle('/mypage')}
+              className={getLinkClassName('/mypage')}
               onClick={onClose}
               aria-label="マイページ"
             >
@@ -676,7 +604,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
@@ -698,7 +626,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
             <Link
               href="/external-links"
-              style={getLinkStyle('/external-links')}
+              className={getLinkClassName('/external-links')}
               onClick={onClose}
               aria-label="外部リンク集"
             >
@@ -708,7 +636,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginRight: '12px' }}
+                className="mr-3"
               >
                 <path
                   d="M10 6H6C4.89543 6 4 6.89543 4 8V18C4 19.1046 4.89543 20 6 20H16C17.1046 20 18 19.1046 18 18V14"
