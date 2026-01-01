@@ -29,7 +29,7 @@ const RegisterPage: React.FC = () => {
             すでにアカウントをお持ちですか？{' '}
             <Link
               href="/login"
-              className="!text-[#00c8ff] no-underline font-bold hover:underline"
+              className="text-[#00c8ff]! no-underline font-bold hover:underline"
             >
               ログイン
             </Link>

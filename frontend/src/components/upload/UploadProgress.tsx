@@ -50,16 +50,16 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
     }
   };
 
-  const getStatusColor = () => {
+  const getStatusColorClass = () => {
     switch (status) {
       case 'success':
-        return '#10b981';
+        return 'text-[#10b981]';
       case 'error':
-        return '#ef4444';
+        return 'text-[#ef4444]';
       case 'uploading':
-        return '#00c8ff';
+        return 'text-[#00c8ff]';
       default:
-        return '#8CB4FF';
+        return 'text-[#8CB4FF]';
     }
   };
 
@@ -114,8 +114,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 
         {/* ステータス表示 */}
         <div
-          className="flex items-center gap-2 text-sm"
-          style={{ color: getStatusColor() }}
+          className={`flex items-center gap-2 text-sm ${getStatusColorClass()}`}
         >
           {getStatusIcon()}
           <span>{getStatusText()}</span>

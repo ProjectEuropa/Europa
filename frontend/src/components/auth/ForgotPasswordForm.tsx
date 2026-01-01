@@ -96,7 +96,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
       <div className="text-center text-[#b0c4d8] text-[0.9rem]">
         <Link
           href="/login"
-          className="!text-[#00c8ff] no-underline font-bold"
+          className="text-[#00c8ff]! no-underline font-bold"
         >
           ログインページに戻る
         </Link>

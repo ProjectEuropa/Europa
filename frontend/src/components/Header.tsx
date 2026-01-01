@@ -25,6 +25,7 @@ const Header: React.FC<HeaderProps> = ({
   const [isMenuButtonAnimated, setIsMenuButtonAnimated] = useState(false);
   const { isMobile } = useBreakpoint();
   const router = useRouter();
+  const { user, loading, logout } = useAuth();
 
   // ページ読み込み時にボタンをハイライトするアニメーション
   useEffect(() => {
@@ -137,7 +138,6 @@ const Header: React.FC<HeaderProps> = ({
           >
             {/* 認証リンク or ユーザー名 */}
             {(() => {
-              const { user, loading, logout } = useAuth();
               if (loading) return null;
               if (user) {
                 return (
@@ -150,7 +150,7 @@ const Header: React.FC<HeaderProps> = ({
                     </span>
                     <Link
                       href="/mypage"
-                      className="!text-[#8CB4FF] font-medium text-[15px] no-underline flex items-center gap-1"
+                      className="text-[#8CB4FF]! font-medium text-[15px] no-underline flex items-center gap-1"
                       aria-label="マイページに移動"
                     >
                       <Icons.Register size={18} color="#8CB4FF" /> マイページ
