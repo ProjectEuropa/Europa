@@ -165,7 +165,7 @@ export default function AboutPage() {
             <div className="mt-10 text-center">
               <Link
                 href="/guide"
-                className="inline-block px-6 py-3 bg-[#00c8ff] text-[#020824] rounded-md font-bold no-underline transition-all hover:opacity-80"
+className="inline-block px-6 py-3 bg-[#00c8ff] text-[#020824] rounded-md font-bold no-underline transition-all duration-200 hover:opacity-80"
               >
                 利用ガイドを見る
               </Link>
