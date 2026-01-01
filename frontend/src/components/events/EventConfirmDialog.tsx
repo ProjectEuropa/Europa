@@ -1,7 +1,6 @@
 import type React from 'react';
 import type { EventFormData } from '@/schemas/event';
 import { getEventTypeDisplay } from '@/schemas/event';
-import { Z_INDEX } from '@/lib/utils';
 
 interface EventConfirmDialogProps {
   isOpen: boolean;
@@ -33,8 +32,7 @@ export default function EventConfirmDialog({
       aria-labelledby="confirm-modal-title"
       aria-describedby="confirm-modal-content"
       aria-modal="true"
-      className="fixed inset-0 bg-black/50 flex items-center justify-center"
-      style={{ zIndex: Z_INDEX.modal }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000]"
       onClick={isLoading ? undefined : onClose}
       onKeyDown={handleKeyDown}
     >

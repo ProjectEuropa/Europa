@@ -3,7 +3,6 @@
 import type React from 'react';
 import { useState } from 'react';
 import { useDeleteEvent, useMyEvents } from '@/hooks/api/useMyPage';
-import { Z_INDEX } from '@/lib/utils';
 import { getEventTypeDisplay } from '@/schemas/event';
 import type { MyPageEvent } from '@/types/user';
 
@@ -183,8 +182,7 @@ const RegisteredEventsSection: React.FC = () => {
           aria-labelledby="event-detail-modal-title"
           aria-describedby="event-detail-modal-content"
           aria-modal="true"
-          className="fixed inset-0 w-screen h-screen bg-black/50 flex items-center justify-center"
-          style={{ zIndex: Z_INDEX.modal }}
+          className="fixed inset-0 w-screen h-screen bg-black/50 flex items-center justify-center z-[1000]"
           onClick={() => setModalOpen(false)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

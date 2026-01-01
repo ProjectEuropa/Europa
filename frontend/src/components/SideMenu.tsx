@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import { FocusTrap } from '@/components/layout/focus-manager';
 import { useBreakpoint } from '@/components/layout/responsive';
 import { useAuth } from '@/hooks/useAuth';
-import { Z_INDEX } from '@/lib/utils';
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -97,10 +96,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
   return (
     <div
-      className={`fixed top-0 left-0 w-full h-full bg-black/50 flex justify-start transition-opacity duration-300 ${
+      className={`fixed top-0 left-0 w-full h-full bg-black/50 flex justify-start transition-opacity duration-300 z-[1000] ${
         animationClass === 'menu-open' ? 'opacity-100' : 'opacity-0'
       } ${animationClass ? 'visible' : 'invisible'} ${className}`}
-      style={{ zIndex: Z_INDEX.modal }}
       role="dialog"
       aria-modal="true"
       aria-label="サイドメニュー"

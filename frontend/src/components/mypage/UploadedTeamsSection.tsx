@@ -3,7 +3,6 @@
 import type React from 'react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Z_INDEX } from '@/lib/utils';
 import { deleteMyFile } from '@/utils/api';
 
 interface TeamData {
@@ -163,8 +162,7 @@ const UploadedTeamsSection: React.FC<UploadedTeamsSectionProps> = ({
           aria-labelledby="team-detail-modal-title"
           aria-describedby="team-detail-modal-content"
           aria-modal="true"
-          className="fixed inset-0 w-screen h-screen bg-black/50 flex items-center justify-center"
-          style={{ zIndex: Z_INDEX.modal }}
+          className="fixed inset-0 w-screen h-screen bg-black/50 flex items-center justify-center z-[1000]"
           onClick={() => setModalOpen(false)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import Icons from '@/components/Icons';
 import { useBreakpoint } from '@/components/layout/responsive';
 import { useAuth } from '@/hooks/useAuth';
-import { Z_INDEX } from '@/lib/utils';
 import SideMenu from './SideMenu';
 
 interface HeaderProps {
@@ -76,8 +75,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header
-        className={`${variant === 'minimal' ? 'py-4' : 'py-5'} px-[5%] border-b border-[rgba(0,200,255,0.3)] relative bg-[#0a0818] ${className}`}
-        style={{ zIndex: Z_INDEX.dropdown }}
+        className={`${variant === 'minimal' ? 'py-4' : 'py-5'} px-[5%] border-b border-[rgba(0,200,255,0.3)] relative bg-[#0a0818] z-10 ${className}`}
         aria-label="サイトヘッダー"
       >
         <div

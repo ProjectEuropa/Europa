@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import Calendar from '@/components/Calendar';
 import { useEventRegistration } from '@/hooks/useEventRegistration';
-import { Z_INDEX } from '@/lib/utils';
 import {
   EVENT_TYPE_OPTIONS,
   EVENT_TYPES,
@@ -199,8 +198,7 @@ export default function EventRegistrationForm({
                 <button
                   type="button"
                   onClick={() => setShowDeadlineCalendar(!showDeadlineCalendar)}
-                  className="bg-transparent border-none text-[#00c8ff] -ml-10 cursor-pointer"
-                  style={{ zIndex: Z_INDEX.base }}
+                  className="bg-transparent border-none text-[#00c8ff] -ml-10 cursor-pointer z-[1]"
                 >
                   <svg
                     width="24"
@@ -229,8 +227,7 @@ export default function EventRegistrationForm({
 
               {showDeadlineCalendar && (
                 <div
-                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A1022] p-5 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[#1E3A5F]"
-                  style={{ zIndex: Z_INDEX.modal }}
+                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A1022] p-5 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[#1E3A5F] z-[1000]"
                 >
                   <div
                     className="flex justify-between items-center mb-4"
@@ -278,8 +275,7 @@ export default function EventRegistrationForm({
                 <button
                   type="button"
                   onClick={() => setShowEndDateCalendar(!showEndDateCalendar)}
-                  className="bg-transparent border-none text-[#00c8ff] -ml-10 cursor-pointer"
-                  style={{ zIndex: Z_INDEX.base }}
+                  className="bg-transparent border-none text-[#00c8ff] -ml-10 cursor-pointer z-[1]"
                 >
                   <svg
                     width="24"
@@ -308,8 +304,7 @@ export default function EventRegistrationForm({
 
               {showEndDateCalendar && (
                 <div
-                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A1022] p-5 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[#1E3A5F]"
-                  style={{ zIndex: Z_INDEX.modal }}
+                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0A1022] p-5 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-[#1E3A5F] z-[1000]"
                 >
                   <div
                     className="flex justify-between items-center mb-4"

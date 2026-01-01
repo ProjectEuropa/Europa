@@ -7,7 +7,6 @@ import {
   useMyMatchFiles,
   useMyTeamFiles,
 } from '@/hooks/api/useMyPage';
-import { Z_INDEX } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import type { MyPageFile } from '@/types/user';
 import {
@@ -383,8 +382,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
           aria-labelledby="comment-modal-title"
           aria-describedby="comment-modal-content"
           aria-modal="true"
-          className="fixed inset-0 bg-black/80 flex items-center justify-center"
-          style={{ zIndex: Z_INDEX.modal }}
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1000]"
           onClick={() => setModalOpen(false)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
