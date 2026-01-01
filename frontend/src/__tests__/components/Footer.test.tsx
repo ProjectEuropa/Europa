@@ -34,13 +34,13 @@ describe('Footer', () => {
   });
 
   it('should display subtitle', () => {
-    const subtitle = screen.getByText('カルネージハート EXA');
+    const subtitle = screen.getByText('カルネージハート エクサ');
     expect(subtitle).toBeInTheDocument();
   });
 
   it('should display description', () => {
     const description = screen.getByText(
-      /OKE共有とチームコラボレーションのための非公式カルネージハートEXAプラットフォーム/
+      /OKE共有とチームコラボレーションのための非公式カルネージハート エクサプラットフォーム/
     );
     expect(description).toBeInTheDocument();
   });

@@ -39,7 +39,7 @@ describe('HeaderLogo', () => {
   });
 
   it('should display subtitle in Japanese', () => {
-    const subtitle = screen.getByText('カルネージハート EXA');
+    const subtitle = screen.getByText('カルネージハート エクサ');
 
     expect(subtitle).toBeInTheDocument();
     expect(subtitle).toHaveClass('text-sm', 'text-gray-400', 'ml-10');
@@ -47,7 +47,7 @@ describe('HeaderLogo', () => {
 
   it('should have proper layout structure', () => {
     const container = screen
-      .getByText('カルネージハート EXA')
+      .getByText('カルネージハート エクサ')
       .closest('.flex.flex-col');
 
     expect(container).toHaveClass('flex', 'flex-col');
@@ -93,7 +93,7 @@ describe('HeaderLogo', () => {
     });
 
     it('should apply correct CSS classes to subtitle', () => {
-      const subtitle = screen.getByText('カルネージハート EXA');
+      const subtitle = screen.getByText('カルネージハート エクサ');
 
       expect(subtitle).toHaveClass('text-sm', 'text-gray-400', 'ml-10');
     });
@@ -102,12 +102,12 @@ describe('HeaderLogo', () => {
   describe('Accessibility', () => {
     it('should have readable text content', () => {
       expect(screen.getByText('EUROPA')).toBeVisible();
-      expect(screen.getByText('カルネージハート EXA')).toBeVisible();
+      expect(screen.getByText('カルネージハート エクサ')).toBeVisible();
     });
 
     it('should have proper semantic structure', () => {
       const title = screen.getByText('EUROPA');
-      const subtitle = screen.getByText('カルネージハート EXA');
+      const subtitle = screen.getByText('カルネージハート エクサ');
 
       // タイトルとサブタイトルが適切な階層になっていることを確認
       expect(title).toBeInTheDocument();

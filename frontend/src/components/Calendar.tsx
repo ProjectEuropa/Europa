@@ -38,26 +38,26 @@ const Calendar: React.FC<CalendarProps> = ({
 
   // フォントサイズを計算
   const fontSize = {
-    yearMonth: size === 'small' ? '1.5rem' : '2rem',
-    weekday: size === 'small' ? '1.2rem' : '1.5rem',
-    day: size === 'small' ? '1.2rem' : '1.5rem',
-    button: size === 'small' ? '1rem' : '1.3rem',
-    timeSelect: size === 'small' ? '0.9rem' : '1.1rem',
+    yearMonth: size === 'small' ? '1rem' : '2rem',
+    weekday: size === 'small' ? '0.75rem' : '1.5rem',
+    day: size === 'small' ? '0.85rem' : '1.5rem',
+    button: size === 'small' ? '0.75rem' : '1.3rem',
+    timeSelect: size === 'small' ? '0.8rem' : '1.1rem',
   };
 
   // パディングを計算
   const padding = {
-    container: size === 'small' ? '20px' : '30px',
-    cell: size === 'small' ? '10px' : '15px',
-    button: size === 'small' ? '10px 15px' : '12px 25px',
-    timeSelect: size === 'small' ? '8px' : '10px',
+    container: size === 'small' ? '10px' : '30px',
+    cell: size === 'small' ? '4px' : '15px',
+    button: size === 'small' ? '6px 10px' : '12px 25px',
+    timeSelect: size === 'small' ? '6px' : '10px',
   };
 
   // 間隔を計算
-  const gap = size === 'small' ? '10px' : '15px';
+  const gap = size === 'small' ? '4px' : '15px';
 
   // セルの高さを計算
-  const cellHeight = size === 'small' ? '60px' : '80px';
+  const cellHeight = size === 'small' ? '45px' : '80px';
 
   // 年月の表示用フォーマット
   const formatYearMonth = (date: Date): string => {
@@ -247,11 +247,14 @@ const Calendar: React.FC<CalendarProps> = ({
       style={{
         background: '#050A14',
         border: '1px solid #1E3A5F',
-        borderRadius: '12px',
+        borderRadius: size === 'small' ? '8px' : '12px',
         padding: padding.container,
         color: 'white',
         width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
         margin: '0 auto',
+        overflow: 'hidden',
       }}
       onClick={handleCalendarClick}
     >
@@ -536,18 +539,20 @@ const Calendar: React.FC<CalendarProps> = ({
               {hasEvent && (
                 <div
                   style={{
-                    marginTop: '4px',
+                    position: 'absolute',
+                    bottom: size === 'small' ? '2px' : '4px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '2px',
+                    gap: '0px',
                   }}
                 >
                   {/* カレンダーアイコン */}
                   <span
                     style={{
-                      fontSize: size === 'small' ? '1.1em' : '1.35em',
-                      color: '#3B82F6',
+                      fontSize: size === 'small' ? '0.6em' : '1em',
                       lineHeight: 1,
                     }}
                   >
@@ -559,13 +564,12 @@ const Calendar: React.FC<CalendarProps> = ({
                       background:
                         'linear-gradient(90deg, #3B82F6 60%, #8CB4FF 100%)',
                       color: '#fff',
-                      fontSize: size === 'small' ? '0.65em' : '0.8em',
-                      padding: '1px 6px',
-                      borderRadius: '6px',
+                      fontSize: size === 'small' ? '0.4em' : '0.65em',
+                      padding: size === 'small' ? '0px 2px' : '1px 4px',
+                      borderRadius: size === 'small' ? '2px' : '4px',
                       fontWeight: 600,
-                      letterSpacing: '0.04em',
-                      boxShadow: '0 1px 4px #0003',
-                      marginTop: '2px',
+                      letterSpacing: '0.02em',
+                      boxShadow: '0 1px 2px #0003',
                       whiteSpace: 'nowrap',
                     }}
                   >
@@ -614,28 +618,30 @@ const Calendar: React.FC<CalendarProps> = ({
         <div
           style={{
             position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0,0,0,0.5)',
-            zIndex: 9999,
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.7)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 99999,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            padding: '20px',
           }}
           onClick={() => setModalEvent(null)}
         >
           <div
             style={{
-              background: '#0A1022',
+              background: 'linear-gradient(135deg, #0A1022 0%, #0d1830 100%)',
               borderRadius: '16px',
               padding: '32px',
               minWidth: '320px',
-              maxWidth: '90vw',
-              border: '2px solid #1E3A5F',
+              maxWidth: '500px',
+              width: '100%',
+              border: '2px solid #00c8ff',
               color: '#fff',
-              boxShadow: '0 4px 24px 0 #000a',
+              boxShadow: '0 8px 32px rgba(0, 200, 255, 0.2), 0 0 60px rgba(0, 200, 255, 0.1)',
               position: 'relative',
             }}
             onClick={e => e.stopPropagation()}
@@ -645,11 +651,18 @@ const Calendar: React.FC<CalendarProps> = ({
                 position: 'absolute',
                 top: 12,
                 right: 12,
-                background: 'none',
-                border: 'none',
-                color: '#8CB4FF',
-                fontSize: '1.5rem',
+                background: 'rgba(0, 200, 255, 0.1)',
+                border: '1px solid rgba(0, 200, 255, 0.3)',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                color: '#00c8ff',
+                fontSize: '1.2rem',
                 cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s',
               }}
               onClick={() => setModalEvent(null)}
             >
@@ -657,23 +670,43 @@ const Calendar: React.FC<CalendarProps> = ({
             </button>
             <h3
               style={{
-                color: '#8CB4FF',
-                fontSize: '1.3rem',
-                marginBottom: '12px',
+                color: '#00c8ff',
+                fontSize: '1.4rem',
+                fontWeight: 'bold',
+                marginBottom: '16px',
+                paddingRight: '40px',
               }}
             >
               {modalEvent.title || 'イベント詳細'}
             </h3>
-            <div style={{ marginBottom: '8px' }}>{modalEvent.details}</div>
+            <div style={{
+              marginBottom: '16px',
+              color: '#b0c4d8',
+              lineHeight: 1.6,
+              whiteSpace: 'pre-wrap',
+            }}>
+              {modalEvent.details}
+            </div>
             {modalEvent.url && (
-              <div style={{ marginTop: '8px' }}>
+              <div style={{ marginTop: '16px' }}>
                 <a
                   href={modalEvent.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#3B82F6', textDecoration: 'underline' }}
+                  style={{
+                    color: '#00c8ff',
+                    textDecoration: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 16px',
+                    background: 'rgba(0, 200, 255, 0.1)',
+                    border: '1px solid rgba(0, 200, 255, 0.3)',
+                    borderRadius: '8px',
+                    transition: 'all 0.2s',
+                  }}
                 >
-                  参考リンクを開く
+                  🔗 参考リンクを開く
                 </a>
               </div>
             )}
