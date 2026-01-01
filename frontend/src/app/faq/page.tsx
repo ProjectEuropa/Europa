@@ -11,55 +11,18 @@ export default function FAQPage() {
         <Header />
 
         {/* Main Content */}
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '40px auto',
-            padding: '0 5%',
-            color: '#b0c4d8',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: '36px',
-              fontWeight: 'bold',
-              color: '#00c8ff',
-              marginBottom: '24px',
-              textAlign: 'center',
-            }}
-          >
+        <div className="max-w-[1200px] mx-auto my-10 px-[5%] text-[#b0c4d8]">
+          <h1 className="text-4xl font-bold text-[#00c8ff] mb-6 text-center">
             よくある質問
           </h1>
 
-          <div
-            style={{
-              background: '#0a1022',
-              borderRadius: '12px',
-              padding: '32px',
-              border: '1px solid #07324a',
-              lineHeight: '1.8',
-              fontSize: '16px',
-            }}
-          >
+          <div className="bg-[#0a1022] rounded-xl p-8 border border-[#07324a] leading-relaxed text-base">
             {/* FAQ項目 */}
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: Project Europaとは何ですか？
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A: Project Europaは、カルネージハート
                   EXAのプレイヤーコミュニティをサポートするための非公式プラットフォームです。
@@ -68,24 +31,11 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: アカウント登録は必要ですか？
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A:
                   一部の機能（イベント告知機能やのマイページなど）を利用するにはアカウント登録が必要です。
@@ -94,24 +44,11 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: チームデータをアップロードするにはどうすればいいですか？
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A:
                   「アップロード」ページからチームデータをアップロードできます。
@@ -121,24 +58,11 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: アップロードしたデータは誰でも見ることができますか？
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A:
                   はい、アップロードされたチームデータは基本的に公開され、他のユーザーが検索・閲覧できるようになります。
@@ -147,24 +71,11 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: データの検索方法を教えてください
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A:
                   「検索」ページから、チーム名、プレイヤー名の特性などで検索できます。
@@ -174,24 +85,11 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: パスワードを忘れてしまいました
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A:
                   ログインページの「パスワードをお忘れですか？」リンクから、パスワードリセット手続きを行えます。
@@ -200,24 +98,11 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: アカウントを削除するにはどうすればいいですか？
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A:
                   マイページの「アカウント設定」から、アカウント削除の手続きを行えます。
@@ -227,24 +112,11 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: サイトの利用は無料ですか？
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A: はい、Project
                   Europaの全ての機能は無料でご利用いただけます。
@@ -252,24 +124,11 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: '40px' }}>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+            <div className="mb-10">
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: 不具合や機能リクエストはどこに報告すればいいですか？
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A:
                   お問い合わせフォームから、不具合の報告や機能リクエストを送信できます。
@@ -280,23 +139,10 @@ export default function FAQPage() {
             </div>
 
             <div>
-              <h2
-                style={{
-                  fontSize: '24px',
-                  color: '#00c8ff',
-                  marginBottom: '16px',
-                }}
-              >
+              <h2 className="text-2xl text-[#00c8ff] mb-4">
                 Q: 開発に参加することはできますか？
               </h2>
-              <div
-                style={{
-                  padding: '20px',
-                  background: '#0a1a33',
-                  borderRadius: '8px',
-                  border: '1px solid #07324a',
-                }}
-              >
+              <div className="p-5 bg-[#0a1a33] rounded-lg border border-[#07324a]">
                 <p>
                   A: はい、Project Europaは常に開発協力者を募集しています。
                   プログラミング、デザイン、翻訳、ドキュメント作成など、様々な形で貢献いただけます。

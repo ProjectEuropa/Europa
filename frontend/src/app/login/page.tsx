@@ -8,45 +8,12 @@ import Header from '@/components/Header';
 
 const LoginPage: React.FC = () => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        background: 'rgb(var(--background-rgb))',
-      }}
-    >
+    <div className="flex flex-col min-h-screen bg-[rgb(var(--background-rgb))]">
       <Header />
 
-      <main
-        style={{
-          flex: '1',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '40px 20px',
-        }}
-      >
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '400px',
-            background: '#0A1022',
-            borderRadius: '12px',
-            padding: '32px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-            border: '1px solid #1E3A5F',
-          }}
-        >
-          <h1
-            style={{
-              color: '#00c8ff',
-              fontSize: '1.8rem',
-              fontWeight: 'bold',
-              marginBottom: '24px',
-              textAlign: 'center',
-            }}
-          >
+      <main className="flex-1 flex justify-center items-center px-5 py-10">
+        <div className="w-full max-w-[400px] bg-[#0A1022] rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.3)] border border-[#1E3A5F]">
+          <h1 className="text-[#00c8ff] text-3xl font-bold mb-6 text-center">
             ログイン
           </h1>
 
@@ -56,41 +23,20 @@ const LoginPage: React.FC = () => {
             }}
           />
 
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: '16px',
-            }}
-          >
+          <div className="flex justify-center mt-4">
             <Link
               href="/forgot-password"
-              style={{
-                color: '#00c8ff',
-                fontSize: '0.9rem',
-                textDecoration: 'none',
-              }}
+              className="text-[#00c8ff] text-sm no-underline hover:underline"
             >
               パスワードをお忘れですか？
             </Link>
           </div>
 
-          <div
-            style={{
-              marginTop: '24px',
-              textAlign: 'center',
-              color: '#b0c4d8',
-              fontSize: '0.9rem',
-            }}
-          >
+          <div className="mt-6 text-center text-[#b0c4d8] text-sm">
             アカウントをお持ちでないですか？{' '}
             <Link
               href="/register"
-              style={{
-                color: '#00c8ff',
-                textDecoration: 'none',
-                fontWeight: 'bold',
-              }}
+              className="text-[#00c8ff] no-underline font-bold hover:underline"
             >
               新規登録
             </Link>

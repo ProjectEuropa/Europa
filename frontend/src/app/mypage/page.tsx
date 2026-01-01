@@ -20,15 +20,7 @@ const MyPageAuthGuard: React.FC<{ children: React.ReactNode }> = ({
   // Zustand初期化完了まで待機
   if (!hasHydrated || loading) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          color: '#b0c4d8',
-        }}
-      >
+      <div className="flex justify-center items-center min-h-screen text-[#b0c4d8]">
         Loading...
       </div>
     );
@@ -69,106 +61,58 @@ const MyPageContent: React.FC = () => {
   };
 
   // タブボタンのスタイルを生成する関数
-  const getTabStyle = (tab: MyPageTab) => {
+  const getTabClassName = (tab: MyPageTab) => {
     const isActive = activeTab === tab;
-    return {
-      padding: '12px 20px',
-      background: isActive ? '#0F1A2E' : 'transparent',
-      border: isActive ? '1px solid #1E3A5F' : '1px solid transparent',
-      borderBottom: isActive ? '1px solid #0F1A2E' : '1px solid #1E3A5F',
-      borderRadius: isActive ? '8px 8px 0 0' : '0',
-      color: isActive ? '#00c8ff' : '#b0c4d8',
-      fontWeight: isActive ? 'bold' : 'normal',
-      cursor: 'pointer',
-      marginRight: '4px',
-      position: 'relative' as const,
-      bottom: '-1px',
-    };
+    return `px-5 py-3 cursor-pointer mr-1 relative -bottom-px ${
+      isActive
+        ? 'bg-[#0F1A2E] border border-[#1E3A5F] border-b-[#0F1A2E] rounded-t-lg text-[#00c8ff] font-bold'
+        : 'bg-transparent border border-transparent border-b-[#1E3A5F] text-[#b0c4d8] font-normal'
+    }`;
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        background: 'rgb(var(--background-rgb))',
-      }}
-    >
+    <div className="flex flex-col min-h-screen bg-[rgb(var(--background-rgb))]">
       <Header />
 
-      <main
-        style={{
-          flex: '1',
-          padding: '20px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-          }}
-        >
-          <h1
-            style={{
-              color: '#00c8ff',
-              fontSize: '2rem',
-              fontWeight: 'bold',
-              marginBottom: '8px',
-            }}
-          >
+      <main className="flex-1 p-5">
+        <div className="max-w-[1200px] mx-auto">
+          <h1 className="text-[#00c8ff] text-3xl font-bold mb-2">
             マイページ
           </h1>
-          <p
-            style={{
-              color: '#b0c4d8',
-              fontSize: '1rem',
-              marginBottom: '24px',
-            }}
-          >
+          <p className="text-[#b0c4d8] text-base mb-6">
             アカウント情報の管理、アップロードデータの確認ができます
           </p>
 
           {/* タブナビゲーション */}
-          <div
-            style={{
-              display: 'flex',
-              borderBottom: '1px solid #1E3A5F',
-              marginBottom: '24px',
-            }}
-          >
+          <div className="flex border-b border-[#1E3A5F] mb-6">
             <button
               onClick={() => handleTabChange('profile')}
-              style={getTabStyle('profile')}
+              className={getTabClassName('profile')}
             >
               プロフィール
             </button>
             <button
               onClick={() => handleTabChange('teams')}
-              style={getTabStyle('teams')}
+              className={getTabClassName('teams')}
             >
               チームデータ
             </button>
             <button
               onClick={() => handleTabChange('matches')}
-              style={getTabStyle('matches')}
+              className={getTabClassName('matches')}
             >
               マッチデータ
             </button>
             <button
               onClick={() => handleTabChange('events')}
-              style={getTabStyle('events')}
+              className={getTabClassName('events')}
             >
               イベント
             </button>
           </div>
 
           {/* タブコンテンツ */}
-          <div
-            style={{
-              marginBottom: '24px',
-            }}
-          >
+          <div className="mb-6">
             {activeTab === 'profile' && <ProfileSection />}
             {activeTab === 'teams' && <FileListSection type="team" />}
             {activeTab === 'matches' && <FileListSection type="match" />}
@@ -176,30 +120,10 @@ const MyPageContent: React.FC = () => {
           </div>
 
           {/* 注意事項 */}
-          <div
-            style={{
-              background: '#0A1022',
-              borderRadius: '12px',
-              padding: '20px',
-              border: '1px solid #1E3A5F',
-            }}
-          >
-            <h2
-              style={{
-                color: '#00c8ff',
-                fontSize: '1.2rem',
-                fontWeight: 'bold',
-                marginBottom: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
+          <div className="bg-[#0A1022] rounded-xl p-5 border border-[#1E3A5F]">
+            <h2 className="text-[#00c8ff] text-xl font-bold mb-3 flex items-center gap-2">
               <svg
-                style={{
-                  width: '20px',
-                  height: '20px',
-                }}
+                className="w-5 h-5"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -213,14 +137,7 @@ const MyPageContent: React.FC = () => {
               </svg>
               アカウント情報に関する注意事項
             </h2>
-            <ul
-              style={{
-                color: '#b0c4d8',
-                fontSize: '0.9rem',
-                lineHeight: '1.6',
-                paddingLeft: '20px',
-              }}
-            >
+            <ul className="text-[#b0c4d8] text-sm leading-relaxed pl-5 list-disc">
               <li>プロフィール情報は他のユーザーにも表示されます。</li>
               <li>
                 アップロードしたデータは管理者によって削除される場合があります。
