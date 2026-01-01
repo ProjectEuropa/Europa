@@ -103,18 +103,13 @@ export function LoginForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+      className="flex flex-col gap-5"
     >
       {/* メールアドレスフィールド */}
       <div>
         <label
           htmlFor="email"
-          style={{
-            display: 'block',
-            marginBottom: '8px',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-          }}
+          className="block mb-2 text-[#b0c4d8] text-[0.9rem]"
         >
           メールアドレス*
         </label>
@@ -124,20 +119,12 @@ export function LoginForm({
           placeholder="example@example.com"
           {...register('email')}
           disabled={isSubmitting}
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            background: '#111A2E',
-            border: errors.email ? '1px solid #ef4444' : '1px solid #1E3A5F',
-            borderRadius: '6px',
-            color: 'white',
-            fontSize: '1rem',
-            outline: 'none',
-            transition: 'border-color 0.2s',
-          }}
+          className={`w-full py-3 px-4 bg-[#111A2E] border ${
+            errors.email ? 'border-red-500' : 'border-[#1E3A5F]'
+          } rounded-md text-white text-base outline-none transition-colors`}
         />
         {errors.email && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.email.message}
           </p>
         )}
@@ -147,88 +134,48 @@ export function LoginForm({
       <div>
         <label
           htmlFor="password"
-          style={{
-            display: 'block',
-            marginBottom: '8px',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-          }}
+          className="block mb-2 text-[#b0c4d8] text-[0.9rem]"
         >
           パスワード*
         </label>
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <input
             id="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="パスワードを入力"
             {...register('password')}
             disabled={isSubmitting}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              paddingRight: '48px',
-              background: '#111A2E',
-              border: errors.password
-                ? '1px solid #ef4444'
-                : '1px solid #1E3A5F',
-              borderRadius: '6px',
-              color: 'white',
-              fontSize: '1rem',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
+            className={`w-full py-3 px-4 pr-12 bg-[#111A2E] border ${
+              errors.password ? 'border-red-500' : 'border-[#1E3A5F]'
+            } rounded-md text-white text-base outline-none transition-colors`}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'transparent',
-              border: 'none',
-              color: '#b0c4d8',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '4px',
-            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#b0c4d8] cursor-pointer flex items-center justify-center p-1"
             aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
         {errors.password && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.password.message}
           </p>
         )}
       </div>
 
       {/* ログインしたままにするチェックボックス */}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="flex items-center">
         <input
           id="remember"
           type="checkbox"
           {...register('remember')}
-          style={{
-            width: '16px',
-            height: '16px',
-            marginRight: '8px',
-            cursor: 'pointer',
-            accentColor: '#00c8ff',
-          }}
+          className="w-4 h-4 mr-2 cursor-pointer accent-[#00c8ff]"
         />
         <label
           htmlFor="remember"
-          style={{
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            userSelect: 'none',
-          }}
+          className="text-[#b0c4d8] text-[0.9rem] cursor-pointer select-none"
         >
           ログインしたままにする
         </label>
@@ -238,20 +185,11 @@ export function LoginForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        style={{
-          width: '100%',
-          padding: '14px',
-          background: isSubmitting ? '#374151' : '#00c8ff',
-          color: isSubmitting ? '#9ca3af' : '#020824',
-          border: 'none',
-          borderRadius: '6px',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          cursor: isSubmitting ? 'not-allowed' : 'pointer',
-          opacity: isSubmitting ? 0.7 : 1,
-          transition: 'all 0.2s',
-          marginTop: '4px',
-        }}
+        className={`w-full py-3.5 border-none rounded-md text-base font-bold mt-1 transition-all ${
+          isSubmitting
+            ? 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-70'
+            : 'bg-[#00c8ff] text-[#020824] cursor-pointer'
+        }`}
       >
         {isSubmitting ? 'ログイン中...' : 'ログイン'}
       </button>

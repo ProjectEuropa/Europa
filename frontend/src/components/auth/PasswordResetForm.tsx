@@ -97,35 +97,17 @@ export function PasswordResetForm({
 
   if (isSuccess) {
     return (
-      <div
-        style={{
-          background: 'rgba(0, 200, 83, 0.1)',
-          border: '1px solid rgba(0, 200, 83, 0.3)',
-          borderRadius: '4px',
-          padding: '16px',
-          marginBottom: '20px',
-          color: '#00c853',
-        }}
-      >
-        <p style={{ marginBottom: '10px', fontWeight: 'bold' }}>
+      <div className="bg-[rgba(0,200,83,0.1)] border border-[rgba(0,200,83,0.3)] rounded p-4 mb-5 text-[#00c853]">
+        <p className="mb-2.5 font-bold">
           パスワードが正常に変更されました！
         </p>
-        <p style={{ marginBottom: '16px' }}>
+        <p className="mb-4">
           新しいパスワードでログインできます。
         </p>
 
         <Link
           href="/login"
-          style={{
-            display: 'inline-block',
-            padding: '10px 16px',
-            background: '#00c8ff',
-            color: '#020824',
-            borderRadius: '6px',
-            textDecoration: 'none',
-            fontWeight: 'bold',
-            fontSize: '0.9rem',
-          }}
+          className="inline-block py-2.5 px-4 bg-[#00c8ff] text-[#020824] rounded-md no-underline font-bold text-[0.9rem]"
         >
           ログインページへ
         </Link>
@@ -136,7 +118,7 @@ export function PasswordResetForm({
   // 初期化中
   if (isInitializing) {
     return (
-      <div style={{ textAlign: 'center', color: '#00c8ff', padding: '20px' }}>
+      <div className="text-center text-[#00c8ff] p-5">
         トークンを検証しています...
       </div>
     );
@@ -145,51 +127,23 @@ export function PasswordResetForm({
   if (!isTokenValid) {
     return (
       <div>
-        <div
-          style={{
-            background: 'rgba(255, 0, 0, 0.1)',
-            border: '1px solid rgba(255, 0, 0, 0.3)',
-            borderRadius: '4px',
-            padding: '10px',
-            marginBottom: '20px',
-            color: '#ff6b6b',
-          }}
-        >
+        <div className="bg-[rgba(255,0,0,0.1)] border border-[rgba(255,0,0,0.3)] rounded p-2.5 mb-5 text-[#ff6b6b]">
           {tokenError}
         </div>
 
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        <div className="text-center mb-5">
           <Link
             href="/forgot-password"
-            style={{
-              display: 'inline-block',
-              padding: '10px 16px',
-              background: '#00c8ff',
-              color: '#020824',
-              borderRadius: '6px',
-              textDecoration: 'none',
-              fontWeight: 'bold',
-              fontSize: '0.9rem',
-            }}
+            className="inline-block py-2.5 px-4 bg-[#00c8ff] text-[#020824] rounded-md no-underline font-bold text-[0.9rem]"
           >
             パスワードリセットを再リクエスト
           </Link>
         </div>
 
-        <div
-          style={{
-            textAlign: 'center',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-          }}
-        >
+        <div className="text-center text-[#b0c4d8] text-[0.9rem]">
           <Link
             href="/login"
-            style={{
-              color: '#00c8ff',
-              textDecoration: 'none',
-              fontWeight: 'bold',
-            }}
+            className="text-[#00c8ff] no-underline font-bold"
           >
             ログインページに戻る
           </Link>
@@ -201,71 +155,42 @@ export function PasswordResetForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+      className="flex flex-col gap-5"
     >
       {/* 新しいパスワード */}
       <div>
         <label
           htmlFor="password"
-          style={{
-            display: 'block',
-            marginBottom: '8px',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-          }}
+          className="block mb-2 text-[#b0c4d8] text-[0.9rem]"
         >
           新しいパスワード*
         </label>
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <input
             id="password"
             type={showPassword ? 'text' : 'password'}
             placeholder="新しいパスワード"
             {...register('password')}
             disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              paddingRight: '48px',
-              background: '#111A2E',
-              border: errors.password
-                ? '1px solid #ef4444'
-                : '1px solid #1E3A5F',
-              borderRadius: '6px',
-              color: 'white',
-              fontSize: '1rem',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
+            className={`w-full py-3 px-4 pr-12 bg-[#111A2E] border ${
+              errors.password ? 'border-red-500' : 'border-[#1E3A5F]'
+            } rounded-md text-white text-base outline-none transition-colors`}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'transparent',
-              border: 'none',
-              color: '#b0c4d8',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '4px',
-            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#b0c4d8] cursor-pointer flex items-center justify-center p-1"
             aria-label={showPassword ? 'パスワードを隠す' : 'パスワードを表示'}
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
         {errors.password && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.password.message}
           </p>
         )}
-        <p style={{ color: '#8CB4FF', fontSize: '0.8rem', marginTop: '4px' }}>
+        <p className="text-[#8CB4FF] text-[0.8rem] mt-1">
           ※ 8文字以上の英数字を含むパスワードを設定してください
         </p>
       </div>
@@ -274,56 +199,27 @@ export function PasswordResetForm({
       <div>
         <label
           htmlFor="passwordConfirmation"
-          style={{
-            display: 'block',
-            marginBottom: '8px',
-            color: '#b0c4d8',
-            fontSize: '0.9rem',
-          }}
+          className="block mb-2 text-[#b0c4d8] text-[0.9rem]"
         >
           パスワード再確認*
         </label>
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <input
             id="passwordConfirmation"
             type={showPasswordConfirmation ? 'text' : 'password'}
             placeholder="パスワードを再入力"
             {...register('passwordConfirmation')}
             disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              paddingRight: '48px',
-              background: '#111A2E',
-              border: errors.passwordConfirmation
-                ? '1px solid #ef4444'
-                : '1px solid #1E3A5F',
-              borderRadius: '6px',
-              color: 'white',
-              fontSize: '1rem',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
+            className={`w-full py-3 px-4 pr-12 bg-[#111A2E] border ${
+              errors.passwordConfirmation ? 'border-red-500' : 'border-[#1E3A5F]'
+            } rounded-md text-white text-base outline-none transition-colors`}
           />
           <button
             type="button"
             onClick={() =>
               setShowPasswordConfirmation(!showPasswordConfirmation)
             }
-            style={{
-              position: 'absolute',
-              right: '12px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'transparent',
-              border: 'none',
-              color: '#b0c4d8',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '4px',
-            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#b0c4d8] cursor-pointer flex items-center justify-center p-1"
             aria-label={
               showPasswordConfirmation ? 'パスワードを隠す' : 'パスワードを表示'
             }
@@ -336,7 +232,7 @@ export function PasswordResetForm({
           </button>
         </div>
         {errors.passwordConfirmation && (
-          <p style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '4px' }}>
+          <p className="text-red-500 text-[0.8rem] mt-1">
             {errors.passwordConfirmation.message}
           </p>
         )}
@@ -345,38 +241,19 @@ export function PasswordResetForm({
       <button
         type="submit"
         disabled={isLoading}
-        style={{
-          width: '100%',
-          padding: '14px',
-          background: isLoading ? '#374151' : '#00c8ff',
-          color: isLoading ? '#9ca3af' : '#020824',
-          border: 'none',
-          borderRadius: '6px',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          cursor: isLoading ? 'not-allowed' : 'pointer',
-          opacity: isLoading ? 0.7 : 1,
-          transition: 'all 0.2s',
-          marginTop: '4px',
-        }}
+        className={`w-full py-3.5 border-none rounded-md text-base font-bold mt-1 transition-all ${
+          isLoading
+            ? 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-70'
+            : 'bg-[#00c8ff] text-[#020824] cursor-pointer'
+        }`}
       >
         {isLoading ? '処理中...' : 'パスワードを変更'}
       </button>
 
-      <div
-        style={{
-          textAlign: 'center',
-          color: '#b0c4d8',
-          fontSize: '0.9rem',
-        }}
-      >
+      <div className="text-center text-[#b0c4d8] text-[0.9rem]">
         <Link
           href="/login"
-          style={{
-            color: '#00c8ff',
-            textDecoration: 'none',
-            fontWeight: 'bold',
-          }}
+          className="text-[#00c8ff] no-underline font-bold"
         >
           ログインページに戻る
         </Link>

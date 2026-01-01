@@ -121,21 +121,17 @@ describe('Footer', () => {
   });
 
   describe('Styling', () => {
-    it('should apply correct background styles to footer', () => {
+    it('should apply correct Tailwind classes to footer', () => {
       const footer = screen.getByRole('contentinfo');
-      expect(footer).toHaveStyle({
-        background: '#0a0e1a',
-        borderTop: '1px solid #07324a',
-        padding: '48px 0 32px 0',
-      });
+      expect(footer).toHaveClass('bg-[#0a0e1a]');
+      expect(footer).toHaveClass('border-t');
+      expect(footer).toHaveClass('border-[#07324a]');
     });
 
-    it('should have proper link styling', () => {
+    it('should have proper link styling classes', () => {
       const firstLink = screen.getByRole('link', { name: 'チームデータ検索' });
-      expect(firstLink).toHaveStyle({
-        color: '#b0c4d8',
-        textDecoration: 'none',
-      });
+      expect(firstLink).toHaveClass('text-[#b0c4d8]');
+      expect(firstLink).toHaveClass('no-underline');
     });
   });
 

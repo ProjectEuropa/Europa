@@ -64,10 +64,9 @@ export const SumDownloadTableView = ({
                         return (
                             <tr
                                 key={item.id}
-                                className={`transition-colors duration-150 items-center text-sm ${isSelected ? 'bg-cyan-900/20' : 'bg-transparent hover:bg-slate-800/50'
+                                className={`transition-colors duration-150 items-center text-sm cursor-pointer ${isSelected ? 'bg-cyan-900/20' : 'bg-transparent hover:bg-slate-800/50'
                                     }`}
                                 onClick={() => onSelectItem(item.id, !isSelected)}
-                                style={{ cursor: 'pointer' }}
                             >
                                 <td className="p-3" onClick={e => {
                                     e.stopPropagation();

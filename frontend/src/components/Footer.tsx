@@ -17,119 +17,54 @@ const Footer: React.FC<FooterProps> = ({
 
   return (
     <footer
-      className={className}
-      style={{
-        background: '#0a0e1a',
-        borderTop: '1px solid #07324a',
-        padding: variant === 'minimal' ? '32px 0 24px 0' : '48px 0 32px 0',
-      }}
+      className={`bg-[#0a0e1a] border-t border-[#07324a] ${variant === 'minimal' ? 'py-8 pb-6' : 'py-12 pb-8'} ${className}`}
       role="contentinfo"
       aria-label="サイトフッター"
     >
-      <div
-        style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '48px',
-          color: '#b0c4d8',
-          fontSize: '15px',
-          padding: '0 5%',
-        }}
-      >
+      <div className="max-w-[1200px] mx-auto grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-12 text-[#b0c4d8] text-[15px] px-[5%]">
         {/* 左カラム：ロゴ・説明 */}
         <div role="region" aria-label="サイト情報">
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '8px',
-            }}
-          >
+          <div className="flex items-center gap-2 mb-2">
             <Icons.Logo size={28} />
-            <span
-              style={{ color: '#00c8ff', fontWeight: 700, fontSize: '20px' }}
-            >
-              EUROPA
-            </span>
+            <span className="text-[#00c8ff] font-bold text-xl">EUROPA</span>
           </div>
-          <div
-            style={{ color: '#00c8ff', fontSize: '13px', marginBottom: '8px' }}
-          >
+          <div className="text-[#00c8ff] text-[13px] mb-2">
             カルネージハート エクサ
           </div>
-          <div style={{ marginBottom: '16px', lineHeight: 1.7 }}>
+          <div className="mb-4 leading-relaxed">
             OKE共有とチームコラボレーションのための非公式カルネージハート エクサプラットフォーム。
           </div>
-          <div style={{ fontSize: '12px', opacity: 0.7 }}>
+          <div className="text-xs opacity-70">
             Team Project Europa 2016-{currentYear}
           </div>
         </div>
 
         {/* 機能 */}
         <nav aria-label="機能メニュー">
-          <div
-            style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
-          >
-            機能
-          </div>
-          <ul
-            style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
-          >
+          <div className="text-[#00c8ff] font-semibold mb-2.5">機能</div>
+          <ul className="list-none p-0 m-0 leading-8">
             <li>
-              <Link
-                href="/search/team"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/search/team" className="text-[#b0c4d8] no-underline">
                 チームデータ検索
               </Link>
             </li>
             <li>
-              <Link
-                href="/search/match"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/search/match" className="text-[#b0c4d8] no-underline">
                 マッチデータ検索
               </Link>
             </li>
             <li>
-              <Link
-                href="/sumdownload/team"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/sumdownload/team" className="text-[#b0c4d8] no-underline">
                 チームデータ一括DL
               </Link>
             </li>
             <li>
-              <Link
-                href="/sumdownload/match"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/sumdownload/match" className="text-[#b0c4d8] no-underline">
                 マッチデータ一括DL
               </Link>
             </li>
             <li>
-              <Link
-                href="/info"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/info" className="text-[#b0c4d8] no-underline">
                 Information
               </Link>
             </li>
@@ -138,33 +73,15 @@ const Footer: React.FC<FooterProps> = ({
 
         {/* アカウント */}
         <nav aria-label="アカウントメニュー">
-          <div
-            style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
-          >
-            アカウント
-          </div>
-          <ul
-            style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
-          >
+          <div className="text-[#00c8ff] font-semibold mb-2.5">アカウント</div>
+          <ul className="list-none p-0 m-0 leading-8">
             <li>
-              <Link
-                href="/login"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/login" className="text-[#b0c4d8] no-underline">
                 ログイン
               </Link>
             </li>
             <li>
-              <Link
-                href="/register"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/register" className="text-[#b0c4d8] no-underline">
                 新規登録
               </Link>
             </li>
@@ -173,22 +90,12 @@ const Footer: React.FC<FooterProps> = ({
 
         {/* 問い合わせ・法的情報 */}
         <nav aria-label="サポートメニュー">
-          <div
-            style={{ color: '#00c8ff', fontWeight: 600, marginBottom: '10px' }}
-          >
+          <div className="text-[#00c8ff] font-semibold mb-2.5">
             お問い合わせ・法的情報
           </div>
-          <ul
-            style={{ listStyle: 'none', padding: 0, margin: 0, lineHeight: 2 }}
-          >
+          <ul className="list-none p-0 m-0 leading-8">
             <li>
-              <Link
-                href="/about"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/about" className="text-[#b0c4d8] no-underline">
                 私たちについて
               </Link>
             </li>
@@ -196,42 +103,24 @@ const Footer: React.FC<FooterProps> = ({
               <a
                 href="https://hp.project-europa.work/contact"
                 target="_blank"
-                style={{ color: '#b0c4d8', textDecoration: 'none' }}
+                className="text-[#b0c4d8] no-underline"
                 rel="noopener"
               >
                 お問い合わせ
               </a>
             </li>
             <li>
-              <Link
-                href="/privacy-policy"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/privacy-policy" className="text-[#b0c4d8] no-underline">
                 プライバシーポリシー
               </Link>
             </li>
             <li>
-              <Link
-                href="/terms-of-service"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/terms-of-service" className="text-[#b0c4d8] no-underline">
                 利用規約
               </Link>
             </li>
             <li>
-              <Link
-                href="/faq"
-                style={{
-                  color: '#b0c4d8',
-                  textDecoration: 'none',
-                }}
-              >
+              <Link href="/faq" className="text-[#b0c4d8] no-underline">
                 よくある質問
               </Link>
             </li>
