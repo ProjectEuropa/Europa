@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { FocusTrap } from '@/components/layout/focus-manager';
 import { useBreakpoint } from '@/components/layout/responsive';
 import { useAuth } from '@/hooks/useAuth';
+import { Z_INDEX } from '@/lib/utils';
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -121,7 +122,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
         width: '100%',
         height: '100%',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 1000,
+        zIndex: Z_INDEX.modal,
         display: 'flex',
         justifyContent: 'flex-start',
         opacity:

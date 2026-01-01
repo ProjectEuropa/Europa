@@ -59,11 +59,18 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
                 <div className="max-w-5xl mx-auto">
                     {/* ヒーローセクション */}
                     <div className="text-center mb-10 sm:mb-16">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 tracking-tighter">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
+                        <div className="relative mb-6">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 tracking-tighter text-white drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]">
                                 {title}
-                            </span>
-                        </h1>
+                            </h1>
+                            <div className="flex items-center justify-center gap-3">
+                                <div className="h-px w-8 bg-cyan-500/50" />
+                                <p className="text-cyan-400 font-bold tracking-[0.2em] text-xs sm:text-sm uppercase opacity-90">
+                                    {searchType === 'team' ? 'TEAM DATA BULK DOWNLOAD' : 'MATCH DATA BULK DOWNLOAD'}
+                                </p>
+                                <div className="h-px w-8 bg-cyan-500/50" />
+                            </div>
+                        </div>
                         <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
                             {typeLabel}データを選択して一括ダウンロードできます。
                             <br className="hidden sm:block" />

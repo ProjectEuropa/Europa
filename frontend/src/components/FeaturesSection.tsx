@@ -1,34 +1,36 @@
 import type React from 'react';
+import { cn } from '@/lib/utils';
+
+// Tailwind CSS classes extracted for easier maintenance and cleaner JSX
+// Adhering to the "Cybernetic Void" theme with glassmorphism and cyan accents
+const styles = {
+  section: "py-20 md:py-32 relative overflow-hidden",
+  gridBackground: {
+    backgroundImage: 'linear-gradient(rgba(0, 200, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 200, 255, 0.03) 1px, transparent 1px)',
+    backgroundSize: '40px 40px'
+  }
+};
 
 interface FeatureItem {
   icon: React.ReactNode;
   title: string;
   description: string;
-  href?: string;
+  href: string;
 }
 
 const FeaturesSection: React.FC = () => {
   const features: FeatureItem[] = [
     {
       icon: (
-        <svg
-          width={36}
-          height={36}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#00c8ff"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="10" cy="8" r="3.5" />
-          <circle cx="17" cy="10" r="2.5" />
-          <circle cx="7" cy="16" r="2.5" />
-          <circle cx="16" cy="16" r="2.5" />
-          <path d="M10 11.5C7.5 11.5 3 12.5 3 16" strokeLinecap="round" />
-          <path d="M17 12.5C18.5 12.5 21 13.2 21 15" strokeLinecap="round" />
-          <path d="M7 18.5C5.8 18.5 4 19 4 20.5" strokeLinecap="round" />
-          <path d="M16 18.5C17.2 18.5 19 19 19 20.5" strokeLinecap="round" />
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
+          <circle cx="10" cy="8" r="3.5" strokeWidth="1.5" />
+          <circle cx="17" cy="10" r="2.5" strokeWidth="1.5" />
+          <circle cx="7" cy="16" r="2.5" strokeWidth="1.5" />
+          <circle cx="16" cy="16" r="2.5" strokeWidth="1.5" />
+          <path d="M10 11.5C7.5 11.5 3 12.5 3 16" strokeLinecap="round" strokeWidth="1.5" />
+          <path d="M17 12.5C18.5 12.5 21 13.2 21 15" strokeLinecap="round" strokeWidth="1.5" />
+          <path d="M7 18.5C5.8 18.5 4 19 4 20.5" strokeLinecap="round" strokeWidth="1.5" />
+          <path d="M16 18.5C17.2 18.5 19 19 19 20.5" strokeLinecap="round" strokeWidth="1.5" />
         </svg>
       ),
       title: 'チームデータ検索',
@@ -38,20 +40,11 @@ const FeaturesSection: React.FC = () => {
     },
     {
       icon: (
-        <svg
-          width={36}
-          height={36}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#00c8ff"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M14 4L18 8L14 12" />
-          <path d="M10 20L6 16L10 12" />
-          <path d="M18 8H13C10.7909 8 9 9.79086 9 12V16" />
-          <path d="M6 16H11C13.2091 16 15 14.2091 15 12V8" />
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
+          <path d="M14 4L18 8L14 12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M10 20L6 16L10 12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M18 8H13C10.7909 8 9 9.79086 9 12V16" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M6 16H11C13.2091 16 15 14.2091 15 12V8" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       ),
       title: 'マッチデータ検索',
@@ -61,19 +54,10 @@ const FeaturesSection: React.FC = () => {
     },
     {
       icon: (
-        <svg
-          width={36}
-          height={36}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#00c8ff"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 16V4" />
-          <path d="M7 9L12 4L17 9" />
-          <path d="M20 16V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V16" />
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
+          <path d="M12 16V4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M7 9L12 4L17 9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M20 16V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V16" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       ),
       title: 'アップロード',
@@ -83,19 +67,10 @@ const FeaturesSection: React.FC = () => {
     },
     {
       icon: (
-        <svg
-          width={36}
-          height={36}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#00c8ff"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="7" r="3" />
-          <path d="M19 20C19 16.134 15.866 13 12 13C8.13401 13 5 16.134 5 20" />
-          <path d="M12 13V20M12 20L15 17M12 20L9 17" />
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
+          <circle cx="12" cy="7" r="3" strokeWidth="1.5" />
+          <path d="M19 20C19 16.134 15.866 13 12 13C8.13401 13 5 16.134 5 20" strokeWidth="1.5" />
+          <path d="M12 13V20M12 20L15 17M12 20L9 17" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       ),
       title: 'チームデータ取得',
@@ -105,21 +80,12 @@ const FeaturesSection: React.FC = () => {
     },
     {
       icon: (
-        <svg
-          width={36}
-          height={36}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#00c8ff"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M4 6H20" />
-          <path d="M4 10H20" />
-          <path d="M4 14H12" />
-          <path d="M4 18H12" />
-          <path d="M16 14V20M16 20L19 17M16 20L13 17" />
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
+          <path d="M4 6H20" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M4 10H20" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M4 14H12" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M4 18H12" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M16 14V20M16 20L19 17M16 20L13 17" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       ),
       title: 'マッチデータ取得',
@@ -128,158 +94,91 @@ const FeaturesSection: React.FC = () => {
     },
     {
       icon: (
-        <svg
-          width={36}
-          height={36}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#00c8ff"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 8V16" />
-          <circle
-            cx="12"
-            cy="6.5"
-            r="0.5"
-            fill="#00c8ff"
-            stroke="#00c8ff"
-            strokeWidth="0.5"
-          />
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
+          <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
+          <path d="M12 8V16" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="12" cy="6.5" r="0.5" fill="currentColor" />
         </svg>
       ),
       title: '情報',
       description:
-        'カルネージハートEXAの大会イベントなどの情報にアクセスできます。',
+        'カルネージハート エクサの大会イベントなどの情報にアクセスできます。',
       href: '/info',
     },
   ];
 
   return (
-    <section
-      id="features"
-      style={{
-        padding: '80px 0 60px 0',
-        background: 'transparent',
-      }}
-    >
+    <section id="features" className={styles.section}>
+      {/* Background Decor - Subtle Grid */}
       <div
-        style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '0 20px',
-          textAlign: 'center',
-        }}
-      >
-        <h2
-          style={{
-            color: '#00c8ff',
-            fontWeight: 800,
-            fontSize: '0.9rem',
-            letterSpacing: '1.5px',
-            textTransform: 'uppercase',
-            marginBottom: '16px',
-          }}
-        >
-          主な機能
-        </h2>
-        <h3
-          style={{
-            color: '#fff',
-            fontWeight: 800,
-            fontSize: '2.2rem',
-            marginBottom: '16px',
-          }}
-        >
-          OKE開発を加速させる機能
-        </h3>
-        <p
-          style={{
-            color: '#b0c4d8',
-            fontSize: '1.05rem',
-            lineHeight: 1.6,
-            marginBottom: '60px',
-            maxWidth: '700px',
-            margin: '0 auto 40px',
-          }}
-        >
-          カルネージハートEXAのOKE開発をサポートする包括的なツールセット。
-          戦略の作成から共有、分析まで、すべてのニーズに対応します。
-        </p>
+        className="absolute inset-0 pointer-events-none"
+        style={styles.gridBackground}
+      />
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '32px',
-            justifyContent: 'center',
-          }}
-        >
+      {/* Radial glow in background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-900/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="container mx-auto px-4 relative z-10 max-w-7xl">
+        <div className="text-center mb-20 space-y-4">
+          <h2 className="text-cyan-400 font-extrabold text-sm tracking-[3px] uppercase animate-pulse shadow-cyan-500/50 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
+            主な機能
+          </h2>
+          <h3 className="text-white font-black text-3xl md:text-5xl tracking-tight cyber-title drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+            OKE開発を<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">加速</span>させる機能
+          </h3>
+          <p className="text-slate-400 text-lg leading-relaxed max-w-2xl mx-auto border-t border-white/5 pt-6 mt-6">
+            カルネージハート エクサのOKE開発をサポートする包括的なツールセット。<br className="hidden md:block" />
+            戦略の作成から共有、分析まで、すべてのニーズに対応します。
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {features.map((feature, index) => (
-            <div
+            <a
               key={index}
-              style={{
-                background: '#0a0e1a',
-                border: '1.5px solid #00c8ff33',
-                borderRadius: '16px',
-                padding: '32px 24px 28px 24px',
-                boxShadow: '0 0 24px 0 #00c8ff22',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                transition: 'box-shadow 0.2s, border 0.2s',
-                minHeight: '260px',
-                cursor: 'pointer',
-              }}
+              href={feature.href}
+              className={cn(
+                "group relative bg-[#0a0e1a]/80 backdrop-blur-md rounded-2xl p-8",
+                "border border-cyan-500/10",
+                "flex flex-col items-center text-center",
+                "transition-all duration-300 ease-out",
+                "hover:border-cyan-400/50 hover:shadow-[0_0_40px_-10px_rgba(6,182,212,0.3)] hover:-translate-y-1",
+                "overflow-hidden"
+              )}
             >
-              <div style={{ marginBottom: '12px' }}>{feature.icon}</div>
+              {/* Card internal glow on hover */}
               <div
-                style={{
-                  color: '#fff',
-                  fontWeight: 700,
-                  fontSize: '1.18rem',
-                  marginBottom: '4px',
-                }}
-              >
+                className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              />
+
+              <div className="relative mb-6 p-4 rounded-full bg-[#0d1626] border border-cyan-500/20 text-cyan-400 group-hover:text-cyan-300 group-hover:scale-110 group-hover:border-cyan-400/60 transition-all duration-300 shadow-[0_0_15px_-5px_rgba(34,211,238,0.2)] group-hover:shadow-[0_0_20px_-3px_rgba(34,211,238,0.5)]">
+                {feature.icon}
+              </div>
+
+              <h4 className="relative text-white font-bold text-xl mb-3 group-hover:text-cyan-100 transition-colors tracking-wide">
                 {feature.title}
-              </div>
-              <div
-                style={{
-                  color: '#00c8ff',
-                  fontSize: '0.98rem',
-                  fontWeight: 600,
-                  marginBottom: '12px',
-                }}
-              >
-                {feature.title
-                  .replace('データ', ' Data')
-                  .replace('シンプル', 'Simple ')
-                  .replace('情報', 'Information')}
-              </div>
-              <div
-                style={{
-                  color: '#b0c4d8',
-                  fontSize: '0.98rem',
-                  marginBottom: '18px',
-                  textAlign: 'center',
-                }}
-              >
+              </h4>
+
+              {/* Divider Line */}
+              <div className="w-12 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent my-3 opacity-30 group-hover:opacity-100 transition-opacity duration-300" />
+
+              <p className="relative text-slate-400 text-sm leading-relaxed mb-8 group-hover:text-slate-300 transition-colors">
                 {feature.description}
+              </p>
+
+              <div className="relative mt-auto">
+                <span className="inline-flex items-center text-cyan-500 font-bold text-sm tracking-wider uppercase group-hover:text-cyan-300 transition-colors">
+                  <span className="mr-2">Access</span>
+                  <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </span>
               </div>
-              <a
-                href={feature.href}
-                style={{
-                  color: '#00c8ff',
-                  fontWeight: 600,
-                  fontSize: '0.98rem',
-                  textDecoration: 'none',
-                }}
-              >
-                アクセスする →
-              </a>
-            </div>
+
+              {/* Corner Accents */}
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-500/30 group-hover:border-cyan-400 transition-colors rounded-tl-sm opacity-50" />
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-500/30 group-hover:border-cyan-400 transition-colors rounded-br-sm opacity-50" />
+            </a>
           ))}
         </div>
       </div>

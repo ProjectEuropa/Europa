@@ -110,15 +110,20 @@ export default function ClientMatchSearch() {
       <div className="flex-1 w-full overflow-x-hidden">
         <div className="max-w-6xl mx-auto py-12 px-4 flex flex-col items-center">
           <div className="w-full text-center mb-10">
-            <h1 className="
-              text-4xl md:text-5xl font-bold mb-4 
-              bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500
-              drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]
-            ">
-              Search Match
-            </h1>
-            <p className="text-slate-400 text-lg mb-8">
-              マッチデータの検索が可能です
+            <div className="relative mb-8 pt-8">
+              <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-3 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                マッチデータ検索
+              </h1>
+              <div className="flex items-center justify-center gap-3">
+                <div className="h-px w-8 bg-cyan-500/50" />
+                <p className="text-cyan-400 font-bold tracking-[0.2em] text-sm md:text-base uppercase opacity-90">
+                  MATCH DATA SEARCH
+                </p>
+                <div className="h-px w-8 bg-cyan-500/50" />
+              </div>
+            </div>
+            <p className="text-slate-400 text-lg mb-10 max-w-2xl mx-auto">
+              戦略や戦術を向上させるために、試合結果やパフォーマンスデータを分析します。
             </p>
 
             <div className="flex flex-col items-center w-full">

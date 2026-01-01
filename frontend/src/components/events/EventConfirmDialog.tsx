@@ -1,5 +1,7 @@
+import type React from 'react';
 import type { EventFormData } from '@/schemas/event';
 import { getEventTypeDisplay } from '@/schemas/event';
+import { Z_INDEX } from '@/lib/utils';
 
 interface EventConfirmDialogProps {
   isOpen: boolean;
@@ -18,8 +20,19 @@ export default function EventConfirmDialog({
 }: EventConfirmDialogProps) {
   if (!isOpen) return null;
 
+  // ESCキーでモーダルを閉じる
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && !isLoading) {
+      onClose();
+    }
+  };
+
   return (
     <div
+      role="dialog"
+      aria-labelledby="confirm-modal-title"
+      aria-describedby="confirm-modal-content"
+      aria-modal="true"
       style={{
         position: 'fixed',
         top: 0,
@@ -30,9 +43,10 @@ export default function EventConfirmDialog({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1000,
+        zIndex: Z_INDEX.modal,
       }}
-      onClick={onClose}
+      onClick={isLoading ? undefined : onClose}
+      onKeyDown={handleKeyDown}
     >
       <div
         style={{
@@ -48,6 +62,7 @@ export default function EventConfirmDialog({
         onClick={e => e.stopPropagation()}
       >
         <h2
+          id="confirm-modal-title"
           style={{
             color: '#00c8ff',
             fontSize: '1.25rem',
@@ -59,7 +74,7 @@ export default function EventConfirmDialog({
           イベント登録内容の確認
         </h2>
 
-        <div style={{ marginBottom: '20px' }}>
+        <div id="confirm-modal-content" style={{ marginBottom: '20px' }}>
           <div style={{ marginBottom: '12px' }}>
             <span
               style={{

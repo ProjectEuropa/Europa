@@ -8,8 +8,8 @@ test.describe('検索機能の統合テスト', () => {
 
   test('チーム検索の基本フロー', async ({ page }) => {
     // ページタイトルの確認
-    await expect(page.getByRole('heading', { name: 'Search Team' })).toBeVisible();
-    await expect(page.getByText('チームデータの検索が可能です')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'チームデータ検索' })).toBeVisible();
+    await expect(page.getByText('TEAM DATA SEARCH')).toBeVisible();
 
     // 検索フォームの確認
     const searchInput = page.getByLabel('検索キーワード');
@@ -42,8 +42,8 @@ test.describe('検索機能の統合テスト', () => {
     await page.goto('/search/match');
 
     // ページタイトルの確認
-    await expect(page.getByRole('heading', { name: 'Search Match' })).toBeVisible();
-    await expect(page.getByText('マッチデータの検索が可能です')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'マッチデータ検索' })).toBeVisible();
+    await expect(page.getByText('MATCH DATA SEARCH')).toBeVisible();
 
     // 検索実行
     const searchInput = page.getByLabel('検索キーワード');
@@ -383,7 +383,7 @@ test.describe('検索機能の統合テスト', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
 
     // レイアウトが適切に調整されることを確認
-    await expect(page.getByRole('heading', { name: 'Search Team' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'チームデータ検索' })).toBeVisible();
   });
 
   test('キーボードナビゲーション', async ({ page }) => {

@@ -58,10 +58,10 @@ const Footer: React.FC<FooterProps> = ({
           <div
             style={{ color: '#00c8ff', fontSize: '13px', marginBottom: '8px' }}
           >
-            カルネージハート EXA
+            カルネージハート エクサ
           </div>
           <div style={{ marginBottom: '16px', lineHeight: 1.7 }}>
-            OKE共有とチームコラボレーションのための非公式カルネージハートEXAプラットフォーム。
+            OKE共有とチームコラボレーションのための非公式カルネージハート エクサプラットフォーム。
           </div>
           <div style={{ fontSize: '12px', opacity: 0.7 }}>
             Team Project Europa 2016-{currentYear}
