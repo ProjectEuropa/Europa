@@ -1,3 +1,4 @@
+import type React from 'react';
 import type { EventFormData } from '@/schemas/event';
 import { getEventTypeDisplay } from '@/schemas/event';
 import { Z_INDEX } from '@/lib/utils';
@@ -44,7 +45,7 @@ export default function EventConfirmDialog({
         justifyContent: 'center',
         zIndex: Z_INDEX.modal,
       }}
-      onClick={onClose}
+      onClick={isLoading ? undefined : onClose}
       onKeyDown={handleKeyDown}
     >
       <div

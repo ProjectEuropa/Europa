@@ -63,7 +63,6 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     const loadTags = async () => {
       try {
         const tags = await fetchTags();
-        console.log('Fetched tags:', tags);
         setAvailableTags(tags);
       } catch (error) {
         console.error('Failed to fetch tags:', error);

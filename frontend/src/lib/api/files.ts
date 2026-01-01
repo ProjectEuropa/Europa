@@ -233,11 +233,8 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
           // デコードに失敗した場合は、そのままの値を使用
           filename = rawFilename;
         }
-        console.log('Extracted filename:', filename);
       }
     }
-
-    console.log('Final filename for download:', filename);
 
     // downloadAttribute を明示的に設定
     a.setAttribute('download', filename);
