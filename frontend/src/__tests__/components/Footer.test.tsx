@@ -45,9 +45,10 @@ describe('Footer', () => {
     expect(description).toBeInTheDocument();
   });
 
-  it('should display copyright with current year', () => {
+  it('should display copyright with current year', async () => {
     const currentYear = new Date().getFullYear();
-    const copyright = screen.getByText(
+    // Wait for useEffect to set the current year
+    const copyright = await screen.findByText(
       `Team Project Europa 2016-${currentYear}`
     );
     expect(copyright).toBeInTheDocument();
