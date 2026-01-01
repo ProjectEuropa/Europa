@@ -148,7 +148,7 @@ const Header: React.FC<HeaderProps> = ({
                     </span>
                     <Link
                       href="/mypage"
-                      className="text-[#8CB4FF] font-medium text-[15px] no-underline flex items-center gap-1"
+                      className="text-[#8CB4FF]! font-medium text-[15px] no-underline flex items-center gap-1"
                       aria-label="マイページに移動"
                     >
                       <Icons.Register size={18} color="#8CB4FF" /> マイページ
