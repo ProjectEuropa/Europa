@@ -346,6 +346,10 @@ const RegisteredEventsSection: React.FC = () => {
       {/* モーダル */}
       {modalOpen && (
         <div
+          role="dialog"
+          aria-labelledby="event-detail-modal-title"
+          aria-describedby="event-detail-modal-content"
+          aria-modal="true"
           style={{
             position: 'fixed',
             top: 0,
@@ -358,6 +362,12 @@ const RegisteredEventsSection: React.FC = () => {
             justifyContent: 'center',
             zIndex: Z_INDEX.modal,
           }}
+          onClick={() => setModalOpen(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setModalOpen(false);
+            }
+          }}
         >
           <div
             style={{
@@ -369,12 +379,14 @@ const RegisteredEventsSection: React.FC = () => {
               maxWidth: '90vw',
               boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ marginBottom: '16px' }}>イベント詳細</h3>
-            <div style={{ marginBottom: '24px', whiteSpace: 'pre-line' }}>
+            <h3 id="event-detail-modal-title" style={{ marginBottom: '16px' }}>イベント詳細</h3>
+            <div id="event-detail-modal-content" style={{ marginBottom: '24px', whiteSpace: 'pre-line' }}>
               {modalDetails || '詳細情報がありません'}
             </div>
             <button
+              aria-label="モーダルを閉じる"
               onClick={() => setModalOpen(false)}
               style={{
                 background: '#00c8ff',

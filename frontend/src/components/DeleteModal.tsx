@@ -22,10 +22,23 @@ export function DeleteModal({
     onOpenChange(false);
   };
 
+  // ESCキーでモーダルを閉じる
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setPassword('');
+      onOpenChange(false);
+    }
+  };
+
   return open ? (
     <dialog
       open
+      role="dialog"
+      aria-labelledby="delete-modal-title"
+      aria-describedby="delete-modal-description"
+      aria-modal="true"
       className="cyber-dialog m-auto rounded-2xl border-2 border-cyan-400 text-white w-full dialog-animation"
+      onKeyDown={handleKeyDown}
       style={{
         maxWidth: '560px',
         position: 'fixed',
@@ -53,6 +66,7 @@ export function DeleteModal({
         }}
       >
         <h2
+          id="delete-modal-title"
           style={{
             color: '#ffffff',
             fontSize: '28px',
@@ -65,6 +79,7 @@ export function DeleteModal({
           {fileName}を本当に削除しますか？
         </h2>
         <p
+          id="delete-modal-description"
           style={{
             color: '#ffffff',
             fontSize: '18px',

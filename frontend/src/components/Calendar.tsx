@@ -39,6 +39,13 @@ const Calendar: React.FC<CalendarProps> = ({
 
   const isSmall = size === 'small';
 
+  // ESCキーでモーダルを閉じる
+  const handleModalKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setModalEvent(null);
+    }
+  };
+
   // 年月の表示用フォーマット
   const formatYearMonth = (date: Date): string => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月`;
@@ -444,23 +451,29 @@ const Calendar: React.FC<CalendarProps> = ({
       {/* イベント詳細モーダル */}
       {modalEvent && (
         <div
+          role="dialog"
+          aria-labelledby="event-modal-title"
+          aria-describedby="event-modal-description"
+          aria-modal="true"
           className="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-sm z-[99999] flex items-center justify-center p-5"
           onClick={() => setModalEvent(null)}
+          onKeyDown={handleModalKeyDown}
         >
           <div
             className="bg-gradient-to-br from-[#0A1022] to-[#0d1830] rounded-2xl p-8 min-w-[320px] max-w-[500px] w-full border-2 border-cyan-400 text-white shadow-[0_8px_32px_rgba(0,200,255,0.2),0_0_60px_rgba(0,200,255,0.1)] relative"
             onClick={e => e.stopPropagation()}
           >
             <button
+              aria-label="モーダルを閉じる"
               className="absolute top-3 right-3 bg-cyan-500/10 border border-cyan-500/30 rounded-full w-8 h-8 text-cyan-400 text-xl cursor-pointer flex items-center justify-center hover:bg-cyan-500/20 transition-all"
               onClick={() => setModalEvent(null)}
             >
               <X className="w-4 h-4" />
             </button>
-            <h3 className="text-cyan-400 text-xl font-bold mb-4 pr-10">
+            <h3 id="event-modal-title" className="text-cyan-400 text-xl font-bold mb-4 pr-10">
               {modalEvent.title || 'イベント詳細'}
             </h3>
-            <div className="mb-4 text-[#b0c4d8] leading-relaxed whitespace-pre-wrap">
+            <div id="event-modal-description" className="mb-4 text-[#b0c4d8] leading-relaxed whitespace-pre-wrap">
               {modalEvent.details}
             </div>
             {modalEvent.url && (
