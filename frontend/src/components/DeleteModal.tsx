@@ -36,7 +36,12 @@ export function DeleteModal({
       aria-labelledby="delete-modal-title"
       aria-describedby="delete-modal-description"
       aria-modal="true"
-      className="cyber-dialog m-auto rounded-2xl border-2 border-cyan-400 text-white w-full max-w-[560px] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm dialog-animation z-[1000] bg-gradient-to-br from-[#0a1022] to-[#0a0818] shadow-[0_0_32px_8px_rgba(0,200,255,0.3),0_0_0_2px_#00c8ff]"
+      className="cyber-dialog m-auto rounded-2xl border-2 border-cyan-400 text-white w-full max-w-[560px] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm dialog-animation z-[1000] shadow-[0_0_32px_8px_rgba(0,200,255,0.3),0_0_0_2px_#00c8ff]"
+      style={{
+        background: 'linear-gradient(135deg, #0a1022 0%, #0a0818 100%)',
+        backgroundImage:
+          'radial-gradient(circle at 20% 30%, rgba(29, 78, 216, 0.15) 0%, transparent 80%), radial-gradient(circle at 80% 70%, rgba(0, 200, 255, 0.1) 0%, transparent 80%)',
+      }}
       onKeyDown={handleKeyDown}
     >
       <form
