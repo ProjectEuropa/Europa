@@ -29,6 +29,11 @@ vi.mock('@/lib/api/files', () => ({
   ),
 }));
 
+// highlightMatch関数をモック（テスト用のシンプルな実装）
+vi.mock('@/hooks/useSearchSuggestions', () => ({
+  highlightMatch: vi.fn((text: string) => [{ text, isMatch: true }]),
+}));
+
 // biome-ignore lint/correctness/noUnusedVariables: Used for type testing
 interface FileUploadOptions {
   ownerName: string;
