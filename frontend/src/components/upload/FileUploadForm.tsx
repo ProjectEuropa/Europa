@@ -187,7 +187,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
         setShowTagSelector(false);
       }
     },
-    [tagInput, addTag, selectedSuggestionIndex, availableTags, formData.tags]
+    [tagInput, addTag, selectedSuggestionIndex, getFilteredSuggestions]
   );
 
   // フィルタリングされたサジェストを取得
