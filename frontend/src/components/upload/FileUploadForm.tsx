@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { DateTimeInput } from '@/components/ui/datetime-input';
 import { Icons } from '@/icons';
 import { fetchTags } from '@/lib/api/files';
+import { highlightMatch } from '@/hooks/useSearchSuggestions';
 
 export interface FileUploadOptions {
   ownerName: string;
@@ -53,6 +54,9 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const [showTagSelector, setShowTagSelector] = useState(false);
+  const [enterPressedOnce, setEnterPressedOnce] = useState(false);
+
+  const enterResetTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -68,6 +72,25 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
       }
     };
     loadTags();
+  }, []);
+
+  // タグ入力が変更されたときにサジェスト選択と確認状態をリセット
+  useEffect(() => {
+    setSelectedSuggestionIndex(-1);
+    setEnterPressedOnce(false);
+    if (enterResetTimeoutRef.current) {
+      clearTimeout(enterResetTimeoutRef.current);
+      enterResetTimeoutRef.current = null;
+    }
+  }, [tagInput]);
+
+  // クリーンアップ
+  useEffect(() => {
+    return () => {
+      if (enterResetTimeoutRef.current) {
+        clearTimeout(enterResetTimeoutRef.current);
+      }
+    };
   }, []);
 
   const updateFormData = useCallback((updates: Partial<FileUploadOptions>) => {
@@ -188,17 +211,38 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
       } else if (e.key === 'Enter') {
         e.preventDefault();
         if (selectedSuggestionIndex >= 0 && suggestions[selectedSuggestionIndex]) {
+          // サジェスチョン選択中は1回で追加（明確な意図があるため）
           addTag(suggestions[selectedSuggestionIndex]);
           setSelectedSuggestionIndex(-1);
+          setEnterPressedOnce(false);
         } else if (tagInput.trim()) {
-          addTag(tagInput.trim());
+          // 手入力の場合はダブルエンターで追加
+          if (enterPressedOnce) {
+            addTag(tagInput.trim());
+            setEnterPressedOnce(false);
+            if (enterResetTimeoutRef.current) {
+              clearTimeout(enterResetTimeoutRef.current);
+              enterResetTimeoutRef.current = null;
+            }
+          } else {
+            setEnterPressedOnce(true);
+            // 1.5秒後に確認状態をリセット
+            if (enterResetTimeoutRef.current) {
+              clearTimeout(enterResetTimeoutRef.current);
+            }
+            enterResetTimeoutRef.current = setTimeout(() => {
+              setEnterPressedOnce(false);
+              enterResetTimeoutRef.current = null;
+            }, 1500);
+          }
         }
       } else if (e.key === 'Escape') {
+        setEnterPressedOnce(false);
         setSelectedSuggestionIndex(-1);
         setShowTagSelector(false);
       }
     },
-    [tagInput, addTag, selectedSuggestionIndex, getFilteredSuggestions]
+    [tagInput, addTag, selectedSuggestionIndex, getFilteredSuggestions, enterPressedOnce]
   );
 
 
@@ -320,11 +364,10 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             アップロード方法
           </h3>
           <div
-            className={`grid gap-5 text-sm ${
-              fileType === 'match'
-                ? 'grid-cols-[repeat(auto-fit,minmax(200px,1fr))]'
-                : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'
-            }`}
+            className={`grid gap-5 text-sm ${fileType === 'match'
+              ? 'grid-cols-[repeat(auto-fit,minmax(200px,1fr))]'
+              : 'grid-cols-[repeat(auto-fit,minmax(250px,1fr))]'
+              }`}
           >
             <div>
               <h4 className="font-semibold text-[#b0c4d8] mb-2">
@@ -367,11 +410,10 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             onChange={e => updateFormData({ ownerName: e.target.value })}
             placeholder="あなたの名前を入力"
             required
-            className={`w-full px-4 py-3 bg-[#020824] rounded-lg text-white text-sm outline-none transition-colors duration-200 ${
-              fieldErrors.ownerName
-                ? 'border-2 border-red-500'
-                : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
-            }`}
+            className={`w-full px-4 py-3 bg-[#020824] rounded-lg text-white text-sm outline-none transition-colors duration-200 ${fieldErrors.ownerName
+              ? 'border-2 border-red-500'
+              : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
+              }`}
           />
           {fieldErrors.ownerName && (
             <p className="text-xs text-red-500 m-0">
@@ -395,11 +437,10 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             onChange={e => updateFormData({ comment: e.target.value })}
             placeholder={`${fileType === 'team' ? 'チームの特徴、戦術、強さ、注目ポイントなどを詳しく入力してください。\n例：攻撃的なフォーメーションで、カウンター攻撃が得意なチームです。' : 'マッチの内容、見どころ、結果、印象的なプレーなどを詳しく入力してください。\n例：接戦で最後まで勝敗が分からない熱い試合でした。'}`}
             rows={6}
-            className={`w-full px-5 py-4 bg-[#020824] rounded-lg text-white text-sm outline-none resize-y min-h-[140px] max-h-[300px] font-inherit transition-colors duration-200 leading-relaxed ${
-              fieldErrors[`${fileType}Comment`]
-                ? 'border-2 border-red-500'
-                : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
-            }`}
+            className={`w-full px-5 py-4 bg-[#020824] rounded-lg text-white text-sm outline-none resize-y min-h-[140px] max-h-[300px] font-inherit transition-colors duration-200 leading-relaxed ${fieldErrors[`${fileType}Comment`]
+              ? 'border-2 border-red-500'
+              : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
+              }`}
           />
           {fieldErrors[`${fileType}Comment`] && (
             <p className="text-xs text-red-500 m-0">
@@ -420,34 +461,76 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
           <div className="relative">
             <div className="flex gap-2">
-              <input
-                id="tagInput"
-                ref={tagInputRef}
-                type="text"
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
-                onKeyDown={handleTagKeyDown}
-                onFocus={() => setShowTagSelector(true)}
-                onBlur={() => setTimeout(() => setShowTagSelector(false), 200)}
-                placeholder="タグを入力（Enterキーで追加）"
-                className="flex-1 px-4 py-3 bg-[#020824] border border-[#1E3A5F] rounded-lg text-white text-sm outline-none transition-colors duration-200 focus:border-[#00c8ff]"
-              />
+              <div className="relative flex-1">
+                <input
+                  id="tagInput"
+                  ref={tagInputRef}
+                  type="text"
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={handleTagKeyDown}
+                  onFocus={() => setShowTagSelector(true)}
+                  onBlur={() => setTimeout(() => setShowTagSelector(false), 200)}
+                  placeholder="タグを入力（Enter2回で追加）"
+                  className={`w-full px-4 py-3 bg-[#020824] border rounded-lg text-white text-sm outline-none transition-colors duration-200 ${enterPressedOnce
+                    ? 'border-[#00c8ff] ring-1 ring-[#00c8ff]'
+                    : 'border-[#1E3A5F] focus:border-[#00c8ff]'
+                    }`}
+                />
+                {enterPressedOnce && tagInput.trim() && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#00c8ff] animate-pulse">
+                    もう一度Enterで追加
+                  </div>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => tagInput.trim() && addTag(tagInput.trim())}
                 disabled={formData.tags.length >= 4}
-                className={`px-5 py-3 border border-[#1E3A5F] rounded-lg text-sm transition-all duration-200 ${
-                  formData.tags.length >= 4
-                    ? 'bg-[#1E3A5F] text-gray-500 cursor-not-allowed'
-                    : 'bg-[#020824] text-[#b0c4d8] cursor-pointer hover:border-[#00c8ff] hover:text-[#00c8ff]'
-                }`}
+                className={`px-5 py-3 border border-[#1E3A5F] rounded-lg text-sm transition-all duration-200 ${formData.tags.length >= 4
+                  ? 'bg-[#1E3A5F] text-gray-500 cursor-not-allowed'
+                  : 'bg-[#020824] text-[#b0c4d8] cursor-pointer hover:border-[#00c8ff] hover:text-[#00c8ff]'
+                  }`}
               >
                 追加
               </button>
             </div>
 
-            {/* タグセレクター（チェックボックス式） */}
-            {showTagSelector && availableTags.length > 0 && (
+            {/* タグサジェスチョン（入力中に表示） */}
+            {showTagSelector && tagInput.trim() && getFilteredSuggestions().length > 0 && (
+              <div className="absolute top-full left-0 z-[20] mt-1 w-full max-w-[500px] bg-[#0a0e1a] border border-[#1E3A5F] rounded-lg max-h-[200px] overflow-y-auto shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+                <div className="py-1">
+                  {getFilteredSuggestions().map((tag, index) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      className={`w-full px-4 py-2 text-left text-sm transition-colors duration-150 ${index === selectedSuggestionIndex
+                        ? 'bg-[rgba(0,200,255,0.2)] text-[#00c8ff]'
+                        : 'text-[#b0c4d8] hover:bg-[rgba(0,200,255,0.1)]'
+                        }`}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        addTag(tag);
+                        setSelectedSuggestionIndex(-1);
+                      }}
+                      onMouseEnter={() => setSelectedSuggestionIndex(index)}
+                    >
+                      {highlightMatch(tag, tagInput).map((part, i) => (
+                        <span
+                          key={i}
+                          className={part.isMatch ? 'text-[#00c8ff] font-semibold' : ''}
+                        >
+                          {part.text}
+                        </span>
+                      ))}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* タグセレクター（チェックボックス式、入力が空の時に表示） */}
+            {showTagSelector && !tagInput.trim() && availableTags.length > 0 && (
               <div className="absolute top-full left-0 z-[10] mt-1 w-full max-w-[500px] bg-[#0a0e1a] border border-[#1E3A5F] rounded-lg max-h-[300px] overflow-y-auto shadow-[0_4px_20px_rgba(0,0,0,0.3)] p-3">
                 <div className="mb-2 pb-2 border-b border-[#1E3A5F] text-[#b0c4d8] text-[13px] font-semibold">
                   登録済みタグから選択
@@ -456,13 +539,12 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                   {availableTags.map(tag => (
                     <label
                       key={tag}
-                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] transition-all duration-200 ${
-                        formData.tags.includes(tag)
-                          ? 'text-[#00c8ff] bg-[rgba(0,200,255,0.1)] hover:bg-[rgba(0,200,255,0.15)]'
-                          : formData.tags.length >= 4
-                            ? 'text-[#b0c4d8] opacity-50 cursor-not-allowed'
-                            : 'text-[#b0c4d8] hover:bg-[rgba(0,200,255,0.15)] cursor-pointer'
-                      }`}
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] transition-all duration-200 ${formData.tags.includes(tag)
+                        ? 'text-[#00c8ff] bg-[rgba(0,200,255,0.1)] hover:bg-[rgba(0,200,255,0.15)]'
+                        : formData.tags.length >= 4
+                          ? 'text-[#b0c4d8] opacity-50 cursor-not-allowed'
+                          : 'text-[#b0c4d8] hover:bg-[rgba(0,200,255,0.15)] cursor-pointer'
+                        }`}
                     >
                       <input
                         type="checkbox"
@@ -479,9 +561,8 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                             updateFormData({ tags: [...formData.tags, tag] });
                           }
                         }}
-                        className={`w-4 h-4 accent-[#00c8ff] ${
-                          formData.tags.length >= 4 && !formData.tags.includes(tag) ? 'cursor-not-allowed' : 'cursor-pointer'
-                        }`}
+                        className={`w-4 h-4 accent-[#00c8ff] ${formData.tags.length >= 4 && !formData.tags.includes(tag) ? 'cursor-not-allowed' : 'cursor-pointer'
+                          }`}
                       />
                       <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
                         {tag}
@@ -515,7 +596,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
           )}
 
           <p className="text-xs text-[#8CB4FF] m-0">
-            タグは最大4つまで入力できます。カンマで区切るか、Enterキーで追加します。
+            タグは最大4つまで入力できます。カンマで区切るか、Enterキー2回で追加します。（サジェスチョン選択は1回）
           </p>
         </div>
 
@@ -538,11 +619,10 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                   updateFormData({ deletePassword: e.target.value })
                 }
                 placeholder="削除時に必要なパスワードを設定"
-                className={`w-full py-3 pl-4 pr-12 bg-[#020824] rounded-lg text-white text-sm outline-none transition-colors duration-200 ${
-                  fieldErrors[`${fileType}DeletePassWord`]
-                    ? 'border-2 border-red-500'
-                    : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
-                }`}
+                className={`w-full py-3 pl-4 pr-12 bg-[#020824] rounded-lg text-white text-sm outline-none transition-colors duration-200 ${fieldErrors[`${fileType}DeletePassWord`]
+                  ? 'border-2 border-red-500'
+                  : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
+                  }`}
               />
               <button
                 type="button"
@@ -586,13 +666,12 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
           />
 
           <div
-            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
-              fieldErrors.file
-                ? 'border-red-500'
-                : selectedFile || dragActive
-                  ? 'border-[#00c8ff] bg-[rgba(0,200,255,0.05)]'
-                  : 'border-[#1E3A5F] hover:border-[#00c8ff] hover:bg-[rgba(0,200,255,0.05)]'
-            }`}
+            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${fieldErrors.file
+              ? 'border-red-500'
+              : selectedFile || dragActive
+                ? 'border-[#00c8ff] bg-[rgba(0,200,255,0.05)]'
+                : 'border-[#1E3A5F] hover:border-[#00c8ff] hover:bg-[rgba(0,200,255,0.05)]'
+              }`}
             onClick={() => fileInputRef.current?.click()}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -669,11 +748,10 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
         <button
           type="submit"
           disabled={isUploading || !selectedFile}
-          className={`w-full p-4 border-none rounded-lg text-base font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
-            isUploading || !selectedFile
-              ? 'bg-[#1E3A5F] text-gray-500 cursor-not-allowed opacity-60'
-              : 'bg-[#00c8ff] text-[#0a0e1a] cursor-pointer hover:bg-[#0099cc]'
-          }`}
+          className={`w-full p-4 border-none rounded-lg text-base font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${isUploading || !selectedFile
+            ? 'bg-[#1E3A5F] text-gray-500 cursor-not-allowed opacity-60'
+            : 'bg-[#00c8ff] text-[#0a0e1a] cursor-pointer hover:bg-[#0099cc]'
+            }`}
         >
           {isUploading ? (
             <>
