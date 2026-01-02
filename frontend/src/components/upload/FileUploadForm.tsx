@@ -162,6 +162,17 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     [formData.tags, updateFormData]
   );
 
+  // フィルタリングされたサジェストを取得
+  const getFilteredSuggestions = useCallback(() => {
+    if (!tagInput.trim()) return [];
+    return availableTags
+      .filter(tag =>
+        tag.toLowerCase().includes(tagInput.toLowerCase()) &&
+        !formData.tags.includes(tag)
+      )
+      .slice(0, 10);
+  }, [tagInput, availableTags, formData.tags]);
+
   const handleTagKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       const suggestions = getFilteredSuggestions();
@@ -189,17 +200,6 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     },
     [tagInput, addTag, selectedSuggestionIndex, getFilteredSuggestions]
   );
-
-  // フィルタリングされたサジェストを取得
-  const getFilteredSuggestions = useCallback(() => {
-    if (!tagInput.trim()) return [];
-    return availableTags
-      .filter(tag =>
-        tag.toLowerCase().includes(tagInput.toLowerCase()) &&
-        !formData.tags.includes(tag)
-      )
-      .slice(0, 10);
-  }, [tagInput, availableTags, formData.tags]);
 
 
 
