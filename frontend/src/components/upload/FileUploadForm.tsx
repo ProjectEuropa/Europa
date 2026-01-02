@@ -71,6 +71,11 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     loadTags();
   }, []);
 
+  // タグ入力が変更されたときにサジェスト選択をリセット
+  useEffect(() => {
+    setSelectedSuggestionIndex(-1);
+  }, [tagInput]);
+
   const updateFormData = useCallback((updates: Partial<FileUploadOptions>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   }, []);
