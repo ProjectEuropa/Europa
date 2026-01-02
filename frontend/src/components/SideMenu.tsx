@@ -96,7 +96,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
   return (
     <div
-      className={`fixed top-0 left-0 w-full h-full bg-black/50 flex justify-start transition-opacity duration-300 z-[1000] ${
+      className={`fixed top-0 left-0 w-full h-full bg-black/50 flex justify-start transition-opacity duration-300 z-modal ${
         animationClass === 'menu-open' ? 'opacity-100' : 'opacity-0'
       } ${animationClass ? 'visible' : 'invisible'} ${className}`}
       role="dialog"

@@ -162,7 +162,7 @@ const UploadedTeamsSection: React.FC<UploadedTeamsSectionProps> = ({
           aria-labelledby="team-detail-modal-title"
           aria-describedby="team-detail-modal-content"
           aria-modal="true"
-          className="fixed inset-0 w-screen h-screen bg-black/50 flex items-center justify-center z-[1000]"
+          className="fixed inset-0 w-screen h-screen bg-black/50 flex items-center justify-center z-modal"
           onClick={() => setModalOpen(false)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

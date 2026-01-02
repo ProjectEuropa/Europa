@@ -32,7 +32,7 @@ export default function EventConfirmDialog({
       aria-labelledby="confirm-modal-title"
       aria-describedby="confirm-modal-content"
       aria-modal="true"
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1000]"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-modal"
       onClick={isLoading ? undefined : onClose}
       onKeyDown={handleKeyDown}
     >
