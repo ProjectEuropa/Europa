@@ -34,9 +34,8 @@ const DialogContent = React.forwardRef<
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
-      style={{ backgroundColor: '#0a1022' }}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-gray-700 bg-background !bg-[#0a1022] p-6 shadow-lg duration-200 sm:rounded-lg',
+        'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-gray-700 bg-[#0a1022] p-6 shadow-lg duration-200 sm:rounded-lg',
         className
       )}
       {...props}

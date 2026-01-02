@@ -172,10 +172,10 @@ describe('FileUploadForm', () => {
     await user.type(tagInput, 'タグ5');
     await user.keyboard('{Enter}');
 
-    // 4つまでしか表示されない（バッジ部分のみをカウント）
+    // 4つまでしか表示されない（バッジ部分のみをカウント - rounded-full クラスを持つ親要素内）
     const tagBadges = screen.getAllByText(/タグ\d/).filter(element => {
       const parent = element.closest('div');
-      return parent?.style.background?.includes('rgb(30, 58, 95)');
+      return parent?.classList.contains('rounded-full');
     });
     expect(tagBadges).toHaveLength(4);
     expect(screen.queryByText('タグ5')).not.toBeInTheDocument();

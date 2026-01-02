@@ -1,5 +1,3 @@
-'use client';
-
 import type React from 'react';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -33,9 +31,9 @@ export default function StaticPageLayout({
                 <div className="relative z-10 max-w-4xl mx-auto">
                     {/* Header */}
                     <div className="text-center mb-8 md:mb-12">
-                        <h2 className="text-cyan-400 font-extrabold text-xs md:text-sm tracking-[2px] md:tracking-[3px] uppercase animate-pulse shadow-cyan-500/50 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)] mb-2 md:mb-4">
+                        <p className="text-cyan-400 font-extrabold text-xs md:text-sm tracking-[2px] md:tracking-[3px] uppercase animate-pulse shadow-cyan-500/50 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)] mb-2 md:mb-4">
                             {titleEn}
-                        </h2>
+                        </p>
                         <h1 className="text-white font-black text-3xl md:text-5xl tracking-tight cyber-title drop-shadow-[0_0_15px_rgba(59,130,246,0.5)] mb-4 md:mb-6">
                             {titleJa}
                         </h1>

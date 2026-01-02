@@ -337,13 +337,7 @@ export default function EventRegistrationForm({
             <select
               id="event-type"
               {...register('type')}
-              className="w-full p-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg text-white text-base focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors appearance-none cursor-pointer"
-              style={{
-                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'right 12px center',
-                backgroundSize: '16px',
-              }}
+              className="w-full p-3 bg-slate-900/50 border border-cyan-500/30 rounded-lg text-white text-base focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-colors appearance-none cursor-pointer bg-no-repeat bg-[length:16px] bg-[right_12px_center] bg-[url('data:image/svg+xml;charset=UTF-8,%3csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2322d3ee%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]"
             >
               {EVENT_TYPE_OPTIONS.map(type => (
                 <option key={type} value={type}>

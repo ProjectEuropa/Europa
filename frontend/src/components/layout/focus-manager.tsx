@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Z_INDEX } from '@/lib/utils';
 
 /**
  * フォーカス管理のためのユーティリティフック
@@ -121,28 +120,7 @@ export function SkipLink({ href, children, className = '' }: SkipLinkProps) {
   return (
     <a
       href={href}
-      className={className}
-      style={{
-        position: 'absolute',
-        left: '-9999px',
-        zIndex: Z_INDEX.focus,
-        padding: '8px 16px',
-        background: '#000',
-        color: '#fff',
-        textDecoration: 'none',
-        fontSize: '14px',
-        fontWeight: 'bold',
-        borderRadius: '4px',
-        border: '2px solid #00c8ff',
-        transition: 'left 0.3s',
-      }}
-      onFocus={e => {
-        e.currentTarget.style.left = '8px';
-        e.currentTarget.style.top = '8px';
-      }}
-      onBlur={e => {
-        e.currentTarget.style.left = '-9999px';
-      }}
+      className={`absolute -left-[9999px] z-[99999] px-4 py-2 bg-black text-white no-underline text-sm font-bold rounded border-2 border-[#00c8ff] transition-[left] duration-300 focus:left-2 focus:top-2 ${className}`}
     >
       {children}
     </a>
@@ -167,16 +145,9 @@ export function LiveRegion({
 }: LiveRegionProps) {
   return (
     <div
-      className={className}
+      className={`absolute -left-[10000px] w-px h-px overflow-hidden ${className}`}
       aria-live={politeness}
       aria-atomic={atomic}
-      style={{
-        position: 'absolute',
-        left: '-10000px',
-        width: '1px',
-        height: '1px',
-        overflow: 'hidden',
-      }}
     >
       {children}
     </div>
