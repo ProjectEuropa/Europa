@@ -94,12 +94,12 @@ describe('FileUploadForm', () => {
     render(<FileUploadForm {...defaultProps} />);
 
     const tagInput = screen.getByPlaceholderText(
-      'タグを入力（Enterキーで追加）'
+      'タグを入力（Enter2回で追加）'
     );
 
-    // タグを追加
+    // タグを追加（Enter2回で追加）
     await user.type(tagInput, 'テストタグ');
-    await user.keyboard('{Enter}');
+    await user.keyboard('{Enter}{Enter}');
 
     expect(screen.getByText('テストタグ')).toBeInTheDocument();
 
@@ -133,7 +133,7 @@ describe('FileUploadForm', () => {
     render(<FileUploadForm {...defaultProps} />);
 
     const tagInput = screen.getByPlaceholderText(
-      'タグを入力（Enterキーで追加）'
+      'タグを入力（Enter2回で追加）'
     );
     await user.click(tagInput);
 
@@ -152,7 +152,7 @@ describe('FileUploadForm', () => {
     render(<FileUploadForm {...defaultProps} />);
 
     const tagInput = screen.getByPlaceholderText(
-      'タグを入力（Enterキーで追加）'
+      'タグを入力（Enter2回で追加）'
     );
     await user.click(tagInput);
 
@@ -182,18 +182,18 @@ describe('FileUploadForm', () => {
     render(<FileUploadForm {...defaultProps} />);
 
     const tagInput = screen.getByPlaceholderText(
-      'タグを入力（Enterキーで追加）'
+      'タグを入力（Enter2回で追加）'
     );
 
-    // 4つのタグを追加
+    // 4つのタグを追加（Enter2回で追加）
     for (let i = 1; i <= 4; i++) {
       await user.type(tagInput, `タグ${i}`);
-      await user.keyboard('{Enter}');
+      await user.keyboard('{Enter}{Enter}');
     }
 
     // 5つ目のタグを追加しようとする
     await user.type(tagInput, 'タグ5');
-    await user.keyboard('{Enter}');
+    await user.keyboard('{Enter}{Enter}');
 
     // 4つまでしか表示されない（バッジ部分のみをカウント - rounded-full クラスを持つ親要素内）
     const tagBadges = screen.getAllByText(/タグ\d/).filter(element => {
@@ -397,7 +397,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       // フォーカスして入力
       await user.click(tagInput);
@@ -413,7 +413,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       await user.click(tagInput);
       await user.type(tagInput, 'ス');
@@ -432,12 +432,12 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
-      // 最初にタグを追加
+      // 最初にタグを追加（Enter2回で追加）
       await user.click(tagInput);
       await user.type(tagInput, 'RPG');
-      await user.keyboard('{Enter}');
+      await user.keyboard('{Enter}{Enter}');
 
       // タグが追加されたことを確認
       await waitFor(() => {
@@ -470,7 +470,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       await user.click(tagInput);
       await user.type(tagInput, 'ア');
@@ -494,7 +494,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       await user.click(tagInput);
       await user.type(tagInput, 'ア');
@@ -520,7 +520,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       await user.click(tagInput);
       await user.type(tagInput, 'アク');
@@ -550,7 +550,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       await user.click(tagInput);
       await user.type(tagInput, 'ア');
@@ -573,10 +573,10 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
-      // サジェストを使わずに直接入力してEnter
-      await user.type(tagInput, 'カスタムタグ{Enter}');
+      // サジェストを使わずに直接入力してEnter2回
+      await user.type(tagInput, 'カスタムタグ{Enter}{Enter}');
 
       // タグが追加される
       await waitFor(() => {
@@ -588,7 +588,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       // すべてのタグにマッチする空文字は表示しない仕様なので、
       // 部分マッチで確認（この場合、モックデータでは10個以下なので全て表示される）
@@ -606,7 +606,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       await user.click(tagInput);
       await user.type(tagInput, 'アク');
@@ -635,7 +635,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       await user.click(tagInput);
       await user.type(tagInput, 'スポ');
@@ -665,7 +665,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       // 入力フィールドをフォーカス（入力なし）
       await user.click(tagInput);
@@ -684,7 +684,7 @@ describe('FileUploadForm', () => {
       const user = userEvent.setup();
       render(<FileUploadForm {...defaultProps} />);
 
-      const tagInput = screen.getByPlaceholderText('タグを入力（Enterキーで追加）');
+      const tagInput = screen.getByPlaceholderText('タグを入力（Enter2回で追加）');
 
       // 最初にフォーカスしてチェックボックスを表示
       await user.click(tagInput);
