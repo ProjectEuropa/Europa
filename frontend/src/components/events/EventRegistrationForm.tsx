@@ -193,7 +193,7 @@ export default function EventRegistrationForm({
                 <button
                   type="button"
                   onClick={() => setShowDeadlineCalendar(!showDeadlineCalendar)}
-                  className="bg-transparent border-none text-cyan-400 -ml-10 cursor-pointer z-base hover:text-cyan-300 transition-colors"
+                  className="bg-transparent border-none text-cyan-400 -ml-10 cursor-pointer z-[1] hover:text-cyan-300 transition-colors"
                 >
                   <svg
                     width="24"
@@ -222,7 +222,7 @@ export default function EventRegistrationForm({
 
               {showDeadlineCalendar && (
                 <div
-                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0d1124]/95 backdrop-blur-md p-5 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-cyan-500/30 z-modal"
+                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0d1124]/95 backdrop-blur-md p-5 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-cyan-500/30 z-[1000]"
                 >
                   <div
                     className="flex justify-between items-center mb-4"
@@ -270,7 +270,7 @@ export default function EventRegistrationForm({
                 <button
                   type="button"
                   onClick={() => setShowEndDateCalendar(!showEndDateCalendar)}
-                  className="bg-transparent border-none text-cyan-400 -ml-10 cursor-pointer z-base hover:text-cyan-300 transition-colors"
+                  className="bg-transparent border-none text-cyan-400 -ml-10 cursor-pointer z-[1] hover:text-cyan-300 transition-colors"
                 >
                   <svg
                     width="24"
@@ -299,7 +299,7 @@ export default function EventRegistrationForm({
 
               {showEndDateCalendar && (
                 <div
-                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0d1124]/95 backdrop-blur-md p-5 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-cyan-500/30 z-modal"
+                  className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#0d1124]/95 backdrop-blur-md p-5 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.5)] border border-cyan-500/30 z-[1000]"
                 >
                   <div
                     className="flex justify-between items-center mb-4"

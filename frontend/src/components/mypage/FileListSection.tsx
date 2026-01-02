@@ -382,7 +382,7 @@ const FileListSection: React.FC<FileListSectionProps> = ({ type }) => {
           aria-labelledby="comment-modal-title"
           aria-describedby="comment-modal-content"
           aria-modal="true"
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-modal"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[1000]"
           onClick={() => setModalOpen(false)}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

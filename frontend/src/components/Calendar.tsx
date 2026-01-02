@@ -455,7 +455,7 @@ const Calendar: React.FC<CalendarProps> = ({
           aria-labelledby="event-modal-title"
           aria-describedby="event-modal-description"
           aria-modal="true"
-          className="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-sm z-focus flex items-center justify-center p-5"
+          className="fixed inset-0 w-full h-full bg-black/70 backdrop-blur-sm z-[99999] flex items-center justify-center p-5"
           onClick={() => setModalEvent(null)}
           onKeyDown={handleModalKeyDown}
         >
