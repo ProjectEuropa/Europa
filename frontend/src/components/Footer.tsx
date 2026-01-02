@@ -65,7 +65,7 @@ const Footer: React.FC<FooterProps> = ({
             </li>
             <li>
               <Link href="/info" className="text-[#b0c4d8] no-underline">
-                Information
+                お知らせ
               </Link>
             </li>
           </ul>

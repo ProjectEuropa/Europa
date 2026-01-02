@@ -60,7 +60,7 @@ describe('Footer', () => {
         { text: 'マッチデータ検索', href: '/search/match' },
         { text: 'チームデータ一括DL', href: '/sumdownload/team' },
         { text: 'マッチデータ一括DL', href: '/sumdownload/match' },
-        { text: 'Information', href: '/info' },
+        { text: 'お知らせ', href: '/info' },
       ];
 
       featureLinks.forEach(({ text, href }) => {
