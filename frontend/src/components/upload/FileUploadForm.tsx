@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { DateTimeInput } from '@/components/ui/datetime-input';
 import { Icons } from '@/icons';
 import { fetchTags } from '@/lib/api/files';
-import { Z_INDEX } from '@/lib/utils';
 
 export interface FileUploadOptions {
   ownerName: string;
@@ -163,6 +162,17 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     [formData.tags, updateFormData]
   );
 
+  // フィルタリングされたサジェストを取得
+  const getFilteredSuggestions = useCallback(() => {
+    if (!tagInput.trim()) return [];
+    return availableTags
+      .filter(tag =>
+        tag.toLowerCase().includes(tagInput.toLowerCase()) &&
+        !formData.tags.includes(tag)
+      )
+      .slice(0, 10);
+  }, [tagInput, availableTags, formData.tags]);
+
   const handleTagKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       const suggestions = getFilteredSuggestions();
@@ -188,19 +198,8 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
         setShowTagSelector(false);
       }
     },
-    [tagInput, addTag, selectedSuggestionIndex, availableTags, formData.tags]
+    [tagInput, addTag, selectedSuggestionIndex, getFilteredSuggestions]
   );
-
-  // フィルタリングされたサジェストを取得
-  const getFilteredSuggestions = useCallback(() => {
-    if (!tagInput.trim()) return [];
-    return availableTags
-      .filter(tag =>
-        tag.toLowerCase().includes(tagInput.toLowerCase()) &&
-        !formData.tags.includes(tag)
-      )
-      .slice(0, 10);
-  }, [tagInput, availableTags, formData.tags]);
 
 
 
@@ -368,29 +367,11 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             onChange={e => updateFormData({ ownerName: e.target.value })}
             placeholder="あなたの名前を入力"
             required
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              background: '#020824',
-              border: fieldErrors.ownerName
-                ? '2px solid #ef4444'
-                : '1px solid #1E3A5F',
-              borderRadius: '8px',
-              color: '#fff',
-              fontSize: '14px',
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={e => {
-              if (!fieldErrors.ownerName) {
-                (e.target as HTMLInputElement).style.borderColor = '#00c8ff';
-              }
-            }}
-            onBlur={e => {
-              if (!fieldErrors.ownerName) {
-                (e.target as HTMLInputElement).style.borderColor = '#1E3A5F';
-              }
-            }}
+            className={`w-full px-4 py-3 bg-[#020824] rounded-lg text-white text-sm outline-none transition-colors duration-200 ${
+              fieldErrors.ownerName
+                ? 'border-2 border-red-500'
+                : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
+            }`}
           />
           {fieldErrors.ownerName && (
             <p className="text-xs text-red-500 m-0">
@@ -414,34 +395,11 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             onChange={e => updateFormData({ comment: e.target.value })}
             placeholder={`${fileType === 'team' ? 'チームの特徴、戦術、強さ、注目ポイントなどを詳しく入力してください。\n例：攻撃的なフォーメーションで、カウンター攻撃が得意なチームです。' : 'マッチの内容、見どころ、結果、印象的なプレーなどを詳しく入力してください。\n例：接戦で最後まで勝敗が分からない熱い試合でした。'}`}
             rows={6}
-            style={{
-              width: '100%',
-              padding: '16px 20px',
-              background: '#020824',
-              border: fieldErrors[`${fileType}Comment`]
-                ? '2px solid #ef4444'
-                : '1px solid #1E3A5F',
-              borderRadius: '8px',
-              color: '#fff',
-              fontSize: '14px',
-              outline: 'none',
-              resize: 'vertical',
-              minHeight: '140px',
-              maxHeight: '300px',
-              fontFamily: 'inherit',
-              transition: 'border-color 0.2s',
-              lineHeight: '1.5',
-            }}
-            onFocus={e => {
-              if (!fieldErrors[`${fileType}Comment`]) {
-                (e.target as HTMLTextAreaElement).style.borderColor = '#00c8ff';
-              }
-            }}
-            onBlur={e => {
-              if (!fieldErrors[`${fileType}Comment`]) {
-                (e.target as HTMLTextAreaElement).style.borderColor = '#1E3A5F';
-              }
-            }}
+            className={`w-full px-5 py-4 bg-[#020824] rounded-lg text-white text-sm outline-none resize-y min-h-[140px] max-h-[300px] font-inherit transition-colors duration-200 leading-relaxed ${
+              fieldErrors[`${fileType}Comment`]
+                ? 'border-2 border-red-500'
+                : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
+            }`}
           />
           {fieldErrors[`${fileType}Comment`] && (
             <p className="text-xs text-red-500 m-0">
@@ -472,52 +430,17 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                 onFocus={() => setShowTagSelector(true)}
                 onBlur={() => setTimeout(() => setShowTagSelector(false), 200)}
                 placeholder="タグを入力（Enterキーで追加）"
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  background: '#020824',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '8px',
-                  color: '#fff',
-                  fontSize: '14px',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                }}
-                onFocusCapture={e => {
-                  (e.target as HTMLInputElement).style.borderColor = '#00c8ff';
-                }}
-                onBlurCapture={e => {
-                  (e.target as HTMLInputElement).style.borderColor = '#1E3A5F';
-                }}
+                className="flex-1 px-4 py-3 bg-[#020824] border border-[#1E3A5F] rounded-lg text-white text-sm outline-none transition-colors duration-200 focus:border-[#00c8ff]"
               />
               <button
                 type="button"
                 onClick={() => tagInput.trim() && addTag(tagInput.trim())}
                 disabled={formData.tags.length >= 4}
-                style={{
-                  padding: '12px 20px',
-                  background: formData.tags.length >= 4 ? '#1E3A5F' : '#020824',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '8px',
-                  color: formData.tags.length >= 4 ? '#666' : '#b0c4d8',
-                  fontSize: '14px',
-                  cursor: formData.tags.length >= 4 ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={e => {
-                  if (formData.tags.length < 4) {
-                    const target = e.target as HTMLButtonElement;
-                    target.style.borderColor = '#00c8ff';
-                    target.style.color = '#00c8ff';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (formData.tags.length < 4) {
-                    const target = e.target as HTMLButtonElement;
-                    target.style.borderColor = '#1E3A5F';
-                    target.style.color = '#b0c4d8';
-                  }
-                }}
+                className={`px-5 py-3 border border-[#1E3A5F] rounded-lg text-sm transition-all duration-200 ${
+                  formData.tags.length >= 4
+                    ? 'bg-[#1E3A5F] text-gray-500 cursor-not-allowed'
+                    : 'bg-[#020824] text-[#b0c4d8] cursor-pointer hover:border-[#00c8ff] hover:text-[#00c8ff]'
+                }`}
               >
                 追加
               </button>
@@ -525,63 +448,21 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
             {/* タグセレクター（チェックボックス式） */}
             {showTagSelector && availableTags.length > 0 && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  zIndex: Z_INDEX.dropdown,
-                  marginTop: '4px',
-                  width: '100%',
-                  maxWidth: '500px',
-                  background: '#0a0e1a',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '8px',
-                  maxHeight: '300px',
-                  overflowY: 'auto',
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-                  padding: '12px',
-                }}
-              >
-                <div style={{
-                  marginBottom: '8px',
-                  paddingBottom: '8px',
-                  borderBottom: '1px solid #1E3A5F',
-                  color: '#b0c4d8',
-                  fontSize: '13px',
-                  fontWeight: '600'
-                }}>
+              <div className="absolute top-full left-0 z-[10] mt-1 w-full max-w-[500px] bg-[#0a0e1a] border border-[#1E3A5F] rounded-lg max-h-[300px] overflow-y-auto shadow-[0_4px_20px_rgba(0,0,0,0.3)] p-3">
+                <div className="mb-2 pb-2 border-b border-[#1E3A5F] text-[#b0c4d8] text-[13px] font-semibold">
                   登録済みタグから選択
                 </div>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-                  gap: '8px'
-                }}>
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-2">
                   {availableTags.map(tag => (
                     <label
                       key={tag}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        cursor: formData.tags.length >= 4 && !formData.tags.includes(tag) ? 'not-allowed' : 'pointer',
-                        padding: '6px 8px',
-                        borderRadius: '6px',
-                        fontSize: '13px',
-                        color: formData.tags.includes(tag) ? '#00c8ff' : '#b0c4d8',
-                        background: formData.tags.includes(tag) ? 'rgba(0, 200, 255, 0.1)' : 'transparent',
-                        transition: 'all 0.2s',
-                        opacity: formData.tags.length >= 4 && !formData.tags.includes(tag) ? 0.5 : 1,
-                      }}
-                      onMouseEnter={(e) => {
-                        if (formData.tags.length < 4 || formData.tags.includes(tag)) {
-                          (e.currentTarget as HTMLElement).style.background = 'rgba(0, 200, 255, 0.15)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.background = formData.tags.includes(tag) ? 'rgba(0, 200, 255, 0.1)' : 'transparent';
-                      }}
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] transition-all duration-200 ${
+                        formData.tags.includes(tag)
+                          ? 'text-[#00c8ff] bg-[rgba(0,200,255,0.1)] hover:bg-[rgba(0,200,255,0.15)]'
+                          : formData.tags.length >= 4
+                            ? 'text-[#b0c4d8] opacity-50 cursor-not-allowed'
+                            : 'text-[#b0c4d8] hover:bg-[rgba(0,200,255,0.15)] cursor-pointer'
+                      }`}
                     >
                       <input
                         type="checkbox"
@@ -598,14 +479,11 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                             updateFormData({ tags: [...formData.tags, tag] });
                           }
                         }}
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          cursor: formData.tags.length >= 4 && !formData.tags.includes(tag) ? 'not-allowed' : 'pointer',
-                          accentColor: '#00c8ff',
-                        }}
+                        className={`w-4 h-4 accent-[#00c8ff] ${
+                          formData.tags.length >= 4 && !formData.tags.includes(tag) ? 'cursor-not-allowed' : 'cursor-pointer'
+                        }`}
                       />
-                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
                         {tag}
                       </span>
                     </label>
@@ -621,37 +499,13 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
               {formData.tags.map(tag => (
                 <div
                   key={tag}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '4px 12px',
-                    background: '#1E3A5F',
-                    borderRadius: '16px',
-                    fontSize: '12px',
-                    color: '#b0c4d8',
-                  }}
+                  className="flex items-center gap-1 px-3 py-1 bg-[#1E3A5F] rounded-full text-xs text-[#b0c4d8]"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#b0c4d8',
-                      cursor: 'pointer',
-                      padding: '2px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      transition: 'color 0.2s',
-                    }}
-                    onMouseEnter={e => {
-                      (e.target as HTMLButtonElement).style.color = '#ef4444';
-                    }}
-                    onMouseLeave={e => {
-                      (e.target as HTMLButtonElement).style.color = '#b0c4d8';
-                    }}
+                    className="bg-transparent border-none text-[#b0c4d8] cursor-pointer p-0.5 flex items-center transition-colors duration-200 hover:text-red-500"
                   >
                     <Icons.X size={12} />
                   </button>
@@ -670,14 +524,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
           <div className="flex flex-col gap-2">
             <label
               htmlFor="deletePassword"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#b0c4d8',
-              }}
+              className="flex items-center gap-2 text-sm font-semibold text-[#b0c4d8]"
             >
               <Icons.Lock size={16} color="#00c8ff" />
               削除パスワード
@@ -691,55 +538,16 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                   updateFormData({ deletePassword: e.target.value })
                 }
                 placeholder="削除時に必要なパスワードを設定"
-                style={{
-                  width: '100%',
-                  padding: '12px 50px 12px 16px',
-                  background: '#020824',
-                  border: fieldErrors[`${fileType}DeletePassWord`]
-                    ? '2px solid #ef4444'
-                    : '1px solid #1E3A5F',
-                  borderRadius: '8px',
-                  color: '#fff',
-                  fontSize: '14px',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                }}
-                onFocus={e => {
-                  if (!fieldErrors[`${fileType}DeletePassWord`]) {
-                    (e.target as HTMLInputElement).style.borderColor =
-                      '#00c8ff';
-                  }
-                }}
-                onBlur={e => {
-                  if (!fieldErrors[`${fileType}DeletePassWord`]) {
-                    (e.target as HTMLInputElement).style.borderColor =
-                      '#1E3A5F';
-                  }
-                }}
+                className={`w-full py-3 pl-4 pr-12 bg-[#020824] rounded-lg text-white text-sm outline-none transition-colors duration-200 ${
+                  fieldErrors[`${fileType}DeletePassWord`]
+                    ? 'border-2 border-red-500'
+                    : 'border border-[#1E3A5F] focus:border-[#00c8ff]'
+                }`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  color: '#b0c4d8',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  transition: 'color 0.2s',
-                }}
-                onMouseEnter={e => {
-                  (e.target as HTMLButtonElement).style.color = '#00c8ff';
-                }}
-                onMouseLeave={e => {
-                  (e.target as HTMLButtonElement).style.color = '#b0c4d8';
-                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#b0c4d8] cursor-pointer p-1 flex items-center transition-colors duration-200 hover:text-[#00c8ff]"
               >
                 {showPassword ? (
                   <Icons.EyeOff size={16} />
@@ -778,61 +586,23 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
           />
 
           <div
-            style={{
-              border: `2px dashed ${fieldErrors.file
-                ? '#ef4444'
-                : selectedFile
-                  ? '#00c8ff'
-                  : dragActive
-                    ? '#00c8ff'
-                    : '#1E3A5F'
-                }`,
-              borderRadius: '12px',
-              padding: '32px',
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              background:
-                dragActive || selectedFile
-                  ? 'rgba(0, 200, 255, 0.05)'
-                  : 'transparent',
-            }}
+            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
+              fieldErrors.file
+                ? 'border-red-500'
+                : selectedFile || dragActive
+                  ? 'border-[#00c8ff] bg-[rgba(0,200,255,0.05)]'
+                  : 'border-[#1E3A5F] hover:border-[#00c8ff] hover:bg-[rgba(0,200,255,0.05)]'
+            }`}
             onClick={() => fileInputRef.current?.click()}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            onMouseEnter={e => {
-              if (!selectedFile && !dragActive && !fieldErrors.file) {
-                (e.target as HTMLDivElement).style.borderColor = '#00c8ff';
-                (e.target as HTMLDivElement).style.background =
-                  'rgba(0, 200, 255, 0.05)';
-              }
-            }}
-            onMouseLeave={e => {
-              if (!selectedFile && !dragActive && !fieldErrors.file) {
-                (e.target as HTMLDivElement).style.borderColor = '#1E3A5F';
-                (e.target as HTMLDivElement).style.background = 'transparent';
-              }
-            }}
           >
             {selectedFile ? (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '16px',
-                  alignItems: 'center',
-                }}
-              >
+              <div className="flex flex-col gap-4 items-center">
                 <Icons.FileCheck size={48} color="#00c8ff" />
                 <div>
-                  <p
-                    style={{
-                      fontWeight: '600',
-                      color: '#00c8ff',
-                      margin: '0 0 4px 0',
-                    }}
-                  >
+                  <p className="font-semibold text-[#00c8ff] mb-1">
                     {selectedFile.name}
                   </p>
                   <p className="text-sm text-[#8CB4FF] m-0">
@@ -845,48 +615,16 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                     e.stopPropagation();
                     resetFile();
                   }}
-                  style={{
-                    padding: '8px 16px',
-                    background: '#020824',
-                    border: '1px solid #1E3A5F',
-                    borderRadius: '6px',
-                    color: '#b0c4d8',
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={e => {
-                    (e.target as HTMLButtonElement).style.borderColor =
-                      '#ef4444';
-                    (e.target as HTMLButtonElement).style.color = '#ef4444';
-                  }}
-                  onMouseLeave={e => {
-                    (e.target as HTMLButtonElement).style.borderColor =
-                      '#1E3A5F';
-                    (e.target as HTMLButtonElement).style.color = '#b0c4d8';
-                  }}
+                  className="px-4 py-2 bg-[#020824] border border-[#1E3A5F] rounded-md text-[#b0c4d8] text-sm cursor-pointer transition-all duration-200 hover:border-red-500 hover:text-red-500"
                 >
                   ファイルを削除
                 </button>
               </div>
             ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '16px',
-                  alignItems: 'center',
-                }}
-              >
+              <div className="flex flex-col gap-4 items-center">
                 <Icons.Upload size={48} color="#8CB4FF" />
                 <div>
-                  <p
-                    style={{
-                      fontWeight: '600',
-                      color: '#b0c4d8',
-                      margin: '0 0 4px 0',
-                    }}
-                  >
+                  <p className="font-semibold text-[#b0c4d8] mb-1">
                     CHEファイルをドラッグ&ドロップ
                   </p>
                   <p className="text-sm text-[#8CB4FF] m-0">
@@ -897,14 +635,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
             )}
           </div>
 
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontSize: '12px',
-              color: '#8CB4FF',
-            }}
-          >
+          <div className="flex justify-between text-xs text-[#8CB4FF]">
             <span>対応形式: .CHE</span>
             <span>最大サイズ: {maxFileSize}KB</span>
           </div>
@@ -938,33 +669,11 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
         <button
           type="submit"
           disabled={isUploading || !selectedFile}
-          style={{
-            width: '100%',
-            padding: '16px',
-            background: isUploading || !selectedFile ? '#1E3A5F' : '#00c8ff',
-            border: 'none',
-            borderRadius: '8px',
-            color: isUploading || !selectedFile ? '#666' : '#0a0e1a',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: isUploading || !selectedFile ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            transition: 'all 0.2s',
-            opacity: isUploading || !selectedFile ? 0.6 : 1,
-          }}
-          onMouseEnter={e => {
-            if (!isUploading && selectedFile) {
-              (e.target as HTMLButtonElement).style.background = '#0099cc';
-            }
-          }}
-          onMouseLeave={e => {
-            if (!isUploading && selectedFile) {
-              (e.target as HTMLButtonElement).style.background = '#00c8ff';
-            }
-          }}
+          className={`w-full p-4 border-none rounded-lg text-base font-semibold flex items-center justify-center gap-2 transition-all duration-200 ${
+            isUploading || !selectedFile
+              ? 'bg-[#1E3A5F] text-gray-500 cursor-not-allowed opacity-60'
+              : 'bg-[#00c8ff] text-[#0a0e1a] cursor-pointer hover:bg-[#0099cc]'
+          }`}
         >
           {isUploading ? (
             <>
@@ -984,101 +693,34 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
       {/* 確認ダイアログ */}
       {showConfirmDialog && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.7)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: Z_INDEX.sticky,
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              maxWidth: '500px',
-              margin: '0 16px',
-              background: '#0a0e1a',
-              border: '1px solid #1E3A5F',
-              borderRadius: '12px',
-              padding: '24px',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-              maxHeight: '80vh',
-              overflowY: 'auto',
-            }}
-          >
-            <h3
-              style={{
-                fontSize: '18px',
-                fontWeight: 'bold',
-                color: '#00c8ff',
-                margin: '0 0 16px 0',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[50]">
+          <div className="w-full max-w-[500px] mx-4 bg-[#0a0e1a] border border-[#1E3A5F] rounded-xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.5)] max-h-[80vh] overflow-y-auto">
+            <h3 className="text-lg font-bold text-[#00c8ff] mb-4 flex items-center gap-2">
               <Icons.Upload size={20} color="#00c8ff" />
               アップロード確認
             </h3>
 
-            <p
-              style={{
-                color: '#b0c4d8',
-                margin: '0 0 20px 0',
-                lineHeight: 1.5,
-              }}
-            >
+            <p className="text-[#b0c4d8] mb-5 leading-relaxed">
               以下の内容で{fileType === 'team' ? 'チーム' : 'マッチ'}
               データをアップロードします。
             </p>
 
             {/* 入力内容の確認 */}
-            <div
-              style={{
-                background: 'rgba(30, 58, 95, 0.3)',
-                borderRadius: '8px',
-                padding: '16px',
-                marginBottom: '20px',
-              }}
-            >
-              <h4
-                style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#00c8ff',
-                  margin: '0 0 12px 0',
-                }}
-              >
+            <div className="bg-[rgba(30,58,95,0.3)] rounded-lg p-4 mb-5">
+              <h4 className="text-sm font-semibold text-[#00c8ff] mb-3">
                 アップロード内容
               </h4>
 
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  fontSize: '14px',
-                }}
-              >
+              <div className="flex flex-col gap-2 text-sm">
                 {/* ファイル情報 */}
-                <div
-                  className="flex justify-between"
-                >
+                <div className="flex justify-between">
                   <span className="text-[#8CB4FF]">ファイル名:</span>
-                  <span style={{ color: '#b0c4d8', fontWeight: '500' }}>
+                  <span className="text-[#b0c4d8] font-medium">
                     {selectedFile?.name || '未選択'}
                   </span>
                 </div>
 
-                <div
-                  className="flex justify-between"
-                >
+                <div className="flex justify-between">
                   <span className="text-[#8CB4FF]">ファイルサイズ:</span>
                   <span className="text-[#b0c4d8]">
                     {selectedFile
@@ -1088,37 +730,18 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                 </div>
 
                 {/* オーナー名 */}
-                <div
-                  className="flex justify-between"
-                >
+                <div className="flex justify-between">
                   <span className="text-[#8CB4FF]">オーナー名:</span>
-                  <span style={{ color: '#b0c4d8', fontWeight: '500' }}>
+                  <span className="text-[#b0c4d8] font-medium">
                     {formData.ownerName || '未入力'}
                   </span>
                 </div>
 
                 {/* コメント */}
                 {formData.comment && (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px',
-                    }}
-                  >
+                  <div className="flex flex-col gap-1">
                     <span className="text-[#8CB4FF]">コメント:</span>
-                    <div
-                      style={{
-                        color: '#b0c4d8',
-                        background: 'rgba(0, 0, 0, 0.2)',
-                        padding: '8px',
-                        borderRadius: '4px',
-                        fontSize: '13px',
-                        lineHeight: 1.4,
-                        maxHeight: '60px',
-                        overflowY: 'auto',
-                      }}
-                    >
+                    <div className="text-[#b0c4d8] bg-black/20 p-2 rounded text-[13px] leading-snug max-h-[60px] overflow-y-auto">
                       {formData.comment}
                     </div>
                   </div>
@@ -1126,27 +749,13 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
 
                 {/* タグ */}
                 {formData.tags.length > 0 && (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px',
-                    }}
-                  >
+                  <div className="flex flex-col gap-1">
                     <span className="text-[#8CB4FF]">タグ:</span>
-                    <div
-                      className="flex flex-wrap gap-1"
-                    >
+                    <div className="flex flex-wrap gap-1">
                       {formData.tags.map(tag => (
                         <span
                           key={tag}
-                          style={{
-                            background: '#1E3A5F',
-                            color: '#b0c4d8',
-                            padding: '2px 8px',
-                            borderRadius: '12px',
-                            fontSize: '12px',
-                          }}
+                          className="bg-[#1E3A5F] text-[#b0c4d8] px-2 py-0.5 rounded-xl text-xs"
                         >
                           {tag}
                         </span>
@@ -1180,55 +789,16 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
                 )}
               </div>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                gap: '8px',
-                justifyContent: 'flex-end',
-              }}
-            >
+            <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowConfirmDialog(false)}
-                style={{
-                  padding: '10px 20px',
-                  background: '#020824',
-                  border: '1px solid #1E3A5F',
-                  borderRadius: '6px',
-                  color: '#b0c4d8',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
-                onMouseEnter={e => {
-                  (e.target as HTMLButtonElement).style.borderColor = '#00c8ff';
-                  (e.target as HTMLButtonElement).style.color = '#00c8ff';
-                }}
-                onMouseLeave={e => {
-                  (e.target as HTMLButtonElement).style.borderColor = '#1E3A5F';
-                  (e.target as HTMLButtonElement).style.color = '#b0c4d8';
-                }}
+                className="px-5 py-2.5 bg-[#020824] border border-[#1E3A5F] rounded-md text-[#b0c4d8] text-sm cursor-pointer transition-all duration-200 hover:border-[#00c8ff] hover:text-[#00c8ff]"
               >
                 キャンセル
               </button>
               <button
                 onClick={executeUpload}
-                style={{
-                  padding: '10px 20px',
-                  background: '#00c8ff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  color: '#0a0e1a',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background 0.2s',
-                }}
-                onMouseEnter={e => {
-                  (e.target as HTMLButtonElement).style.background = '#0099cc';
-                }}
-                onMouseLeave={e => {
-                  (e.target as HTMLButtonElement).style.background = '#00c8ff';
-                }}
+                className="px-5 py-2.5 bg-[#00c8ff] border-none rounded-md text-[#0a0e1a] text-sm font-semibold cursor-pointer transition-colors duration-200 hover:bg-[#0099cc]"
               >
                 アップロード
               </button>

@@ -1,16 +1,6 @@
 import type React from 'react';
 import { cn } from '@/lib/utils';
 
-// Tailwind CSS classes extracted for easier maintenance and cleaner JSX
-// Adhering to the "Cybernetic Void" theme with glassmorphism and cyan accents
-const styles = {
-  section: "py-20 md:py-32 relative overflow-hidden",
-  gridBackground: {
-    backgroundImage: 'linear-gradient(rgba(0, 200, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 200, 255, 0.03) 1px, transparent 1px)',
-    backgroundSize: '40px 40px'
-  }
-};
-
 interface FeatureItem {
   icon: React.ReactNode;
   title: string;
@@ -108,11 +98,10 @@ const FeaturesSection: React.FC = () => {
   ];
 
   return (
-    <section id="features" className={styles.section}>
+    <section id="features" className="py-20 md:py-32 relative overflow-hidden">
       {/* Background Decor - Subtle Grid */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={styles.gridBackground}
+        className="absolute inset-0 pointer-events-none bg-[length:40px_40px] bg-[linear-gradient(rgba(0,200,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,200,255,0.03)_1px,transparent_1px)]"
       />
 
       {/* Radial glow in background */}

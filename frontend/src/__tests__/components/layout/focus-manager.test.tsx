@@ -72,31 +72,32 @@ describe('Focus Management Components', () => {
       const skipLink = screen.getByRole('link', {
         name: 'Skip to main content',
       });
-      expect(skipLink.style.left).toBe('-9999px');
+      // Tailwind class: -left-[9999px] positions element off-screen
+      expect(skipLink).toHaveClass('-left-[9999px]');
     });
 
-    it('should become visible on focus', () => {
+    it('should have focus styles defined via Tailwind classes', () => {
       render(<SkipLink href="#main-content">Skip to main content</SkipLink>);
 
       const skipLink = screen.getByRole('link', {
         name: 'Skip to main content',
       });
 
-      fireEvent.focus(skipLink);
-      expect(skipLink.style.left).toBe('8px');
-      expect(skipLink.style.top).toBe('8px');
+      // Tailwind classes for focus state: focus:left-2 focus:top-2
+      expect(skipLink).toHaveClass('focus:left-2');
+      expect(skipLink).toHaveClass('focus:top-2');
     });
 
-    it('should hide on blur', () => {
+    it('should have proper styling classes', () => {
       render(<SkipLink href="#main-content">Skip to main content</SkipLink>);
 
       const skipLink = screen.getByRole('link', {
         name: 'Skip to main content',
       });
 
-      fireEvent.focus(skipLink);
-      fireEvent.blur(skipLink);
-      expect(skipLink.style.left).toBe('-9999px');
+      // Verify essential styling classes are present
+      expect(skipLink).toHaveClass('absolute');
+      expect(skipLink).toHaveClass('z-[99999]');
     });
   });
 
@@ -117,8 +118,12 @@ describe('Focus Management Components', () => {
       render(<LiveRegion>Status update</LiveRegion>);
 
       const liveRegion = screen.getByText('Status update');
-      expect(liveRegion.style.position).toBe('absolute');
-      expect(liveRegion.style.left).toBe('-10000px');
+      // Tailwind classes for visual hiding: absolute -left-[10000px] w-px h-px overflow-hidden
+      expect(liveRegion).toHaveClass('absolute');
+      expect(liveRegion).toHaveClass('-left-[10000px]');
+      expect(liveRegion).toHaveClass('w-px');
+      expect(liveRegion).toHaveClass('h-px');
+      expect(liveRegion).toHaveClass('overflow-hidden');
     });
 
     it('should use default politeness level', () => {

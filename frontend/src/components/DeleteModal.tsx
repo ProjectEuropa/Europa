@@ -1,7 +1,6 @@
 'use client';
 import { Lock } from 'lucide-react';
 import * as React from 'react';
-import { Z_INDEX } from '@/lib/utils';
 
 export function DeleteModal({
   open,
@@ -37,15 +36,13 @@ export function DeleteModal({
       aria-labelledby="delete-modal-title"
       aria-describedby="delete-modal-description"
       aria-modal="true"
-      className="cyber-dialog m-auto rounded-2xl border-2 border-cyan-400 text-white w-full max-w-[560px] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm dialog-animation"
-      onKeyDown={handleKeyDown}
+      className="cyber-dialog m-auto rounded-2xl border-2 border-cyan-400 text-white w-full max-w-[560px] fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop-blur-sm dialog-animation z-[1000] shadow-[0_0_32px_8px_rgba(0,200,255,0.3),0_0_0_2px_#00c8ff]"
       style={{
-        zIndex: Z_INDEX.modal,
         background: 'linear-gradient(135deg, #0a1022 0%, #0a0818 100%)',
-        boxShadow: '0 0 32px 8px rgba(0, 200, 255, 0.3), 0 0 0 2px #00c8ff',
         backgroundImage:
           'radial-gradient(circle at 20% 30%, rgba(29, 78, 216, 0.15) 0%, transparent 80%), radial-gradient(circle at 80% 70%, rgba(0, 200, 255, 0.1) 0%, transparent 80%)',
       }}
+      onKeyDown={handleKeyDown}
     >
       <form
         onSubmit={e => {
@@ -56,8 +53,7 @@ export function DeleteModal({
       >
         <h2
           id="delete-modal-title"
-          className="text-white text-[28px] font-bold mb-4 leading-[1.4]"
-          style={{ textShadow: '0 0 8px #00c8ff' }}
+          className="text-white text-[28px] font-bold mb-4 leading-[1.4] [text-shadow:0_0_8px_#00c8ff]"
         >
           {fileName}を本当に削除しますか？
         </h2>
