@@ -124,6 +124,7 @@ export const uploadTeamFile = async (
   const formData = new FormData();
 
   formData.append('file', file);
+  formData.append('data_type', '1'); // チームデータ
   if (options?.comment) formData.append('comment', options.comment);
   if (options?.ownerName) formData.append('upload_owner_name', options.ownerName);
   if (options?.deletePassword) formData.append('deletePassword', options.deletePassword);
@@ -159,6 +160,7 @@ export const uploadMatchFile = async (
   const formData = new FormData();
 
   formData.append('file', file);
+  formData.append('data_type', '2'); // マッチデータ
   if (options?.comment) formData.append('comment', options.comment);
   if (options?.ownerName) formData.append('upload_owner_name', options.ownerName);
   if (options?.deletePassword) formData.append('deletePassword', options.deletePassword);
