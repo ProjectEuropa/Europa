@@ -3,7 +3,7 @@ import { HTTPException } from 'hono/http-exception';
 import { neon } from '@neondatabase/serverless';
 import { GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Env } from '../types/bindings';
-import type { File as FileType, SuccessResponse, PaginationMeta } from '../types/api';
+import { DATA_TYPE, type File as FileType, type SuccessResponse, type PaginationMeta } from '../types/api';
 import { fileQuerySchema, type FileQueryInput } from '../utils/validation';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth';
 import { generateDeletePassword, hashDeletePassword, verifyDeletePassword } from '../utils/password';
@@ -276,6 +276,7 @@ files.post('/', optionalAuthMiddleware, async (c) => {
   const inputDeletePassword = formData.get('deletePassword') as string | null; // ユーザー入力の削除パスワード
   const inputOwnerName = formData.get('upload_owner_name') as string | null; // ユーザー入力のアップロード者名
   const inputDownloadableAt = formData.get('downloadable_at') as string | null; // ダウンロード可能日時
+  const inputDataType = formData.get('data_type') as string | null; // データタイプ (1: チーム, 2: マッチ)
 
   if (!file) {
     throw new HTTPException(400, { message: 'File is required' });
@@ -305,13 +306,8 @@ files.post('/', optionalAuthMiddleware, async (c) => {
   // タグをパース
   const tags = tagsString ? JSON.parse(tagsString) : [];
 
-  // data_typeを判定（tagsの最初の要素から）
-  let dataType = '1'; // デフォルトはチーム
-  if (tags.includes('match')) {
-    dataType = '2';
-  } else if (tags.includes('team')) {
-    dataType = '1';
-  }
+  // data_typeを判定（フロントエンドから送信された値を使用、デフォルトはチーム）
+  const dataType = inputDataType === DATA_TYPE.MATCH ? DATA_TYPE.MATCH : DATA_TYPE.TEAM;
 
   // データベース接続
   const sql = neon(c.env.DATABASE_URL);
