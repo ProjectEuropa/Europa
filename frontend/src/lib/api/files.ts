@@ -20,6 +20,7 @@ import type {
 } from '@/types/search';
 import { apiClient } from './client';
 import { extractDataFromResponse } from './utils';
+import { DATA_TYPE } from '@/utils/constants';
 
 // 検索関連
 // 検索関連
@@ -124,7 +125,7 @@ export const uploadTeamFile = async (
   const formData = new FormData();
 
   formData.append('file', file);
-  formData.append('data_type', '1'); // チームデータ
+  formData.append('data_type', DATA_TYPE.TEAM);
   if (options?.comment) formData.append('comment', options.comment);
   if (options?.ownerName) formData.append('upload_owner_name', options.ownerName);
   if (options?.deletePassword) formData.append('deletePassword', options.deletePassword);
@@ -160,7 +161,7 @@ export const uploadMatchFile = async (
   const formData = new FormData();
 
   formData.append('file', file);
-  formData.append('data_type', '2'); // マッチデータ
+  formData.append('data_type', DATA_TYPE.MATCH);
   if (options?.comment) formData.append('comment', options.comment);
   if (options?.ownerName) formData.append('upload_owner_name', options.ownerName);
   if (options?.deletePassword) formData.append('deletePassword', options.deletePassword);

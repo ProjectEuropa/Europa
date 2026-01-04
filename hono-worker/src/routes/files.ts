@@ -3,7 +3,7 @@ import { HTTPException } from 'hono/http-exception';
 import { neon } from '@neondatabase/serverless';
 import { GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Env } from '../types/bindings';
-import type { File as FileType, SuccessResponse, PaginationMeta } from '../types/api';
+import { DATA_TYPE, type File as FileType, type SuccessResponse, type PaginationMeta } from '../types/api';
 import { fileQuerySchema, type FileQueryInput } from '../utils/validation';
 import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth';
 import { generateDeletePassword, hashDeletePassword, verifyDeletePassword } from '../utils/password';
@@ -307,7 +307,7 @@ files.post('/', optionalAuthMiddleware, async (c) => {
   const tags = tagsString ? JSON.parse(tagsString) : [];
 
   // data_typeを判定（フロントエンドから送信された値を使用、デフォルトはチーム）
-  const dataType = inputDataType === '2' ? '2' : '1';
+  const dataType = inputDataType === DATA_TYPE.MATCH ? DATA_TYPE.MATCH : DATA_TYPE.TEAM;
 
   // データベース接続
   const sql = neon(c.env.DATABASE_URL);
