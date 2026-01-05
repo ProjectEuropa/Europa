@@ -1,0 +1,106 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner "サイトヘッダー" [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - button "メニューを開く" [ref=e6] [cursor=pointer]:
+            - generic [ref=e7]:
+              - img [ref=e8]
+              - generic [ref=e9]: メニュー
+          - link "ホームページに戻る" [ref=e10] [cursor=pointer]:
+            - /url: /
+            - text: EUROPA
+        - navigation "メインナビゲーション" [ref=e11]:
+          - link "ログインページに移動" [ref=e12] [cursor=pointer]:
+            - /url: /login
+            - img [ref=e13]
+            - text: ログイン
+          - link "新規登録ページに移動" [ref=e16] [cursor=pointer]:
+            - /url: /register
+            - img [ref=e17]
+            - text: 新規登録
+    - main [ref=e21]:
+      - generic [ref=e22]:
+        - heading "ログイン" [level=1] [ref=e23]
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - generic [ref=e26]: メールアドレス*
+            - textbox "メールアドレス*" [ref=e27]:
+              - /placeholder: example@example.com
+          - generic [ref=e28]:
+            - generic [ref=e29]: パスワード*
+            - generic [ref=e30]:
+              - textbox "パスワード*" [ref=e31]:
+                - /placeholder: パスワードを入力
+              - button "パスワードを表示" [ref=e32] [cursor=pointer]:
+                - img [ref=e33]
+          - generic [ref=e36]:
+            - checkbox "ログインしたままにする" [ref=e37] [cursor=pointer]
+            - generic [ref=e38] [cursor=pointer]: ログインしたままにする
+          - button "ログイン" [ref=e39] [cursor=pointer]
+        - link "パスワードをお忘れですか？" [ref=e41] [cursor=pointer]:
+          - /url: /forgot-password
+        - generic [ref=e42]:
+          - text: アカウントをお持ちでないですか？
+          - link "新規登録" [ref=e43] [cursor=pointer]:
+            - /url: /register
+    - contentinfo "サイトフッター" [ref=e44]:
+      - generic [ref=e45]:
+        - region "サイト情報" [ref=e46]:
+          - generic [ref=e47]:
+            - img [ref=e48]
+            - generic [ref=e52]: EUROPA
+          - generic [ref=e53]: カルネージハート エクサ
+          - generic [ref=e54]: OKE共有とチームコラボレーションのための非公式カルネージハート エクサプラットフォーム。
+          - generic [ref=e55]: Team Project Europa 2016-2026
+        - navigation "機能メニュー" [ref=e56]:
+          - generic [ref=e57]: 機能
+          - list [ref=e58]:
+            - listitem [ref=e59]:
+              - link "チームデータ検索" [ref=e60] [cursor=pointer]:
+                - /url: /search/team
+            - listitem [ref=e61]:
+              - link "マッチデータ検索" [ref=e62] [cursor=pointer]:
+                - /url: /search/match
+            - listitem [ref=e63]:
+              - link "チームデータ一括DL" [ref=e64] [cursor=pointer]:
+                - /url: /sumdownload/team
+            - listitem [ref=e65]:
+              - link "マッチデータ一括DL" [ref=e66] [cursor=pointer]:
+                - /url: /sumdownload/match
+            - listitem [ref=e67]:
+              - link "お知らせ" [ref=e68] [cursor=pointer]:
+                - /url: /info
+        - navigation "アカウントメニュー" [ref=e69]:
+          - generic [ref=e70]: アカウント
+          - list [ref=e71]:
+            - listitem [ref=e72]:
+              - link "ログイン" [ref=e73] [cursor=pointer]:
+                - /url: /login
+            - listitem [ref=e74]:
+              - link "新規登録" [ref=e75] [cursor=pointer]:
+                - /url: /register
+        - navigation "サポートメニュー" [ref=e76]:
+          - generic [ref=e77]: お問い合わせ・法的情報
+          - list [ref=e78]:
+            - listitem [ref=e79]:
+              - link "私たちについて" [ref=e80] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e81]:
+              - link "お問い合わせ" [ref=e82] [cursor=pointer]:
+                - /url: https://hp.project-europa.work/contact
+            - listitem [ref=e83]:
+              - link "プライバシーポリシー" [ref=e84] [cursor=pointer]:
+                - /url: /privacy-policy
+            - listitem [ref=e85]:
+              - link "利用規約" [ref=e86] [cursor=pointer]:
+                - /url: /terms-of-service
+            - listitem [ref=e87]:
+              - link "よくある質問" [ref=e88] [cursor=pointer]:
+                - /url: /faq
+  - region "Notifications alt+T"
+  - alert [ref=e89]
+```
