@@ -172,7 +172,9 @@ export class SearchPage extends BasePage {
 
   async expectUrlContainsKeyword(keyword?: string) {
     if (keyword) {
-      await expect(this.page).toHaveURL(new RegExp(`keyword=${keyword}`));
+      // RegExpメタ文字をエスケープしてReDoS脆弱性を防止
+      const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      await expect(this.page).toHaveURL(new RegExp(`keyword=${escaped}`));
     } else {
       await expect(this.page).toHaveURL(/keyword=/);
     }

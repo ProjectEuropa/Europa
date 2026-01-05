@@ -7,6 +7,8 @@ test.describe('Mobile: Authentication Pages', () => {
     const loginPage = new LoginPage(page);
 
     await loginPage.goto();
+    // テスト間の状態リークを防止
+    await loginPage.clearStorage();
     await loginPage.expectVisible();
   });
 
@@ -14,6 +16,8 @@ test.describe('Mobile: Authentication Pages', () => {
     const registerPage = new RegisterPage(page);
 
     await registerPage.goto();
+    // テスト間の状態リークを防止
+    await registerPage.clearStorage();
     await registerPage.expectVisible();
   });
 });

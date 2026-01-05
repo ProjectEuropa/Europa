@@ -44,6 +44,7 @@ test.describe('Authentication Integration Tests', () => {
       await loginPage.expectUnauthenticated();
     });
 
+    // Skip: ネットワークエラー時のトーストメッセージ実装が未完了
     test.skip('should handle network errors gracefully', async ({ page }) => {
       const loginPage = new LoginPage(page);
 

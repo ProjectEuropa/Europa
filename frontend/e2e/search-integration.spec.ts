@@ -5,6 +5,8 @@ test.describe('検索機能の統合テスト', () => {
   test.beforeEach(async ({ page }) => {
     const teamSearchPage = new TeamSearchPage(page);
     await teamSearchPage.goto();
+    // テスト間の状態リークを防止
+    await teamSearchPage.clearStorage();
   });
 
   test('チーム検索の基本フロー', async ({ page }) => {

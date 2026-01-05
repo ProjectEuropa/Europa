@@ -11,19 +11,19 @@ export class RegisterPage extends BasePage {
 
   // Locators (semantic priority: getByRole > getByLabel > getByText)
   get nameInput() {
-    return this.page.locator('input#name');
+    return this.page.getByLabel('名前*');
   }
 
   get emailInput() {
-    return this.page.locator('input#email');
+    return this.page.getByLabel('メールアドレス*');
   }
 
   get passwordInput() {
-    return this.page.locator('input#password');
+    return this.page.getByLabel('パスワード*', { exact: true });
   }
 
   get passwordConfirmationInput() {
-    return this.page.locator('input#passwordConfirmation');
+    return this.page.getByLabel('パスワード確認*');
   }
 
   get submitButton() {
@@ -31,7 +31,8 @@ export class RegisterPage extends BasePage {
   }
 
   override get loginLink() {
-    return this.page.getByRole('link', { name: /ログイン/ }).first();
+    // 登録ページのメインコンテンツ内のログインリンク
+    return this.page.getByRole('main').getByRole('link', { name: 'ログイン' });
   }
 
   get nameError() {

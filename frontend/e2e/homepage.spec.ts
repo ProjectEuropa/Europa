@@ -6,6 +6,8 @@ test.describe('Homepage', () => {
     const homePage = new HomePage(page);
 
     await homePage.goto();
+    // テスト間の状態リークを防止
+    await homePage.clearStorage();
 
     // EUROPAロゴが表示されることを確認
     await expect(homePage.homeLink).toBeVisible();

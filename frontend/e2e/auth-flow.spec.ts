@@ -132,6 +132,7 @@ test.describe('Authentication Flow', () => {
       await registerPage.expectPasswordMismatchError();
     });
 
+    // Skip: 実DBへの登録が必要（DB初期化・シード未設定）
     test.skip('should handle successful registration', async ({ page }) => {
       const registerPage = new RegisterPage(page);
 

@@ -15,7 +15,7 @@ export class LoginPage extends BasePage {
   }
 
   get passwordInput() {
-    return this.page.locator('input#password');
+    return this.page.getByLabel('パスワード*');
   }
 
   get submitButton() {

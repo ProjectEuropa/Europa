@@ -38,6 +38,18 @@ export class [PageName]Page extends BasePage {
   // 3. getByText - テキストコンテンツ
   // 4. getByTestId - 最終手段
 
+  get emailInput() {
+    return this.page.getByLabel('メールアドレス*');
+  }
+
+  get passwordInput() {
+    return this.page.getByLabel('パスワード*');
+  }
+
+  get submitButton() {
+    return this.page.getByRole('button', { name: '送信' });
+  }
+
   // Actions
   async goto() {
     await this.page.goto('/path');
@@ -45,7 +57,9 @@ export class [PageName]Page extends BasePage {
 
   // Assertions
   async expectVisible() {
-    // ページ固有の表示確認
+    await expect(this.emailInput).toBeVisible();
+    await expect(this.passwordInput).toBeVisible();
+    await expect(this.submitButton).toBeVisible();
   }
 }
 ```
@@ -69,6 +83,8 @@ test.describe('[PageName]', () => {
   test('should load correctly', async ({ page }) => {
     const [pageName]Page = new [PageName]Page(page);
     await [pageName]Page.goto();
+    // 必須: テスト間の状態リークを防止（gotoの後に実行）
+    await [pageName]Page.clearStorage();
     await [pageName]Page.expectVisible();
   });
 
