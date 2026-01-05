@@ -290,38 +290,50 @@ jobs:
           path: frontend/test-results/
           retention-days: 7
 
-      - name: Upload E2E failure videos to Slack
+      - name: Upload E2E failure video to Slack
         if: failure()
+        continue-on-error: true
         run: |
-          # Find video files from test results
-          VIDEO_FILES=$(find test-results -name "*.webm" -type f 2>/dev/null || true)
+          VIDEO_FILE=$(find test-results -name "*.webm" -type f 2>/dev/null | head -1 || true)
 
-          if [ -z "$SLACK_BOT_TOKEN" ]; then
-            echo "SLACK_BOT_TOKEN not set, skipping video upload"
+          if [ -z "$SLACK_BOT_TOKEN" ] || [ -z "$VIDEO_FILE" ]; then
+            echo "Skipping: SLACK_BOT_TOKEN not set or no video found"
             exit 0
           fi
 
-          if [ -n "$VIDEO_FILES" ]; then
-            echo "📹 Found video files, uploading to Slack..."
-            for video in $VIDEO_FILES; do
-              # Get test name from directory path
-              TEST_NAME=$(basename $(dirname "$video"))
+          TEST_NAME=$(basename $(dirname "$VIDEO_FILE"))
+          FILE_SIZE=$(stat -f%z "$VIDEO_FILE" 2>/dev/null || stat -c%s "$VIDEO_FILE")
+          FILE_NAME=$(basename "$VIDEO_FILE")
 
-              curl -s -F file=@"$video" \
-                   -F "initial_comment=🎬 E2E Test Failed: ${TEST_NAME}
-          PR: #${{ github.event.pull_request.number }}
-          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-                   -F channels=${{ secrets.SLACK_CHANNEL_ID }} \
-                   -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-                   https://slack.com/api/files.upload
+          # Step 1: Get upload URL
+          UPLOAD_RESPONSE=$(curl -s -X POST "https://slack.com/api/files.getUploadURLExternal" \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "filename=$FILE_NAME&length=$FILE_SIZE")
 
-              echo "Uploaded: $video"
-            done
-          else
-            echo "No video files found"
+          UPLOAD_URL=$(echo "$UPLOAD_RESPONSE" | jq -r '.upload_url // empty')
+          FILE_ID=$(echo "$UPLOAD_RESPONSE" | jq -r '.file_id // empty')
+
+          if [ -z "$UPLOAD_URL" ]; then
+            echo "Failed to get upload URL: $UPLOAD_RESPONSE"
+            exit 1
           fi
+
+          # Step 2: Upload file to the URL
+          curl -s -X POST "$UPLOAD_URL" -F "file=@$VIDEO_FILE"
+
+          # Step 3: Complete upload and share to channel
+          curl -s -X POST "https://slack.com/api/files.completeUploadExternal" \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"files\": [{\"id\": \"$FILE_ID\", \"title\": \"E2E Failed: $TEST_NAME\"}],
+              \"channel_id\": \"$SLACK_CHANNEL_ID\",
+              \"initial_comment\": \"E2E Test Failed: $TEST_NAME\nPR: #${{ github.event.pull_request.number }}\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
+            }"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 
       - name: Notify Slack on E2E failure
         if: failure()
