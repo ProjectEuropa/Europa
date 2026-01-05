@@ -23,16 +23,16 @@ export class ApiClient {
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'X-Requested-With': 'XMLHttpRequest', // Laravel SPAモードで必要
+      'X-Requested-With': 'XMLHttpRequest', // SPA モードで必要
       ...config?.defaultHeaders,
     };
   }
 
   /**
-   * CSRF Cookieを取得（Sanctum Token認証では不要だが互換性のため残す）
+   * CSRF Cookieを取得（JWT認証では不要だが互換性のため残す）
    */
   async getCsrfCookie(): Promise<void> {
-    // Sanctum Token + HttpOnly Cookie方式ではCSRF不要
+    // JWT + HttpOnly Cookie方式ではCSRF不要
     // 互換性のため空実装を残す
     return Promise.resolve();
   }
