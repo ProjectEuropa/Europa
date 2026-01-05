@@ -82,11 +82,16 @@ export const testUsers = useRealApi
  */
 export async function loginUser(page: Page, user: TestUser) {
   if (useRealApi) {
+    // Validate password exists for real API login
+    if (!user.password) {
+      throw new Error(`loginUser: password is required for TestUser "${user.email}"`);
+    }
+
     // Perform real login via API
     const { LoginPage } = await import('../pages/LoginPage');
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login(user.email, user.password!);
+    await loginPage.login(user.email, user.password);
     // Wait for redirect after successful login
     await page.waitForURL(/\/(mypage)?$/, { timeout: 10000 });
     return;
