@@ -1,0 +1,82 @@
+name: E2E Sync with UI Changes
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/src/components/**'
+      - 'frontend/src/app/**'
+
+jobs:
+  sync-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            frontend/src/components/**
+            frontend/src/app/**
+
+      - name: Check if E2E update needed
+        if: steps.changes.outputs.any_changed == 'true'
+        run: |
+          echo "Changed UI files detected:"
+          echo "${{ steps.changes.outputs.all_changed_files }}"
+
+      - name: Setup Node.js
+        if: steps.changes.outputs.any_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        if: steps.changes.outputs.any_changed == 'true'
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Update E2E tests with Claude
+        if: steps.changes.outputs.any_changed == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            以下のUIコンポーネントが変更されました:
+            ${{ steps.changes.outputs.all_changed_files }}
+
+            これらの変更に関連するE2Eテストの更新が必要か確認してください。
+
+            ## 手順
+            1. 変更されたコンポーネントを読み取る
+            2. frontend/e2e/pages/ の関連するPage Objectを特定
+            3. 以下の変更がないか確認:
+               - aria-label, role属性の変更
+               - ボタン/リンクのテキスト変更
+               - フォーム要素の構造変更
+            4. 必要に応じてPage Objectのロケータを更新
+            5. テストケースに影響がないか確認
+
+            ## ロケータ優先順位
+            getByRole > getByLabel > getByText > getByTestId
+
+            ## 修正があれば
+            git add と git commit を実行してください。
+            コミットメッセージ: "fix(e2e): UIコンポーネント変更に追従"
+          allowed_tools: "Read,Edit,Write,Bash(git:*),Glob,Grep"
+
+      - name: Push changes
+        if: steps.changes.outputs.any_changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git push || echo "No changes to push"

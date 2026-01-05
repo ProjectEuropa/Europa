@@ -1,0 +1,117 @@
+name: E2E Auto Fix
+
+on:
+  workflow_run:
+    workflows: ["Frontend CI"]
+    types: [completed]
+
+jobs:
+  auto-fix:
+    # Only run when Frontend CI failed and it's not an auto-fix branch (prevent infinite loops)
+    if: |
+      github.event.workflow_run.conclusion == 'failure' &&
+      !startsWith(github.event.workflow_run.head_branch, 'fix/e2e-auto-')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - name: Download Playwright report
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: playwright-report
+          path: playwright-report
+        continue-on-error: true
+
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: playwright-test-results
+          path: test-results
+        continue-on-error: true
+
+      - name: Check if E2E artifacts exist
+        id: check-artifacts
+        run: |
+          if [ -d "playwright-report" ] || [ -d "test-results" ]; then
+            echo "has_artifacts=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_artifacts=false" >> $GITHUB_OUTPUT
+            echo "No E2E test artifacts found - skipping auto-fix"
+          fi
+
+      - name: Setup Node.js
+        if: steps.check-artifacts.outputs.has_artifacts == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        if: steps.check-artifacts.outputs.has_artifacts == 'true'
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Run Claude Code to fix E2E
+        if: steps.check-artifacts.outputs.has_artifacts == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            E2Eテストが失敗しています。自動修復を試みてください。
+
+            ## 失敗レポートの場所
+            - playwright-report/ - Playwrightのテストレポート
+            - test-results/ - 失敗時のスクリーンショット/動画
+
+            ## 手順
+            1. playwright-report/index.html を読んで失敗したテストを特定
+            2. 失敗原因を分析（ロケータ変更、タイミング、API変更など）
+            3. frontend/e2e/ のテストコードまたは Page Object を修正
+            4. セマンティックロケータ優先順位を守る:
+               getByRole > getByLabel > getByText > getByTestId
+
+            ## 修正後
+            修正が完了したら git add と git commit を実行してください。
+            コミットメッセージ: "fix(e2e): 自動修復 - [修正内容の要約]"
+          allowed_tools: "Read,Edit,Write,Bash(git:*),Bash(npm run test:e2e:*),Glob,Grep"
+
+      - name: Create fix PR
+        if: steps.check-artifacts.outputs.has_artifacts == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "fix(e2e): 自動修復 by Claude Code"
+          body: |
+            ## 🤖 自動修復 PR
+
+            E2Eテスト失敗を検知し、Claude Codeが自動修復を試みました。
+
+            ### 元のワークフロー
+            - Run: ${{ github.event.workflow_run.html_url }}
+            - Branch: `${{ github.event.workflow_run.head_branch }}`
+
+            ### 確認事項
+            - [ ] 修正内容が適切か確認
+            - [ ] テストが意図した動作を検証しているか確認
+            - [ ] 関連するテストに影響がないか確認
+
+            ---
+            🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          branch: fix/e2e-auto-${{ github.run_id }}
+          base: ${{ github.event.workflow_run.head_branch }}
+          labels: |
+            auto-fix
+            e2e
+          delete-branch: true
