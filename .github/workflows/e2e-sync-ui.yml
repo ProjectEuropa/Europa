@@ -22,7 +22,8 @@ jobs:
 
       - name: Get changed files
         id: changes
-        uses: tj-actions/changed-files@v44
+        # v46.0.1+ required due to CVE-2025-30066 (supply-chain compromise in v44-v45.0.7)
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             frontend/src/components/**
@@ -79,4 +80,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Race condition対策: リモートの変更を取り込んでからpush
+          git pull --rebase origin ${{ github.head_ref }} || true
           git push || echo "No changes to push"

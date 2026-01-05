@@ -5,6 +5,12 @@ on:
     workflows: ["Frontend CI"]
     types: [completed]
 
+# Rate limiting: Only one auto-fix job per branch at a time
+# Cancels any in-progress auto-fix for the same branch
+concurrency:
+  group: e2e-auto-fix-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
 jobs:
   auto-fix:
     # Only run when Frontend CI failed and it's not an auto-fix branch (prevent infinite loops)
