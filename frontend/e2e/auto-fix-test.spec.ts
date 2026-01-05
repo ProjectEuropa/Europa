@@ -13,8 +13,8 @@ test.describe('Auto Fix Test', () => {
   test('should fail with wrong button name', async ({ page }) => {
     await page.goto('/login');
 
-    // 間違ったボタン名（正しくは "ログイン"）
-    const button = page.getByRole('button', { name: '間違ったボタン' });
+    // 修正: 正しいボタン名に変更
+    const button = page.getByRole('button', { name: 'ログイン' });
     await expect(button).toBeVisible({ timeout: 1000 });
   });
 });
