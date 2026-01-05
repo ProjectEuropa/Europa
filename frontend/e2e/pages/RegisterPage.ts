@@ -30,7 +30,7 @@ export class RegisterPage extends BasePage {
     return this.page.getByRole('button', { name: /アカウント作成/ });
   }
 
-  get loginLink() {
+  override get loginLink() {
     return this.page.getByRole('link', { name: /ログイン/ }).first();
   }
 

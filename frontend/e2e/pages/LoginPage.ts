@@ -22,7 +22,7 @@ export class LoginPage extends BasePage {
     return this.page.getByRole('button', { name: 'ログイン', exact: true });
   }
 
-  get registerLink() {
+  override get registerLink() {
     // ログインページのメインコンテンツ内の新規登録リンク
     return this.page.getByRole('main').getByRole('link', { name: '新規登録' });
   }
