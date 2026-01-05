@@ -121,11 +121,20 @@ interface PaginatedResponse<T> {
   rememberMe: '30d',      // Remember Me option
 }
 
-// Cookie Settings
+// Cookie Settings (environment-specific)
+// Production
 {
   httpOnly: true,
-  secure: true,           // Production only
-  sameSite: 'None',       // Production: None, Dev: Lax
+  secure: true,           // HTTPS required
+  sameSite: 'None',       // Cross-origin allowed
+  path: '/',
+}
+
+// Development
+{
+  httpOnly: true,
+  secure: false,          // HTTP allowed
+  sameSite: 'Lax',        // Same-origin only
   path: '/',
 }
 ```
@@ -219,19 +228,34 @@ throw new HTTPException(422, {
 
 ```typescript
 // src/middleware/cors.ts
-const allowedOrigins = {
-  development: ['http://localhost:3000', 'http://localhost:3002'],
-  staging: ['https://pre.project-europa.work'],
-  production: ['https://project-europa.work'],
-};
+export function setupCORS() {
+  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+    const middleware = cors({
+      origin: (origin) => {
+        // Dynamic allowed origins including env.FRONTEND_URL
+        const allowedOrigins = [
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'http://localhost:3002',
+          'https://localhost:3002',
+          c.env.FRONTEND_URL,
+        ].filter(Boolean) as string[];
 
-app.use('*', cors({
-  origin: (origin) => {
-    const env = c.env.ENVIRONMENT || 'development';
-    return allowedOrigins[env].includes(origin) ? origin : null;
-  },
-  credentials: true,
-}));
+        // Allow direct URL access (no Origin header)
+        if (!origin) return true;
+
+        return allowedOrigins.includes(origin) ? origin : false;
+      },
+      credentials: true,
+      allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      exposeHeaders: ['Set-Cookie', 'Content-Disposition'],
+      maxAge: 86400, // 24 hours
+    });
+
+    return middleware(c, next);
+  };
+}
 ```
 
 ## Database
@@ -258,34 +282,61 @@ CREATE TABLE users (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  remember_token VARCHAR(100),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Files
+-- Events
+CREATE TABLE events (
+  id SERIAL PRIMARY KEY,
+  register_user_id INTEGER REFERENCES users(id),
+  event_name VARCHAR(255) NOT NULL,
+  event_details VARCHAR(255) NOT NULL,
+  event_reference_url VARCHAR(255),
+  event_type VARCHAR(255) NOT NULL,  -- '1': 大会, '2': その他
+  event_closing_day TIMESTAMP NOT NULL,
+  event_displaying_day TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Files (metadata only, binary in R2)
 CREATE TABLE files (
   id SERIAL PRIMARY KEY,
   upload_user_id INTEGER REFERENCES users(id),
+  upload_owner_name VARCHAR(255) DEFAULT 'Anonymous',
   file_name VARCHAR(255) NOT NULL,
-  file_path VARCHAR(500) NOT NULL,
-  file_size INTEGER,
-  data_type VARCHAR(1) NOT NULL,  -- '1': Team, '2': Match
-  delete_password VARCHAR(255),    -- For anonymous uploads
+  file_path VARCHAR(255),            -- R2 object key
+  file_size BIGINT,
+  file_comment TEXT,
+  data_type VARCHAR(10) DEFAULT '1', -- '1': Team, '2': Match
+  delete_password VARCHAR(255) NULL, -- Hashed, for anonymous uploads
   downloadable_at TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Tags (normalized)
 CREATE TABLE tags (
   id SERIAL PRIMARY KEY,
-  tag_name VARCHAR(100) UNIQUE NOT NULL
+  tag_name VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- File-Tag relationship
 CREATE TABLE file_tags (
   file_id INTEGER REFERENCES files(id) ON DELETE CASCADE,
   tag_id INTEGER REFERENCES tags(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT NOW(),
   PRIMARY KEY (file_id, tag_id)
+);
+
+-- Password Resets
+CREATE TABLE password_resets (
+  email VARCHAR(255) PRIMARY KEY,
+  token VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -376,12 +427,13 @@ bucket_name = "europa-files-prod"
 wrangler secret put DATABASE_URL --env production
 wrangler secret put JWT_SECRET --env production
 wrangler secret put RESEND_API_KEY --env production
+wrangler secret put RESEND_FROM_EMAIL --env production
 ```
 
 | Secret | Description |
 |--------|-------------|
 | DATABASE_URL | Neon PostgreSQL接続文字列 |
-| JWT_SECRET | JWT署名キー（≥32文字推奨） |
+| JWT_SECRET | JWT署名キー（HS256: 32バイト以上必須、`openssl rand -hex 32`で生成） |
 | RESEND_API_KEY | メール送信APIキー |
 | RESEND_FROM_EMAIL | 送信元メールアドレス |
 
@@ -393,7 +445,7 @@ wrangler secret put RESEND_API_KEY --env production
 - 行幅: 100文字
 - セミコロン: 常に付与
 - クォート: シングル
-- any: 禁止（理由コメント必須）
+- any: 警告（noExplicitAny: warn）
 
 ### Security Rules
 
@@ -419,11 +471,18 @@ const hashed = await bcrypt.hash(password, 10);
 // vitest.config.ts
 export default defineConfig({
   test: {
-    environment: 'node',
     globals: true,
+    environment: 'node',
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
       include: ['src/**/*.ts'],
-      exclude: ['**/*.test.ts', 'src/types/', 'src/index.ts'],
+      exclude: [
+        'src/**/*.{test,spec}.ts',
+        'src/types/**',
+        'src/index.ts',
+      ],
     },
   },
 });

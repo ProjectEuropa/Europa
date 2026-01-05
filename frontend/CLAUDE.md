@@ -64,7 +64,7 @@ npm run ci           # test:run + build
 
 ### Pre-commit Hook（lint-staged）
 
-- TypeScript/JavaScript: `biome check --write` + `vitest related --run`
+- TypeScript/JavaScript: `biome check --write` + `vitest related --run --reporter=verbose`
 - JSON/Markdown/CSS: `biome format --write`
 
 ## Coding Standards
@@ -106,9 +106,41 @@ npm run ci           # test:run + build
   name: 'auth-storage',
   partialize: state => ({ user, isAuthenticated }), // token除外
 }
+```
 
-// SSR対応
-hasHydrated フラグで水和完了を判定
+### SSR Hydration Pattern
+
+```typescript
+// src/stores/authStore.ts
+interface AuthStore {
+  user: User | null;
+  isAuthenticated: boolean;
+  hasHydrated: boolean; // Hydration完了フラグ
+}
+
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      isAuthenticated: false,
+      hasHydrated: false,
+    }),
+    {
+      name: 'auth-storage',
+      onRehydrateStorage: () => (state) => {
+        if (state) state.hasHydrated = true;
+      },
+    }
+  )
+);
+
+// Usage in components (avoid hydration mismatch)
+export function MyComponent() {
+  const { hasHydrated, user } = useAuthStore();
+
+  if (!hasHydrated) return null; // Wait for hydration
+  return <div>{user?.name}</div>;
+}
 ```
 
 **Store Structure**: State + Actions を union型で定義
@@ -193,8 +225,16 @@ await page.waitForResponse('**/api/v2/auth/login');
 
 ```typescript
 // Fixed time waits
-await page.waitForTimeout(1000);   // ❌ NEVER
-await new Promise(r => setTimeout(r, 500)); // ❌ NEVER
+await page.waitForTimeout(1000);   // ❌ Avoid
+await new Promise(r => setTimeout(r, 500)); // ❌ Avoid
+```
+
+### Rare Exceptions (with documentation)
+
+```typescript
+// If an automatic wait cannot be used, document the reason
+// Animation delay (unavoidable)
+await page.waitForTimeout(300); // Wait for CSS animation completion (transition: 300ms)
 ```
 
 ---
