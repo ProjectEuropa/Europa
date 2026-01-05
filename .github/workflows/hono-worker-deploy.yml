@@ -1,0 +1,202 @@
+name: Hono Worker Deploy
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'hono-worker/**'
+      - '.github/workflows/hono-worker-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: 'staging'
+
+# Concurrency: prevent multiple deployments to the same environment
+concurrency:
+  group: hono-worker-deploy-${{ github.event.inputs.environment || 'staging' }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  # Pre-deployment checks
+  pre-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: ./hono-worker
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine deployment environment
+        id: set-env
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: './hono-worker/package-lock.json'
+
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: hono-worker/node_modules
+          key: ${{ runner.os }}-hono-deploy-deps-${{ hashFiles('hono-worker/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-hono-deploy-deps-
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm run test:run
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+  # Deploy to Cloudflare Workers
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [pre-deploy]
+    environment:
+      name: ${{ needs.pre-deploy.outputs.environment }}
+      url: ${{ steps.deploy.outputs.url }}
+    defaults:
+      run:
+        working-directory: ./hono-worker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: './hono-worker/package-lock.json'
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: hono-worker/node_modules
+          key: ${{ runner.os }}-hono-deploy-deps-${{ hashFiles('hono-worker/package-lock.json') }}
+
+      - name: Install dependencies (if cache miss)
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Deploy to Cloudflare Workers
+        id: deploy
+        run: |
+          if [[ "${{ needs.pre-deploy.outputs.environment }}" == "production" ]]; then
+            echo "🚀 Deploying to PRODUCTION..."
+            npm run deploy:production
+            echo "url=https://project-europa.work" >> $GITHUB_OUTPUT
+          else
+            echo "🚀 Deploying to STAGING..."
+            npm run deploy:staging
+            echo "url=https://pre.project-europa.work" >> $GITHUB_OUTPUT
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deployment summary
+        run: |
+          echo "✅ Deployment completed successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ needs.pre-deploy.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+
+  # Post-deployment smoke tests (optional)
+  post-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [deploy, pre-deploy]
+    if: success()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Wait for deployment to be ready
+        run: sleep 10
+
+      - name: Health check
+        run: |
+          ENV="${{ needs.pre-deploy.outputs.environment }}"
+          if [[ "$ENV" == "production" ]]; then
+            URL="https://project-europa.work/api/v2/files/tags"
+          else
+            URL="https://pre.project-europa.work/api/v2/files/tags"
+          fi
+          
+          echo "🔍 Checking health of $URL..."
+          
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$URL" || echo "000")
+          
+          if [[ "$RESPONSE" == "200" ]]; then
+            echo "✅ Health check passed (HTTP $RESPONSE)"
+          else
+            echo "⚠️ Health check returned HTTP $RESPONSE"
+            exit 1
+          fi
+
+  # Notification job
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    needs: [deploy, pre-deploy, post-deploy]
+    if: always()
+    steps:
+      - name: Determine overall status
+        id: status
+        run: |
+          if [[ "${{ needs.deploy.result }}" == "failure" ]]; then
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=🚨 Deployment failed" >> $GITHUB_OUTPUT
+          elif [[ "${{ needs.post-deploy.result }}" == "failure" ]]; then
+            echo "status=warning" >> $GITHUB_OUTPUT
+            echo "message=⚠️ Deployment succeeded but health check failed" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=✅ Deployment succeeded" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: steps.status.outputs.status != 'success'
+        with:
+          status: ${{ steps.status.outputs.status }}
+          fields: repo,message,author,job,ref
+          text: |
+            ${{ steps.status.outputs.message }}
+            Environment: ${{ needs.pre-deploy.outputs.environment }}
+            Commit: ${{ github.sha }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
