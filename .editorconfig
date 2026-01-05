@@ -8,12 +8,12 @@ charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
-indent_style = tab
+indent_style = space
 indent_size = 2
 
-# TypeScript/JavaScript
+# TypeScript/JavaScript (matches Biome config)
 [*.{ts,tsx,js,jsx,mjs,cjs}]
-indent_style = tab
+indent_style = space
 indent_size = 2
 
 # JSON files
@@ -42,10 +42,10 @@ indent_size = 2
 
 # CSS/SCSS
 [*.{css,scss}]
-indent_style = tab
+indent_style = space
 indent_size = 2
 
 # HTML
 [*.html]
-indent_style = tab
+indent_style = space
 indent_size = 2
