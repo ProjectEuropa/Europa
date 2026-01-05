@@ -252,6 +252,10 @@ jobs:
       - name: Start API server
         working-directory: ./hono-worker
         run: |
+          # Create .dev.vars for wrangler to read secrets
+          echo "DATABASE_URL=$DATABASE_URL" > .dev.vars
+          echo "JWT_SECRET=$JWT_SECRET" >> .dev.vars
+
           npx wrangler dev --env e2e --port 8787 &
           # Wait for server to be ready with retry loop
           for i in {1..30}; do
