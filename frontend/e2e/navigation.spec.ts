@@ -1,51 +1,61 @@
-// @ts-ignore
-// @vitest-ignore
-import { test as playwrightTest, expect as playwrightExpect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { HomePage } from './pages/HomePage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 
-playwrightTest('Navigation between pages', async ({ page }) => {
-  // ホームページから開始
-  await page.goto('/');
-  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
+test.describe('Navigation', () => {
+  test('Navigation between pages', async ({ page }) => {
+    const homePage = new HomePage(page);
+    const loginPage = new LoginPage(page);
+    const registerPage = new RegisterPage(page);
 
-  // ログインページへ移動
-  await page.getByRole('navigation').getByRole('link', { name: 'ログインページに移動' }).click();
-  await playwrightExpect(page).toHaveURL(/.*login/);
-  await playwrightExpect(page.getByRole('heading', { name: 'ログイン' })).toBeVisible();
+    // ホームページから開始
+    await homePage.goto();
+    await expect(homePage.homeLink).toBeVisible();
 
-  // 新規登録ページへ移動
-  await page.getByRole('link', { name: '新規登録ページに移動' }).first().click();
-  await playwrightExpect(page).toHaveURL(/.*register/);
-  await playwrightExpect(page.getByRole('heading', { name: '新規登録' })).toBeVisible();
+    // ログインページへ移動
+    await homePage.navigateToLogin();
+    await expect(page).toHaveURL(/.*login/);
+    await loginPage.expectVisible();
 
-  // ホームページに戻る
-  await page.goto('/');
-  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
-});
+    // 新規登録ページへ移動
+    await homePage.navigateToRegister();
+    await expect(page).toHaveURL(/.*register/);
+    await registerPage.expectVisible();
 
-playwrightTest('Header navigation', async ({ page }) => {
-  await page.goto('/');
+    // ホームページに戻る
+    await homePage.navigateToHome();
+    await expect(homePage.homeLink).toBeVisible();
+  });
 
-  // ヘッダーの要素を確認
-  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
+  test('Header navigation', async ({ page }) => {
+    const homePage = new HomePage(page);
 
-  // メインナビゲーションメニューがある場合の確認
-  const navigation = page.getByRole('navigation', { name: 'メインナビゲーション' });
-  await playwrightExpect(navigation).toBeVisible();
-});
+    await homePage.goto();
 
-playwrightTest('Responsive design', async ({ page }) => {
-  // デスクトップサイズ
-  await page.setViewportSize({ width: 1200, height: 800 });
-  await page.goto('/');
-  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
+    // ヘッダーの要素を確認
+    await expect(homePage.homeLink).toBeVisible();
 
-  // タブレットサイズ
-  await page.setViewportSize({ width: 768, height: 1024 });
-  await page.reload();
-  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
+    // メインナビゲーションメニューがある場合の確認
+    await expect(homePage.mainNav).toBeVisible();
+  });
 
-  // モバイルサイズ
-  await page.setViewportSize({ width: 375, height: 667 });
-  await page.reload();
-  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
+  test('Responsive design', async ({ page }) => {
+    const homePage = new HomePage(page);
+
+    // デスクトップサイズ
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await homePage.goto();
+    await expect(homePage.homeLink).toBeVisible();
+
+    // タブレットサイズ
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await page.reload();
+    await expect(homePage.homeLink).toBeVisible();
+
+    // モバイルサイズ
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.reload();
+    await expect(homePage.homeLink).toBeVisible();
+  });
 });
