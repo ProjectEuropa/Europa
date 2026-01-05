@@ -207,10 +207,9 @@ async function main(): Promise<void> {
           process.exit(1);
         }
         const connectionUrl = await createBranch(arg);
-        // Output connection URL for CI to capture
-        console.log(`::set-output name=database_url::${connectionUrl}`);
-        // Also output to stdout for direct capture
-        console.log(connectionUrl);
+        // Output connection URL for CI to capture (GitHub Actions format)
+        // Use special marker so CI can extract the URL reliably
+        console.log(`NEON_CONNECTION_URL=${connectionUrl}`);
         break;
       }
 

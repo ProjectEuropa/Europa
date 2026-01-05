@@ -204,10 +204,16 @@ jobs:
           BRANCH_NAME="pr-${{ github.event.pull_request.number }}"
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-          # Create branch and capture connection URL
-          CONNECTION_URL=$(npx tsx scripts/neon-branch.ts create "$BRANCH_NAME" | tail -1)
-          echo "database_url=$CONNECTION_URL" >> $GITHUB_OUTPUT
+          # Create branch and capture connection URL from special marker
+          OUTPUT=$(npx tsx scripts/neon-branch.ts create "$BRANCH_NAME")
+          echo "$OUTPUT"
+          CONNECTION_URL=$(echo "$OUTPUT" | grep "^NEON_CONNECTION_URL=" | cut -d'=' -f2-)
+          if [ -z "$CONNECTION_URL" ]; then
+            echo "Error: Failed to get connection URL"
+            exit 1
+          fi
           echo "::add-mask::$CONNECTION_URL"
+          echo "database_url=$CONNECTION_URL" >> $GITHUB_OUTPUT
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
           NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
