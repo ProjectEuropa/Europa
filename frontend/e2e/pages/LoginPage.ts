@@ -19,7 +19,8 @@ export class LoginPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.getByRole('button', { name: 'ログイン', exact: true });
+    // INTENTIONALLY BROKEN: wrong button name for auto-fix test
+    return this.page.getByRole('button', { name: 'サインイン', exact: true });
   }
 
   override get registerLink() {
