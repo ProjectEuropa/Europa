@@ -15,6 +15,27 @@ export interface TestUser {
 export const useRealApi = !!process.env.E2E_API_URL;
 
 /**
+ * Generate a unique email address for registration tests
+ * Uses timestamp and random string to ensure uniqueness across test runs
+ */
+export function generateUniqueEmail(prefix: string = 'e2e-register'): string {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8);
+  return `${prefix}-${timestamp}-${random}@test.com`;
+}
+
+/**
+ * Generate a unique test user for registration tests
+ */
+export function generateUniqueTestUser(): TestUser & { password: string } {
+  return {
+    name: 'E2E New User',
+    email: generateUniqueEmail(),
+    password: 'password123',
+  };
+}
+
+/**
  * Test users - uses seed data credentials when running with real API
  */
 export const testUsers = useRealApi
