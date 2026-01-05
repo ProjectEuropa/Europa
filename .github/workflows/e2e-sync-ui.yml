@@ -22,7 +22,7 @@ jobs:
 
       - name: Get changed files
         id: changes
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             frontend/src/components/**
