@@ -20,6 +20,11 @@ frontend/blob-report/
 frontend/playwright/.cache/
 frontend/coverage/
 
+# E2E artifacts (downloaded in CI workflows)
+/playwright-report/
+/test-results/
+test-results.json
+
 # Hono Worker
 hono-worker/node_modules/
 hono-worker/.wrangler/
