@@ -212,6 +212,11 @@ jobs:
             echo "Error: Failed to get connection URL"
             exit 1
           fi
+          # Validate URL format (should start with postgresql:// or postgres://)
+          if [[ ! "$CONNECTION_URL" =~ ^postgres(ql)?:// ]]; then
+            echo "Error: Invalid connection URL format"
+            exit 1
+          fi
           echo "::add-mask::$CONNECTION_URL"
           echo "database_url=$CONNECTION_URL" >> $GITHUB_OUTPUT
         env:
@@ -246,9 +251,19 @@ jobs:
         working-directory: ./hono-worker
         run: |
           npx wrangler dev --env e2e --port 8787 &
-          # Wait for server to be ready
-          sleep 10
-          curl -s http://localhost:8787/health || echo "Health check skipped"
+          # Wait for server to be ready with retry loop
+          for i in {1..30}; do
+            if curl -s http://localhost:8787/health > /dev/null 2>&1; then
+              echo "Server is ready"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Server failed to start"
+              exit 1
+            fi
+            echo "Waiting for server... ($i/30)"
+            sleep 2
+          done
         env:
           DATABASE_URL: ${{ steps.neon.outputs.database_url }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}

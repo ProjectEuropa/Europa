@@ -168,9 +168,10 @@ async function seedDatabase(databaseUrl: string): Promise<void> {
   console.log('Seeding database...');
 
   // Use pg Client for executing raw SQL
+  // Neon uses valid SSL certificates, so we don't need to disable verification
   const client = new Client({
     connectionString: databaseUrl,
-    ssl: { rejectUnauthorized: false },
+    ssl: true,
   });
 
   try {
