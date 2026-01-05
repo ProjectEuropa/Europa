@@ -188,7 +188,7 @@ describe('ApiClient', () => {
 
   describe('getCsrfCookie', () => {
     it('should return immediately (no-op for token-based auth)', async () => {
-      // Sanctum Token + HttpOnly Cookie方式ではCSRF不要
+      // JWT + HttpOnly Cookie方式ではCSRF不要
       await apiClient.getCsrfCookie();
 
       // fetchが呼ばれないことを確認
