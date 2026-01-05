@@ -7,16 +7,14 @@ import { test, expect } from '@playwright/test';
  * 目的: e2e-auto-fix.yml ワークフローが正しく動作するか確認
  *
  * 期待される修正:
- * - 存在しないボタン名 "存在しないボタン" → 実際のボタン名に修正
+ * - "間違ったボタン" → "ログイン" に修正
  */
 test.describe('Auto Fix Test', () => {
-  test('should fail with wrong locator for auto-fix workflow test', async ({ page }) => {
+  test('should fail with wrong button name', async ({ page }) => {
     await page.goto('/login');
 
-    // このロケータは存在しないため、確実に失敗する
-    const nonExistentButton = page.getByRole('button', { name: '存在しないボタン', exact: true });
-
-    // 5秒でタイムアウト（即座に失敗）
-    await expect(nonExistentButton).toBeVisible({ timeout: 5000 });
+    // 間違ったボタン名（正しくは "ログイン"）
+    const button = page.getByRole('button', { name: '間違ったボタン' });
+    await expect(button).toBeVisible({ timeout: 1000 });
   });
 });
