@@ -254,17 +254,22 @@ jobs:
           echo "DATABASE_URL=$DATABASE_URL" > .dev.vars
           echo "JWT_SECRET=$JWT_SECRET" >> .dev.vars
 
+          # Ensure .dev.vars is always cleaned up, even on failure
+          cleanup() {
+            rm -f .dev.vars
+          }
+          trap cleanup EXIT
+
           npx wrangler dev --env e2e --port 8787 &
           WRANGLER_PID=$!
-
-          # Clean up secrets file after wrangler reads it (give it a moment to initialize)
-          sleep 2
-          rm -f .dev.vars
 
           # Wait for server to be ready with retry loop
           for i in {1..30}; do
             if curl -s http://localhost:8787/health > /dev/null 2>&1; then
               echo "Server is ready"
+              # Clean up secrets file after server is confirmed running
+              rm -f .dev.vars
+              trap - EXIT
               break
             fi
             if [ $i -eq 30 ]; then
