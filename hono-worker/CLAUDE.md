@@ -2,7 +2,7 @@
 
 ## Project Structure
 
-```
+```text
 src/
 ├── index.ts           # メインアプリケーション（Honoインスタンス）
 ├── middleware/        # ミドルウェア
@@ -62,7 +62,7 @@ npm run deploy:production # 本番環境
 
 ### Endpoint Structure
 
-```
+```text
 /api/v2
 ├── /auth
 │   ├── POST /register       # ユーザー登録
