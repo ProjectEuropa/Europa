@@ -24,6 +24,7 @@ interface NeonBranch {
   project_id: string;
   parent_id: string;
   created_at: string;
+  primary?: boolean;
 }
 
 interface NeonEndpoint {
@@ -67,11 +68,12 @@ async function getDefaultBranchId(projectId: string): Promise<string> {
   const data = await neonApi<{ branches: NeonBranch[] }>(
     `/projects/${projectId}/branches`
   );
+  // Find primary branch (default branch) or fall back to common names
   const defaultBranch = data.branches.find(
-    (b) => b.name === 'main' || b.name === 'master'
+    (b) => b.primary || b.name === 'main' || b.name === 'master' || b.name === 'production'
   );
   if (!defaultBranch) {
-    throw new Error('Default branch (main/master) not found');
+    throw new Error('Default branch not found');
   }
   return defaultBranch.id;
 }
