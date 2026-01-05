@@ -204,7 +204,6 @@ jobs:
         run: npx playwright install-deps chromium webkit
 
       - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium webkit
 
       - name: Build application
