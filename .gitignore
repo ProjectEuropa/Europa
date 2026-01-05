@@ -1,38 +1,46 @@
-/node_modules
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
+# Dependencies
+node_modules/
+
+# Environment
 .env
-.env.backup
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
+.env.*
+!.env.example
 
-.vscode
-.nuxt
+# IDE
+.vscode/
+.idea/
 
-/public/js/*
-/public/css/*
-/public/mix-manifest.json
-/public/.CHE
-
-/.idea
-
-# Frontend testing
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
 frontend/test-results/
 frontend/playwright-report/
 frontend/blob-report/
 frontend/playwright/.cache/
 frontend/coverage/
 
+# Hono Worker
+hono-worker/node_modules/
+hono-worker/.wrangler/
+hono-worker/dist/
+
+# Claude Code
+/.claude/*
+!/.claude/skills/
+
+# Serena
 /.serena/cache
 
-/.claude/*
-
-/data
-
+# Kiro
 .kiro/settings
 .kiro/memories
+
+# Data
+/data
+
+# Misc
+.DS_Store
+*.log
+
+/ansible

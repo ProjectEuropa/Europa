@@ -12,11 +12,24 @@ export default defineConfig({
   use: {
     baseURL: isCI ? 'http://localhost:3000' : 'http://localhost:3002',
     trace: 'on-first-retry',
+    // Record video on failure for debugging (especially useful in CI)
+    video: 'retain-on-failure',
   },
+  // Output directory for test artifacts (videos, traces, screenshots)
+  outputDir: 'test-results',
   projects: [
+    // Desktop tests (default)
     {
-      name: 'chromium',
+      name: 'Desktop Chrome',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/*.spec.ts',
+      testIgnore: '**/*.mobile.spec.ts',
+    },
+    // Mobile tests (separate files)
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 13'] },
+      testMatch: '**/*.mobile.spec.ts',
     },
   ],
   webServer: {

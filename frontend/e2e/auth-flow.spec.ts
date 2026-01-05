@@ -1,4 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { HomePage } from './pages/HomePage';
+import { MyPage } from './pages/MyPage';
 
 // テスト用のユーザーデータ
 const testUser = {
@@ -14,45 +18,40 @@ const invalidUser = {
 
 test.describe('Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // 各テスト前にローカルストレージをクリア
-    await page.goto('/');
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    const homePage = new HomePage(page);
+    await homePage.goto();
+    await homePage.clearStorage();
   });
 
   test.describe('Login Page', () => {
     test('should display login form correctly', async ({ page }) => {
-      await page.goto('/login');
+      const loginPage = new LoginPage(page);
+
+      await loginPage.goto();
 
       // ページタイトルとフォーム要素の確認
       await expect(page).toHaveTitle(/EUROPA/);
-      await expect(page.getByRole('heading', { name: /ログイン/ })).toBeVisible();
-
-      // フォーム要素の確認
-      await expect(page.locator('input#email')).toBeVisible();
-      await expect(page.locator('input#password')).toBeVisible();
-      await expect(page.getByRole('button', { name: 'ログイン' })).toBeVisible();
+      await loginPage.expectVisible();
 
       // リンクの確認
-      await expect(page.getByRole('link', { name: /新規登録/ }).first()).toBeVisible();
-      await expect(page.getByRole('link', { name: /パスワードをお忘れですか/ })).toBeVisible();
+      await expect(loginPage.registerLink).toBeVisible();
+      await expect(loginPage.forgotPasswordLink).toBeVisible();
     });
 
     test('should show validation errors for empty fields', async ({ page }) => {
-      await page.goto('/login');
+      const loginPage = new LoginPage(page);
 
-      // 空のフォームで送信
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await loginPage.goto();
+      await loginPage.submit();
 
-      // React Hook Formのクライアントサイドバリデーションエラーが表示されることを確認
-      // Note: React Hook Formはクライアントサイドバリデーションを使用
-      await expect(page.locator('p').filter({ hasText: /メールアドレスを入力してください/ })).toBeVisible({ timeout: 3000 });
-      await expect(page.locator('p').filter({ hasText: /パスワードを入力してください/ })).toBeVisible({ timeout: 3000 });
+      // バリデーションエラーが表示されることを確認
+      await loginPage.expectEmailError(/メールアドレスを入力してください/);
+      await loginPage.expectPasswordError(/パスワードを入力してください/);
     });
 
     test('should handle login with invalid credentials', async ({ page }) => {
+      const loginPage = new LoginPage(page);
+
       // APIモックを設定
       await page.route('**/api/v2/auth/login', async (route) => {
         await route.fulfill({
@@ -64,18 +63,16 @@ test.describe('Authentication Flow', () => {
         });
       });
 
-      await page.goto('/login');
+      await loginPage.goto();
+      await loginPage.login(invalidUser.email, invalidUser.password);
 
-      // 無効な認証情報でログイン試行
-      await page.locator('input#email').fill(invalidUser.email);
-      await page.locator('input#password').fill(invalidUser.password);
-      await page.getByRole('button', { name: 'ログイン' }).click();
-
-      // エラーメッセージまたはトーストが表示されることを確認
-      await expect(page.locator('p').filter({ hasText: /メールアドレスまたはパスワードが正しくありません/ }).first()).toBeVisible({ timeout: 5000 });
+      // エラーメッセージが表示されることを確認
+      await loginPage.expectLoginError();
     });
 
     test('should handle successful login', async ({ page }) => {
+      const loginPage = new LoginPage(page);
+
       // APIモックを設定
       await page.route('**/api/v2/auth/login', async (route) => {
         await route.fulfill({
@@ -93,63 +90,52 @@ test.describe('Authentication Flow', () => {
         });
       });
 
-      await page.goto('/login');
+      await loginPage.goto();
+      await loginPage.login(testUser.email, testUser.password);
 
-      // 有効な認証情報でログイン
-      await page.locator('input#email').fill(testUser.email);
-      await page.locator('input#password').fill(testUser.password);
-      await page.getByRole('button', { name: 'ログイン' }).click();
-
-      // 成功メッセージまたはリダイレクトを確認
-      await expect(page).toHaveURL('/', { timeout: 5000 });
+      // 成功後のリダイレクトを確認
+      await loginPage.expectLoginSuccess();
 
       // ローカルストレージに認証状態が保存されることを確認
-      const isAuthenticated = await page.evaluate(() => {
-        const authStorage = localStorage.getItem('auth-storage');
-        if (!authStorage) return false;
-        const parsed = JSON.parse(authStorage);
-        return parsed.state?.isAuthenticated && parsed.state?.user;
-      });
-      expect(isAuthenticated).toBeTruthy();
+      const authStorage = await loginPage.getAuthStorage();
+      expect(authStorage?.state?.isAuthenticated).toBeTruthy();
+      expect(authStorage?.state?.user).toBeTruthy();
     });
   });
 
   test.describe('Registration Page', () => {
     test('should display registration form correctly', async ({ page }) => {
-      await page.goto('/register');
+      const registerPage = new RegisterPage(page);
+
+      await registerPage.goto();
 
       // ページタイトルとフォーム要素の確認
       await expect(page).toHaveTitle(/EUROPA/);
-      await expect(page.getByRole('heading', { name: /新規登録/ })).toBeVisible();
-
-      // フォーム要素の確認
-      await expect(page.locator('input#name')).toBeVisible();
-      await expect(page.locator('input#email')).toBeVisible();
-      await expect(page.locator('input#password')).toBeVisible();
-      await expect(page.locator('input#passwordConfirmation')).toBeVisible();
-      await expect(page.getByRole('button', { name: /アカウント作成/ })).toBeVisible();
+      await registerPage.expectVisible();
 
       // ログインリンクの確認
-      await expect(page.getByRole('link', { name: /ログイン/ }).first()).toBeVisible();
+      await expect(registerPage.loginLink).toBeVisible();
     });
 
     test('should show validation error for password mismatch', async ({ page }) => {
-      await page.goto('/register');
+      const registerPage = new RegisterPage(page);
 
-      // パスワードが一致しない場合
-      await page.locator('input#name').fill(testUser.name);
-      await page.locator('input#email').fill(testUser.email);
-      await page.locator('input#password').fill(testUser.password);
-      await page.locator('input#passwordConfirmation').fill('differentpassword');
-
-      await page.getByRole('button', { name: /アカウント作成/ }).click();
+      await registerPage.goto();
+      await registerPage.register({
+        name: testUser.name,
+        email: testUser.email,
+        password: testUser.password,
+        passwordConfirmation: 'differentpassword',
+      });
 
       // パスワード不一致エラーが表示されることを確認
-      await expect(page.locator('text=パスワードが一致しません')).toBeVisible({ timeout: 3000 });
+      await registerPage.expectPasswordMismatchError();
     });
 
+    // Skip: 実DBへの登録が必要（DB初期化・シード未設定）
     test.skip('should handle successful registration', async ({ page }) => {
-      // Skip this test - requires database initialization
+      const registerPage = new RegisterPage(page);
+
       // APIモックを設定
       await page.route('**/api/v2/auth/register', async (route) => {
         await route.fulfill({
@@ -167,29 +153,25 @@ test.describe('Authentication Flow', () => {
         });
       });
 
-      await page.goto('/register');
+      await registerPage.goto();
+      await registerPage.register({
+        name: testUser.name,
+        email: testUser.email,
+        password: testUser.password,
+        passwordConfirmation: testUser.password,
+      });
 
-      // 有効な情報で登録
-      await page.locator('input#name').fill(testUser.name);
-      await page.locator('input#email').fill(testUser.email);
-      await page.locator('input#password').fill(testUser.password);
-      await page.locator('input#passwordConfirmation').fill(testUser.password);
-
-      await page.getByRole('button', { name: /アカウント作成/ }).click();
-
-      // Wait for form submission and check if button shows loading state
-      await expect(page.getByRole('button', { name: /登録中/ })).toBeVisible({ timeout: 2000 });
-      
       // 成功後のリダイレクトを確認
-      await expect(page).toHaveURL('/', { timeout: 5000 });
+      await registerPage.expectRegisterSuccess();
 
-      // ローカルストレージにトークンが保存されることを確認
-      const token = await page.evaluate(() => localStorage.getItem('auth-storage'));
-      expect(token).toBeTruthy();
+      // ローカルストレージに認証状態が保存されることを確認
+      const authStorage = await registerPage.getAuthStorage();
+      expect(authStorage).toBeTruthy();
     });
 
-    // TODO: API mock for 422 error not working correctly in E2E
     test.skip('should handle registration with existing email', async ({ page }) => {
+      const registerPage = new RegisterPage(page);
+
       // APIモックを設定
       await page.route('**/api/v2/auth/register', async (route) => {
         await route.fulfill({
@@ -203,23 +185,24 @@ test.describe('Authentication Flow', () => {
         });
       });
 
-      await page.goto('/register');
-
-      // 既存のメールアドレスで登録試行
-      await page.locator('input#name').fill(testUser.name);
-      await page.locator('input#email').fill(testUser.email);
-      await page.locator('input#password').fill(testUser.password);
-      await page.locator('input#passwordConfirmation').fill(testUser.password);
-
-      await page.getByRole('button', { name: /アカウント作成/ }).click();
+      await registerPage.goto();
+      await registerPage.register({
+        name: testUser.name,
+        email: testUser.email,
+        password: testUser.password,
+        passwordConfirmation: testUser.password,
+      });
 
       // エラーメッセージが表示されることを確認
-      await expect(page.locator('text=このメールアドレスは既に使用されています')).toBeVisible({ timeout: 5000 });
+      await registerPage.expectEmailExistsError();
     });
   });
 
   test.describe('Authentication Guard', () => {
     test('should redirect unauthenticated user to login', async ({ page }) => {
+      const myPage = new MyPage(page);
+      const loginPage = new LoginPage(page);
+
       await page.goto('/mypage');
 
       // 未認証の場合、ログインページにリダイレクトされることを確認
@@ -227,8 +210,11 @@ test.describe('Authentication Flow', () => {
     });
 
     test('should allow authenticated user to access protected pages', async ({ page }) => {
-      // 認証状態をモック（tokenは永続化されないため、userとisAuthenticatedのみ設定）
-      await page.goto('/');
+      const myPage = new MyPage(page);
+      const homePage = new HomePage(page);
+
+      // 認証状態をモック
+      await homePage.goto();
       await page.evaluate(() => {
         localStorage.setItem('auth-storage', JSON.stringify({
           state: {
@@ -257,17 +243,17 @@ test.describe('Authentication Flow', () => {
         });
       });
 
-      await page.goto('/mypage');
+      await myPage.goto();
 
       // マイページにアクセスできることを確認
-      await expect(page).toHaveURL('/mypage');
-      await expect(page.getByRole('heading', { name: /マイページ/ })).toBeVisible({ timeout: 5000 });
+      await myPage.expectVisible();
     });
 
-    // TODO: Zustand store hydration timing issue with localStorage mock
     test.skip('should redirect authenticated user away from login page', async ({ page }) => {
-      // 認証状態をモック（tokenは永続化されないため、userとisAuthenticatedのみ設定）
-      await page.goto('/');
+      const homePage = new HomePage(page);
+
+      // 認証状態をモック
+      await homePage.goto();
       await page.evaluate(() => {
         localStorage.setItem('auth-storage', JSON.stringify({
           state: {
@@ -293,10 +279,12 @@ test.describe('Authentication Flow', () => {
   });
 
   test.describe('Logout Flow', () => {
-    // TODO: Zustand store hydration timing issue with localStorage mock
     test.skip('should logout user and redirect to home', async ({ page }) => {
-      // 認証状態をモック（tokenは永続化されないため、userとisAuthenticatedのみ設定）
-      await page.goto('/');
+      const homePage = new HomePage(page);
+      const myPage = new MyPage(page);
+
+      // 認証状態をモック
+      await homePage.goto();
       await page.evaluate(() => {
         localStorage.setItem('auth-storage', JSON.stringify({
           state: {
@@ -334,40 +322,34 @@ test.describe('Authentication Flow', () => {
         });
       });
 
-      // ストアのハイドレーションを確実にするためにリロード
       await page.reload();
-
-      await page.goto('/mypage');
+      await myPage.goto();
 
       // ログアウトボタンをクリック
-      await page.getByRole('button', { name: /ログアウト/ }).click();
+      await homePage.logout();
 
       // ホームページにリダイレクトされることを確認
       await expect(page).toHaveURL('/', { timeout: 5000 });
 
       // ローカルストレージの認証状態がクリアされることを確認
-      const isAuthenticated = await page.evaluate(() => {
-        const authStorage = localStorage.getItem('auth-storage');
-        if (!authStorage) return false;
-        const parsed = JSON.parse(authStorage);
-        return parsed.state?.isAuthenticated;
-      });
-      expect(isAuthenticated).toBeFalsy();
+      const authStorage = await homePage.getAuthStorage();
+      expect(authStorage?.state?.isAuthenticated).toBeFalsy();
     });
   });
 
   test.describe('Navigation Integration', () => {
     test('should show login/register links when not authenticated', async ({ page }) => {
-      await page.goto('/');
+      const homePage = new HomePage(page);
 
-      // 未認証時のナビゲーションリンクを確認
-      await expect(page.getByRole('link', { name: 'ログインページに移動' })).toBeVisible();
-      await expect(page.getByRole('link', { name: '新規登録ページに移動' })).toBeVisible();
+      await homePage.goto();
+      await homePage.expectUnauthenticatedView();
     });
 
     test('should show logout button when authenticated', async ({ page }) => {
-      // 認証状態をモック（tokenは永続化されないため、userとisAuthenticatedのみ設定）
-      await page.goto('/');
+      const homePage = new HomePage(page);
+
+      // 認証状態をモック
+      await homePage.goto();
       await page.evaluate(() => {
         localStorage.setItem('auth-storage', JSON.stringify({
           state: {
@@ -396,15 +378,10 @@ test.describe('Authentication Flow', () => {
         });
       });
 
-      await page.goto('/');
+      await homePage.goto();
 
       // 認証時のナビゲーション要素を確認
-      await expect(page.getByRole('button', { name: /ログアウト/ })).toBeVisible({ timeout: 5000 });
-      
-      // Note: アプリの実装では認証状態でもログイン/新規登録リンクが表示される可能性があります
-      // 実際の実装に合わせてコメントアウト
-      // await expect(page.getByRole('link', { name: /ログイン/ }).first()).not.toBeVisible();
-      // await expect(page.getByRole('link', { name: /新規登録/ }).first()).not.toBeVisible();
+      await homePage.expectAuthenticatedView();
     });
   });
 });

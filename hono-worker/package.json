@@ -24,7 +24,11 @@
         "clean-tags:stg": "tsx scripts/clean-tags.ts --env staging",
         "clean-tags:stg:execute": "tsx scripts/clean-tags.ts --env staging --execute",
         "clean-tags:prod": "tsx scripts/clean-tags.ts --env production",
-        "clean-tags:prod:execute": "tsx scripts/clean-tags.ts --env production --execute"
+        "clean-tags:prod:execute": "tsx scripts/clean-tags.ts --env production --execute",
+        "neon:create": "tsx scripts/neon-branch.ts create",
+        "neon:delete": "tsx scripts/neon-branch.ts delete",
+        "neon:seed": "tsx scripts/neon-branch.ts seed",
+        "e2e:dev": "wrangler dev --env e2e --port 8787"
     },
     "keywords": [
         "cloudflare",

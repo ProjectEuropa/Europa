@@ -1,33 +1,40 @@
-# データベースモデル構造
+# データベース・API 構造
 
-## 主要モデル
+## Supabase PostgreSQL
 
-### User (app/User.php)
-- **認証**: Laravel Sanctum HasApiTokens
-- **管理パネルアクセス**: `canAccessPanel()` - email設定ベース
-- **属性**: name, email, password, api_token
-- **リレーション**: Filament管理機能
+### 主要テーブル
+- **users**: ユーザー情報 (Supabase Auth 連携)
+- **files**: アップロードされたファイルメタデータ
+- **tags**: ファイルに付与されるタグ
+- **file_tags**: ファイルとタグの関連 (多対多)
 
-### File (app/File.php)
-- **ファイル管理**: アップロード・ダウンロード機能
-- **時限アクセス**: `downloadable_at` タイムスタンプで制御
-- **検索機能**: 複数フィールドでのキーワード検索
+## Hono Worker API ルート
 
-### Event (app/Event.php)
-- **イベント管理**: イベント情報の管理
+### 認証 (/api/auth)
+- POST `/login` - ログイン
+- POST `/register` - ユーザー登録
+- POST `/logout` - ログアウト
+- GET `/me` - 現在のユーザー情報
 
-## API コントローラー構造
-- **V1 API**: `app/Http/Controllers/Api/V1/`
-  - FileController: ファイル操作
-  - UserController: ユーザー管理
-  - EventController: イベント管理
-  - SearchController: 検索機能
-  - Auth/: 認証関連 (Login, Register, Reset等)
+### ファイル (/api/files)
+- GET `/` - ファイル一覧・検索
+- GET `/:id` - ファイル詳細
+- POST `/` - ファイルアップロード
+- DELETE `/:id` - ファイル削除
+- GET `/:id/download` - ファイルダウンロード
 
-- **レガシーAPI**: `app/Http/Controllers/Api/`
-  - 後方互換性維持
+### 一括ダウンロード (/api/sum-download)
+- POST `/` - 複数ファイルのZIPダウンロード
 
-## 認証・認可
-- **Sanctum**: SPA用トークン認証
-- **Filament**: 管理パネル (`config('app.panel_email')` で制御)
-- **Basic Auth**: ステージング環境保護
+### お知らせ (/api/info)
+- GET `/` - お知らせ一覧
+
+## ストレージ
+- **Cloudflare R2**: ファイル本体の保存
+- **バケット名**: europa-files (環境ごとに異なる)
+
+## 認証フロー
+1. フロントエンドで Supabase Auth SDK を使用
+2. JWT トークンを取得
+3. API リクエスト時に Authorization ヘッダーに付与
+4. Hono ミドルウェアで JWT を検証
