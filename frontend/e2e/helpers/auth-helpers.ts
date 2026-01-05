@@ -8,29 +8,70 @@ export interface TestUser {
   createdAt?: string;
 }
 
-export const testUsers = {
-  valid: {
-    name: 'Test User',
-    email: 'test@example.com',
-    password: 'password123',
-  },
-  invalid: {
-    email: 'invalid@example.com',
-    password: 'wrongpassword',
-  },
-  existing: {
-    name: 'Existing User',
-    email: 'existing@example.com',
-    password: 'password123',
-  },
-};
+/**
+ * Check if we're running with a real API (Neon database)
+ * When E2E_API_URL is set, we use real API calls instead of mocks
+ */
+export const useRealApi = !!process.env.E2E_API_URL;
+
+/**
+ * Test users - uses seed data credentials when running with real API
+ */
+export const testUsers = useRealApi
+  ? {
+      // Credentials from seed-e2e.sql
+      valid: {
+        name: 'E2E Test User',
+        email: 'e2e@test.com',
+        password: 'password123',
+      },
+      invalid: {
+        name: 'Invalid User',
+        email: 'invalid@example.com',
+        password: 'wrongpassword',
+      },
+      existing: {
+        name: 'E2E Admin User',
+        email: 'e2e-admin@test.com',
+        password: 'password123',
+      },
+    }
+  : {
+      // Mock test users
+      valid: {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+      },
+      invalid: {
+        name: 'Invalid User',
+        email: 'invalid@example.com',
+        password: 'wrongpassword',
+      },
+      existing: {
+        name: 'Existing User',
+        email: 'existing@example.com',
+        password: 'password123',
+      },
+    };
 
 /**
  * ユーザーをログイン状態にする
+ * When useRealApi is true, performs actual login via API
  */
 export async function loginUser(page: Page, user: TestUser) {
-  // ローカルストレージに認証情報を設定
-  // Note: tokenは永続化されないため、userとisAuthenticatedのみ設定
+  if (useRealApi) {
+    // Perform real login via API
+    const { LoginPage } = await import('../pages/LoginPage');
+    const loginPage = new LoginPage(page);
+    await loginPage.goto();
+    await loginPage.login(user.email, user.password!);
+    // Wait for redirect after successful login
+    await page.waitForURL(/\/(mypage)?$/, { timeout: 10000 });
+    return;
+  }
+
+  // Mock mode: set localStorage directly
   await page.goto('/');
   await page.evaluate((userData) => {
     localStorage.setItem('auth-storage', JSON.stringify({
@@ -74,8 +115,11 @@ export async function logoutUser(page: Page) {
 
 /**
  * ログイン成功のAPIモックを設定
+ * When useRealApi is true, this is a no-op (real API will be used)
  */
 export async function mockLoginSuccess(page: Page, user: TestUser) {
+  if (useRealApi) return; // Use real API
+
   await page.route('**/api/v2/auth/login', async (route) => {
     await route.fulfill({
       status: 200,
@@ -95,8 +139,11 @@ export async function mockLoginSuccess(page: Page, user: TestUser) {
 
 /**
  * ログイン失敗のAPIモックを設定
+ * When useRealApi is true, this is a no-op (real API will return actual errors)
  */
 export async function mockLoginFailure(page: Page, status: number = 401, message: string = 'Invalid credentials') {
+  if (useRealApi) return; // Use real API - invalid credentials will fail naturally
+
   await page.route('**/api/v2/auth/login', async (route) => {
     await route.fulfill({
       status,
@@ -116,8 +163,12 @@ export async function mockLoginFailure(page: Page, status: number = 401, message
 
 /**
  * 登録成功のAPIモックを設定
+ * When useRealApi is true, this is a no-op (real API will be used)
+ * Note: In real API mode, registration tests should use unique emails
  */
 export async function mockRegisterSuccess(page: Page, user: TestUser) {
+  if (useRealApi) return; // Use real API
+
   await page.route('**/api/v2/auth/register', async (route) => {
     await route.fulfill({
       status: 200,

@@ -290,6 +290,52 @@ jobs:
           path: frontend/test-results/
           retention-days: 7
 
+      - name: Upload E2E failure videos to Slack
+        if: failure()
+        run: |
+          # Find video files from test results
+          VIDEO_FILES=$(find test-results -name "*.webm" -type f 2>/dev/null || true)
+
+          if [ -z "$SLACK_BOT_TOKEN" ]; then
+            echo "SLACK_BOT_TOKEN not set, skipping video upload"
+            exit 0
+          fi
+
+          if [ -n "$VIDEO_FILES" ]; then
+            echo "📹 Found video files, uploading to Slack..."
+            for video in $VIDEO_FILES; do
+              # Get test name from directory path
+              TEST_NAME=$(basename $(dirname "$video"))
+
+              curl -s -F file=@"$video" \
+                   -F "initial_comment=🎬 E2E Test Failed: ${TEST_NAME}
+          PR: #${{ github.event.pull_request.number }}
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+                   -F channels=${{ secrets.SLACK_CHANNEL_ID }} \
+                   -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+                   https://slack.com/api/files.upload
+
+              echo "Uploaded: $video"
+            done
+          else
+            echo "No video files found"
+          fi
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Notify Slack on E2E failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          fields: repo,message,author,ref
+          text: |
+            🎬 E2E Test Failed
+            PR: #${{ github.event.pull_request.number }}
+            🔗 View artifacts: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
       - name: Cleanup Neon branch
         if: always()
         working-directory: ./hono-worker
@@ -358,9 +404,55 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-test-results
+          name: playwright-test-results-static
           path: frontend/test-results/
           retention-days: 7
+
+      - name: Upload E2E failure videos to Slack
+        if: failure()
+        run: |
+          # Find video files from test results
+          VIDEO_FILES=$(find test-results -name "*.webm" -type f 2>/dev/null || true)
+
+          if [ -z "$SLACK_BOT_TOKEN" ]; then
+            echo "SLACK_BOT_TOKEN not set, skipping video upload"
+            exit 0
+          fi
+
+          if [ -n "$VIDEO_FILES" ]; then
+            echo "📹 Found video files, uploading to Slack..."
+            for video in $VIDEO_FILES; do
+              # Get test name from directory path
+              TEST_NAME=$(basename $(dirname "$video"))
+
+              curl -s -F file=@"$video" \
+                   -F "initial_comment=🎬 E2E Test Failed (Static): ${TEST_NAME}
+          Branch: ${{ github.ref_name }}
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+                   -F channels=${{ secrets.SLACK_CHANNEL_ID }} \
+                   -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+                   https://slack.com/api/files.upload
+
+              echo "Uploaded: $video"
+            done
+          else
+            echo "No video files found"
+          fi
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - name: Notify Slack on E2E failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          fields: repo,message,author,ref
+          text: |
+            🎬 E2E Test Failed (Static)
+            Branch: ${{ github.ref_name }}
+            🔗 View artifacts: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
   # Bundle analysis job (only for PRs, optimized to use existing build)
   build-analysis:
