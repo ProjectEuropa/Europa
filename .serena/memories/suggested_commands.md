@@ -1,24 +1,5 @@
 # 推奨開発コマンド
 
-## バックエンド (Laravel)
-```bash
-# 依存関係インストール
-composer install
-
-# 環境設定
-cp .env.example .env
-php artisan key:generate
-
-# データベース
-php artisan migrate --seed
-
-# 開発サーバー起動
-php artisan serve --host 0.0.0.0 --port 50756
-
-# テスト実行
-./vendor/bin/phpunit
-```
-
 ## フロントエンド (Next.js)
 ```bash
 cd frontend
@@ -29,9 +10,8 @@ npm install
 # 開発サーバー (ポート3002)
 npm run dev
 
-# ビルド
+# ビルド (静的エクスポート)
 npm run build
-npm run start
 
 # テスト
 npm run test              # 単体テスト (Vitest)
@@ -44,14 +24,40 @@ npm run format:fix        # 自動フォーマット
 npm run check:fix         # lint + format 自動修正
 ```
 
-## Docker開発
+## バックエンド (Hono Worker)
 ```bash
-# コンテナ起動
-docker compose -f docker-compose.server.yml up -d --build
+cd hono-worker
 
-# Composer インストール
-docker compose -f docker-compose.server.yml run php-fpm composer install
+# 依存関係インストール
+npm install
 
-# マイグレーション
-docker compose -f docker-compose.server.yml run php-fpm php artisan migrate
+# ローカル開発サーバー
+npm run dev
+
+# テスト
+npm run test              # 単体テスト (Vitest)
+npm run test:coverage     # カバレッジ
+
+# コード品質
+npm run lint              # Biome linting
+npm run format            # フォーマットチェック
+npm run format:fix        # 自動フォーマット
+
+# デプロイ
+npm run deploy            # Cloudflare Workers へデプロイ
+
+# 型チェック
+npx tsc --noEmit
+```
+
+## CI/CD
+```bash
+# GitHub Actions で自動実行
+# - frontend-ci.yml: フロントエンドの lint, test, build
+# - backend-ci.yml: バックエンドの lint, test, type-check
+```
+
+## Docker ローカル開発 (オプション)
+```bash
+docker compose -f compose.local.yaml up -d
 ```

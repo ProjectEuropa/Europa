@@ -2,17 +2,19 @@
 
 ## コード変更後の必須チェック
 
-### フロントエンド
-1. **型チェック**: `npm run lint` (Biome)
-2. **フォーマット**: `npm run format:fix` 
-3. **単体テスト**: `npm run test` (Vitest)
-4. **E2Eテスト**: `npm run test:e2e` (Playwright) - 必要に応じて
+### フロントエンド (frontend/)
+1. **Lint**: `npm run lint`
+2. **フォーマット**: `npm run format:fix`
+3. **型チェック**: `npx tsc --noEmit`
+4. **単体テスト**: `npm run test`
 5. **ビルド確認**: `npm run build`
+6. **E2Eテスト**: `npm run test:e2e` (必要に応じて)
 
-### バックエンド
-1. **構文チェック**: `composer install` でオートローダー更新
-2. **テスト実行**: `./vendor/bin/phpunit`
-3. **マイグレーション**: 新しいマイグレーションがある場合は `php artisan migrate`
+### バックエンド (hono-worker/)
+1. **Lint**: `npm run lint`
+2. **フォーマット**: `npm run format:fix`
+3. **型チェック**: `npx tsc --noEmit`
+4. **テスト**: `npm run test`
 
 ## コミット前の確認項目
 - [ ] 機能が期待通り動作する
@@ -24,5 +26,12 @@
 
 ## 注意事項
 - **コミット**: ユーザーが明示的に依頼した場合のみ実行
-- **環境変数**: 秘匿情報はコミットしない
+- **環境変数**: 秘匿情報はコミットしない (.env は .gitignore に含まれる)
 - **依存関係**: 新しいライブラリ追加時は既存の使用状況を確認
+- **静的エクスポート**: `output: 'export'` のため SSR 機能は使用不可
+
+## CI/CD
+- **frontend-ci.yml**: PR/push 時に自動実行
+- **backend-ci.yml**: PR/push 時に自動実行
+- Lint/Type-check は non-blocking (警告のみ)
+- テストは blocking (失敗で CI 失敗)
