@@ -58,7 +58,7 @@ Build output directory: .vercel/output/static
 Root directory: frontend
 ```
 
-> **注意**: このビルド設定を機能させるには、`frontend/next.config.ts` ファイルで `output: 'export'` が設定されている必要があります。
+> **注意**: このビルド設定を機能させるには、`frontend/next.config.js` ファイルで `output: 'export'` が設定されている必要があります。
 
 #### 環境変数の設定
 
