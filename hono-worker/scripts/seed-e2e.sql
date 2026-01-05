@@ -8,10 +8,10 @@ DELETE FROM events WHERE event_name LIKE 'E2E%';
 DELETE FROM users WHERE email LIKE 'e2e%@test.com';
 
 -- E2E Test User (password: "password123")
--- bcrypt hash generated with cost 10
+-- bcrypt hash generated with cost 10: $2a$10$i7Uqraj.Z.FdlA0S0T9SB.JBznzE/XjiBhGEfJmmbQkhhkz8xEtiK
 INSERT INTO users (name, email, password, created_at, updated_at) VALUES
-('E2E Test User', 'e2e@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.mOf7vYoHAjjS7FzOFy', NOW(), NOW()),
-('E2E Admin User', 'e2e-admin@test.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.mOf7vYoHAjjS7FzOFy', NOW(), NOW())
+('E2E Test User', 'e2e@test.com', '$2a$10$i7Uqraj.Z.FdlA0S0T9SB.JBznzE/XjiBhGEfJmmbQkhhkz8xEtiK', NOW(), NOW()),
+('E2E Admin User', 'e2e-admin@test.com', '$2a$10$i7Uqraj.Z.FdlA0S0T9SB.JBznzE/XjiBhGEfJmmbQkhhkz8xEtiK', NOW(), NOW())
 ON CONFLICT (email) DO NOTHING;
 
 -- E2E Test Events
@@ -99,7 +99,7 @@ INSERT INTO files (
     512,
     'E2E anonymous upload test',
     '1',
-    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.mOf7vYoHAjjS7FzOFy',
+    '$2a$10$i7Uqraj.Z.FdlA0S0T9SB.JBznzE/XjiBhGEfJmmbQkhhkz8xEtiK',
     NOW(),
     NOW(),
     NOW()
