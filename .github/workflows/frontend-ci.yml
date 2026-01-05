@@ -226,8 +226,6 @@ jobs:
       - name: Seed test data
         working-directory: ./hono-worker
         run: npx tsx scripts/neon-branch.ts seed "${{ steps.neon.outputs.database_url }}"
-        env:
-          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -257,6 +255,12 @@ jobs:
           echo "JWT_SECRET=$JWT_SECRET" >> .dev.vars
 
           npx wrangler dev --env e2e --port 8787 &
+          WRANGLER_PID=$!
+
+          # Clean up secrets file after wrangler reads it (give it a moment to initialize)
+          sleep 2
+          rm -f .dev.vars
+
           # Wait for server to be ready with retry loop
           for i in {1..30}; do
             if curl -s http://localhost:8787/health > /dev/null 2>&1; then
