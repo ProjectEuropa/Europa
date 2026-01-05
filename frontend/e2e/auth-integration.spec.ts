@@ -10,6 +10,8 @@ import {
   mockLoginSuccess,
   mockLoginFailure,
   mockRegisterSuccess,
+  generateUniqueTestUser,
+  useRealApi,
 } from './helpers/auth-helpers';
 
 test.describe('Authentication Integration Tests', () => {
@@ -64,14 +66,16 @@ test.describe('Authentication Integration Tests', () => {
   test.describe('Registration Integration', () => {
     test('should successfully register with valid information', async ({ page }) => {
       const registerPage = new RegisterPage(page);
+      // Use unique email for real API to avoid conflicts, mock user for mock mode
+      const newUser = useRealApi ? generateUniqueTestUser() : testUsers.valid;
 
-      await mockRegisterSuccess(page, testUsers.valid);
+      await mockRegisterSuccess(page, newUser);
       await registerPage.goto();
       await registerPage.register({
-        name: testUsers.valid.name,
-        email: testUsers.valid.email,
-        password: testUsers.valid.password!,
-        passwordConfirmation: testUsers.valid.password!,
+        name: newUser.name,
+        email: newUser.email,
+        password: newUser.password!,
+        passwordConfirmation: newUser.password!,
       });
 
       // 成功後の状態を確認
@@ -81,16 +85,18 @@ test.describe('Authentication Integration Tests', () => {
     test('should show error for existing email', async ({ page }) => {
       const registerPage = new RegisterPage(page);
 
-      // Honoバックエンドのレスポンス形式に合わせたモック (409 Conflict)
-      await page.route('**/api/v2/auth/register', async (route) => {
-        await route.fulfill({
-          status: 409,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            message: 'Email already exists',
-          }),
+      // Mock only when not using real API (real API will return actual 409 error)
+      if (!useRealApi) {
+        await page.route('**/api/v2/auth/register', async (route) => {
+          await route.fulfill({
+            status: 409,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              message: 'Email already exists',
+            }),
+          });
         });
-      });
+      }
 
       await registerPage.goto();
       await registerPage.register({
@@ -110,12 +116,14 @@ test.describe('Authentication Integration Tests', () => {
 
     test('should validate password confirmation', async ({ page }) => {
       const registerPage = new RegisterPage(page);
+      // Use unique email to avoid potential conflicts (validation is client-side anyway)
+      const testUser = useRealApi ? generateUniqueTestUser() : testUsers.valid;
 
       await registerPage.goto();
       await registerPage.register({
-        name: testUsers.valid.name,
-        email: testUsers.valid.email,
-        password: testUsers.valid.password!,
+        name: testUser.name,
+        email: testUser.email,
+        password: testUser.password!,
         passwordConfirmation: 'differentpassword',
       });
 

@@ -12,7 +12,11 @@ export default defineConfig({
   use: {
     baseURL: isCI ? 'http://localhost:3000' : 'http://localhost:3002',
     trace: 'on-first-retry',
+    // Record video on failure for debugging (especially useful in CI)
+    video: 'retain-on-failure',
   },
+  // Output directory for test artifacts (videos, traces, screenshots)
+  outputDir: 'test-results',
   projects: [
     // Desktop tests (default)
     {
