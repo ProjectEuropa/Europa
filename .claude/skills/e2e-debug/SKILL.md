@@ -185,8 +185,12 @@ GitHub Actionsから呼び出された場合の対応手順。
 ls -la playwright-report/
 ls -la test-results/
 
-# index.htmlから失敗テストを特定
-cat playwright-report/index.html | grep -A5 "failed"
+# JSONレポートから失敗テストを抽出（推奨）
+# playwright.config.ts に ['json', { outputFile: 'test-results.json' }] を追加済みの場合
+cat test-results.json | jq '.suites[].specs[] | select(.ok | not) | {title: .title, file: .file}'
+
+# HTMLレポートからの抽出（フォールバック）
+cat playwright-report/index.html | grep -oP 'data-testid="[^"]*failed[^"]*"' | head -5
 ```
 
 確認項目:

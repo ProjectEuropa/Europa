@@ -38,7 +38,7 @@ jobs:
         if: steps.changes.outputs.any_changed == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install dependencies
         if: steps.changes.outputs.any_changed == 'true'
@@ -72,7 +72,7 @@ jobs:
             ## 修正があれば
             git add と git commit を実行してください。
             コミットメッセージ: "fix(e2e): UIコンポーネント変更に追従"
-          allowed_tools: "Read,Edit,Write,Bash(git:*),Glob,Grep"
+          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Glob,Grep"
 
       - name: Push changes
         if: steps.changes.outputs.any_changed == 'true'

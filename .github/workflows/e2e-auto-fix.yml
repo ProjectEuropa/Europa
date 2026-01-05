@@ -45,18 +45,21 @@ jobs:
       - name: Check if E2E artifacts exist
         id: check-artifacts
         run: |
-          if [ -d "playwright-report" ] || [ -d "test-results" ]; then
+          # E2Eテストが失敗した場合のみ自動修復を実行
+          # playwright-reportにファイルが存在し、かつtest-resultsに失敗時のスクリーンショット等があるか確認
+          if [ -d "playwright-report" ] && [ -n "$(ls -A playwright-report 2>/dev/null)" ]; then
             echo "has_artifacts=true" >> $GITHUB_OUTPUT
+            echo "E2E test artifacts found - proceeding with auto-fix"
           else
             echo "has_artifacts=false" >> $GITHUB_OUTPUT
-            echo "No E2E test artifacts found - skipping auto-fix"
+            echo "No E2E test artifacts found - this failure is not E2E related, skipping auto-fix"
           fi
 
       - name: Setup Node.js
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install dependencies
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
@@ -85,7 +88,7 @@ jobs:
             ## 修正後
             修正が完了したら git add と git commit を実行してください。
             コミットメッセージ: "fix(e2e): 自動修復 - [修正内容の要約]"
-          allowed_tools: "Read,Edit,Write,Bash(git:*),Bash(npm run test:e2e:*),Glob,Grep"
+          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Bash(npm run test:e2e:*),Glob,Grep"
 
       - name: Create fix PR
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
