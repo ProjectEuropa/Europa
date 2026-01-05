@@ -7,10 +7,7 @@ const bundleAnalyzer = withBundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  eslint: {
-    // ESLintチェックをビルド時にスキップする（Biomeを使用しているため）
-    ignoreDuringBuilds: true,
-  },
+  turbopack: {},
   // 開発時のパフォーマンス向上
   experimental: {
     optimizePackageImports: ['@tanstack/react-query', 'zustand', 'lucide-react'],
