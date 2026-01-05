@@ -27,6 +27,7 @@ hono-worker/dist/
 
 # Claude Code
 /.claude/*
+!/.claude/skills/
 
 # Serena
 /.serena/cache

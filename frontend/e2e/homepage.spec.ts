@@ -1,17 +1,16 @@
-// @ts-ignore
-// @vitest-ignore
-import { test as playwrightTest, expect as playwrightExpect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { HomePage } from './pages/HomePage';
 
-// Vitestとの競合を避けるためにplaywrightTestとして明示的にインポート
-playwrightTest('Homepage should load correctly', async ({ page }) => {
-  await page.goto('/');
+test.describe('Homepage', () => {
+  test('should load correctly', async ({ page }) => {
+    const homePage = new HomePage(page);
 
-  // EUROPAロゴが表示されることを確認
-  await playwrightExpect(page.getByRole('link', { name: 'ホームページに戻る' })).toBeVisible();
+    await homePage.goto();
 
-  // ログインリンクが表示されることを確認
-  await playwrightExpect(page.getByRole('navigation').getByRole('link', { name: 'ログインページに移動' })).toBeVisible();
+    // EUROPAロゴが表示されることを確認
+    await expect(homePage.homeLink).toBeVisible();
 
-  // 新規登録リンクが表示されることを確認
-  await playwrightExpect(page.getByRole('navigation').getByRole('link', { name: '新規登録ページに移動' })).toBeVisible();
+    // 未認証状態でログイン/新規登録リンクが表示される
+    await homePage.expectUnauthenticatedView();
+  });
 });

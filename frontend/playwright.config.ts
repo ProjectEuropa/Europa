@@ -14,9 +14,18 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   projects: [
+    // Desktop tests (default)
     {
-      name: 'chromium',
+      name: 'Desktop Chrome',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/*.spec.ts',
+      testIgnore: '**/*.mobile.spec.ts',
+    },
+    // Mobile tests (separate files)
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 13'] },
+      testMatch: '**/*.mobile.spec.ts',
     },
   ],
   webServer: {

@@ -1,0 +1,232 @@
+import { Page, expect } from '@playwright/test';
+import { BasePage } from './BasePage';
+
+/**
+ * Search Page Object (Team/Match Search)
+ */
+export class SearchPage extends BasePage {
+  constructor(
+    page: Page,
+    protected searchType: 'team' | 'match' = 'team'
+  ) {
+    super(page);
+  }
+
+  // Locators
+  get pageHeading() {
+    const headingName = this.searchType === 'team' ? 'チームデータ検索' : 'マッチデータ検索';
+    return this.page.getByRole('heading', { name: headingName });
+  }
+
+  get subTitle() {
+    const subTitleText = this.searchType === 'team' ? 'TEAM DATA SEARCH' : 'MATCH DATA SEARCH';
+    return this.page.getByText(subTitleText);
+  }
+
+  get keywordInput() {
+    return this.page.getByLabel('検索キーワード');
+  }
+
+  get searchButton() {
+    return this.page.getByRole('button', { name: '検索', exact: true });
+  }
+
+  get clearButton() {
+    return this.page.getByLabel('検索をクリア');
+  }
+
+  get resultsTable() {
+    return this.page.getByRole('table');
+  }
+
+  get resultRows() {
+    return this.page.getByRole('row').filter({ hasNot: this.page.getByRole('columnheader') });
+  }
+
+  get pagination() {
+    return this.page.getByRole('navigation', { name: /ページネーション/ });
+  }
+
+  get prevButton() {
+    return this.page.getByRole('button', { name: '前へ' });
+  }
+
+  get nextButton() {
+    return this.page.getByRole('button', { name: '次へ' });
+  }
+
+  get noResultsMessage() {
+    return this.page.getByText(/検索結果が見つかりませんでした/);
+  }
+
+  get noResultsHint() {
+    return this.page.getByText(/別のキーワードで検索してみてください/);
+  }
+
+  get loadingIndicator() {
+    return this.page.getByRole('status');
+  }
+
+  get deletePasswordInput() {
+    return this.page.getByPlaceholder('削除パスワード');
+  }
+
+  get deleteConfirmButton() {
+    return this.page.getByRole('button', { name: '削除実行' });
+  }
+
+  // Actions
+  async goto() {
+    await this.page.goto(`/search/${this.searchType}`);
+  }
+
+  async gotoWithParams(keyword: string, page: number = 1) {
+    await this.page.goto(`/search/${this.searchType}?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+  }
+
+  async fillKeyword(keyword: string) {
+    await this.keywordInput.fill(keyword);
+  }
+
+  async submitSearch() {
+    await this.searchButton.click();
+  }
+
+  async search(keyword: string) {
+    await this.fillKeyword(keyword);
+    await this.submitSearch();
+  }
+
+  async searchWithEnter(keyword: string) {
+    await this.keywordInput.click();
+    await this.keywordInput.fill(keyword);
+    await this.keywordInput.press('Enter');
+  }
+
+  async clearSearch() {
+    await this.clearButton.click();
+  }
+
+  async goToNextPage() {
+    await this.nextButton.click();
+  }
+
+  async goToPrevPage() {
+    await this.prevButton.click();
+  }
+
+  async clickResult(index: number) {
+    await this.resultRows.nth(index).click();
+  }
+
+  async clickDownloadButton(fileName: string) {
+    return this.page.getByLabel(`${fileName}をダウンロード`);
+  }
+
+  async clickDeleteButton(fileName: string) {
+    return this.page.getByLabel(`${fileName}を削除`);
+  }
+
+  async confirmDelete(password: string) {
+    await this.deletePasswordInput.fill(password);
+    await this.deleteConfirmButton.click();
+  }
+
+  getPageButton(pageNumber: number) {
+    return this.page.getByRole('button', { name: String(pageNumber), exact: true });
+  }
+
+  // Assertions
+  async expectVisible() {
+    await expect(this.pageHeading).toBeVisible();
+    await expect(this.subTitle).toBeVisible();
+    await expect(this.keywordInput).toBeVisible();
+    await expect(this.searchButton).toBeVisible();
+  }
+
+  async expectSearchButtonDisabled() {
+    await expect(this.searchButton).toBeDisabled();
+  }
+
+  async expectSearchButtonEnabled() {
+    await expect(this.searchButton).toBeEnabled();
+  }
+
+  async expectResults(minCount = 1) {
+    await expect(this.resultsTable).toBeVisible();
+    await expect(this.resultRows).toHaveCount(minCount, { timeout: 10000 });
+  }
+
+  async expectResultsInfo(total: number, currentPage: number, totalPages: number) {
+    await expect(this.page.getByText(`${total}件の結果 (ページ ${currentPage}/${totalPages})`)).toBeVisible();
+  }
+
+  async expectNoResults() {
+    await expect(this.noResultsMessage).toBeVisible();
+    await expect(this.noResultsHint).toBeVisible();
+  }
+
+  async expectLoading() {
+    await expect(this.loadingIndicator).toBeVisible();
+  }
+
+  async expectUrlContainsKeyword(keyword?: string) {
+    if (keyword) {
+      await expect(this.page).toHaveURL(new RegExp(`keyword=${keyword}`));
+    } else {
+      await expect(this.page).toHaveURL(/keyword=/);
+    }
+  }
+
+  async expectUrlContainsPage(page: number) {
+    await expect(this.page).toHaveURL(new RegExp(`page=${page}`));
+  }
+
+  async expectKeywordValue(keyword: string) {
+    await expect(this.keywordInput).toHaveValue(keyword);
+  }
+
+  async expectResultText(text: string) {
+    await expect(this.page.getByText(text)).toBeVisible();
+  }
+
+  async expectTag(tag: string) {
+    await expect(this.page.getByText(tag)).toBeVisible();
+  }
+
+  async expectPaginationVisible() {
+    await expect(this.prevButton).toBeVisible();
+    await expect(this.nextButton).toBeVisible();
+  }
+
+  async expectPrevButtonDisabled() {
+    await expect(this.prevButton).toBeDisabled();
+  }
+
+  async expectDeleteModal(fileName: string) {
+    await expect(this.page.getByText(`${fileName}を本当に削除しますか？`)).toBeVisible();
+  }
+
+  async expectSearchError() {
+    const errorMessage = this.searchType === 'team' ? 'チーム検索に失敗しました' : 'マッチ検索に失敗しました';
+    await expect(this.page.getByText(errorMessage)).toBeVisible({ timeout: 10000 });
+  }
+}
+
+/**
+ * Team Search Page Object
+ */
+export class TeamSearchPage extends SearchPage {
+  constructor(page: Page) {
+    super(page, 'team');
+  }
+}
+
+/**
+ * Match Search Page Object
+ */
+export class MatchSearchPage extends SearchPage {
+  constructor(page: Page) {
+    super(page, 'match');
+  }
+}

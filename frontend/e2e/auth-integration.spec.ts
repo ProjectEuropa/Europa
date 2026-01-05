@@ -1,4 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { HomePage } from './pages/HomePage';
+import { MyPage } from './pages/MyPage';
 import {
   testUsers,
   loginUser,
@@ -6,75 +10,76 @@ import {
   mockLoginSuccess,
   mockLoginFailure,
   mockRegisterSuccess,
-  fillLoginForm,
-  fillRegisterForm,
-  expectAuthenticated,
-  expectUnauthenticated,
 } from './helpers/auth-helpers';
 
 test.describe('Authentication Integration Tests', () => {
   test.beforeEach(async ({ page }) => {
-    // 各テスト前にローカルストレージをクリア
     await logoutUser(page);
   });
 
   test.describe('Login Integration', () => {
     test('should successfully login with valid credentials', async ({ page }) => {
+      const loginPage = new LoginPage(page);
+
       await mockLoginSuccess(page, testUsers.valid);
-      await page.goto('/login');
+      await loginPage.goto();
+      await loginPage.login(testUsers.valid.email, testUsers.valid.password!);
 
-      await fillLoginForm(page, testUsers.valid.email, testUsers.valid.password!);
-      await page.getByRole('button', { name: 'ログイン' }).click();
-
-      // 成功後の状態を確認（ログイン成功後はホームページにリダイレクト）
-      await expect(page).toHaveURL('/', { timeout: 5000 });
-      await expectAuthenticated(page);
+      // 成功後の状態を確認
+      await loginPage.expectLoginSuccess();
     });
 
     test('should show error message for invalid credentials', async ({ page }) => {
-      await mockLoginFailure(page);
-      await page.goto('/login');
+      const loginPage = new LoginPage(page);
 
-      await fillLoginForm(page, testUsers.invalid.email, testUsers.invalid.password);
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await mockLoginFailure(page);
+      await loginPage.goto();
+      await loginPage.login(testUsers.invalid.email, testUsers.invalid.password);
 
       // エラーメッセージが表示されることを確認
-      await expect(page.locator('text=メールアドレスまたはパスワードが正しくありません').first()).toBeVisible({ timeout: 5000 });
+      await loginPage.expectLoginError();
 
       // ログインページに留まることを確認
       await expect(page).toHaveURL('/login');
-      await expectUnauthenticated(page);
+      await loginPage.expectUnauthenticated();
     });
 
     test.skip('should handle network errors gracefully', async ({ page }) => {
+      const loginPage = new LoginPage(page);
+
       // ネットワークエラーをシミュレート
       await page.route('**/api/v2/auth/login', async (route) => {
         await route.abort('failed');
       });
 
-      await page.goto('/login');
-      await fillLoginForm(page, testUsers.valid.email, testUsers.valid.password!);
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await loginPage.goto();
+      await loginPage.login(testUsers.valid.email, testUsers.valid.password!);
 
       // エラートーストまたはメッセージが表示されることを確認
-      await expect(page.locator('text=接続に問題があります')).toBeVisible({ timeout: 5000 });
+      await loginPage.expectToast(/接続に問題があります/);
     });
   });
 
   test.describe('Registration Integration', () => {
     test('should successfully register with valid information', async ({ page }) => {
+      const registerPage = new RegisterPage(page);
+
       await mockRegisterSuccess(page, testUsers.valid);
-      await page.goto('/register');
+      await registerPage.goto();
+      await registerPage.register({
+        name: testUsers.valid.name,
+        email: testUsers.valid.email,
+        password: testUsers.valid.password!,
+        passwordConfirmation: testUsers.valid.password!,
+      });
 
-      await fillRegisterForm(page, testUsers.valid);
-      await page.getByRole('button', { name: /アカウント作成/ }).click();
-
-      // 成功後の状態を確認（登録成功後はホームページにリダイレクト）
-      await expect(page).toHaveURL('/', { timeout: 5000 });
-      await expectAuthenticated(page);
+      // 成功後の状態を確認
+      await registerPage.expectRegisterSuccess();
     });
 
     test('should show error for existing email', async ({ page }) => {
+      const registerPage = new RegisterPage(page);
+
       // Honoバックエンドのレスポンス形式に合わせたモック (409 Conflict)
       await page.route('**/api/v2/auth/register', async (route) => {
         await route.fulfill({
@@ -86,52 +91,58 @@ test.describe('Authentication Integration Tests', () => {
         });
       });
 
-      await page.goto('/register');
-      await fillRegisterForm(page, testUsers.existing);
-      await page.getByRole('button', { name: /アカウント作成/ }).click();
+      await registerPage.goto();
+      await registerPage.register({
+        name: testUsers.existing.name,
+        email: testUsers.existing.email,
+        password: testUsers.existing.password!,
+        passwordConfirmation: testUsers.existing.password!,
+      });
 
-      // エラーメッセージが表示されることを確認（トーストで表示される）
-      await expect(page.locator('text=このメールアドレスは既に使用されています')).toBeVisible({ timeout: 5000 });
+      // エラーメッセージが表示されることを確認
+      await registerPage.expectEmailExistsError();
 
       // 登録ページに留まることを確認
       await expect(page).toHaveURL('/register');
-      await expectUnauthenticated(page);
+      await registerPage.expectUnauthenticated();
     });
 
     test('should validate password confirmation', async ({ page }) => {
-      await page.goto('/register');
+      const registerPage = new RegisterPage(page);
 
-      await fillRegisterForm(page, {
-        ...testUsers.valid,
+      await registerPage.goto();
+      await registerPage.register({
+        name: testUsers.valid.name,
+        email: testUsers.valid.email,
+        password: testUsers.valid.password!,
         passwordConfirmation: 'differentpassword',
       });
-      await page.getByRole('button', { name: /アカウント作成/ }).click();
 
       // パスワード不一致エラーが表示されることを確認
-      await expect(page.locator('text=パスワードが一致しません')).toBeVisible({ timeout: 3000 });
+      await registerPage.expectPasswordMismatchError();
     });
   });
 
   test.describe('Authentication Flow', () => {
     test('should complete full login-logout cycle', async ({ page }) => {
+      const loginPage = new LoginPage(page);
+      const homePage = new HomePage(page);
+
       // ログイン
       await mockLoginSuccess(page, testUsers.valid);
-      await page.goto('/login');
-      await fillLoginForm(page, testUsers.valid.email, testUsers.valid.password!);
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await loginPage.goto();
+      await loginPage.login(testUsers.valid.email, testUsers.valid.password!);
 
-      // ログイン成功後はホームページにリダイレクト
-      await expect(page).toHaveURL('/', { timeout: 5000 });
-      await expectAuthenticated(page);
+      // ログイン成功を確認
+      await loginPage.expectLoginSuccess();
 
       // ログアウト
-      await page.getByRole('button', { name: /ログアウト/ }).click();
+      await homePage.logout();
 
       await expect(page).toHaveURL('/', { timeout: 5000 });
-      await expectUnauthenticated(page);
+      await homePage.expectUnauthenticatedView();
     });
 
-    // TODO: Zustand store hydration timing issue with localStorage mock
     test.skip('should redirect authenticated user from auth pages', async ({ page }) => {
       await loginUser(page, testUsers.valid);
 
@@ -148,6 +159,8 @@ test.describe('Authentication Integration Tests', () => {
     });
 
     test('should redirect unauthenticated user from protected pages', async ({ page }) => {
+      const myPage = new MyPage(page);
+
       await page.goto('/mypage');
       await expect(page).toHaveURL('/login', { timeout: 5000 });
     });
@@ -155,34 +168,42 @@ test.describe('Authentication Integration Tests', () => {
 
   test.describe('Session Persistence', () => {
     test('should maintain authentication across page reloads', async ({ page }) => {
+      const myPage = new MyPage(page);
+      const homePage = new HomePage(page);
+
       await loginUser(page, testUsers.valid);
-      await page.goto('/mypage');
-      await expectAuthenticated(page);
+      await myPage.goto();
+      await homePage.expectAuthenticated();
 
       // ページをリロード
       await page.reload();
-      await expectAuthenticated(page);
+      await homePage.expectAuthenticated();
       await expect(page).toHaveURL('/mypage');
     });
 
     test('should maintain authentication across navigation', async ({ page }) => {
+      const homePage = new HomePage(page);
+      const myPage = new MyPage(page);
+
       await loginUser(page, testUsers.valid);
 
       // 複数のページを移動
-      await page.goto('/');
-      await expectAuthenticated(page);
+      await homePage.goto();
+      await homePage.expectAuthenticated();
 
       await page.goto('/about');
-      await expectAuthenticated(page);
+      await homePage.expectAuthenticated();
 
-      await page.goto('/mypage');
-      await expectAuthenticated(page);
+      await myPage.goto();
+      await homePage.expectAuthenticated();
     });
   });
 
   test.describe('Error Handling', () => {
-    // TODO: API mock timing issue - /mypage triggers multiple API calls
     test.skip('should handle expired token gracefully', async ({ page }) => {
+      const myPage = new MyPage(page);
+      const loginPage = new LoginPage(page);
+
       await loginUser(page, testUsers.valid);
 
       // 期限切れトークンのレスポンスをモック
@@ -196,14 +217,16 @@ test.describe('Authentication Integration Tests', () => {
         });
       });
 
-      await page.goto('/mypage');
+      await myPage.goto();
 
       // ログインページにリダイレクトされることを確認
       await expect(page).toHaveURL('/login', { timeout: 5000 });
-      await expectUnauthenticated(page);
+      await loginPage.expectUnauthenticated();
     });
 
     test('should handle API server errors', async ({ page }) => {
+      const loginPage = new LoginPage(page);
+
       // サーバーエラーをシミュレート
       await page.route('**/api/v2/auth/login', async (route) => {
         await route.fulfill({
@@ -215,12 +238,11 @@ test.describe('Authentication Integration Tests', () => {
         });
       });
 
-      await page.goto('/login');
-      await fillLoginForm(page, testUsers.valid.email, testUsers.valid.password!);
-      await page.getByRole('button', { name: 'ログイン' }).click();
+      await loginPage.goto();
+      await loginPage.login(testUsers.valid.email, testUsers.valid.password!);
 
       // エラーメッセージが表示されることを確認
-      await expect(page.locator('text=サーバーで問題が発生しました')).toBeVisible({ timeout: 5000 });
+      await loginPage.expectToast(/サーバーで問題が発生しました/);
     });
   });
 });
