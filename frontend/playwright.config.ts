@@ -8,7 +8,9 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
   workers: isCI ? 1 : undefined,
-  reporter: isCI ? [['html'], ['github']] : 'html',
+  reporter: isCI
+    ? [['html'], ['github'], ['json', { outputFile: 'test-results.json' }]]
+    : 'html',
   use: {
     baseURL: isCI ? 'http://localhost:3000' : 'http://localhost:3002',
     trace: 'on-first-retry',
