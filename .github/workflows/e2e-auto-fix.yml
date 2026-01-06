@@ -96,6 +96,13 @@ jobs:
         run: npm ci
         working-directory: ./frontend
 
+      # Only install chromium for faster setup (Desktop Chrome project only).
+      # Frontend CI installs chromium+webkit, but auto-fix only needs chromium for verification.
+      - name: Install Playwright browsers
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
+        run: npx playwright install chromium --with-deps
+        working-directory: ./frontend
+
       # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
       # to ensure consistency across all E2E workflows
       #

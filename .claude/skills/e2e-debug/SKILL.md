@@ -184,15 +184,25 @@ GitHub Actionsから呼び出された場合の対応手順。
 # レポートの構造を確認
 ls -la test-results/
 
-# JSONレポートから失敗テストを抽出
-# playwright.config.ts: outputFile='test-results/test-results.json'
-cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | {title: .title, file: .file}'
+# JSONレポートの存在確認
+if [ -f "test-results/test-results.json" ]; then
+  # JSONレポートから失敗テストを抽出
+  # playwright.config.ts: outputFile='test-results/test-results.json'
+  cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | {title: .title, file: .file}'
 
-# 詳細なエラーメッセージを取得
-cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | .tests[].results[].error.message'
+  # 詳細なエラーメッセージを取得
+  cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | .tests[].results[].error.message'
+else
+  echo "JSON report not found. Check test-results/ for screenshots and videos."
+  # スクリーンショットやエラーログから情報を取得
+  # Note: This only lists file paths. Manually inspect these files:
+  # - Screenshots (.png): Show UI state at failure
+  # - Videos (.webm): Show test execution leading to failure
+  find test-results/ -name "*.png" -o -name "*.webm" 2>/dev/null
+fi
 ```
 
-**注意**: JSONレポートを使用してください。HTMLレポートの構造はPlaywrightのバージョンで変わる可能性があります。
+**注意**: JSONレポートを使用してください。HTMLレポートの構造はPlaywrightのバージョンで変わる可能性があります。JSONレポートが存在しない場合は、スクリーンショットや動画から情報を取得してください。
 
 確認項目:
 - 失敗したテスト名
