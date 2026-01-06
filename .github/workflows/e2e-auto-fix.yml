@@ -97,7 +97,7 @@ jobs:
 
             ## 重要
             ファイルの修正のみ行ってください。git操作は不要です（ワークフローが自動で行います）。
-          claude_args: --allowed-tools "Read,Edit,Write,Bash(npm run test:e2e:*),Glob,Grep"
+          claude_args: --allowedTools "Read,Edit,Write,Bash(npm run test:e2e:*),Glob,Grep"
 
       # Security: Commit message is fixed to prevent prompt injection.
       # Claude Code cannot influence the commit message content.
