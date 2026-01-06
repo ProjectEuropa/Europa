@@ -47,6 +47,8 @@ jobs:
         run: npm ci
         working-directory: ./frontend
 
+      # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
+      # to ensure consistency across all E2E workflows
       - name: Update E2E tests with Claude
         if: steps.changes.outputs.any_changed == 'true'
         uses: anthropics/claude-code-action@v1

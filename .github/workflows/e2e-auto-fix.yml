@@ -73,6 +73,8 @@ jobs:
         run: npm ci
         working-directory: ./frontend
 
+      # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
+      # to ensure consistency across all E2E workflows
       - name: Run Claude Code to fix E2E
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: anthropics/claude-code-action@v1
@@ -83,7 +85,10 @@ jobs:
 
             ## 手順
             1. まず .claude/skills/e2e-debug/SKILL.md を読んで、E2Eデバッグの手順を確認してください
-            2. playwright-report/ と test-results/ から失敗情報を分析
+            2. test-results.json と test-results/ から失敗情報を分析
+               - 失敗したテスト名
+               - エラーメッセージ
+               - スクリーンショット/動画
             3. frontend/e2e/ のテストコードまたは Page Object を修正
 
             ## 修正後
