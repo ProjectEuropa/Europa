@@ -13,9 +13,13 @@ concurrency:
 
 jobs:
   auto-fix:
-    # Only run when Frontend CI failed and it's not an auto-fix branch (prevent infinite loops)
+    # Only run when:
+    # 1. Frontend CI failed
+    # 2. It was triggered by a PR (E2E tests only run on PRs)
+    # 3. It's not an auto-fix branch (prevent infinite loops)
     if: |
       github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.event == 'pull_request' &&
       !startsWith(github.event.workflow_run.head_branch, 'fix/e2e-auto-')
     runs-on: ubuntu-latest
     permissions:
@@ -79,6 +83,10 @@ jobs:
       # Security: Claude Code only has file read/edit permissions.
       # Git operations are handled by the workflow with fixed commit messages
       # to prevent prompt injection attacks via E2E error output.
+      #
+      # Note: Bash(npm run test:e2e:*) requires frontend/package.json to have
+      # matching scripts (e.g., test:e2e, test:e2e:headed). These are validated
+      # by npm ci in the previous step.
       - name: Run Claude Code to fix E2E
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: anthropics/claude-code-action@v1
@@ -89,10 +97,9 @@ jobs:
 
             ## 手順
             1. まず .claude/skills/e2e-debug/SKILL.md を読んで、E2Eデバッグの手順を確認してください
-            2. test-results.json と test-results/ から失敗情報を分析
-               - 失敗したテスト名
-               - エラーメッセージ
-               - スクリーンショット/動画
+            2. test-results/ から失敗情報を分析
+               - test-results/test-results.json でテスト結果を確認
+               - スクリーンショット/動画（test-results/配下）
             3. frontend/e2e/ のテストコードまたは Page Object を修正
 
             ## 重要
