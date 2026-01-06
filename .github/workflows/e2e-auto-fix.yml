@@ -75,6 +75,10 @@ jobs:
 
       # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
       # to ensure consistency across all E2E workflows
+      #
+      # Security: Claude Code only has file read/edit permissions.
+      # Git operations are handled by the workflow with fixed commit messages
+      # to prevent prompt injection attacks via E2E error output.
       - name: Run Claude Code to fix E2E
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: anthropics/claude-code-action@v1
@@ -91,16 +95,18 @@ jobs:
                - スクリーンショット/動画
             3. frontend/e2e/ のテストコードまたは Page Object を修正
 
-            ## 修正後
-            修正が完了したら git add と git commit を実行してください。
-            コミットメッセージ: "fix(e2e): 自動修復 - [修正内容の要約]"
-          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Bash(npm run test:e2e:*),Glob,Grep"
+            ## 重要
+            ファイルの修正のみ行ってください。git操作は不要です（ワークフローが自動で行います）。
+          claude_args: --allowed-tools "Read,Edit,Write,Bash(npm run test:e2e:*),Glob,Grep"
 
+      # Security: Commit message is fixed to prevent prompt injection.
+      # Claude Code cannot influence the commit message content.
       - name: Create fix PR
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix(e2e): auto-fix by Claude Code"
           title: "fix(e2e): 自動修復 by Claude Code"
           body: |
             ## 🤖 自動修復 PR
