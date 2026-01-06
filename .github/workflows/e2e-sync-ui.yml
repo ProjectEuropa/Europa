@@ -23,8 +23,8 @@ jobs:
 
       - name: Get changed files
         id: changes
-        # v46.0.1+ required due to CVE-2025-30066 (supply-chain compromise in v44-v45.0.7)
-        uses: tj-actions/changed-files@v46
+        # Pinned to v46.0.1 due to CVE-2025-30066 (supply-chain compromise in v44-v45.0.7)
+        uses: tj-actions/changed-files@v46.0.1
         with:
           files: |
             frontend/src/components/**
@@ -77,7 +77,7 @@ jobs:
 
             ## 重要
             ファイルの修正のみ行ってください。git操作は不要です（ワークフローが自動で行います）。
-          claude_args: --allowed-tools "Read,Edit,Write,Glob,Grep"
+          claude_args: --allowedTools "Read,Edit,Write,Glob,Grep"
 
       # Security: Use PR instead of direct push to respect branch protection rules.
       # Commit message is fixed to prevent prompt injection.
