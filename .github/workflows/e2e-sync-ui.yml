@@ -49,6 +49,10 @@ jobs:
 
       # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
       # to ensure consistency across all E2E workflows
+      #
+      # Security: Claude Code only has file read/edit permissions.
+      # Git operations are handled by the workflow with fixed commit messages
+      # to prevent prompt injection attacks.
       - name: Update E2E tests with Claude
         if: steps.changes.outputs.any_changed == 'true'
         uses: anthropics/claude-code-action@v1
@@ -71,16 +75,37 @@ jobs:
             5. 必要に応じてPage Objectのロケータを更新
             6. テストケースに影響がないか確認
 
-            ## 修正があれば
-            git add と git commit を実行してください。
-            コミットメッセージ: "fix(e2e): UIコンポーネント変更に追従"
-          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Glob,Grep"
+            ## 重要
+            ファイルの修正のみ行ってください。git操作は不要です（ワークフローが自動で行います）。
+          claude_args: --allowed-tools "Read,Edit,Write,Glob,Grep"
 
-      - name: Push changes
+      # Security: Use PR instead of direct push to respect branch protection rules.
+      # Commit message is fixed to prevent prompt injection.
+      - name: Create sync PR
         if: steps.changes.outputs.any_changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Race condition対策: リモートの変更を取り込んでからpush
-          git pull --rebase origin ${{ github.head_ref }} || true
-          git push || echo "No changes to push"
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix(e2e): sync with UI component changes"
+          title: "fix(e2e): UI変更に追従 by Claude Code"
+          body: |
+            ## 🤖 E2E同期 PR
+
+            UIコンポーネントの変更を検知し、Claude CodeがE2Eテストを更新しました。
+
+            ### 変更されたUIファイル
+            ```
+            ${{ steps.changes.outputs.all_changed_files }}
+            ```
+
+            ### 確認事項
+            - [ ] ロケータの更新が適切か確認
+            - [ ] テストが意図した動作を検証しているか確認
+
+            ---
+            🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          branch: fix/e2e-sync-${{ github.run_id }}
+          base: ${{ github.head_ref }}
+          labels: |
+            auto-fix
+            e2e
