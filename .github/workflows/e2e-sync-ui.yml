@@ -59,22 +59,20 @@ jobs:
             これらの変更に関連するE2Eテストの更新が必要か確認してください。
 
             ## 手順
-            1. 変更されたコンポーネントを読み取る
-            2. frontend/e2e/pages/ の関連するPage Objectを特定
-            3. 以下の変更がないか確認:
+            1. まず .claude/skills/e2e-debug/SKILL.md を読んで、E2Eデバッグの手順を確認してください
+            2. 変更されたコンポーネントを読み取る
+            3. frontend/e2e/pages/ の関連するPage Objectを特定
+            4. 以下の変更がないか確認:
                - aria-label, role属性の変更
                - ボタン/リンクのテキスト変更
                - フォーム要素の構造変更
-            4. 必要に応じてPage Objectのロケータを更新
-            5. テストケースに影響がないか確認
-
-            ## ロケータ優先順位
-            getByRole > getByLabel > getByText > getByTestId
+            5. 必要に応じてPage Objectのロケータを更新
+            6. テストケースに影響がないか確認
 
             ## 修正があれば
             git add と git commit を実行してください。
             コミットメッセージ: "fix(e2e): UIコンポーネント変更に追従"
-          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Glob,Grep"
+          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Glob,Grep,Skill"
 
       - name: Push changes
         if: steps.changes.outputs.any_changed == 'true'
