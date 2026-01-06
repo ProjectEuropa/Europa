@@ -72,7 +72,7 @@ jobs:
             ## 修正があれば
             git add と git commit を実行してください。
             コミットメッセージ: "fix(e2e): UIコンポーネント変更に追従"
-          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Glob,Grep,Skill"
+          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Glob,Grep"
 
       - name: Push changes
         if: steps.changes.outputs.any_changed == 'true'

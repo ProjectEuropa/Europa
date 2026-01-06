@@ -89,7 +89,7 @@ jobs:
             ## 修正後
             修正が完了したら git add と git commit を実行してください。
             コミットメッセージ: "fix(e2e): 自動修復 - [修正内容の要約]"
-          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Bash(npm run test:e2e:*),Glob,Grep,Skill"
+          claude_args: --allowed-tools "Read,Edit,Write,Bash(git add:*),Bash(git commit:*),Bash(npm run test:e2e:*),Glob,Grep"
 
       - name: Create fix PR
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
