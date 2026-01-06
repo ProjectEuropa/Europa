@@ -109,3 +109,4 @@ jobs:
           labels: |
             auto-fix
             e2e
+          delete-branch: true
