@@ -195,6 +195,9 @@ if [ -f "test-results/test-results.json" ]; then
 else
   echo "JSON report not found. Check test-results/ for screenshots and videos."
   # スクリーンショットやエラーログから情報を取得
+  # Note: This only lists file paths. Manually inspect these files:
+  # - Screenshots (.png): Show UI state at failure
+  # - Videos (.webm): Show test execution leading to failure
   find test-results/ -name "*.png" -o -name "*.webm" 2>/dev/null
 fi
 ```

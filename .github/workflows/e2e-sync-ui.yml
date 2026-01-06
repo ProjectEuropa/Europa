@@ -102,7 +102,7 @@ jobs:
 
       # Cleanup partial changes if Claude Code fails
       - name: Cleanup on failure
-        if: failure()
+        if: failure() && steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
         run: git checkout -- .
 
       - name: Check for changes
