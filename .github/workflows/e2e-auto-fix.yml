@@ -29,13 +29,30 @@ jobs:
       id-token: write  # Required for Claude Code Action OIDC token
 
     steps:
+      # Security: Verify PR source to prevent malicious artifact injection from forks.
+      # Fork PRs could contain crafted artifacts that exploit Claude Code or the workflow.
+      - name: Check PR source
+        id: check-source
+        run: |
+          HEAD_REPO="${{ github.event.workflow_run.head_repository.full_name }}"
+          BASE_REPO="${{ github.repository }}"
+          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "is_fork=true" >> $GITHUB_OUTPUT
+            echo "::warning::Skipping auto-fix for fork PR (security) - head: $HEAD_REPO, base: $BASE_REPO"
+          else
+            echo "is_fork=false" >> $GITHUB_OUTPUT
+            echo "PR is from the same repository - proceeding with auto-fix"
+          fi
+
       - name: Checkout repository
+        if: steps.check-source.outputs.is_fork != 'true'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
 
       - name: Download Playwright report
+        if: steps.check-source.outputs.is_fork != 'true'
         uses: actions/download-artifact@v4
         with:
           run-id: ${{ github.event.workflow_run.id }}
@@ -45,6 +62,7 @@ jobs:
         continue-on-error: true
 
       - name: Download test results
+        if: steps.check-source.outputs.is_fork != 'true'
         uses: actions/download-artifact@v4
         with:
           run-id: ${{ github.event.workflow_run.id }}
@@ -54,6 +72,7 @@ jobs:
         continue-on-error: true
 
       - name: Check if E2E artifacts exist
+        if: steps.check-source.outputs.is_fork != 'true'
         id: check-artifacts
         run: |
           # E2Eテストが失敗した場合のみ自動修復を実行
@@ -67,13 +86,13 @@ jobs:
           fi
 
       - name: Setup Node.js
-        if: steps.check-artifacts.outputs.has_artifacts == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install dependencies
-        if: steps.check-artifacts.outputs.has_artifacts == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
         run: npm ci
         working-directory: ./frontend
 
@@ -84,11 +103,11 @@ jobs:
       # Git operations are handled by the workflow with fixed commit messages
       # to prevent prompt injection attacks via E2E error output.
       #
-      # Note: Bash(npm run test:e2e:*) requires frontend/package.json to have
-      # matching scripts (e.g., test:e2e, test:e2e:headed). These are validated
-      # by npm ci in the previous step.
+      # Security: Only allow specific test scripts, not wildcards.
+      # Available scripts: test:e2e (run tests), test:e2e:ui (interactive), test:e2e:report (view report)
+      # CI only needs test:e2e to verify fixes.
       - name: Run Claude Code to fix E2E
-        if: steps.check-artifacts.outputs.has_artifacts == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -104,12 +123,12 @@ jobs:
 
             ## 重要
             ファイルの修正のみ行ってください。git操作は不要です（ワークフローが自動で行います）。
-          claude_args: --allowedTools "Read,Edit,Write,Bash(npm run test:e2e:*),Glob,Grep"
+          claude_args: --allowedTools "Read,Edit,Write,Bash(npm run test:e2e),Glob,Grep"
 
       # Security: Commit message is fixed to prevent prompt injection.
       # Claude Code cannot influence the commit message content.
       - name: Create fix PR
-        if: steps.check-artifacts.outputs.has_artifacts == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

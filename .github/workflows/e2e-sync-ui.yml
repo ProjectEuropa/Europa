@@ -6,6 +6,12 @@ on:
       - 'frontend/src/components/**'
       - 'frontend/src/app/**'
 
+# Rate limiting: Only one sync job per PR at a time
+# Cancels any in-progress sync for the same PR
+concurrency:
+  group: e2e-sync-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   sync-tests:
     runs-on: ubuntu-latest
