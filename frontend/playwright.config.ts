@@ -12,8 +12,9 @@ export default defineConfig({
     ? [
         ['html'],
         ['github'],
-        // JSON report written to outputDir (test-results/) for CI artifact download
-        ['json', { outputFile: 'test-results.json' }],
+        // JSON report in test-results/ for CI artifact download
+        // Note: outputFile is relative to working directory, not outputDir
+        ['json', { outputFile: 'test-results/test-results.json' }],
       ]
     : 'html',
   use: {
