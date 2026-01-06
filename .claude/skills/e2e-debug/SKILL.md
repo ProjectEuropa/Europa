@@ -178,20 +178,21 @@ GitHub Actionsから呼び出された場合の対応手順。
 
 ### 1. 失敗レポートの分析
 
-`playwright-report/` と `test-results/` からエラー情報を取得:
+`test-results/` からエラー情報を取得:
 
 ```bash
 # レポートの構造を確認
-ls -la playwright-report/
 ls -la test-results/
 
-# JSONレポートから失敗テストを抽出（推奨）
-# playwright.config.ts に ['json', { outputFile: 'test-results.json' }] を追加済みの場合
-cat test-results.json | jq '.suites[].specs[] | select(.ok | not) | {title: .title, file: .file}'
+# JSONレポートから失敗テストを抽出
+# playwright.config.ts: outputFile='test-results/test-results.json'
+cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | {title: .title, file: .file}'
 
-# HTMLレポートからの抽出（フォールバック）
-cat playwright-report/index.html | grep -oP 'data-testid="[^"]*failed[^"]*"' | head -5
+# 詳細なエラーメッセージを取得
+cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | .tests[].results[].error.message'
 ```
+
+**注意**: JSONレポートを使用してください。HTMLレポートの構造はPlaywrightのバージョンで変わる可能性があります。
 
 確認項目:
 - 失敗したテスト名
