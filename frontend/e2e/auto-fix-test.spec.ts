@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test('should fail with wrong button name', async ({ page }) => {
   await page.goto('/login');
 
-  // 間違ったボタン名（正しくは「ログイン」）
-  const button = page.getByRole('button', { name: '間違ったボタン' });
+  // 正しいボタン名でテスト
+  const button = page.getByRole('button', { name: 'ログイン' });
   await expect(button).toBeVisible({ timeout: 1000 });
 });
