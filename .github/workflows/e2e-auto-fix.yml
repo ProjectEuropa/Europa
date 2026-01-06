@@ -1,0 +1,165 @@
+name: E2E Auto Fix
+
+on:
+  workflow_run:
+    workflows: ["Frontend CI"]
+    types: [completed]
+
+# Rate limiting: Only one auto-fix job per branch at a time
+# Cancels any in-progress auto-fix for the same branch
+concurrency:
+  group: e2e-auto-fix-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  auto-fix:
+    # Only run when:
+    # 1. Frontend CI failed
+    # 2. It was triggered by a PR (E2E tests only run on PRs)
+    # 3. It's not an auto-fix branch (prevent infinite loops)
+    if: |
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      !startsWith(github.event.workflow_run.head_branch, 'fix/e2e-auto-')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+      id-token: write  # Required for Claude Code Action OIDC token
+
+    steps:
+      # Security: Verify PR source to prevent malicious artifact injection from forks.
+      # Fork PRs could contain crafted artifacts that exploit Claude Code or the workflow.
+      - name: Check PR source
+        id: check-source
+        run: |
+          HEAD_REPO="${{ github.event.workflow_run.head_repository.full_name }}"
+          BASE_REPO="${{ github.repository }}"
+          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+            echo "is_fork=true" >> $GITHUB_OUTPUT
+            echo "::warning::Skipping auto-fix for fork PR (security) - head: $HEAD_REPO, base: $BASE_REPO"
+          else
+            echo "is_fork=false" >> $GITHUB_OUTPUT
+            echo "PR is from the same repository - proceeding with auto-fix"
+          fi
+
+      - name: Checkout repository
+        if: steps.check-source.outputs.is_fork != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+
+      - name: Download Playwright report
+        if: steps.check-source.outputs.is_fork != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: playwright-report
+          path: playwright-report
+        continue-on-error: true
+
+      - name: Download test results
+        if: steps.check-source.outputs.is_fork != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: playwright-test-results
+          path: test-results
+        continue-on-error: true
+
+      - name: Check if E2E artifacts exist
+        if: steps.check-source.outputs.is_fork != 'true'
+        id: check-artifacts
+        run: |
+          # E2Eテストが失敗した場合のみ自動修復を実行
+          # playwright-reportにファイルが存在し、かつtest-resultsに失敗時のスクリーンショット等があるか確認
+          if [ -d "playwright-report" ] && [ -n "$(ls -A playwright-report 2>/dev/null)" ]; then
+            echo "has_artifacts=true" >> $GITHUB_OUTPUT
+            echo "E2E test artifacts found - proceeding with auto-fix"
+          else
+            echo "has_artifacts=false" >> $GITHUB_OUTPUT
+            echo "No E2E test artifacts found - this failure is not E2E related, skipping auto-fix"
+          fi
+
+      - name: Setup Node.js
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
+        run: npm ci
+        working-directory: ./frontend
+
+      # Only install chromium for faster setup (Desktop Chrome project only).
+      # Frontend CI installs chromium+webkit, but auto-fix only needs chromium for verification.
+      - name: Install Playwright browsers
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
+        run: npx playwright install chromium --with-deps
+        working-directory: ./frontend
+
+      # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
+      # to ensure consistency across all E2E workflows
+      #
+      # Security: Claude Code only has file read/edit permissions.
+      # Git operations are handled by the workflow with fixed commit messages
+      # to prevent prompt injection attacks via E2E error output.
+      #
+      # Security: Only allow specific test scripts, not wildcards.
+      # Available scripts: test:e2e (run tests), test:e2e:ui (interactive), test:e2e:report (view report)
+      # CI only needs test:e2e to verify fixes.
+      - name: Run Claude Code to fix E2E
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            E2Eテストが失敗しています。
+
+            ## 手順
+            1. まず .claude/skills/e2e-debug/SKILL.md を読んで、E2Eデバッグの手順を確認してください
+            2. test-results/ から失敗情報を分析
+               - test-results/test-results.json でテスト結果を確認
+               - スクリーンショット/動画（test-results/配下）
+            3. frontend/e2e/ のテストコードまたは Page Object を修正
+
+            ## 重要
+            ファイルの修正のみ行ってください。git操作は不要です（ワークフローが自動で行います）。
+          claude_args: --allowedTools "Read,Edit,Write,Bash(npm run test:e2e),Glob,Grep"
+
+      # Security: Commit message is fixed to prevent prompt injection.
+      # Claude Code cannot influence the commit message content.
+      - name: Create fix PR
+        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix(e2e): auto-fix by Claude Code"
+          title: "fix(e2e): 自動修復 by Claude Code"
+          body: |
+            ## 🤖 自動修復 PR
+
+            E2Eテスト失敗を検知し、Claude Codeが自動修復を試みました。
+
+            ### 元のワークフロー
+            - Run: ${{ github.event.workflow_run.html_url }}
+            - Branch: `${{ github.event.workflow_run.head_branch }}`
+
+            ### 確認事項
+            - [ ] 修正内容が適切か確認
+            - [ ] テストが意図した動作を検証しているか確認
+            - [ ] 関連するテストに影響がないか確認
+
+            ---
+            🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          branch: fix/e2e-auto-${{ github.run_id }}
+          base: ${{ github.event.workflow_run.head_branch }}
+          labels: |
+            auto-fix
+            e2e
+          delete-branch: true

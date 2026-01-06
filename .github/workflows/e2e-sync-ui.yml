@@ -1,0 +1,151 @@
+name: E2E Sync with UI Changes
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/src/components/**'
+      - 'frontend/src/app/**'
+
+# Rate limiting: Only one sync job per PR at a time
+# Cancels any in-progress sync for the same PR
+concurrency:
+  group: e2e-sync-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  sync-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write  # Required for Claude Code Action OIDC token
+
+    steps:
+      # Security: Skip for fork PRs to prevent malicious code execution.
+      # Fork PRs could contain crafted component changes that exploit Claude Code.
+      - name: Check PR source
+        id: check-source
+        run: |
+          if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+            echo "is_fork=true" >> $GITHUB_OUTPUT
+            echo "::warning::Skipping E2E sync for fork PR (security)"
+          else
+            echo "is_fork=false" >> $GITHUB_OUTPUT
+            echo "PR is from the same repository - proceeding with E2E sync"
+          fi
+
+      - name: Checkout repository
+        if: steps.check-source.outputs.is_fork != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get changed files
+        if: steps.check-source.outputs.is_fork != 'true'
+        id: changes
+        # Pinned to v46.0.1 due to CVE-2025-30066 (supply-chain compromise in v44-v45.0.7)
+        uses: tj-actions/changed-files@v46.0.1
+        with:
+          files: |
+            frontend/src/components/**
+            frontend/src/app/**
+
+      - name: Check if E2E update needed
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
+        run: |
+          echo "Changed UI files detected:"
+          echo "${{ steps.changes.outputs.all_changed_files }}"
+
+      - name: Setup Node.js
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
+        run: npm ci
+        working-directory: ./frontend
+
+      # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
+      # to ensure consistency across all E2E workflows
+      #
+      # Security: Claude Code only has file read/edit permissions.
+      # Git operations are handled by the workflow with fixed commit messages
+      # to prevent prompt injection attacks.
+      - name: Update E2E tests with Claude
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            以下のUIコンポーネントが変更されました:
+            ${{ steps.changes.outputs.all_changed_files }}
+
+            これらの変更に関連するE2Eテストの更新が必要か確認してください。
+
+            ## 手順
+            1. まず .claude/skills/e2e-debug/SKILL.md を読んで、E2Eデバッグの手順を確認してください
+            2. 変更されたコンポーネントを読み取る
+            3. frontend/e2e/pages/ の関連するPage Objectを特定
+            4. 以下の変更がないか確認:
+               - aria-label, role属性の変更
+               - ボタン/リンクのテキスト変更
+               - フォーム要素の構造変更
+            5. 必要に応じてPage Objectのロケータを更新
+            6. テストケースに影響がないか確認
+
+            ## 重要
+            ファイルの修正のみ行ってください。git操作は不要です（ワークフローが自動で行います）。
+          claude_args: --allowedTools "Read,Edit,Write,Glob,Grep"
+
+      # Cleanup partial changes if Claude Code fails
+      - name: Cleanup on failure
+        if: failure() && steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
+        run: git checkout -- .
+
+      - name: Check for changes
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
+        id: git-diff
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected - Claude Code determined no E2E updates needed"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected:"
+            git diff --stat
+          fi
+
+      # Security: Use PR instead of direct push to respect branch protection rules.
+      # Commit message is fixed to prevent prompt injection.
+      - name: Create sync PR
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true' && steps.git-diff.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "fix(e2e): sync with UI component changes"
+          title: "fix(e2e): UI変更に追従 by Claude Code"
+          body: |
+            ## 🤖 E2E同期 PR
+
+            UIコンポーネントの変更を検知し、Claude CodeがE2Eテストを更新しました。
+
+            ### 変更されたUIファイル
+            ```
+            ${{ steps.changes.outputs.all_changed_files }}
+            ```
+
+            ### 確認事項
+            - [ ] ロケータの更新が適切か確認
+            - [ ] テストが意図した動作を検証しているか確認
+
+            ---
+            🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          branch: fix/e2e-sync-${{ github.run_id }}
+          base: ${{ github.head_ref }}
+          labels: |
+            auto-fix
+            e2e
+          delete-branch: true

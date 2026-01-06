@@ -169,3 +169,84 @@ npm run test:e2e -- [test-file].spec.ts
 1. エラーの原因分析
 2. 修正されたコード
 3. テスト成功の確認
+
+---
+
+## CI自動修復モード
+
+GitHub Actionsから呼び出された場合の対応手順。
+
+### 1. 失敗レポートの分析
+
+`test-results/` からエラー情報を取得:
+
+```bash
+# レポートの構造を確認
+ls -la test-results/
+
+# JSONレポートの存在確認
+if [ -f "test-results/test-results.json" ]; then
+  # JSONレポートから失敗テストを抽出
+  # playwright.config.ts: outputFile='test-results/test-results.json'
+  cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | {title: .title, file: .file}'
+
+  # 詳細なエラーメッセージを取得
+  cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | .tests[].results[].error.message'
+else
+  echo "JSON report not found. Check test-results/ for screenshots and videos."
+  # スクリーンショットやエラーログから情報を取得
+  # Note: This only lists file paths. Manually inspect these files:
+  # - Screenshots (.png): Show UI state at failure
+  # - Videos (.webm): Show test execution leading to failure
+  find test-results/ -name "*.png" -o -name "*.webm" 2>/dev/null
+fi
+```
+
+**注意**: JSONレポートを使用してください。HTMLレポートの構造はPlaywrightのバージョンで変わる可能性があります。JSONレポートが存在しない場合は、スクリーンショットや動画から情報を取得してください。
+
+確認項目:
+- 失敗したテスト名
+- エラーメッセージ
+- スクリーンショット/動画（test-results/配下）
+
+### 2. 失敗原因の分類
+
+| エラータイプ | 対処法 |
+|-------------|--------|
+| ロケータが見つからない | 正しいセマンティックロケータを特定 |
+| タイムアウト | waitFor追加、タイムアウト値調整 |
+| API 422/500 | モックデータ更新 or API変更確認 |
+| Strict Mode違反 | `.first()` 追加 or より具体的なロケータ |
+| URL不一致 | リダイレクト条件の確認 |
+
+### 3. ロケータ変換ルール
+
+HTMLから正しいロケータを生成する際の優先順位:
+
+| HTML要素 | 属性 | 生成ロケータ |
+|----------|------|-------------|
+| `<input>` | `aria-label="X"` | `getByLabel('X')` |
+| `<input>` | `<label>X</label>` | `getByLabel('X')` |
+| `<button>` | テキスト "X" | `getByRole('button', { name: 'X' })` |
+| `<a>` | テキスト "X" | `getByRole('link', { name: 'X' })` |
+| `<h1-h6>` | テキスト "X" | `getByRole('heading', { name: 'X' })` |
+| 任意 | `data-testid="X"` | `getByTestId('X')` （最終手段） |
+
+### 4. 修正適用後
+
+```bash
+# テストを実行して確認
+npm run test:e2e -- [test-file].spec.ts
+
+# 成功したらコミット
+git add frontend/e2e/
+git commit -m "fix(e2e): 自動修復 - [修正内容の要約]"
+```
+
+### 5. 自動修復の制限
+
+以下の場合は人間の介入が必要:
+- ビジネスロジックの変更が必要な場合
+- 複数ファイルにまたがる大規模な変更
+- セキュリティに関わるテストの変更
+- モック vs 実API の切り替えが必要な場合
