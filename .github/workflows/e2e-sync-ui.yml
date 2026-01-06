@@ -21,13 +21,28 @@ jobs:
       id-token: write  # Required for Claude Code Action OIDC token
 
     steps:
+      # Security: Skip for fork PRs to prevent malicious code execution.
+      # Fork PRs could contain crafted component changes that exploit Claude Code.
+      - name: Check PR source
+        id: check-source
+        run: |
+          if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+            echo "is_fork=true" >> $GITHUB_OUTPUT
+            echo "::warning::Skipping E2E sync for fork PR (security)"
+          else
+            echo "is_fork=false" >> $GITHUB_OUTPUT
+            echo "PR is from the same repository - proceeding with E2E sync"
+          fi
+
       - name: Checkout repository
+        if: steps.check-source.outputs.is_fork != 'true'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - name: Get changed files
+        if: steps.check-source.outputs.is_fork != 'true'
         id: changes
         # Pinned to v46.0.1 due to CVE-2025-30066 (supply-chain compromise in v44-v45.0.7)
         uses: tj-actions/changed-files@v46.0.1
@@ -37,19 +52,19 @@ jobs:
             frontend/src/app/**
 
       - name: Check if E2E update needed
-        if: steps.changes.outputs.any_changed == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
         run: |
           echo "Changed UI files detected:"
           echo "${{ steps.changes.outputs.all_changed_files }}"
 
       - name: Setup Node.js
-        if: steps.changes.outputs.any_changed == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install dependencies
-        if: steps.changes.outputs.any_changed == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
         run: npm ci
         working-directory: ./frontend
 
@@ -60,7 +75,7 @@ jobs:
       # Git operations are handled by the workflow with fixed commit messages
       # to prevent prompt injection attacks.
       - name: Update E2E tests with Claude
-        if: steps.changes.outputs.any_changed == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -86,7 +101,7 @@ jobs:
           claude_args: --allowedTools "Read,Edit,Write,Glob,Grep"
 
       - name: Check for changes
-        if: steps.changes.outputs.any_changed == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
         id: git-diff
         run: |
           if git diff --quiet; then
@@ -101,7 +116,7 @@ jobs:
       # Security: Use PR instead of direct push to respect branch protection rules.
       # Commit message is fixed to prevent prompt injection.
       - name: Create sync PR
-        if: steps.changes.outputs.any_changed == 'true' && steps.git-diff.outputs.has_changes == 'true'
+        if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true' && steps.git-diff.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
