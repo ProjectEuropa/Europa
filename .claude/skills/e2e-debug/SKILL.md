@@ -185,7 +185,7 @@ GitHub Actionsから呼び出された場合の対応手順。
 ls -la test-results/
 
 # JSONレポートから失敗テストを抽出
-# playwright.config.ts に ['json', { outputFile: 'test-results/test-results.json' }] を設定済み
+# playwright.config.ts: outputDir='test-results', outputFile='test-results.json'
 cat test-results/test-results.json | jq '.suites[].specs[] | select(.ok | not) | {title: .title, file: .file}'
 
 # 詳細なエラーメッセージを取得
