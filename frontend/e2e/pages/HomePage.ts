@@ -14,16 +14,23 @@ export class HomePage extends BasePage {
     return this.page.getByRole('region', { name: /hero/i }).or(this.page.locator('section').first());
   }
 
+  get featuresSection() {
+    return this.page.locator('#features');
+  }
+
   get searchTeamLink() {
-    return this.page.getByRole('link', { name: /チーム検索/ });
+    // FeaturesSection内の「チームデータ検索」リンクを特定
+    return this.featuresSection.getByRole('link', { name: /チームデータ検索/ }).first();
   }
 
   get searchMatchLink() {
-    return this.page.getByRole('link', { name: /マッチ検索/ });
+    // FeaturesSection内の「マッチデータ検索」リンクを特定
+    return this.featuresSection.getByRole('link', { name: /マッチデータ検索/ }).first();
   }
 
   get uploadLink() {
-    return this.page.getByRole('link', { name: /アップロード/ });
+    // FeaturesSection内の「アップロード」リンクを特定
+    return this.featuresSection.getByRole('link', { name: /アップロード/ }).first();
   }
 
   // Actions
