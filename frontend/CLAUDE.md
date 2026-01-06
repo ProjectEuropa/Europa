@@ -566,4 +566,12 @@ test('should display loading state when submitting form', ...);
 **Settings**:
 - workers: 1（CI環境）
 - retries: 2
-- reporter: html + github
+- reporter: html + github + json
+
+### E2E Auto-Fix Workflow
+
+E2Eテスト失敗時の自動修復については `.claude/skills/e2e-debug/SKILL.md` を参照。
+
+- エラーパターンと解決策
+- ロケータ変換ルール
+- CI自動修復モードの手順

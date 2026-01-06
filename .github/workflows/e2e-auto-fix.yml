@@ -73,24 +73,23 @@ jobs:
         run: npm ci
         working-directory: ./frontend
 
+      # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
+      # to ensure consistency across all E2E workflows
       - name: Run Claude Code to fix E2E
         if: steps.check-artifacts.outputs.has_artifacts == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
-            E2Eテストが失敗しています。自動修復を試みてください。
-
-            ## 失敗レポートの場所
-            - playwright-report/ - Playwrightのテストレポート
-            - test-results/ - 失敗時のスクリーンショット/動画
+            E2Eテストが失敗しています。
 
             ## 手順
-            1. playwright-report/index.html を読んで失敗したテストを特定
-            2. 失敗原因を分析（ロケータ変更、タイミング、API変更など）
+            1. まず .claude/skills/e2e-debug/SKILL.md を読んで、E2Eデバッグの手順を確認してください
+            2. test-results.json と test-results/ から失敗情報を分析
+               - 失敗したテスト名
+               - エラーメッセージ
+               - スクリーンショット/動画
             3. frontend/e2e/ のテストコードまたは Page Object を修正
-            4. セマンティックロケータ優先順位を守る:
-               getByRole > getByLabel > getByText > getByTestId
 
             ## 修正後
             修正が完了したら git add と git commit を実行してください。
