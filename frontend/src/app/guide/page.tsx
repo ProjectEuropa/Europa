@@ -33,8 +33,8 @@ export default function GuidePage() {
             <h4 className="text-cyan-400 font-bold mb-2">検索のヒント</h4>
             <ul className="list-disc list-inside text-slate-400 text-sm space-y-1">
               <li>オーナー名で検索して、特定ユーザーのチームを探せます</li>
-              <li>タグ検索（例：Desktop, 2on2）で環境に合ったチームを絞り込めます</li>
-              <li>ソート機能で「最新順」や「評価順」に並び替え可能です</li>
+              <li>タグ検索（例：冥界、上級演習所）で環境に合ったチームを絞り込めます</li>
+              <li>ソート機能で「最新順」などに並び替え可能です</li>
             </ul>
           </div>
           <ActionButton href="/search/team">チーム検索へ</ActionButton>
