@@ -30,8 +30,7 @@ export default function TermsOfServicePage() {
 
       <SectionTitle>2. サービスの内容</SectionTitle>
       <Paragraph>
-        当サイトは、カルネージハート
-        EXAに関連するデータ共有、検索、分析などのサービスを提供します。
+        当サイトは、カルネージハート エクサに関連するデータ共有、検索、分析などのサービスを提供します。
         サービスの内容は予告なく変更される場合があります。
       </Paragraph>
 

@@ -36,7 +36,7 @@ const UploadSection: React.FC = () => {
           </div>
 
           <p className="text-slate-400 text-lg leading-relaxed mb-10">
-            あなたのカルネージハート エクサアルゴリズムをコミュニティと共有しましょう。シンプルなアップロードシステムにより、簡単に投稿してフィードバックを得ることができます。
+            あなたのカルネージハート エクサのアルゴリズムをコミュニティと共有しましょう。シンプルなアップロードシステムにより、簡単に投稿してフィードバックを得ることができます。
           </p>
 
           <div className="flex flex-wrap gap-4">
