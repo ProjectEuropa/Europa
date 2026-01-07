@@ -9,13 +9,13 @@ export default function ExternalLinksPage() {
   // リンク情報を配列として定義
   const links = [
     {
-      title: 'カルネージハートEXA 公式HP',
+      title: 'カルネージハート エクサ 公式HP',
       url: 'https://www.artdink.co.jp/japanese/title/che/',
       description:
         'アートディンク社が提供する公式サイト。ゲームの基本情報や最新情報を確認できます。',
     },
     {
-      title: 'Carnage Heart EXA 2chまとめwiki',
+      title: 'Carnage Heart EXA 2chまとめWiki',
       url: 'https://w.atwiki.jp/chex/',
       description:
         'コミュニティによって運営されているwiki。戦術やテクニックなど、詳細な情報が集約されています。',
@@ -38,7 +38,7 @@ export default function ExternalLinksPage() {
     <StaticPageLayout
       titleEn="EXTERNAL LINKS"
       titleJa="外部リンク集"
-      description="カルネージハートEXAに関連する公式・非公式の外部サイトへのリンク集です"
+      description="カルネージハート エクサに関連する公式・非公式の外部サイトへのリンク集です"
     >
       <Paragraph>
         最新情報の確認・コミュニティへの参加にご活用ください。
