@@ -53,7 +53,7 @@ export const QuickStart = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {steps.map((item, index) => (
+                {steps.map((item) => (
                     <Link
                         key={item.step}
                         href={item.href}

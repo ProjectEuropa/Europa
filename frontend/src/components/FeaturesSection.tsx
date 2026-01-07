@@ -58,7 +58,7 @@ const FeaturesSection: React.FC = () => {
       ),
       title: 'アップロード',
       subTitle: 'UPLOAD DATA',
-      description: 'コメントでアピール',
+      description: 'OKEファイルをアップロードし、コメントで戦略をアピールできます。',
       href: '/upload',
       actionLabel: 'アップロードする',
     },

@@ -50,9 +50,11 @@ export const StepSection = ({
                             {/* Image Overlay Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-[#0a0818]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none" />
 
-                            <img
+                            <Image
                                 src={imagePath}
                                 alt={`${title} screenshot`}
+                                width={800}
+                                height={600}
                                 className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
                             />
 
