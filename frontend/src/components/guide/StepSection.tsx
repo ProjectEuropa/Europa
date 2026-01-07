@@ -55,6 +55,7 @@ export const StepSection = ({
                                 alt={`${title} screenshot`}
                                 width={800}
                                 height={600}
+                                unoptimized
                                 className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
                             />
 

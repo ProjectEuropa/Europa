@@ -56,7 +56,7 @@ export default function GuidePage() {
             ダウンロードしたファイルは、PSPの `Savedata` フォルダ内のカルネージハートエクサのフォルダに転送してください。
           </p>
           <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 text-sm text-blue-300">
-            <strong>Note:</strong> ダウンロードにはログインは不要ですが、一部の機能（お気に入りなど）はログインが必要です。
+            <strong>Note:</strong> ダウンロードにはログインは不要ですが、一部の機能（イベント登録など）はログインが必要です。
           </div>
         </div>
       </StepSection>
@@ -99,7 +99,7 @@ export default function GuidePage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-cyan-500">✓</span>
-                イベントへの参加資格
+                イベント登録
               </li>
             </ul>
             <div className="mt-6">
@@ -116,9 +116,8 @@ export default function GuidePage() {
             </p>
             <InfoBox title="現在開発中の機能">
               <p className="text-sm text-slate-400">
-                ・チームの自動評価システム<br />
-                ・ユーザーランキング機能<br />
-                ・コメント機能の強化
+                ・AIレコメンド機能<br />
+                ・スマホアプリ
               </p>
             </InfoBox>
           </div>
