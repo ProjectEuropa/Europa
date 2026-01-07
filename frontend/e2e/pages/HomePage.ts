@@ -15,22 +15,23 @@ export class HomePage extends BasePage {
   }
 
   get featuresSection() {
-    return this.page.locator('#features');
+    // セマンティックロケータでFeaturesSectionを取得（aria-label="主な機能"）
+    return this.page.getByRole('region', { name: /主な機能/i });
   }
 
   get searchTeamLink() {
-    // FeaturesSection内の「チームデータ検索」リンクを特定
-    return this.featuresSection.getByRole('link', { name: /チームデータ検索/ }).first();
+    // FeaturesSection内の「チームデータ検索」リンク（セクション内でユニーク）
+    return this.featuresSection.getByRole('link', { name: /チームデータ検索/ });
   }
 
   get searchMatchLink() {
-    // FeaturesSection内の「マッチデータ検索」リンクを特定
-    return this.featuresSection.getByRole('link', { name: /マッチデータ検索/ }).first();
+    // FeaturesSection内の「マッチデータ検索」リンク（セクション内でユニーク）
+    return this.featuresSection.getByRole('link', { name: /マッチデータ検索/ });
   }
 
   get uploadLink() {
-    // FeaturesSection内の「アップロード」リンクを特定
-    return this.featuresSection.getByRole('link', { name: /アップロード/ }).first();
+    // FeaturesSection内の「アップロード」リンク（セクション内でユニーク）
+    return this.featuresSection.getByRole('link', { name: /アップロード/ });
   }
 
   // Actions

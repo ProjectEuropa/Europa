@@ -102,9 +102,42 @@ page.getByRole('button', { name: '送信' })
 page.getByRole('textbox', { name: /メールアドレス/ })
 page.getByLabel('パスワード')
 
-// Avoid - 実装依存
+// NG - 実装依存（クラス名、ID）
 page.locator('.btn-submit')
 page.locator('#email-input')
+page.locator('#features')  // ← IDセレクタも禁止
+```
+
+### セクションスコープの使用
+
+ページ内に同じテキストのリンクや要素が複数ある場合、親要素でスコープして検索する:
+
+```typescript
+// Good - 親要素でスコープ
+get featuresSection() {
+  return this.page.getByRole('region', { name: /features/i });
+}
+
+get searchTeamLink() {
+  // featuresセクション内のリンクに限定
+  return this.featuresSection.getByRole('link', { name: /チームデータ検索/ });
+}
+
+// NG - ページ全体から検索（複数マッチの可能性）
+get searchTeamLink() {
+  return this.page.getByRole('link', { name: /チームデータ検索/ });
+}
+```
+
+**親要素のロケータもセマンティック優先**:
+```typescript
+// Good - role属性でスコープ
+this.page.getByRole('region', { name: /features/i })
+this.page.getByRole('main')
+this.page.getByRole('navigation')
+
+// NG - IDセレクタでスコープ
+this.page.locator('#features')
 ```
 
 ### 待機処理（必須）
@@ -133,10 +166,19 @@ await page.route('**/api/v2/endpoint', async (route) => {
 ### 複数要素への対応
 
 ```typescript
-// strict mode違反を避ける
-page.getByRole('link', { name: '新規登録' }).first()
+// strict mode違反を避ける方法
+
+// 方法1: 親要素でスコープ（推奨）
 page.getByRole('main').getByRole('button', { name: '送信' })
+
+// 方法2: .first()を使用（本当に複数存在し、最初の要素が正解の場合のみ）
+page.getByRole('link', { name: '新規登録' }).first()
 ```
+
+**`.first()`使用時の注意**:
+- 本来ユニークであるべき要素に使うとフレーキーテストの原因になる
+- 親要素でスコープできる場合はそちらを優先
+- 使用する場合は、なぜ複数要素が存在するのかコメントで説明
 
 ## Output
 

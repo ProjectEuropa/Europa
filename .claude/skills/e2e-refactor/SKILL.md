@@ -24,15 +24,34 @@
 #### 非推奨ロケータ
 
 ```typescript
-// Before - 実装依存
+// Before - 実装依存（クラス、ID、data-testid）
 page.locator('.submit-btn')
 page.locator('#email')
+page.locator('#features')  // IDセレクタも非推奨
 page.locator('[data-testid="password"]')
 
 // After - セマンティック
 page.getByRole('button', { name: '送信' })
 page.getByRole('textbox', { name: /メールアドレス/ })
 page.getByLabel('パスワード')
+```
+
+#### セクションスコープの適用
+
+```typescript
+// Before - ページ全体から検索
+get searchLink() {
+  return this.page.getByRole('link', { name: /検索/ });
+}
+
+// After - 親要素でスコープ
+get featuresSection() {
+  return this.page.getByRole('region', { name: /features/i });
+}
+
+get searchLink() {
+  return this.featuresSection.getByRole('link', { name: /検索/ });
+}
 ```
 
 #### 固定wait
@@ -132,7 +151,12 @@ test('login test', async ({ page }) => {
 
 ### Strict Mode対応
 
-- [ ] 複数要素にマッチするロケータ → `.first()` または親要素でスコープ
+- [ ] 複数要素にマッチするロケータ → 親要素でスコープ（推奨）または `.first()`
+
+### `.first()`の見直し
+
+- [ ] 不必要な `.first()` の削除（本来ユニークな要素に使っている場合）
+- [ ] `.first()` を使っている箇所 → 親要素でスコープに置き換え可能か検討
 
 ## Output
 
