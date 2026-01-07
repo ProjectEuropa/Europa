@@ -7,7 +7,7 @@ export default function manifest() {
     name: 'EUROPA Platform',
     short_name: 'EUROPA',
     description:
-      'カルネージハートEXAのためのOKE共有・分析・コラボレーションプラットフォーム',
+      'カルネージハート エクサのためのOKE共有・分析・コラボレーションプラットフォーム',
     start_url: '/',
     display: 'standalone',
     background_color: '#0a0818',

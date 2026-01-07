@@ -53,7 +53,7 @@ export default function GuidePage() {
         <div className="space-y-4">
           <p className="text-slate-300 leading-relaxed">
             「一括ダウンロードリスト」に追加したチームは、`.OKE` ファイルとしてまとめてZIP形式でダウンロードされます。
-            ダウンロードしたファイルは、PSPの `Savedata` フォルダ内のカルネージハートエクサのフォルダに転送してください。
+            ダウンロードしたファイルは、PSPの `Savedata` フォルダ内のカルネージハート エクサのフォルダに転送してください。
           </p>
           <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 text-sm text-blue-300">
             <strong>Note:</strong> ダウンロードにはログインは不要ですが、一部の機能（イベント登録など）はログインが必要です。
