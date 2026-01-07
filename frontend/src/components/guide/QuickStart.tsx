@@ -17,7 +17,7 @@ export const QuickStart = () => {
         {
             step: '02',
             title: 'データを取得',
-            desc: 'OKEファイルをダウンロードして、カルネージハートエクサで読み込みます。',
+            desc: 'OKEファイルをダウンロードして、カルネージハート エクサで読み込みます。',
             href: '/sumdownload/team',
             action: 'DLページへ',
             icon: (
