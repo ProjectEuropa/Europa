@@ -12,8 +12,7 @@ export default function FAQPage() {
     >
       <div className="space-y-6">
         <FAQItem question="Project Europaとは何ですか？">
-          Project Europaは、カルネージハート
-          EXAのプレイヤーコミュニティをサポートするための非公式プラットフォームです。
+          Project Europaは、カルネージハート エクサのプレイヤーコミュニティをサポートするための非公式プラットフォームです。
           チームデータの共有、検索、分析などの機能を提供し、プレイヤー同士の交流を促進しています。
         </FAQItem>
 
@@ -24,8 +23,7 @@ export default function FAQPage() {
 
         <FAQItem question="チームデータをアップロードするにはどうすればいいですか？">
           「アップロード」ページからチームデータをアップロードできます。
-          対応しているファイル形式は、カルネージハート
-          EXAの標準フォーマット（.CHE）です。
+          対応しているファイル形式は、カルネージハート エクサの標準フォーマット（.CHE）です。
         </FAQItem>
 
         <FAQItem question="アップロードしたデータは誰でも見ることができますか？">

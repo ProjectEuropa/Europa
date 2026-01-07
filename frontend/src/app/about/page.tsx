@@ -23,8 +23,7 @@ export default function AboutPage() {
     >
       <SectionTitle>Project Europaとは</SectionTitle>
       <Paragraph>
-        Project Europaは、カルネージハート
-        EXAのコミュニティをサポートするために2016年に設立された非公式プロジェクトです。
+        Project Europaは、カルネージハート エクサのコミュニティをサポートするために2016年に設立された非公式プロジェクトです。
         プレイヤーの皆様がゲーム体験を最大限に楽しめるよう、チームデータの共有やマッチデータの共有などのサービスを提供しています。
         最新のテクノロジーを活用し、直感的なインターフェースで誰でも簡単に利用できるプラットフォームを目指しています。
       </Paragraph>
@@ -48,8 +47,7 @@ export default function AboutPage() {
 
       <SectionTitle>ミッション</SectionTitle>
       <Paragraph>
-        私たちのミッションは、カルネージハート
-        EXAのプレイヤーコミュニティを活性化し、
+        私たちのミッションは、カルネージハート エクサのプレイヤーコミュニティを活性化し、
         プレイヤー同士の交流を促進することです。データの共有と分析を通じて、
         より戦略的で楽しいゲームプレイを支援します。
       </Paragraph>
@@ -60,8 +58,7 @@ export default function AboutPage() {
 
       <SectionTitle>チーム</SectionTitle>
       <Paragraph>
-        Project Europaは、カルネージハート
-        EXAを愛する有志のプレイヤーによって運営されています。
+        Project Europaは、カルネージハート エクサを愛する有志のプレイヤーによって運営されています。
         開発、デザイン、コミュニティマネジメントなど、様々な分野の専門家がボランティアとして参加しています。
         私たちは常に新しいメンバーを歓迎しており、プロジェクトに貢献したい方はお気軽にご連絡ください。
       </Paragraph>
