@@ -7,7 +7,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
-  workers: isCI ? 1 : undefined,
+  // Local dev server (Turbopack) can be unstable with many parallel connections
+  // Use limited workers locally to avoid net::ERR_ABORTED errors
+  workers: isCI ? 1 : 2,
   reporter: isCI
     ? [
         ['html'],
