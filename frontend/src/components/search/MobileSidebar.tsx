@@ -25,25 +25,22 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     <div
-      className={`lg:hidden fixed inset-0 z-20 transition-opacity duration-300 ease-in-out ${
-        isOpen
+      className={`lg:hidden fixed inset-0 z-20 transition-opacity duration-300 ease-in-out ${isOpen
           ? 'opacity-100 pointer-events-auto'
           : 'opacity-0 pointer-events-none'
-      }`}
+        }`}
     >
       {/* Backdrop with fade effect */}
       <div
-        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-          isOpen ? 'opacity-80' : 'opacity-0'
-        }`}
+        className={`absolute inset-0 bg-black transition-opacity duration-300 ${isOpen ? 'opacity-80' : 'opacity-0'
+          }`}
         onClick={() => setIsOpen(false)}
       ></div>
 
       {/* Sidebar with slide effect */}
       <div
-        className={`absolute left-0 top-0 h-full w-64 bg-gray-950 shadow-lg overflow-y-auto transform transition-transform duration-300 ease-in-out border-r border-blue-800 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`absolute left-0 top-0 h-full w-64 bg-gray-950 shadow-lg overflow-y-auto transform transition-transform duration-300 ease-in-out border-r border-blue-800 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className="p-4">
           <div className="flex items-center justify-between mb-6">
@@ -172,7 +169,7 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, setIsOpen }) => {
               </h3>
               <SidebarItem
                 icon="info"
-                label="Information"
+                label="お知らせ"
                 href="/info"
                 active={pathname === '/info'}
               />

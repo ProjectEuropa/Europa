@@ -113,7 +113,7 @@ const DesktopSidebar: React.FC = () => {
             </h3>
             <SidebarItem
               icon="info"
-              label="Information"
+              label="お知らせ"
               href="/info"
               active={pathname === '/info'}
             />
