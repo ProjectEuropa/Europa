@@ -9,7 +9,7 @@ const stats = [
 
 const HeroSection: React.FC = () => {
   return (
-    <section className="relative pt-24 pb-32 overflow-hidden">
+    <section aria-label="ヒーローセクション" className="relative pt-24 pb-32 overflow-hidden">
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_-20%,rgba(14,165,233,0.15),transparent_50%)] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />

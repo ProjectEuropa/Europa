@@ -11,7 +11,7 @@ export class HomePage extends BasePage {
 
   // Locators
   get heroSection() {
-    return this.page.getByRole('region', { name: /hero/i }).or(this.page.locator('section').first());
+    return this.page.getByRole('region', { name: /ヒーローセクション/i });
   }
 
   get featuresSection() {
