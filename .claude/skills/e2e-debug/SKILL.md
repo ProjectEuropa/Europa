@@ -78,6 +78,25 @@ navigationTimeout: 60000,
 await page.goto('/path', { timeout: 60000 });
 ```
 
+#### net::ERR_ABORTED（並列実行時）
+
+```
+Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+```
+
+**原因**: Next.js開発サーバー（Turbopack/HMR）が複数の同時接続で不安定
+
+**解決策**:
+```typescript
+// playwright.config.ts でワーカー数を制限
+workers: isCI ? 1 : 2,  // ローカルでは2に制限
+```
+
+**デバッグ手順**:
+1. `--workers=1` で実行して問題が解消するか確認
+2. 解消する場合はワーカー数の問題
+3. 解消しない場合は別の原因を調査
+
 #### Hydration Issues (Zustand)
 
 ```

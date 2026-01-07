@@ -111,7 +111,7 @@ const FeaturesSection: React.FC = () => {
   ];
 
   return (
-    <section id="features" className="py-20 md:py-32 relative overflow-hidden">
+    <section id="features" aria-label="主な機能" className="py-20 md:py-32 relative overflow-hidden">
       {/* Background Decor - Subtle Grid */}
       <div
         className="absolute inset-0 pointer-events-none bg-[length:40px_40px] bg-[linear-gradient(rgba(0,200,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,200,255,0.03)_1px,transparent_1px)]"
