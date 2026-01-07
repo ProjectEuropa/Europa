@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import type React from 'react';
+import { ExternalLink } from 'lucide-react';
 import Icons from '@/components/Icons';
 
 interface FooterProps {
@@ -103,10 +104,11 @@ const Footer: React.FC<FooterProps> = ({
               <a
                 href="https://hp.project-europa.work/contact"
                 target="_blank"
-                className="text-[#b0c4d8] no-underline"
+                className="text-[#b0c4d8] no-underline flex items-center gap-1 hover:text-[#00c8ff] transition-colors"
                 rel="noopener"
               >
                 お問い合わせ
+                <ExternalLink size={14} />
               </a>
             </li>
             <li>
