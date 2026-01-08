@@ -1,5 +1,0 @@
----
-- name: Deploy
-  hosts: production
-  roles:
-    - deploy
