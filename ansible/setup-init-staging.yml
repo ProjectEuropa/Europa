@@ -1,8 +1,0 @@
----
-- name: Set up OS users and security
-  hosts: staging
-  roles:
-    - setuser
-    - docker
-    - git
-
