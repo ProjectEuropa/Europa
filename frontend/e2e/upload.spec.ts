@@ -20,6 +20,7 @@ import {
   mockUploadSuccessWithData,
   mockSearchFiles,
   uploadTestData,
+  waitForAuthHydration,
 } from './helpers/upload-helpers';
 
 test.describe('チームデータアップロード', () => {
@@ -49,8 +50,8 @@ test.describe('チームデータアップロード', () => {
 
       const uploadPage = new TeamUploadPage(page);
       await uploadPage.goto();
-      // Zustandストアのハイドレーション完了を確実にするためリロード
-      await page.reload();
+      // Zustandストアの認証状態ハイドレーションを待機
+      await waitForAuthHydration(page);
       await uploadPage.expectDeletePasswordFieldHidden();
     });
   });
@@ -254,15 +255,12 @@ test.describe('チームデータアップロード', () => {
 
       const uploadPage = new TeamUploadPage(page);
       await uploadPage.goto();
-      // Zustandストアがハイドレートされるまで待機（ページリロードでハイドレーションを確実にする）
-      await page.reload();
+      // Zustandストアの認証状態ハイドレーションを待機
+      await waitForAuthHydration(page);
       await uploadPage.expectDeletePasswordFieldHidden();
 
-      // 認証ユーザーでもオーナー名は必須（デフォルト値が設定されない場合があるため）
-      const ownerNameValue = await uploadPage.ownerNameInput.inputValue();
-      if (!ownerNameValue) {
-        await uploadPage.fillOwnerName(testUsers.valid.name);
-      }
+      // 認証ユーザーでもオーナー名フィールドに値を設定（テストの決定論的動作を保証）
+      await uploadPage.fillOwnerName(testUsers.valid.name);
 
       await uploadPage.fillComment(uploadTestData.validTeam.comment);
       await uploadPage.selectFileByBuffer(
