@@ -1,12 +1,17 @@
 import { test, expect } from '@playwright/test';
-import { TeamUploadPage, MatchUploadPage } from './pages/UploadPage';
-import { TeamSearchPage, MatchSearchPage } from './pages/SearchPage';
+import {
+  TeamUploadPage,
+  MatchUploadPage,
+  TeamSearchPage,
+  MatchSearchPage,
+} from './pages';
 import { loginUser, testUsers } from './helpers/auth-helpers';
 import {
   createTeamCheFile,
   createMatchCheFile,
   createOversizedTeamFile,
   createOversizedMatchFile,
+  createInvalidFormatFile,
   loadSampleTeamFile,
   loadSampleMatchFile,
   mockUploadSuccess,
@@ -119,7 +124,7 @@ test.describe('チームデータアップロード', () => {
 
       await uploadPage.selectFileByBuffer(
         'invalid.txt',
-        Buffer.from('This is not a CHE file')
+        createInvalidFormatFile()
       );
 
       await uploadPage.expectFileFormatError();
@@ -236,8 +241,8 @@ test.describe('チームデータアップロード', () => {
   });
 
   test.describe('アップロード実行（認証済み）', () => {
-    // TODO: 認証済みユーザーでのアップロードテストは確認ダイアログが表示されない問題を調査中
-    test.skip('認証ユーザーはオーナー名と削除パスワードなしでアップロードできる', async ({ page }) => {
+    test('認証ユーザーはオーナー名と削除パスワードなしでアップロードできる', async ({ page }) => {
+      test.skip(true, '確認ダイアログが表示されない問題を調査中');
       await mockUploadSuccess(page, 'team');
       await mockFetchTags(page);
       await loginUser(page, testUsers.valid);

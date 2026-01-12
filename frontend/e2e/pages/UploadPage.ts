@@ -89,7 +89,8 @@ export class UploadPage extends BasePage {
 
   // タグ関連
   getTagBadge(tagName: string) {
-    return this.page.locator('div').filter({ hasText: new RegExp(`^${tagName}$`) }).getByRole('button');
+    const escapedTagName = tagName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return this.page.locator('div').filter({ hasText: new RegExp(`^${escapedTagName}$`) }).getByRole('button');
   }
 
   // エラー表示
