@@ -25,7 +25,7 @@ CHEファイルはこのアプリケーション独自のバイナリ形式で�
 ## テストでの使用方法
 
 ```typescript
-import { loadSampleTeamFile, loadSampleMatchFile } from './helpers/upload-helpers';
+import { loadSampleTeamFile, loadSampleMatchFile } from '../helpers/upload-helpers';
 
 // チームファイルを読み込む
 const teamFile = loadSampleTeamFile();
