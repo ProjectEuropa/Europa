@@ -537,7 +537,7 @@ jobs:
           fi
 
       - name: Comment bundle analysis
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: always()
         with:
           script: |
