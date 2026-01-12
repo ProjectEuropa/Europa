@@ -49,6 +49,8 @@ test.describe('チームデータアップロード', () => {
 
       const uploadPage = new TeamUploadPage(page);
       await uploadPage.goto();
+      // Zustandストアのハイドレーション完了を確実にするためリロード
+      await page.reload();
       await uploadPage.expectDeletePasswordFieldHidden();
     });
   });
@@ -245,14 +247,22 @@ test.describe('チームデータアップロード', () => {
   });
 
   test.describe('アップロード実行（認証済み）', () => {
-    test('認証ユーザーはオーナー名と削除パスワードなしでアップロードできる', async ({ page }) => {
-      test.skip(true, '確認ダイアログが表示されない問題を調査中');
+    test('認証ユーザーは削除パスワードなしでアップロードできる', async ({ page }) => {
       await mockUploadSuccess(page, 'team');
       await mockFetchTags(page);
       await loginUser(page, testUsers.valid);
 
       const uploadPage = new TeamUploadPage(page);
       await uploadPage.goto();
+      // Zustandストアがハイドレートされるまで待機（ページリロードでハイドレーションを確実にする）
+      await page.reload();
+      await uploadPage.expectDeletePasswordFieldHidden();
+
+      // 認証ユーザーでもオーナー名は必須（デフォルト値が設定されない場合があるため）
+      const ownerNameValue = await uploadPage.ownerNameInput.inputValue();
+      if (!ownerNameValue) {
+        await uploadPage.fillOwnerName(testUsers.valid.name);
+      }
 
       await uploadPage.fillComment(uploadTestData.validTeam.comment);
       await uploadPage.selectFileByBuffer(
@@ -262,6 +272,7 @@ test.describe('チームデータアップロード', () => {
 
       await uploadPage.expectSubmitButtonEnabled();
       await uploadPage.submit();
+
       await uploadPage.expectConfirmDialogVisible();
       await uploadPage.confirmUpload();
       await uploadPage.expectUploadSuccess();
