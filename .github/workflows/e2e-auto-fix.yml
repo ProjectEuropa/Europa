@@ -53,7 +53,7 @@ jobs:
 
       - name: Download Playwright report
         if: steps.check-source.outputs.is_fork != 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -63,7 +63,7 @@ jobs:
 
       - name: Download test results
         if: steps.check-source.outputs.is_fork != 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -87,7 +87,7 @@ jobs:
 
       - name: Setup Node.js
         if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
