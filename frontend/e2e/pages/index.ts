@@ -19,3 +19,4 @@ export { RegisterPage } from './RegisterPage';
 export { HomePage } from './HomePage';
 export { MyPage } from './MyPage';
 export { SearchPage, TeamSearchPage, MatchSearchPage } from './SearchPage';
+export { UploadPage, TeamUploadPage, MatchUploadPage } from './UploadPage';
