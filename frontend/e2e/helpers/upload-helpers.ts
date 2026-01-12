@@ -11,6 +11,30 @@ const __dirname = path.dirname(__filename);
 const FIXTURES_DIR = path.join(__dirname, '../fixtures');
 
 /**
+ * ファイルサイズ制限（KB）
+ */
+export const FILE_SIZE_LIMITS = {
+  TEAM: 25,
+  MATCH: 260,
+} as const;
+
+/**
+ * Zustandストアの認証状態ハイドレーションを待機する
+ * page.reload()より信頼性が高く高速
+ */
+export async function waitForAuthHydration(page: Page): Promise<void> {
+  await page.waitForFunction(
+    () => {
+      const authStorage = localStorage.getItem('auth-storage');
+      if (!authStorage) return false;
+      const parsed = JSON.parse(authStorage);
+      return parsed.state?.isAuthenticated && parsed.state?.user;
+    },
+    { timeout: 5000 }
+  );
+}
+
+/**
  * 実際のサンプルチームファイルを読み込む
  */
 export function loadSampleTeamFile(): Buffer {
@@ -60,11 +84,13 @@ export function createMatchCheFile(sizeInKB: number = 50): Buffer {
  * オーバーサイズのCHEファイル（テスト用）
  */
 export function createOversizedTeamFile(): Buffer {
-  return createMockCheFile(30 * 1024); // 30KB > 25KB
+  const oversizeKB = FILE_SIZE_LIMITS.TEAM + 5; // 30KB > 25KB
+  return createMockCheFile(oversizeKB * 1024);
 }
 
 export function createOversizedMatchFile(): Buffer {
-  return createMockCheFile(300 * 1024); // 300KB > 260KB
+  const oversizeKB = FILE_SIZE_LIMITS.MATCH + 40; // 300KB > 260KB
+  return createMockCheFile(oversizeKB * 1024);
 }
 
 /**
