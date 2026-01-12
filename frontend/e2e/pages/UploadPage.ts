@@ -79,8 +79,8 @@ export class UploadPage extends BasePage {
   }
 
   get confirmButton() {
-    // 確認ダイアログ内のアップロードボタン（2つ目）
-    return this.page.getByRole('button', { name: 'アップロード' }).nth(1);
+    // 確認ダイアログ内のアップロードボタン
+    return this.confirmDialogHeading.locator('..').getByRole('button', { name: 'アップロード' });
   }
 
   get cancelButton() {
@@ -90,7 +90,7 @@ export class UploadPage extends BasePage {
   // タグ関連
   getTagBadge(tagName: string) {
     const escapedTagName = tagName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return this.page.locator('div').filter({ hasText: new RegExp(`^${escapedTagName}$`) }).getByRole('button');
+    return this.page.locator('div.rounded-full').filter({ hasText: new RegExp(`^${escapedTagName}$`) }).getByRole('button');
   }
 
   // エラー表示

@@ -109,8 +109,8 @@ export async function mockUploadSuccess(page: Page, fileType: 'team' | 'match' =
           data: {
             file: {
               id: 1,
-              file_name: 'uploaded-file.CHE',
-              file_comment: 'Test comment',
+              file_name: `uploaded-${fileType}-file.CHE`,
+              file_comment: `Test ${fileType} comment`,
               upload_owner_name: 'Test Owner',
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
@@ -127,7 +127,8 @@ export async function mockUploadSuccess(page: Page, fileType: 'team' | 'match' =
 }
 
 /**
- * アップロードAPIエラーモック
+ * アップロードAPIエラーモック（サーバーエラー用）
+ * バリデーションエラー（422）はmockValidationErrorを使用
  */
 export async function mockUploadError(
   page: Page,
@@ -139,14 +140,7 @@ export async function mockUploadError(
       await route.fulfill({
         status,
         contentType: 'application/json',
-        body: JSON.stringify({
-          message,
-          ...(status === 422 && {
-            errors: {
-              file: ['ファイルが無効です'],
-            },
-          }),
-        }),
+        body: JSON.stringify({ message }),
       });
     } else {
       await route.continue();
@@ -245,29 +239,35 @@ export async function mockSearchFiles(
   files: UploadedFileData[]
 ) {
   const dataType = fileType === 'team' ? '1' : '2';
-  await page.route(`**/api/v2/files?data_type=${dataType}*`, async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        data: {
-          files: files.map(f => ({
-            id: f.id,
-            file_name: f.file_name,
-            file_comment: f.file_comment,
-            upload_owner_name: f.upload_owner_name,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            downloadable_at: new Date().toISOString(),
-            tags: f.tags,
-          })),
-          pagination: {
-            page: 1,
-            limit: 10,
-            total: files.length,
+  // クエリパラメータの順序に依存しないマッチング
+  await page.route('**/api/v2/files*', async (route) => {
+    const requestUrl = new URL(route.request().url());
+    if (requestUrl.searchParams.get('data_type') === dataType) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: {
+            files: files.map(f => ({
+              id: f.id,
+              file_name: f.file_name,
+              file_comment: f.file_comment,
+              upload_owner_name: f.upload_owner_name,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              downloadable_at: new Date().toISOString(),
+              tags: f.tags,
+            })),
+            pagination: {
+              page: 1,
+              limit: 10,
+              total: files.length,
+            },
           },
-        },
-      }),
-    });
+        }),
+      });
+    } else {
+      await route.continue();
+    }
   });
 }

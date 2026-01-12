@@ -24,18 +24,22 @@ import {
 
 test.describe('チームデータアップロード', () => {
   test.describe('ページ表示', () => {
-    test('アップロードページが正しく表示される', async ({ page }) => {
-      const uploadPage = new TeamUploadPage(page);
-      await uploadPage.goto();
-      await uploadPage.clearStorage();
-      await uploadPage.expectVisible();
-    });
+    test.describe('未認証時', () => {
+      let uploadPage: TeamUploadPage;
 
-    test('未認証時は削除パスワードフィールドが表示される', async ({ page }) => {
-      const uploadPage = new TeamUploadPage(page);
-      await uploadPage.goto();
-      await uploadPage.clearStorage();
-      await uploadPage.expectDeletePasswordFieldVisible();
+      test.beforeEach(async ({ page }) => {
+        uploadPage = new TeamUploadPage(page);
+        await uploadPage.goto();
+        await uploadPage.clearStorage();
+      });
+
+      test('アップロードページが正しく表示される', async () => {
+        await uploadPage.expectVisible();
+      });
+
+      test('削除パスワードフィールドが表示される', async () => {
+        await uploadPage.expectDeletePasswordFieldVisible();
+      });
     });
 
     test('認証時は削除パスワードフィールドが非表示', async ({ page }) => {
