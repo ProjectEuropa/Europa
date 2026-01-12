@@ -19,6 +19,14 @@ export const FILE_SIZE_LIMITS = {
 } as const;
 
 /**
+ * オーバーサイズテスト用のマージン（KB）
+ */
+const OVERSIZE_MARGIN = {
+  TEAM: 5,   // 25KB + 5KB = 30KB
+  MATCH: 40, // 260KB + 40KB = 300KB
+} as const;
+
+/**
  * Zustandストアの認証状態ハイドレーションを待機する
  * page.reload()より信頼性が高く高速
  */
@@ -27,8 +35,12 @@ export async function waitForAuthHydration(page: Page): Promise<void> {
     () => {
       const authStorage = localStorage.getItem('auth-storage');
       if (!authStorage) return false;
-      const parsed = JSON.parse(authStorage);
-      return parsed.state?.isAuthenticated && parsed.state?.user;
+      try {
+        const parsed = JSON.parse(authStorage);
+        return parsed.state?.isAuthenticated && parsed.state?.user;
+      } catch {
+        return false;
+      }
     },
     { timeout: 5000 }
   );
@@ -84,12 +96,12 @@ export function createMatchCheFile(sizeInKB: number = 50): Buffer {
  * オーバーサイズのCHEファイル（テスト用）
  */
 export function createOversizedTeamFile(): Buffer {
-  const oversizeKB = FILE_SIZE_LIMITS.TEAM + 5; // 30KB > 25KB
+  const oversizeKB = FILE_SIZE_LIMITS.TEAM + OVERSIZE_MARGIN.TEAM;
   return createMockCheFile(oversizeKB * 1024);
 }
 
 export function createOversizedMatchFile(): Buffer {
-  const oversizeKB = FILE_SIZE_LIMITS.MATCH + 40; // 300KB > 260KB
+  const oversizeKB = FILE_SIZE_LIMITS.MATCH + OVERSIZE_MARGIN.MATCH;
   return createMockCheFile(oversizeKB * 1024);
 }
 

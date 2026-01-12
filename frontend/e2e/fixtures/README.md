@@ -24,8 +24,10 @@ CHEファイルはこのアプリケーション独自のバイナリ形式で�
 
 ## テストでの使用方法
 
+`frontend/e2e/` 配下のテストファイルから使用する場合：
+
 ```typescript
-import { loadSampleTeamFile, loadSampleMatchFile } from '../helpers/upload-helpers';
+import { loadSampleTeamFile, loadSampleMatchFile } from './helpers/upload-helpers';
 
 // チームファイルを読み込む
 const teamFile = loadSampleTeamFile();
