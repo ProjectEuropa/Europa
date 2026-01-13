@@ -32,10 +32,7 @@
   "overrides": {
     "undici": "^6.0.0",
     "esbuild": "^0.25.0",
-    "path-to-regexp": "^6.2.1",
-    "@cloudflare/next-on-pages": {
-      "cookie": "^0.7.2"
-    }
+    "path-to-regexp": "^8.0.0"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -57,7 +54,7 @@
     "howler": "^2.2.4",
     "lucide-react": "^0.511.0",
     "motion": "^12.12.1",
-    "next": "^15.4.8",
+    "next": "^16.1.1",
     "postcss": "^8.5.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -71,9 +68,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
-    "@cloudflare/next-on-pages": "^1.13.12",
     "@eslint/eslintrc": "^3",
-    "@next/bundle-analyzer": "^15.3.1",
+    "@next/bundle-analyzer": "^16.1.1",
     "@playwright/test": "^1.54.1",
     "@tanstack/react-query-devtools": "^5.83.0",
     "@testing-library/jest-dom": "^6.6.3",
