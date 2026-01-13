@@ -61,6 +61,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
   const [enterPressedOnce, setEnterPressedOnce] = useState(false);
 
   const enterResetTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const redirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -93,6 +94,9 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     return () => {
       if (enterResetTimeoutRef.current) {
         clearTimeout(enterResetTimeoutRef.current);
+      }
+      if (redirectTimeoutRef.current) {
+        clearTimeout(redirectTimeoutRef.current);
       }
     };
   }, []);
@@ -258,7 +262,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
       // 認証状態がフォーム開始時から変わった場合（トークン切れ）
       if (initialAuthState && !isAuthenticated) {
         toast.error('セッションが切れました。再度ログインしてください。');
-        setTimeout(() => {
+        redirectTimeoutRef.current = setTimeout(() => {
           router.push('/login');
         }, 1500);
         return;
