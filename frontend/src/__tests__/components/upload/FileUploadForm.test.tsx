@@ -1,9 +1,17 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { toast } from 'sonner';
 import { vi } from 'vitest';
 import { FileUploadForm } from '@/components/upload/FileUploadForm';
 
 // モック
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}));
+
 vi.mock('sonner', () => ({
   toast: {
     error: vi.fn(),
@@ -57,6 +65,7 @@ const defaultProps = {
 describe('FileUploadForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPush.mockClear();
   });
 
   it('should render form elements correctly', () => {
@@ -701,6 +710,155 @@ describe('FileUploadForm', () => {
         expect(screen.queryByText('登録済みタグから選択')).not.toBeInTheDocument();
         expect(screen.getByText('アクション')).toBeInTheDocument();
       });
+    });
+  });
+
+  // ===== Session Expiry Tests =====
+  describe('Session Expiry Handling', () => {
+    it('should show session expired error and redirect when auth state changes from true to false', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+
+      // 最初は認証済みでレンダリング
+      const { rerender } = render(
+        <FileUploadForm {...defaultProps} isAuthenticated={true} />
+      );
+
+      // フォームに入力
+      fireEvent.change(screen.getByLabelText('オーナー名'), {
+        target: { value: 'テストユーザー' },
+      });
+      fireEvent.change(screen.getByLabelText('コメント'), {
+        target: { value: 'テストコメント' },
+      });
+
+      // ファイルを選択
+      const file = new File(['test'], 'test.che', {
+        type: 'application/octet-stream',
+      });
+      const dropZone = screen
+        .getByText('CHEファイルをドラッグ&ドロップ')
+        .closest('div');
+      if (dropZone) {
+        fireEvent.drop(dropZone, {
+          dataTransfer: { files: [file] },
+        });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('test.che')).toBeInTheDocument();
+      });
+
+      // 認証状態が変わる（トークン切れをシミュレート）
+      rerender(<FileUploadForm {...defaultProps} isAuthenticated={false} />);
+
+      // フォームを送信
+      const submitButton = screen.getByRole('button', { name: /アップロード/ });
+      fireEvent.click(submitButton);
+
+      // エラーメッセージが表示される
+      expect(toast.error).toHaveBeenCalledWith(
+        'セッションが切れました。再度ログインしてください。'
+      );
+
+      // 確認ダイアログは表示されない
+      expect(screen.queryByText('アップロード確認')).not.toBeInTheDocument();
+
+      // 1.5秒後にリダイレクト
+      vi.advanceTimersByTime(1500);
+
+      expect(mockPush).toHaveBeenCalledWith('/login');
+
+      vi.useRealTimers();
+    });
+
+    it('should not show session expired error when initially unauthenticated', async () => {
+      // 最初から未認証でレンダリング
+      render(<FileUploadForm {...defaultProps} isAuthenticated={false} />);
+
+      // 必要な情報を入力
+      fireEvent.change(screen.getByLabelText('オーナー名'), {
+        target: { value: 'テストユーザー' },
+      });
+      fireEvent.change(screen.getByLabelText('削除パスワード'), {
+        target: { value: 'password' },
+      });
+      fireEvent.change(screen.getByLabelText('コメント'), {
+        target: { value: 'テストコメント' },
+      });
+
+      // ファイルを選択
+      const file = new File(['test'], 'test.che', {
+        type: 'application/octet-stream',
+      });
+      const dropZone = screen
+        .getByText('CHEファイルをドラッグ&ドロップ')
+        .closest('div');
+      if (dropZone) {
+        fireEvent.drop(dropZone, {
+          dataTransfer: { files: [file] },
+        });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('test.che')).toBeInTheDocument();
+      });
+
+      // フォームを送信
+      const submitButton = screen.getByRole('button', { name: /アップロード/ });
+      fireEvent.click(submitButton);
+
+      // セッション切れエラーは表示されない
+      expect(toast.error).not.toHaveBeenCalledWith(
+        'セッションが切れました。再度ログインしてください。'
+      );
+
+      // 確認ダイアログが表示される
+      expect(screen.getByText('アップロード確認')).toBeInTheDocument();
+    });
+
+    it('should work normally when authenticated throughout the session', async () => {
+      // 認証済みでレンダリング
+      render(<FileUploadForm {...defaultProps} isAuthenticated={true} />);
+
+      // 認証済みユーザーは削除パスワード不要
+      expect(screen.queryByLabelText('削除パスワード')).not.toBeInTheDocument();
+
+      // フォームに入力
+      fireEvent.change(screen.getByLabelText('オーナー名'), {
+        target: { value: 'テストユーザー' },
+      });
+      fireEvent.change(screen.getByLabelText('コメント'), {
+        target: { value: 'テストコメント' },
+      });
+
+      // ファイルを選択
+      const file = new File(['test'], 'test.che', {
+        type: 'application/octet-stream',
+      });
+      const dropZone = screen
+        .getByText('CHEファイルをドラッグ&ドロップ')
+        .closest('div');
+      if (dropZone) {
+        fireEvent.drop(dropZone, {
+          dataTransfer: { files: [file] },
+        });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('test.che')).toBeInTheDocument();
+      });
+
+      // フォームを送信
+      const submitButton = screen.getByRole('button', { name: /アップロード/ });
+      fireEvent.click(submitButton);
+
+      // 確認ダイアログが表示される
+      expect(screen.getByText('アップロード確認')).toBeInTheDocument();
+
+      // セッション切れエラーは表示されない
+      expect(toast.error).not.toHaveBeenCalledWith(
+        'セッションが切れました。再度ログインしてください。'
+      );
     });
   });
 });
