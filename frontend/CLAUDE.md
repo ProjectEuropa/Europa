@@ -28,7 +28,7 @@ src/
 
 | 技術 | バージョン | 用途 |
 |-----|-----------|------|
-| Next.js | 15.x | Webフレームワーク（App Router, 静的生成） |
+| Next.js | 16.x | Webフレームワーク（App Router, 静的生成, Turbopack） |
 | React | 19.x | UIライブラリ |
 | TypeScript | 5.x | 型安全性（strict有効） |
 | Zustand | 5.x | 状態管理（persist middleware） |
