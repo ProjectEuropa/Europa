@@ -52,9 +52,9 @@ NEXT_PUBLIC_BASIC_AUTH_PASSWORD=your-password
 ```
 Project name: europa-frontend-staging (または任意の名前)
 Production branch: main (または master)
-Framework preset: Next.js
-Build command: npx @cloudflare/next-on-pages
-Build output directory: .vercel/output/static
+Framework preset: Next.js (Static HTML Export)
+Build command: npm run build
+Build output directory: out
 Root directory: frontend
 ```
 
@@ -168,7 +168,7 @@ npx wrangler deploy --env staging
 
 **エラー例:**
 ```
-Error: Command failed with exit code 1: npx @cloudflare/next-on-pages
+Error: Command failed with exit code 1: npm run build
 ```
 
 **解決策:**
@@ -180,10 +180,12 @@ Error: Command failed with exit code 1: npx @cloudflare/next-on-pages
 
 2. ビルドコマンドを確認
    ```
-   npx @cloudflare/next-on-pages
+   npm run build
    ```
 
 3. `Root directory`が`frontend`になっているか確認
+
+4. `next.config.js`で`output: 'export'`が設定されているか確認
 
 ### 問題2: APIリクエストが失敗する
 
@@ -243,8 +245,7 @@ Cloudflare Pagesは自動的にCI/CDを提供：
 ## 9. 参考リンク
 
 - [Cloudflare Pages Documentation](https://developers.cloudflare.com/pages/)
-- [Next.js on Cloudflare Pages](https://developers.cloudflare.com/pages/framework-guides/nextjs/)
-- [@cloudflare/next-on-pages](https://github.com/cloudflare/next-on-pages)
+- [Next.js Static Site on Cloudflare Pages](https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/)
 - [Cloudflare Pages GitHub Integration](https://developers.cloudflare.com/pages/get-started/git-integration/)
 
 ## 10. デプロイ前チェックリスト
