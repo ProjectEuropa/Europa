@@ -10,20 +10,26 @@ import { SearchResults } from '@/components/search/SearchResults';
 import { TagCloud } from '@/components/search/TagCloud';
 import { useMatchSearch, usePopularTags } from '@/hooks/useSearch';
 import type { MatchFile, TeamFile } from '@/types/file';
-import type { SearchParams } from '@/types/search';
+import type { SearchParams, SortOrder } from '@/types/search';
 import { tryDownloadTeamFile } from '@/utils/api';
 
 export default function ClientMatchSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
-  // URLパラメータからページ番号を初期化
+  // URLパラメータからページ番号とソート順を初期化
   useEffect(() => {
     const pageParam = searchParams.get('page');
     const page = pageParam ? parseInt(pageParam, 10) : 1;
     if (page > 0) {
       setCurrentPage(page);
+    }
+
+    const sortParam = searchParams.get('sort');
+    if (sortParam === 'asc' || sortParam === 'desc') {
+      setSortOrder(sortParam);
     }
   }, [searchParams]);
 
@@ -32,6 +38,7 @@ export default function ClientMatchSearch() {
   const searchParamsObj: SearchParams = {
     keyword: searchQuery,
     page: currentPage,
+    sortOrder,
   };
 
   // React Queryを使用した検索
@@ -167,6 +174,14 @@ export default function ClientMatchSearch() {
               onPageChange={handlePageChange}
               onDownload={handleDownload}
               onTagClick={handleTagClick}
+              sortOrder={sortOrder}
+              onSortChange={(order) => {
+              setSortOrder(order);
+              // URLを更新
+              const urlParams = new URLSearchParams(searchParams.toString());
+              urlParams.set('sort', order);
+              router.push(`?${urlParams.toString()}`);
+            }}
             />
           </div>
         </div>

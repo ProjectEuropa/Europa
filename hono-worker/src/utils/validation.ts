@@ -52,6 +52,7 @@ export const fileQuerySchema = z.object({
     mine: z.string().optional(),
     keyword: z.string().max(255).optional(), // ファイル名・コメント検索用
     data_type: z.string().regex(/^[12]$/).optional(), // チーム:1 or マッチ:2
+    sort_order: z.enum(['asc', 'desc']).optional(), // ソート順: asc=古い順, desc=新しい順
 });
 
 // バリデーションヘルパー

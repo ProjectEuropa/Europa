@@ -23,7 +23,7 @@ files.get('/', optionalAuthMiddleware, async (c) => {
   const queryParams = c.req.query();
   const result = fileQuerySchema.safeParse(queryParams);
 
-  const { page = 1, limit = 20, tag, upload_user_id, mine, keyword, data_type }: FileQueryInput = result.success
+  const { page = 1, limit = 20, tag, upload_user_id, mine, keyword, data_type, sort_order = 'desc' }: FileQueryInput = result.success
     ? result.data
     : { page: 1, limit: 20 };
 
@@ -92,7 +92,8 @@ files.get('/', optionalAuthMiddleware, async (c) => {
 
     // 件数取得とリスト取得のクエリを並列実行
     const countQuery = `SELECT COUNT(*) as count FROM files ${whereClause}`;
-    const listQuery = `SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files ${whereClause} ORDER BY created_at DESC LIMIT $${whereParams.length + 1} OFFSET $${whereParams.length + 2}`;
+    const orderDirection = sort_order === 'asc' ? 'ASC' : 'DESC';
+    const listQuery = `SELECT id, upload_user_id, upload_owner_name, file_name, file_path, file_size, file_comment, data_type, downloadable_at, created_at, updated_at FROM files ${whereClause} ORDER BY created_at ${orderDirection} LIMIT $${whereParams.length + 1} OFFSET $${whereParams.length + 2}`;
 
     [countResult, filesList] = await Promise.all([
       sql(countQuery, whereParams),
