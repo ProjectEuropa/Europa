@@ -7,7 +7,6 @@ const bundleAnalyzer = withBundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  turbopack: {},
   // 開発時のパフォーマンス向上
   experimental: {
     optimizePackageImports: ['@tanstack/react-query', 'zustand', 'lucide-react'],
@@ -15,17 +14,8 @@ const nextConfig = {
   // ビルド最適化
   compress: true,
   poweredByHeader: false,
-  // 開発時のHMR最適化
-  webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
-      config.watchOptions = {
-        ...config.watchOptions,
-        poll: 1000,
-        aggregateTimeout: 300,
-      };
-    }
-    return config;
-  },
+  // Next.js 16ではTurbopackがデフォルト
+  turbopack: {},
 };
 
 export default bundleAnalyzer(nextConfig);
