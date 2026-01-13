@@ -556,10 +556,15 @@ export const SearchResults = memo<SearchResultsProps>(
   },
   (prevProps, nextProps) => {
     // 基本的な比較でメモ化を最適化
+    // results配列の長さだけでなく、各要素のIDも比較して正確な変更検知を行う
+    const resultsEqual =
+      prevProps.results.length === nextProps.results.length &&
+      prevProps.results.every((item, index) => item.id === nextProps.results[index]?.id);
+
     return (
       prevProps.loading === nextProps.loading &&
       prevProps.error === nextProps.error &&
-      prevProps.results.length === nextProps.results.length &&
+      resultsEqual &&
       prevProps.meta.currentPage === nextProps.meta.currentPage &&
       prevProps.meta.lastPage === nextProps.meta.lastPage &&
       prevProps.meta.total === nextProps.meta.total &&

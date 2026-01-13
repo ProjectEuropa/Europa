@@ -109,6 +109,16 @@ export default function ClientTeamSearch() {
     router.push(`?${urlParams.toString()}`);
   }, [searchParams, router]);
 
+  // ソート順変更処理
+  const handleSortChange = useCallback((order: SortOrder) => {
+    setSortOrder(order);
+    setCurrentPage(1); // ソート変更時はページを1にリセット
+    const urlParams = new URLSearchParams(searchParams.toString());
+    urlParams.set('sort', order);
+    urlParams.set('page', '1');
+    router.push(`?${urlParams.toString()}`);
+  }, [searchParams, router]);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0818] text-white selection:bg-cyan-500/30">
       <Header />
@@ -174,13 +184,7 @@ export default function ClientTeamSearch() {
               onDownload={handleDownload}
               onTagClick={handleTagClick}
               sortOrder={sortOrder}
-              onSortChange={(order) => {
-                setSortOrder(order);
-                // URLを更新
-                const urlParams = new URLSearchParams(searchParams.toString());
-                urlParams.set('sort', order);
-                router.push(`?${urlParams.toString()}`);
-              }}
+              onSortChange={handleSortChange}
             />
           </div>
         </div>
