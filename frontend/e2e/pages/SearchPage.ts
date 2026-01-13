@@ -75,6 +75,18 @@ export class SearchPage extends BasePage {
     return this.page.getByRole('button', { name: '削除実行' });
   }
 
+  get sortButton() {
+    return this.page.getByRole('button', { name: /新しい順|古い順/ }).first();
+  }
+
+  get sortButtonText() {
+    return this.sortButton;
+  }
+
+  get tableHeaderSortButton() {
+    return this.page.getByRole('button', { name: /アップロード日時/ });
+  }
+
   // Actions
   async goto() {
     await this.page.goto(`/search/${this.searchType}`);
@@ -134,6 +146,14 @@ export class SearchPage extends BasePage {
 
   getPageButton(pageNumber: number) {
     return this.page.getByRole('button', { name: String(pageNumber), exact: true });
+  }
+
+  async clickSortButton() {
+    await this.sortButton.click();
+  }
+
+  async clickTableHeaderSort() {
+    await this.tableHeaderSortButton.click();
   }
 
   // Assertions
@@ -212,6 +232,19 @@ export class SearchPage extends BasePage {
   async expectSearchError() {
     const errorMessage = this.searchType === 'team' ? 'チーム検索に失敗しました' : 'マッチ検索に失敗しました';
     await expect(this.page.getByText(errorMessage)).toBeVisible({ timeout: 10000 });
+  }
+
+  async expectSortButtonVisible() {
+    await expect(this.sortButton).toBeVisible();
+  }
+
+  async expectSortOrder(order: 'asc' | 'desc') {
+    const expectedText = order === 'desc' ? '新しい順' : '古い順';
+    await expect(this.sortButton).toContainText(expectedText);
+  }
+
+  async expectUrlContainsSort(order: 'asc' | 'desc') {
+    await expect(this.page).toHaveURL(new RegExp(`sort=${order}`));
   }
 }
 
