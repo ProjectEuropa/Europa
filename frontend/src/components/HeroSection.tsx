@@ -2,7 +2,7 @@ import type React from 'react';
 import { cn } from '@/lib/utils';
 
 const stats = [
-  { value: '700+', label: '登録済みOKE', subLabel: 'Registered OKEs' },
+  { value: '800+', label: '登録済みOKE', subLabel: 'Registered OKEs' },
   { value: '100+', label: 'アクティブチーム', subLabel: 'Active Teams' },
   { value: '250+', label: 'シミュレートバトル', subLabel: 'Battle Sims' },
 ];
@@ -30,7 +30,7 @@ const HeroSection: React.FC = () => {
             </div>
 
             <h1 className="text-white font-black text-5xl lg:text-7xl leading-tight mb-8 drop-shadow-2xl">
-              <span className="block text-2xl lg:text-3xl font-bold text-cyan-500 mb-2 tracking-widest uppercase">
+              <span className="block text-2xl lg:text-3xl font-bold text-cyan-500 mb-4 tracking-widest uppercase">
                 Unofficial OKE Platform
               </span>
               非公式 OKE <br />
@@ -39,7 +39,7 @@ const HeroSection: React.FC = () => {
               </span>
             </h1>
 
-            <p className="text-slate-300 text-lg lg:text-xl leading-relaxed mb-10 max-w-xl border-l-2 border-slate-700 pl-6">
+            <p className="text-slate-300 text-lg lg:text-xl leading-loose mb-10 max-w-xl border-l-2 border-slate-700 pl-6">
               あなたの戦略アルゴリズムをアップロードし、戦術的思考を共有。<br className="hidden sm:block" />
               世界中のOKE開発者とつながるための、次世代プラットフォーム。
             </p>

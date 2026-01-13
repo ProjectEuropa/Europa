@@ -27,3 +27,12 @@ vars = { ENVIRONMENT = "production", API_VERSION = "v2", LOG_LEVEL = "info", FRO
 [[env.production.r2_buckets]]
 binding = "FILES_BUCKET"
 bucket_name = "europa-files-prod" # 本番環境用
+
+# E2E テスト環境（CI用）
+[env.e2e]
+name = "hono-worker-e2e"
+vars = { ENVIRONMENT = "e2e", API_VERSION = "v2", LOG_LEVEL = "debug", FRONTEND_URL = "http://localhost:3000" }
+
+[[env.e2e.r2_buckets]]
+binding = "FILES_BUCKET"
+bucket_name = "europa-files-stg" # E2EはSTGのR2を使用

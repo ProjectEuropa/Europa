@@ -1,33 +1,55 @@
 # コードスタイルと規約
 
-## PHP (Laravel) スタイル
-- **PSR-4** オートローディング (`App\` → `app/`)
-- **DocBlock**: メソッドとプロパティにPHPDoc記載
-- **型宣言**: 引数と戻り値の型を明示
-- **命名規約**: 
-  - クラス: PascalCase
-  - メソッド: camelCase
-  - プロパティ: snake_case (配列)
-
 ## TypeScript/React スタイル (Biome)
 - **インデント**: 2スペース
 - **行幅**: 80文字
-- **クォート**: シングルクォート (JS), ダブルクォート (JSX)
+- **クォート**: ダブルクォート
 - **セミコロン**: 必須
-- **トレイリングカンマ**: ES5準拠
+- **トレイリングカンマ**: all
 - **型安全性**: strict mode, noExplicitAny警告
 - **インポート**: 自動整理有効
 
-## ディレクトリ構造
-### バックエンド
-- `app/`: Laravel ビジネスロジック
-- `app/Http/Controllers/Api/V1/`: V1 API
-- `app/Filament/Resources/`: 管理パネル
-- `routes/api.php`: ルート定義
+## フロントエンド ディレクトリ構造
+```
+frontend/src/
+├── app/                 # Next.js App Router ページ
+│   ├── search/          # 検索ページ (team, match)
+│   ├── upload/          # アップロードページ
+│   ├── info/            # お知らせページ
+│   └── sumdownload/     # 一括ダウンロードページ
+├── components/          # 再利用可能コンポーネント
+│   ├── ui/              # shadcn/ui コンポーネント
+│   ├── search/          # 検索関連
+│   ├── upload/          # アップロード関連
+│   └── layout/          # レイアウト関連
+├── lib/                 # ユーティリティ
+│   ├── api/             # API クライアント
+│   └── utils/           # 汎用ユーティリティ
+├── hooks/               # カスタムフック
+├── types/               # TypeScript型定義
+└── schemas/             # Zod バリデーション
+```
 
-### フロントエンド
-- `src/app/`: Next.js App Router
-- `src/components/`: 再利用可能コンポーネント
-- `src/lib/api/`: API クライアント
-- `src/types/`: TypeScript型定義
-- `src/schemas/`: Zod バリデーション
+## バックエンド ディレクトリ構造
+```
+hono-worker/src/
+├── index.ts             # エントリーポイント
+├── routes/              # API ルート定義
+│   ├── files.ts
+│   ├── auth.ts
+│   └── ...
+├── middleware/          # ミドルウェア
+│   ├── auth.ts
+│   └── cors.ts
+├── services/            # ビジネスロジック
+├── types/               # 型定義
+│   └── bindings.ts      # Cloudflare bindings
+└── utils/               # ユーティリティ
+```
+
+## 命名規約
+- **コンポーネント**: PascalCase (`SearchResults.tsx`)
+- **フック**: camelCase, use プレフィックス (`useSearch.ts`)
+- **ユーティリティ**: camelCase (`formatDate.ts`)
+- **型/インターフェース**: PascalCase (`FileData`, `SearchParams`)
+- **定数**: UPPER_SNAKE_CASE (`API_BASE_URL`)

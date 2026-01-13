@@ -38,10 +38,10 @@ jobs:
       cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -72,10 +72,10 @@ jobs:
         working-directory: ./frontend
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -105,7 +105,7 @@ jobs:
           VITEST_MAX_THREADS: 4
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: success() || failure()
         with:
           directory: ./frontend/coverage
@@ -124,10 +124,10 @@ jobs:
         working-directory: ./frontend
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -168,20 +168,229 @@ jobs:
           compression-level: 6
           include-hidden-files: true
 
-  # E2E tests job
+  # E2E tests job with Neon Database Branch
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     needs: [setup]
+    # Only run on PRs (need PR number for branch naming)
+    if: github.event_name == 'pull_request'
     defaults:
       run:
         working-directory: ./frontend
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore frontend dependencies
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: Install hono-worker dependencies
+        working-directory: ./hono-worker
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Create Neon branch
+        id: neon
+        working-directory: ./hono-worker
+        run: |
+          BRANCH_NAME="pr-${{ github.event.pull_request.number }}"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+          # Create branch and capture connection URL from special marker
+          OUTPUT=$(npx tsx scripts/neon-branch.ts create "$BRANCH_NAME")
+          echo "$OUTPUT"
+          CONNECTION_URL=$(echo "$OUTPUT" | grep "^NEON_CONNECTION_URL=" | cut -d'=' -f2-)
+          if [ -z "$CONNECTION_URL" ]; then
+            echo "Error: Failed to get connection URL"
+            exit 1
+          fi
+          # Validate URL format (should start with postgresql:// or postgres://)
+          if [[ ! "$CONNECTION_URL" =~ ^postgres(ql)?:// ]]; then
+            echo "Error: Invalid connection URL format"
+            exit 1
+          fi
+          echo "::add-mask::$CONNECTION_URL"
+          echo "database_url=$CONNECTION_URL" >> $GITHUB_OUTPUT
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+
+      - name: Seed test data
+        working-directory: ./hono-worker
+        run: npx tsx scripts/neon-branch.ts seed "${{ steps.neon.outputs.database_url }}"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright system dependencies
+        run: npx playwright install-deps chromium webkit
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium webkit
+
+      - name: Build frontend application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:8787
+
+      - name: Start API server
+        working-directory: ./hono-worker
+        run: |
+          # Create .dev.vars for wrangler to read secrets
+          echo "DATABASE_URL=$DATABASE_URL" > .dev.vars
+          echo "JWT_SECRET=$JWT_SECRET" >> .dev.vars
+
+          # Ensure .dev.vars is always cleaned up, even on failure
+          cleanup() {
+            rm -f .dev.vars
+          }
+          trap cleanup EXIT
+
+          npx wrangler dev --env e2e --port 8787 &
+          WRANGLER_PID=$!
+
+          # Wait for server to be ready with retry loop
+          for i in {1..30}; do
+            if curl -s http://localhost:8787/health > /dev/null 2>&1; then
+              echo "Server is ready"
+              # Clean up secrets file after server is confirmed running
+              rm -f .dev.vars
+              trap - EXIT
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Server failed to start"
+              exit 1
+            fi
+            echo "Waiting for server... ($i/30)"
+            sleep 2
+          done
+        env:
+          DATABASE_URL: ${{ steps.neon.outputs.database_url }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: Run E2E tests
+        run: npx playwright test
+        env:
+          CI: true
+          E2E_API_URL: http://localhost:8787
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-test-results
+          path: frontend/test-results/
+          retention-days: 7
+
+      - name: Upload E2E failure videos to Slack
+        if: failure()
+        continue-on-error: true
+        run: |
+          VIDEO_FILES=$(find test-results -name "*.webm" -type f 2>/dev/null || true)
+
+          if [ -z "$SLACK_BOT_TOKEN" ] || [ -z "$VIDEO_FILES" ]; then
+            echo "Skipping: SLACK_BOT_TOKEN not set or no video found"
+            exit 0
+          fi
+
+          for VIDEO_FILE in $VIDEO_FILES; do
+            TEST_NAME=$(basename $(dirname "$VIDEO_FILE"))
+            FILE_SIZE=$(stat -f%z "$VIDEO_FILE" 2>/dev/null || stat -c%s "$VIDEO_FILE")
+            FILE_NAME=$(basename "$VIDEO_FILE")
+
+            # Step 1: Get upload URL
+            UPLOAD_RESPONSE=$(curl -s -X POST "https://slack.com/api/files.getUploadURLExternal" \
+              -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+              -H "Content-Type: application/x-www-form-urlencoded" \
+              -d "filename=$FILE_NAME&length=$FILE_SIZE")
+
+            UPLOAD_URL=$(echo "$UPLOAD_RESPONSE" | jq -r '.upload_url // empty')
+            FILE_ID=$(echo "$UPLOAD_RESPONSE" | jq -r '.file_id // empty')
+
+            if [ -z "$UPLOAD_URL" ]; then
+              echo "Failed to get upload URL: $UPLOAD_RESPONSE"
+              continue
+            fi
+
+            # Step 2: Upload file to the URL
+            curl -s -X POST "$UPLOAD_URL" -F "file=@$VIDEO_FILE"
+
+            # Step 3: Complete upload and share to channel
+            curl -s -X POST "https://slack.com/api/files.completeUploadExternal" \
+              -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"files\": [{\"id\": \"$FILE_ID\", \"title\": \"E2E Failed: $TEST_NAME\"}],
+                \"channel_id\": \"$SLACK_CHANNEL_ID\",
+                \"initial_comment\": \"E2E Test Failed: $TEST_NAME\nPR: #${{ github.event.pull_request.number }}\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
+              }"
+
+            echo "Uploaded: $VIDEO_FILE"
+          done
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+
+      - name: Notify Slack on E2E failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          fields: repo,message,author,ref
+          text: |
+            🎬 E2E Test Failed
+            PR: #${{ github.event.pull_request.number }}
+            🔗 View artifacts: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Cleanup Neon branch
+        if: always()
+        working-directory: ./hono-worker
+        run: npx tsx scripts/neon-branch.ts delete "${{ steps.neon.outputs.branch_name }}"
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+
+  # E2E tests without DB (for push events to master/prd)
+  e2e-static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [setup]
+    # Only run on push events (not PRs)
+    if: github.event_name == 'push'
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -201,11 +410,10 @@ jobs:
             ${{ runner.os }}-playwright-
 
       - name: Install Playwright system dependencies
-        run: npx playwright install-deps chromium
+        run: npx playwright install-deps chromium webkit
 
       - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium
+        run: npx playwright install chromium webkit
 
       - name: Build application
         run: npm run build
@@ -231,6 +439,68 @@ jobs:
           path: frontend/test-results/
           retention-days: 7
 
+      - name: Upload E2E failure videos to Slack
+        if: failure()
+        continue-on-error: true
+        run: |
+          VIDEO_FILES=$(find test-results -name "*.webm" -type f 2>/dev/null || true)
+
+          if [ -z "$SLACK_BOT_TOKEN" ] || [ -z "$VIDEO_FILES" ]; then
+            echo "Skipping: SLACK_BOT_TOKEN not set or no video found"
+            exit 0
+          fi
+
+          for VIDEO_FILE in $VIDEO_FILES; do
+            TEST_NAME=$(basename $(dirname "$VIDEO_FILE"))
+            FILE_SIZE=$(stat -f%z "$VIDEO_FILE" 2>/dev/null || stat -c%s "$VIDEO_FILE")
+            FILE_NAME=$(basename "$VIDEO_FILE")
+
+            # Step 1: Get upload URL
+            UPLOAD_RESPONSE=$(curl -s -X POST "https://slack.com/api/files.getUploadURLExternal" \
+              -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+              -H "Content-Type: application/x-www-form-urlencoded" \
+              -d "filename=$FILE_NAME&length=$FILE_SIZE")
+
+            UPLOAD_URL=$(echo "$UPLOAD_RESPONSE" | jq -r '.upload_url // empty')
+            FILE_ID=$(echo "$UPLOAD_RESPONSE" | jq -r '.file_id // empty')
+
+            if [ -z "$UPLOAD_URL" ]; then
+              echo "Failed to get upload URL: $UPLOAD_RESPONSE"
+              continue
+            fi
+
+            # Step 2: Upload file to the URL
+            curl -s -X POST "$UPLOAD_URL" -F "file=@$VIDEO_FILE"
+
+            # Step 3: Complete upload and share to channel
+            curl -s -X POST "https://slack.com/api/files.completeUploadExternal" \
+              -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"files\": [{\"id\": \"$FILE_ID\", \"title\": \"E2E Failed (Static): $TEST_NAME\"}],
+                \"channel_id\": \"$SLACK_CHANNEL_ID\",
+                \"initial_comment\": \"E2E Test Failed (Static): $TEST_NAME\nBranch: ${{ github.ref_name }}\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
+              }"
+
+            echo "Uploaded: $VIDEO_FILE"
+          done
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+
+      - name: Notify Slack on E2E failure
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          fields: repo,message,author,ref
+          text: |
+            🎬 E2E Test Failed (Static)
+            Branch: ${{ github.ref_name }}
+            🔗 View artifacts: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
   # Bundle analysis job (only for PRs, optimized to use existing build)
   build-analysis:
     runs-on: ubuntu-latest
@@ -242,7 +512,7 @@ jobs:
         working-directory: ./frontend
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: frontend-build-${{ github.sha }}
           path: frontend/.next/
@@ -267,7 +537,7 @@ jobs:
           fi
 
       - name: Comment bundle analysis
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: always()
         with:
           script: |
@@ -318,13 +588,13 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     timeout-minutes: 2
-    needs: [test, build, e2e]
-    if: always() && (needs.test.result == 'failure' || needs.build.result == 'failure' || needs.e2e.result == 'failure')
+    needs: [test, build, e2e, e2e-static]
+    if: always() && (needs.test.result == 'failure' || needs.build.result == 'failure' || needs.e2e.result == 'failure' || needs.e2e-static.result == 'failure')
     steps:
       - name: Determine status
         id: status
         run: |
-          if [[ "${{ needs.test.result }}" == "failure" || "${{ needs.build.result }}" == "failure" || "${{ needs.e2e.result }}" == "failure" ]]; then
+          if [[ "${{ needs.test.result }}" == "failure" || "${{ needs.build.result }}" == "failure" || "${{ needs.e2e.result }}" == "failure" || "${{ needs.e2e-static.result }}" == "failure" ]]; then
             echo "status=failure" >> $GITHUB_OUTPUT
           else
             echo "status=success" >> $GITHUB_OUTPUT
@@ -337,9 +607,9 @@ jobs:
           status: failure
           fields: repo,message,author,job,ref
           text: |
-            🚨 Frontend CI Pipeline Failed
+            Frontend CI Pipeline Failed
             Test: ${{ needs.test.result }}
             Build: ${{ needs.build.result }}
-            E2E: ${{ needs.e2e.result }}
+            E2E: ${{ github.event_name == 'pull_request' && needs.e2e.result || needs.e2e-static.result }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

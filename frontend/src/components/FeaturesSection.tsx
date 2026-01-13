@@ -4,8 +4,10 @@ import { cn } from '@/lib/utils';
 interface FeatureItem {
   icon: React.ReactNode;
   title: string;
+  subTitle: string;
   description: string;
   href: string;
+  actionLabel: string;
 }
 
 const FeaturesSection: React.FC = () => {
@@ -24,9 +26,11 @@ const FeaturesSection: React.FC = () => {
         </svg>
       ),
       title: 'チームデータ検索',
+      subTitle: 'TEAM SEARCH',
       description:
         'ランキングやパフォーマンス指標など、様々な条件でチームを検索、探索できます。',
       href: '/search/team',
+      actionLabel: '検索する',
     },
     {
       icon: (
@@ -38,9 +42,11 @@ const FeaturesSection: React.FC = () => {
         </svg>
       ),
       title: 'マッチデータ検索',
+      subTitle: 'MATCH SEARCH',
       description:
         '戦略や戦術を向上させるために、試合結果やパフォーマンスデータを分析します。',
       href: '/search/match',
+      actionLabel: '検索する',
     },
     {
       icon: (
@@ -51,9 +57,10 @@ const FeaturesSection: React.FC = () => {
         </svg>
       ),
       title: 'アップロード',
-      description:
-        '合理化されたアップロードシステムでOKEファイルを簡単にアップロードできます。',
+      subTitle: 'UPLOAD DATA',
+      description: 'OKEファイルをアップロードし、コメントで戦略をアピールできます。',
       href: '/upload',
+      actionLabel: 'アップロードする',
     },
     {
       icon: (
@@ -64,9 +71,11 @@ const FeaturesSection: React.FC = () => {
         </svg>
       ),
       title: 'チームデータ取得',
+      subTitle: 'DOWNLOAD TEAM',
       description:
         'オフライン分析や戦略開発のために包括的なチームデータをダウンロードします。',
       href: '/sumdownload/team',
+      actionLabel: 'ダウンロード',
     },
     {
       icon: (
@@ -79,8 +88,10 @@ const FeaturesSection: React.FC = () => {
         </svg>
       ),
       title: 'マッチデータ取得',
+      subTitle: 'DOWNLOAD MATCH',
       description: '過去の戦闘から学ぶための詳細な試合統計を取得します。',
       href: '/sumdownload/match',
+      actionLabel: 'ダウンロード',
     },
     {
       icon: (
@@ -90,15 +101,17 @@ const FeaturesSection: React.FC = () => {
           <circle cx="12" cy="6.5" r="0.5" fill="currentColor" />
         </svg>
       ),
-      title: '情報',
+      title: 'お知らせ',
+      subTitle: 'INFORMATION',
       description:
         'カルネージハート エクサの大会イベントなどの情報にアクセスできます。',
       href: '/info',
+      actionLabel: '確認する',
     },
   ];
 
   return (
-    <section id="features" className="py-20 md:py-32 relative overflow-hidden">
+    <section id="features" aria-label="主な機能" className="py-20 md:py-32 relative overflow-hidden">
       {/* Background Decor - Subtle Grid */}
       <div
         className="absolute inset-0 pointer-events-none bg-[length:40px_40px] bg-[linear-gradient(rgba(0,200,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,200,255,0.03)_1px,transparent_1px)]"
@@ -110,13 +123,13 @@ const FeaturesSection: React.FC = () => {
       <div className="container mx-auto px-4 relative z-10 max-w-7xl">
         <div className="text-center mb-20 space-y-4">
           <h2 className="text-cyan-400 font-extrabold text-sm tracking-[3px] uppercase animate-pulse shadow-cyan-500/50 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
-            主な機能
+            FEATURES
           </h2>
-          <h3 className="text-white font-black text-3xl md:text-5xl tracking-tight cyber-title drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-            OKE開発を<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">加速</span>させる機能
+          <h3 className="text-white font-black text-4xl md:text-6xl tracking-tight cyber-title drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+            主な機能
           </h3>
-          <p className="text-slate-400 text-lg leading-relaxed max-w-2xl mx-auto border-t border-white/5 pt-6 mt-6">
-            カルネージハート エクサのOKE開発をサポートする包括的なツールセット。<br className="hidden md:block" />
+          <p className="text-slate-400 text-lg md:text-xl leading-8 md:leading-loose max-w-2xl mx-auto border-t border-white/5 pt-8 mt-8">
+            カルネージハート エクサのOKE開発を<span className="text-cyan-400 font-bold">加速</span>させる包括的なツールセット。<br className="hidden md:block" />
             戦略の作成から共有、分析まで、すべてのニーズに対応します。
           </p>
         </div>
@@ -144,20 +157,25 @@ const FeaturesSection: React.FC = () => {
                 {feature.icon}
               </div>
 
-              <h4 className="relative text-white font-bold text-xl mb-3 group-hover:text-cyan-100 transition-colors tracking-wide">
-                {feature.title}
-              </h4>
+              <div className="flex flex-col items-center mb-3">
+                <h4 className="relative text-white font-bold text-xl group-hover:text-cyan-100 transition-colors tracking-wide">
+                  {feature.title}
+                </h4>
+                <span className="text-[10px] text-cyan-500/70 uppercase tracking-[2px] font-bold mt-1 group-hover:text-cyan-400 transition-colors">
+                  {feature.subTitle}
+                </span>
+              </div>
 
               {/* Divider Line */}
               <div className="w-12 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent my-3 opacity-30 group-hover:opacity-100 transition-opacity duration-300" />
 
-              <p className="relative text-slate-400 text-sm leading-relaxed mb-8 group-hover:text-slate-300 transition-colors">
+              <p className="relative text-slate-400 text-sm leading-7 mb-8 group-hover:text-slate-300 transition-colors line-clamp-3">
                 {feature.description}
               </p>
 
               <div className="relative mt-auto">
                 <span className="inline-flex items-center text-cyan-500 font-bold text-sm tracking-wider uppercase group-hover:text-cyan-300 transition-colors">
-                  <span className="mr-2">Access</span>
+                  <span className="mr-2">{feature.actionLabel}</span>
                   <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>

@@ -84,11 +84,10 @@ const SideMenu: React.FC<SideMenuProps> = ({
   // リンクのスタイルを生成する関数
   const getLinkClassName = (path: string) => {
     const isActive = pathname === path;
-    return `flex items-center px-4 py-3 mb-2 text-base rounded-md transition-all duration-200 no-underline w-full ${
-      isActive
+    return `flex items-center px-4 py-3 mb-2 text-base rounded-md transition-all duration-200 no-underline w-full ${isActive
         ? 'text-[#00c8ff] bg-[rgba(0,200,255,0.1)]'
         : 'text-[#b0c4d8] bg-transparent'
-    }`;
+      }`;
   };
 
   // カテゴリヘッダーのクラス
@@ -96,9 +95,8 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
   return (
     <div
-      className={`fixed top-0 left-0 w-full h-full bg-black/50 flex justify-start transition-opacity duration-300 z-[1000] ${
-        animationClass === 'menu-open' ? 'opacity-100' : 'opacity-0'
-      } ${animationClass ? 'visible' : 'invisible'} ${className}`}
+      className={`fixed top-0 left-0 w-full h-full bg-black/50 flex justify-start transition-opacity duration-300 z-[1000] ${animationClass === 'menu-open' ? 'opacity-100' : 'opacity-0'
+        } ${animationClass ? 'visible' : 'invisible'} ${className}`}
       role="dialog"
       aria-modal="true"
       aria-label="サイドメニュー"
@@ -106,9 +104,8 @@ const SideMenu: React.FC<SideMenuProps> = ({
       <FocusTrap active={isOpen}>
         <div
           ref={menuRef}
-          className={`h-full bg-[#020824] border-r border-[#1E3A5F] transition-transform duration-300 flex flex-col shadow-[2px_0_10px_rgba(0,0,0,0.5)] overflow-y-auto ${
-            isMobile ? 'w-[280px] py-4' : 'w-[300px] py-5'
-          } ${animationClass === 'menu-open' ? 'translate-x-0' : '-translate-x-full'}`}
+          className={`h-full bg-[#020824] border-r border-[#1E3A5F] transition-transform duration-300 flex flex-col shadow-[2px_0_10px_rgba(0,0,0,0.5)] overflow-y-auto ${isMobile ? 'w-[280px] py-4' : 'w-[300px] py-5'
+            } ${animationClass === 'menu-open' ? 'translate-x-0' : '-translate-x-full'}`}
           onTransitionEnd={handleTransitionEnd}
           role="navigation"
           aria-label="メインナビゲーション"
@@ -501,7 +498,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
               href="/info"
               className={getLinkClassName('/info')}
               onClick={onClose}
-              aria-label="Information"
+              aria-label="お知らせ"
             >
               <svg
                 width="24"
@@ -531,7 +528,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                   fill={pathname === '/info' ? '#00c8ff' : '#b0c4d8'}
                 />
               </svg>
-              Information
+              お知らせ
             </Link>
 
             <Link
