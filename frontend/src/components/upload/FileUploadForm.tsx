@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -37,6 +38,9 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
   onSubmit,
   isUploading = false,
 }) => {
+  const router = useRouter();
+  // フォーム開始時の認証状態を保持（トークン切れ検出用）
+  const [initialAuthState] = useState(isAuthenticated);
   const [formData, setFormData] = useState<FileUploadOptions>({
     ownerName: defaultOwnerName,
     comment: '',
@@ -251,6 +255,15 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
     async (e: React.FormEvent) => {
       e.preventDefault();
 
+      // 認証状態がフォーム開始時から変わった場合（トークン切れ）
+      if (initialAuthState && !isAuthenticated) {
+        toast.error('セッションが切れました。再度ログインしてください。');
+        setTimeout(() => {
+          router.push('/login');
+        }, 1500);
+        return;
+      }
+
       const errors: Record<string, string[]> = {};
 
       // ファイルチェック
@@ -283,7 +296,7 @@ export const FileUploadForm: React.FC<FileUploadFormProps> = ({
       setFieldErrors({});
       setShowConfirmDialog(true);
     },
-    [selectedFile, formData, isAuthenticated, fileType]
+    [selectedFile, formData, isAuthenticated, fileType, initialAuthState, router]
   );
 
   const executeUpload = useCallback(async () => {
