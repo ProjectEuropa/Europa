@@ -98,8 +98,9 @@ export const useSumDownloadManager = ({
   // ソート順変更
   const handleSortChange = useCallback((order: SortOrder) => {
     setSortOrder(order);
+    setCurrentPage(1); // ソート変更時はページを1にリセット
     setSelectedIds([]); // ソート変更時に選択をクリア
-    updateURL({ sort: order });
+    updateURL({ sort: order, page: 1 });
   }, [updateURL]);
 
   // 選択状態の管理

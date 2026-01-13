@@ -175,12 +175,12 @@ export default function ClientTeamSearch() {
               onTagClick={handleTagClick}
               sortOrder={sortOrder}
               onSortChange={(order) => {
-              setSortOrder(order);
-              // URLを更新
-              const urlParams = new URLSearchParams(searchParams.toString());
-              urlParams.set('sort', order);
-              router.push(`?${urlParams.toString()}`);
-            }}
+                setSortOrder(order);
+                // URLを更新
+                const urlParams = new URLSearchParams(searchParams.toString());
+                urlParams.set('sort', order);
+                router.push(`?${urlParams.toString()}`);
+              }}
             />
           </div>
         </div>
