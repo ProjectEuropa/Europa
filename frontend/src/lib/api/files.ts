@@ -16,6 +16,7 @@ import type {
 import type {
   MatchSearchResult,
   SearchParams,
+  SortOrder,
   TeamSearchResult,
 } from '@/types/search';
 import { apiClient } from './client';
@@ -23,9 +24,9 @@ import { extractDataFromResponse } from './utils';
 import { DATA_TYPE } from '@/utils/constants';
 
 // 検索関連
-// 検索関連
 export const searchTeams = async (params: SearchParams): Promise<TeamSearchResult> => {
-  const url = `/api/v2/files?data_type=1&page=${params.page || 1}&limit=10&keyword=${encodeURIComponent(params.keyword)}`;
+  const sortOrder: SortOrder = params.sortOrder || 'desc';
+  const url = `/api/v2/files?data_type=1&page=${params.page || 1}&limit=10&keyword=${encodeURIComponent(params.keyword)}&sort_order=${sortOrder}`;
 
   const response = await apiClient.get<any>(url);
   const rawData = response.data?.files || [];
@@ -64,7 +65,8 @@ export const searchTeams = async (params: SearchParams): Promise<TeamSearchResul
 };
 
 export const searchMatches = async (params: SearchParams): Promise<MatchSearchResult> => {
-  const url = `/api/v2/files?data_type=2&page=${params.page || 1}&limit=10&keyword=${encodeURIComponent(params.keyword)}`;
+  const sortOrder: SortOrder = params.sortOrder || 'desc';
+  const url = `/api/v2/files?data_type=2&page=${params.page || 1}&limit=10&keyword=${encodeURIComponent(params.keyword)}&sort_order=${sortOrder}`;
 
   const response = await apiClient.get<any>(url);
   const rawData = response.data?.files || [];

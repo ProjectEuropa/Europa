@@ -95,7 +95,7 @@ describe('filesApi', () => {
       const result = await filesApi.searchTeams(params);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test`
+        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test&sort_order=desc`
       );
       expect(result).toEqual({
         data: [
@@ -155,7 +155,65 @@ describe('filesApi', () => {
       await filesApi.searchTeams(params);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test%20%26%20special`
+        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test%20%26%20special&sort_order=desc`
+      );
+    });
+  });
+
+  describe('searchTeams with sortOrder', () => {
+    it('should include sort_order parameter when provided', async () => {
+      const params: SearchParams = { keyword: 'test', page: 1, sortOrder: 'asc' };
+      const mockResponse = {
+        data: {
+          files: [
+            { id: 1, file_name: "Team 1", upload_owner_name: "Owner 1" },
+          ],
+          pagination: { page: 1, limit: 10, total: 1 },
+        },
+      };
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
+
+      await filesApi.searchTeams(params);
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test&sort_order=asc`
+      );
+    });
+
+    it('should default to desc when sortOrder is not provided', async () => {
+      const params: SearchParams = { keyword: 'test', page: 1 };
+      const mockResponse = {
+        data: {
+          files: [],
+          pagination: { page: 1, limit: 10, total: 0 },
+        },
+      };
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
+
+      await filesApi.searchTeams(params);
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test&sort_order=desc`
+      );
+    });
+
+    it('should handle sortOrder desc correctly', async () => {
+      const params: SearchParams = { keyword: 'test', page: 1, sortOrder: 'desc' };
+      const mockResponse = {
+        data: {
+          files: [],
+          pagination: { page: 1, limit: 10, total: 0 },
+        },
+      };
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
+
+      await filesApi.searchTeams(params);
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=1&page=1&limit=10&keyword=test&sort_order=desc`
       );
     });
   });
@@ -175,7 +233,7 @@ describe('filesApi', () => {
       const result = await filesApi.searchMatches(params);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        `/api/v2/files?data_type=2&page=2&limit=10&keyword=match`
+        `/api/v2/files?data_type=2&page=2&limit=10&keyword=match&sort_order=desc`
       );
       expect(result).toEqual({
         data: [
@@ -205,6 +263,46 @@ describe('filesApi', () => {
           total: 30,
         },
       });
+    });
+  });
+
+  describe('searchMatches with sortOrder', () => {
+    it('should include sort_order parameter when provided', async () => {
+      const params: SearchParams = { keyword: 'match', page: 1, sortOrder: 'asc' };
+      const mockResponse = {
+        data: {
+          files: [
+            { id: 1, file_name: "Match 1", upload_owner_name: "Owner 1" },
+          ],
+          pagination: { page: 1, limit: 10, total: 1 },
+        },
+      };
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
+
+      await filesApi.searchMatches(params);
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=2&page=1&limit=10&keyword=match&sort_order=asc`
+      );
+    });
+
+    it('should default to desc when sortOrder is not provided', async () => {
+      const params: SearchParams = { keyword: 'match', page: 1 };
+      const mockResponse = {
+        data: {
+          files: [],
+          pagination: { page: 1, limit: 10, total: 0 },
+        },
+      };
+
+      vi.mocked(apiClient.get).mockResolvedValueOnce(mockResponse);
+
+      await filesApi.searchMatches(params);
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=2&page=1&limit=10&keyword=match&sort_order=desc`
+      );
     });
   });
 

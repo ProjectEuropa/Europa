@@ -13,11 +13,12 @@ export interface SumDownloadSearchResponse {
  */
 export const sumDLSearchTeam = async (
   keyword: string = '',
-  page: number = 1
+  page: number = 1,
+  sortOrder: 'asc' | 'desc' = 'desc'
 ): Promise<SumDownloadSearchResponse> => {
   // v2 APIを使用、limit=50で一括ダウンロード用に多めに取得
   const response = await apiClient.get<any>(
-    `/api/v2/files?data_type=1&limit=50&page=${page}&keyword=${encodeURIComponent(keyword)}`
+    `/api/v2/files?data_type=1&limit=50&page=${page}&keyword=${encodeURIComponent(keyword)}&sort_order=${sortOrder}`
   );
 
   // v2 APIのレスポンス形式を一括ダウンロード用の形式に変換
@@ -45,11 +46,12 @@ export const sumDLSearchTeam = async (
  */
 export const sumDLSearchMatch = async (
   keyword: string = '',
-  page: number = 1
+  page: number = 1,
+  sortOrder: 'asc' | 'desc' = 'desc'
 ): Promise<SumDownloadSearchResponse> => {
   // v2 APIを使用、limit=50で一括ダウンロード用に多めに取得
   const response = await apiClient.get<any>(
-    `/api/v2/files?data_type=2&limit=50&page=${page}&keyword=${encodeURIComponent(keyword)}`
+    `/api/v2/files?data_type=2&limit=50&page=${page}&keyword=${encodeURIComponent(keyword)}&sort_order=${sortOrder}`
   );
 
   // v2 APIのレスポンス形式を一括ダウンロード用の形式に変換

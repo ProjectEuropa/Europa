@@ -4,6 +4,23 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useSumDownloadManager } from '@/hooks/useSumDownloadManager';
 
+// Next.js App Routerのモック
+const mockPush = vi.fn();
+const mockSearchParams = new URLSearchParams();
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  useSearchParams: () => mockSearchParams,
+  usePathname: () => '/sumdownload',
+}));
+
 // API関数をモック
 vi.mock('@/lib/api/sumdownload', () => ({
   sumDLSearchTeam: vi.fn(),
@@ -92,6 +109,7 @@ const mockSearchResponse = {
 describe('useSumDownloadManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPush.mockClear();
 
     // デフォルトのAPI応答をモック
     sumDLSearchTeam.mockResolvedValue(mockSearchResponse);
@@ -212,9 +230,9 @@ describe('useSumDownloadManager', () => {
       // ページ変更後の状態確認（フックの内部状態はすぐに反映される）
       expect(result.current.selectedIds).toEqual([]); // ページ変更時に選択がクリアされる
 
-      // APIが新しいページで呼び出されることを確認
+      // APIが新しいページで呼び出されることを確認（sort_order付き）
       await waitFor(() => {
-        expect(sumDLSearchTeam).toHaveBeenCalledWith('', 2);
+        expect(sumDLSearchTeam).toHaveBeenCalledWith('', 2, 'desc');
       });
     });
   });
@@ -428,6 +446,140 @@ describe('useSumDownloadManager', () => {
       await waitFor(() => {
         expect(result.current.downloadError).toEqual(downloadError);
       });
+    });
+  });
+
+  describe('ソート機能', () => {
+    it('should initialize with default sort order (desc)', () => {
+      const { result } = renderHook(
+        () => useSumDownloadManager({ searchType: 'team' }),
+        { wrapper: createTestWrapper() }
+      );
+
+      expect(result.current.sortOrder).toBe('desc');
+    });
+
+    it('should handle sort order change', async () => {
+      const { result } = renderHook(
+        () => useSumDownloadManager({ searchType: 'team' }),
+        { wrapper: createTestWrapper() }
+      );
+
+      // 初期ロード完了を待つ
+      await waitFor(() => {
+        expect(result.current.isSearchLoading).toBe(false);
+      });
+
+      // ソート順を昇順に変更
+      act(() => {
+        result.current.handleSortChange('asc');
+      });
+
+      expect(result.current.sortOrder).toBe('asc');
+      expect(result.current.currentPage).toBe(1); // ページがリセットされる
+      expect(result.current.selectedIds).toEqual([]); // 選択がクリアされる
+    });
+
+    it('should call API with correct sort order parameter', async () => {
+      const { result } = renderHook(
+        () => useSumDownloadManager({ searchType: 'team' }),
+        { wrapper: createTestWrapper() }
+      );
+
+      // 初期ロード完了を待つ
+      await waitFor(() => {
+        expect(result.current.isSearchLoading).toBe(false);
+      });
+
+      // 初期状態でdescで呼び出されることを確認
+      expect(sumDLSearchTeam).toHaveBeenCalledWith('', 1, 'desc');
+
+      // ソート順を昇順に変更
+      act(() => {
+        result.current.handleSortChange('asc');
+      });
+
+      // ascで呼び出されることを確認
+      await waitFor(() => {
+        expect(sumDLSearchTeam).toHaveBeenCalledWith('', 1, 'asc');
+      });
+    });
+
+    it('should reset page to 1 when sort order changes', async () => {
+      const { result } = renderHook(
+        () => useSumDownloadManager({ searchType: 'team' }),
+        { wrapper: createTestWrapper() }
+      );
+
+      // 初期ロード完了を待つ
+      await waitFor(() => {
+        expect(result.current.isSearchLoading).toBe(false);
+      });
+
+      // ページを2に移動
+      act(() => {
+        result.current.handlePageChange(2);
+      });
+
+      // ソート順を変更
+      act(() => {
+        result.current.handleSortChange('asc');
+      });
+
+      // ページが1にリセットされる
+      expect(result.current.currentPage).toBe(1);
+    });
+
+    it('should clear selections when sort order changes', async () => {
+      const { result } = renderHook(
+        () => useSumDownloadManager({ searchType: 'team' }),
+        { wrapper: createTestWrapper() }
+      );
+
+      // 初期ロード完了を待つ
+      await waitFor(() => {
+        expect(result.current.isSearchLoading).toBe(false);
+      });
+
+      // アイテムを選択
+      act(() => {
+        result.current.handleSelectionChange([1, 2, 3]);
+      });
+
+      expect(result.current.selectedCount).toBe(3);
+
+      // ソート順を変更
+      act(() => {
+        result.current.handleSortChange('asc');
+      });
+
+      // 選択がクリアされる
+      expect(result.current.selectedIds).toEqual([]);
+      expect(result.current.selectedCount).toBe(0);
+    });
+
+    it('should toggle sort order correctly', async () => {
+      const { result } = renderHook(
+        () => useSumDownloadManager({ searchType: 'team' }),
+        { wrapper: createTestWrapper() }
+      );
+
+      // 初期ロード完了を待つ
+      await waitFor(() => {
+        expect(result.current.isSearchLoading).toBe(false);
+      });
+
+      // desc -> asc
+      act(() => {
+        result.current.handleSortChange('asc');
+      });
+      expect(result.current.sortOrder).toBe('asc');
+
+      // asc -> desc
+      act(() => {
+        result.current.handleSortChange('desc');
+      });
+      expect(result.current.sortOrder).toBe('desc');
     });
   });
 

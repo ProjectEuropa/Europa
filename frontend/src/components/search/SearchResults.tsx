@@ -7,9 +7,9 @@ import { DeleteModal } from '@/components/DeleteModal';
 import { ViewToggleButton } from '@/components/search/ViewToggleButton';
 import { useDeleteFile } from '@/hooks/useSearch';
 import type { MatchFile, TeamFile } from '@/types/file';
-import type { PaginationMeta } from '@/types/search';
+import type { PaginationMeta, SortOrder } from '@/types/search';
 import { useViewMode } from '@/hooks/useViewMode';
-import { Download, Trash2, AlertCircle, SearchX, ChevronLeft, ChevronRight, LayoutGrid, LayoutList, User, Calendar, FileText, Tag } from 'lucide-react';
+import { Download, Trash2, AlertCircle, SearchX, ChevronLeft, ChevronRight, LayoutGrid, LayoutList, User, Calendar, FileText, Tag, ArrowUp, ArrowDown } from 'lucide-react';
 
 // 定数定義
 const VIEW_MODE_STORAGE_KEY = 'searchViewMode';
@@ -30,6 +30,10 @@ interface SearchResultsProps {
   onDownload: (file: TeamFile | MatchFile) => void;
   /** タグクリックハンドラー */
   onTagClick?: (tag: string) => void;
+  /** ソート順 */
+  sortOrder: SortOrder;
+  /** ソート変更ハンドラー */
+  onSortChange: (order: SortOrder) => void;
 }
 
 /**
@@ -48,6 +52,8 @@ export const SearchResults = memo<SearchResultsProps>(
     onPageChange,
     onDownload,
     onTagClick,
+    sortOrder,
+    onSortChange,
   }) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<{
@@ -84,7 +90,7 @@ export const SearchResults = memo<SearchResultsProps>(
       return `${year}/${month}/${day} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    // 結果データの前処理（メモ化）
+    // 結果データの前処理（メモ化）- ソートはAPIが行うためここでは行わない
     const processedResults = useMemo(() => {
       return results.map(result => ({
         ...result,
@@ -221,25 +227,46 @@ export const SearchResults = memo<SearchResultsProps>(
               {meta.total}件の結果 (ページ {meta.currentPage}/{meta.lastPage})
             </div>
 
-            {/* ビュー切り替えトグル（デスクトップのみ表示） */}
-            {!isMobileOrTablet && (
-              <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg p-1">
-                <ViewToggleButton
-                  label="テーブル"
-                  icon={<LayoutList size={18} />}
-                  isActive={viewMode === 'table'}
-                  onClick={() => setViewMode('table')}
-                  title="テーブル表示"
-                />
-                <ViewToggleButton
-                  label="カード"
-                  icon={<LayoutGrid size={18} />}
-                  isActive={viewMode === 'card'}
-                  onClick={() => setViewMode('card')}
-                  title="カード表示"
-                />
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              {/* ソート切り替えボタン */}
+              <button
+                onClick={() => onSortChange(sortOrder === 'desc' ? 'asc' : 'desc')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900/80 border border-slate-700 rounded-lg text-sm text-slate-300 hover:text-cyan-400 hover:border-cyan-500/50 transition-all"
+                title={sortOrder === 'desc' ? '古い順に変更' : '新しい順に変更'}
+              >
+                {sortOrder === 'desc' ? (
+                  <>
+                    <ArrowDown size={14} />
+                    <span>新しい順</span>
+                  </>
+                ) : (
+                  <>
+                    <ArrowUp size={14} />
+                    <span>古い順</span>
+                  </>
+                )}
+              </button>
+
+              {/* ビュー切り替えトグル（デスクトップのみ表示） */}
+              {!isMobileOrTablet && (
+                <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg p-1">
+                  <ViewToggleButton
+                    label="テーブル"
+                    icon={<LayoutList size={18} />}
+                    isActive={viewMode === 'table'}
+                    onClick={() => setViewMode('table')}
+                    title="テーブル表示"
+                  />
+                  <ViewToggleButton
+                    label="カード"
+                    icon={<LayoutGrid size={18} />}
+                    isActive={viewMode === 'card'}
+                    onClick={() => setViewMode('card')}
+                    title="カード表示"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* アニメーション付きビュー切り替え */}
@@ -261,7 +288,14 @@ export const SearchResults = memo<SearchResultsProps>(
                       <div className="p-3">オーナー名</div>
                       <div className="p-3">コメント・タグ</div>
                       <div className="p-3">ファイル名</div>
-                      <div className="p-3 whitespace-nowrap">アップロード日時</div>
+                      <button
+                        onClick={() => onSortChange(sortOrder === 'desc' ? 'asc' : 'desc')}
+                        className="p-3 whitespace-nowrap flex items-center gap-1 hover:text-cyan-400 transition-colors cursor-pointer"
+                        title={sortOrder === 'desc' ? '古い順に変更' : '新しい順に変更'}
+                      >
+                        アップロード日時
+                        {sortOrder === 'desc' ? <ArrowDown size={14} /> : <ArrowUp size={14} />}
+                      </button>
                       <div className="p-3 whitespace-nowrap">DL可能日時</div>
                       <div className="p-3 text-center">削除</div>
                     </div>
@@ -522,13 +556,19 @@ export const SearchResults = memo<SearchResultsProps>(
   },
   (prevProps, nextProps) => {
     // 基本的な比較でメモ化を最適化
+    // results配列の長さだけでなく、各要素のIDも比較して正確な変更検知を行う
+    const resultsEqual =
+      prevProps.results.length === nextProps.results.length &&
+      prevProps.results.every((item, index) => item.id === nextProps.results[index]?.id);
+
     return (
       prevProps.loading === nextProps.loading &&
       prevProps.error === nextProps.error &&
-      prevProps.results.length === nextProps.results.length &&
+      resultsEqual &&
       prevProps.meta.currentPage === nextProps.meta.currentPage &&
       prevProps.meta.lastPage === nextProps.meta.lastPage &&
-      prevProps.meta.total === nextProps.meta.total
+      prevProps.meta.total === nextProps.meta.total &&
+      prevProps.sortOrder === nextProps.sortOrder
     );
   }
 );

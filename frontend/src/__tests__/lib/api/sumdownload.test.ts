@@ -50,7 +50,7 @@ describe('sumdownload API', () => {
       const result = await sumDLSearchTeam('テスト', 1);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        `/api/v2/files?data_type=1&limit=50&page=1&keyword=${encodeURIComponent("テスト")}`
+        `/api/v2/files?data_type=1&limit=50&page=1&keyword=${encodeURIComponent("テスト")}&sort_order=desc`
       );
       expect(result).toEqual({
         data: [
@@ -77,9 +77,53 @@ describe('sumdownload API', () => {
     });
   });
 
+  describe('sumDLSearchTeam with sortOrder', () => {
+    it('should include sort_order parameter when provided', async () => {
+      const mockResponse = {
+        files: [
+          {
+            id: 1,
+            file_name: 'テストファイル1',
+            upload_owner_name: 'テストオーナー',
+            created_at: '2024-01-01T10:00:00Z',
+            file_comment: 'テストコメント',
+            downloadable_at: '2024-01-01T10:00:00Z',
+            search_tag1: 'タグ1',
+          },
+        ],
+        pagination: {
+          page: 1,
+          limit: 50,
+          total: 1,
+        },
+      };
+
+      (apiClient.get as any).mockResolvedValueOnce({ data: mockResponse });
+
+      await sumDLSearchTeam('テスト', 1, 'asc');
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=1&limit=50&page=1&keyword=${encodeURIComponent("テスト")}&sort_order=asc`
+      );
+    });
+
+    it('should default to desc when sortOrder is not provided', async () => {
+      const mockResponse = {
+        files: [],
+        pagination: { page: 1, limit: 50, total: 0 },
+      };
+
+      (apiClient.get as any).mockResolvedValueOnce({ data: mockResponse });
+
+      await sumDLSearchTeam('テスト', 1);
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=1&limit=50&page=1&keyword=${encodeURIComponent("テスト")}&sort_order=desc`
+      );
+    });
+  });
+
   describe('sumDLSearchMatch', () => {
-
-
     it('should search match data successfully', async () => {
       const mockResponse = {
         files: [
@@ -104,7 +148,7 @@ describe('sumdownload API', () => {
       const result = await sumDLSearchMatch('マッチテスト', 1);
 
       expect(apiClient.get).toHaveBeenCalledWith(
-        `/api/v2/files?data_type=2&limit=50&page=1&keyword=${encodeURIComponent("マッチテスト")}`
+        `/api/v2/files?data_type=2&limit=50&page=1&keyword=${encodeURIComponent("マッチテスト")}&sort_order=desc`
       );
       expect(result).toEqual({
         data: [
@@ -126,6 +170,51 @@ describe('sumdownload API', () => {
         last_page: 1,
         total: 1,
       });
+    });
+  });
+
+  describe('sumDLSearchMatch with sortOrder', () => {
+    it('should include sort_order parameter when provided', async () => {
+      const mockResponse = {
+        files: [
+          {
+            id: 3,
+            file_name: 'テストマッチ1',
+            upload_owner_name: 'テストオーナー3',
+            created_at: '2024-01-03T10:00:00Z',
+            file_comment: 'マッチコメント1',
+            downloadable_at: '2024-01-03T10:00:00Z',
+          },
+        ],
+        pagination: {
+          page: 1,
+          limit: 50,
+          total: 1,
+        },
+      };
+
+      (apiClient.get as any).mockResolvedValueOnce({ data: mockResponse });
+
+      await sumDLSearchMatch('マッチ', 1, 'asc');
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=2&limit=50&page=1&keyword=${encodeURIComponent("マッチ")}&sort_order=asc`
+      );
+    });
+
+    it('should default to desc when sortOrder is not provided', async () => {
+      const mockResponse = {
+        files: [],
+        pagination: { page: 1, limit: 50, total: 0 },
+      };
+
+      (apiClient.get as any).mockResolvedValueOnce({ data: mockResponse });
+
+      await sumDLSearchMatch('マッチ', 1);
+
+      expect(apiClient.get).toHaveBeenCalledWith(
+        `/api/v2/files?data_type=2&limit=50&page=1&keyword=${encodeURIComponent("マッチ")}&sort_order=desc`
+      );
     });
   });
 
