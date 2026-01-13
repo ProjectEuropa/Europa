@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DeleteModal } from '@/components/DeleteModal';
 import { ViewToggleButton } from '@/components/search/ViewToggleButton';
+import { SortButton } from '@/components/search/SortButton';
 import { useDeleteFile } from '@/hooks/useSearch';
 import type { MatchFile, TeamFile } from '@/types/file';
 import type { PaginationMeta, SortOrder } from '@/types/search';
@@ -229,23 +230,7 @@ export const SearchResults = memo<SearchResultsProps>(
 
             <div className="flex items-center gap-3">
               {/* ソート切り替えボタン */}
-              <button
-                onClick={() => onSortChange(sortOrder === 'desc' ? 'asc' : 'desc')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900/80 border border-slate-700 rounded-lg text-sm text-slate-300 hover:text-cyan-400 hover:border-cyan-500/50 transition-all"
-                title={sortOrder === 'desc' ? '古い順に変更' : '新しい順に変更'}
-              >
-                {sortOrder === 'desc' ? (
-                  <>
-                    <ArrowDown size={14} />
-                    <span>新しい順</span>
-                  </>
-                ) : (
-                  <>
-                    <ArrowUp size={14} />
-                    <span>古い順</span>
-                  </>
-                )}
-              </button>
+              <SortButton sortOrder={sortOrder} onSortChange={onSortChange} />
 
               {/* ビュー切り替えトグル（デスクトップのみ表示） */}
               {!isMobileOrTablet && (
