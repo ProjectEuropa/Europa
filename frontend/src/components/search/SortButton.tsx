@@ -12,7 +12,13 @@ interface SortButtonProps {
 
 /**
  * ソート順切り替えボタンコンポーネント
- * 検索結果や一括ダウンロード画面で共通利用
+ *
+ * 検索結果や一括ダウンロード画面で共通利用される、
+ * 昇順/降順を切り替えるためのボタンコンポーネント
+ *
+ * @param sortOrder - 現在のソート順 ('asc' | 'desc')
+ * @param onSortChange - ソート順変更時のコールバック関数
+ * @param className - 追加のCSSクラス（オプション）
  */
 export const SortButton: React.FC<SortButtonProps> = ({
   sortOrder,
