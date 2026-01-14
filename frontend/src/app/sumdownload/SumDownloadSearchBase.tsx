@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import { useSumDownloadManager } from '@/hooks/useSumDownloadManager';
 import { useViewMode } from '@/hooks/useViewMode';
 import { ViewToggleButton } from '@/components/search/ViewToggleButton';
+import { SortButton } from '@/components/search/SortButton';
 import { SumDownloadForm } from '@/components/features/sumdownload/SumDownloadForm';
 import { SumDownloadTable } from '@/components/features/sumdownload/SumDownloadTable';
 import { SumDownloadPagination } from '@/components/features/sumdownload/SumDownloadPagination';
@@ -33,6 +34,8 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
         currentPage,
         lastPage,
         handlePageChange,
+        sortOrder,
+        handleSortChange,
     } = useSumDownloadManager({ searchType });
 
     // View mode state management using hook
@@ -114,6 +117,9 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
                             </div>
 
                             <div className="flex items-center gap-3">
+                                {/* ソート切り替えボタン */}
+                                <SortButton sortOrder={sortOrder} onSortChange={handleSortChange} />
+
                                 {/* ビュー切り替えトグル */}
                                 {!isMobileOrTablet && (
                                     <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg p-1">

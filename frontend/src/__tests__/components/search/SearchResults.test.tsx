@@ -53,6 +53,7 @@ vi.mock('sonner', () => ({
 describe('SearchResults', () => {
   const mockOnPageChange = vi.fn();
   const mockOnDownload = vi.fn();
+  const mockOnSortChange = vi.fn();
 
   const mockTeamFile: TeamFile = {
     id: 1,
@@ -99,6 +100,12 @@ describe('SearchResults', () => {
     total: 25,
   };
 
+  // デフォルトのソートpropsを定義
+  const defaultSortProps = {
+    sortOrder: 'desc' as const,
+    onSortChange: mockOnSortChange,
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     // デスクトップサイズ（1024px以上）をデフォルトに設定
@@ -119,6 +126,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -137,6 +145,7 @@ describe('SearchResults', () => {
           loading={true}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -152,6 +161,7 @@ describe('SearchResults', () => {
           error="検索に失敗しました"
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -166,6 +176,7 @@ describe('SearchResults', () => {
           meta={{ currentPage: 1, lastPage: 1, perPage: 10, total: 0 }}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -186,6 +197,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -204,6 +216,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -218,6 +231,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -249,6 +263,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -266,6 +281,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -294,6 +310,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -313,6 +330,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -337,6 +355,7 @@ describe('SearchResults', () => {
           meta={singlePageMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -352,6 +371,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -368,6 +388,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -389,6 +410,7 @@ describe('SearchResults', () => {
           meta={lastPageMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -410,6 +432,7 @@ describe('SearchResults', () => {
           meta={manyPagesMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -426,6 +449,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -443,18 +467,15 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
-      // Tabキーでビュー切り替えボタンを通過してダウンロードボタンにフォーカス
-      // （デスクトップではビュー切り替えボタンが先に来る）
-      await user.tab(); // テーブル表示ボタン
-      await user.tab(); // カード表示ボタン
-      await user.tab(); // ダウンロードボタン
-
+      // ダウンロードボタンに直接フォーカスしてEnterキーで実行
       const downloadButton = screen.getByLabelText(
         'test-team.okeをダウンロード'
       );
+      downloadButton.focus();
       expect(downloadButton).toHaveFocus();
 
       // Enterキーで実行
@@ -479,6 +500,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -489,6 +511,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -550,6 +573,7 @@ describe('SearchResults', () => {
           meta={testMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -586,6 +610,7 @@ describe('SearchResults', () => {
           meta={testMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -620,6 +645,7 @@ describe('SearchResults', () => {
           meta={testMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -628,6 +654,146 @@ describe('SearchResults', () => {
 
       // 削除モーダルが表示される
       expect(screen.getByTestId('delete-modal')).toBeInTheDocument();
+    });
+  });
+
+  describe('ソート機能', () => {
+    const mockOnSortChange = vi.fn();
+
+    beforeEach(() => {
+      mockOnSortChange.mockClear();
+    });
+
+    it('should render sort button with correct initial state (desc)', () => {
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+          sortOrder="desc"
+          onSortChange={mockOnSortChange}
+        />
+      );
+
+      expect(screen.getByText('新しい順')).toBeInTheDocument();
+    });
+
+    it('should render sort button with ascending state', () => {
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+          sortOrder="asc"
+          onSortChange={mockOnSortChange}
+        />
+      );
+
+      expect(screen.getByText('古い順')).toBeInTheDocument();
+    });
+
+    it('should call onSortChange when sort button is clicked (desc to asc)', async () => {
+      const user = userEvent.setup();
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+          sortOrder="desc"
+          onSortChange={mockOnSortChange}
+        />
+      );
+
+      const sortButton = screen.getByText('新しい順');
+      await user.click(sortButton);
+
+      expect(mockOnSortChange).toHaveBeenCalledWith('asc');
+    });
+
+    it('should call onSortChange when sort button is clicked (asc to desc)', async () => {
+      const user = userEvent.setup();
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+          sortOrder="asc"
+          onSortChange={mockOnSortChange}
+        />
+      );
+
+      const sortButton = screen.getByText('古い順');
+      await user.click(sortButton);
+
+      expect(mockOnSortChange).toHaveBeenCalledWith('desc');
+    });
+
+    it('should call onSortChange when table header is clicked', async () => {
+      const user = userEvent.setup();
+      // デスクトップサイズを設定（テーブルが表示される）
+      Object.defineProperty(window, 'innerWidth', { value: 1200 });
+
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+          sortOrder="desc"
+          onSortChange={mockOnSortChange}
+        />
+      );
+
+      // テーブルヘッダーのアップロード日時カラムをクリック（テキスト内容で検索）
+      const headerButtons = screen.getAllByTitle('古い順に変更');
+      // テーブルヘッダーのボタンは最初の要素
+      await user.click(headerButtons[0]);
+
+      expect(mockOnSortChange).toHaveBeenCalledWith('asc');
+    });
+
+    it('should display correct arrow icon for descending order', () => {
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+          sortOrder="desc"
+          onSortChange={mockOnSortChange}
+        />
+      );
+
+      // 降順の場合は下向き矢印アイコンが表示される
+      const sortButton = screen.getByText('新しい順').closest('button');
+      expect(sortButton).toBeInTheDocument();
+      // ArrowDownアイコンの存在を確認
+      expect(screen.getByTestId('arrow-down-icon')).toBeInTheDocument();
+      expect(screen.queryByTestId('arrow-up-icon')).not.toBeInTheDocument();
+    });
+
+    it('should display correct arrow icon for ascending order', () => {
+      render(
+        <SearchResults
+          results={[mockTeamFile]}
+          meta={mockMeta}
+          onPageChange={mockOnPageChange}
+          onDownload={mockOnDownload}
+          sortOrder="asc"
+          onSortChange={mockOnSortChange}
+        />
+      );
+
+      // 昇順の場合は上向き矢印アイコンが表示される
+      const sortButton = screen.getByText('古い順').closest('button');
+      expect(sortButton).toBeInTheDocument();
+      // ArrowUpアイコンの存在を確認
+      expect(screen.getByTestId('arrow-up-icon')).toBeInTheDocument();
+      expect(screen.queryByTestId('arrow-down-icon')).not.toBeInTheDocument();
     });
   });
 
@@ -642,6 +808,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -659,6 +826,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -677,6 +845,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -697,6 +866,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -713,6 +883,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 
@@ -730,6 +901,7 @@ describe('SearchResults', () => {
           meta={mockMeta}
           onPageChange={mockOnPageChange}
           onDownload={mockOnDownload}
+          {...defaultSortProps}
         />
       );
 

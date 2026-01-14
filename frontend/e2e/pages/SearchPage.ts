@@ -36,11 +36,19 @@ export class SearchPage extends BasePage {
   }
 
   get resultsTable() {
-    return this.page.getByRole('table');
+    // The table is a grid-based div layout with download buttons
+    // We use the presence of download buttons as a marker for results
+    return this.page.getByLabel(/をダウンロード/).first().locator('..');
   }
 
   get resultRows() {
-    return this.page.getByRole('row').filter({ hasNot: this.page.getByRole('columnheader') });
+    // Result rows contain download buttons - count them
+    return this.page.getByLabel(/をダウンロード/);
+  }
+
+  get resultsContainer() {
+    // Container for both table and card views
+    return this.page.locator('.w-full.mt-8').first();
   }
 
   get pagination() {
@@ -73,6 +81,30 @@ export class SearchPage extends BasePage {
 
   get deleteConfirmButton() {
     return this.page.getByRole('button', { name: '削除実行' });
+  }
+
+  get sortButton() {
+    return this.page.getByRole('button', { name: /新しい順|古い順/ });
+  }
+
+  get sortButtonDesc() {
+    return this.page.getByRole('button', { name: '新しい順' });
+  }
+
+  get sortButtonAsc() {
+    return this.page.getByRole('button', { name: '古い順' });
+  }
+
+  get tableHeaderSortButton() {
+    return this.page.getByRole('button', { name: /アップロード日時/ });
+  }
+
+  get viewToggleTableButton() {
+    return this.page.getByRole('button', { name: 'テーブル' });
+  }
+
+  get viewToggleCardButton() {
+    return this.page.getByRole('button', { name: 'カード' });
   }
 
   // Actions
@@ -132,6 +164,22 @@ export class SearchPage extends BasePage {
     await this.deleteConfirmButton.click();
   }
 
+  async clickSortButton() {
+    await this.sortButton.first().click();
+  }
+
+  async clickTableHeaderSort() {
+    await this.tableHeaderSortButton.click();
+  }
+
+  async switchToTableView() {
+    await this.viewToggleTableButton.click();
+  }
+
+  async switchToCardView() {
+    await this.viewToggleCardButton.click();
+  }
+
   getPageButton(pageNumber: number) {
     return this.page.getByRole('button', { name: String(pageNumber), exact: true });
   }
@@ -153,8 +201,11 @@ export class SearchPage extends BasePage {
   }
 
   async expectResults(minCount = 1) {
-    await expect(this.resultsTable).toBeVisible();
-    await expect(this.resultRows).toHaveCount(minCount, { timeout: 10000 });
+    // Wait for results to appear (check for download buttons)
+    await expect(this.resultRows.first()).toBeVisible({ timeout: 10000 });
+    // Verify we have at least the minimum count
+    const count = await this.resultRows.count();
+    expect(count).toBeGreaterThanOrEqual(minCount);
   }
 
   async expectResultsInfo(total: number, currentPage: number, totalPages: number) {
@@ -212,6 +263,19 @@ export class SearchPage extends BasePage {
   async expectSearchError() {
     const errorMessage = this.searchType === 'team' ? 'チーム検索に失敗しました' : 'マッチ検索に失敗しました';
     await expect(this.page.getByText(errorMessage)).toBeVisible({ timeout: 10000 });
+  }
+
+  async expectSortButtonVisible() {
+    await expect(this.sortButton.first()).toBeVisible();
+  }
+
+  async expectSortOrder(order: 'asc' | 'desc') {
+    const buttonText = order === 'desc' ? '新しい順' : '古い順';
+    await expect(this.page.getByRole('button', { name: buttonText }).first()).toBeVisible();
+  }
+
+  async expectUrlContainsSortOrder(order: 'asc' | 'desc') {
+    await expect(this.page).toHaveURL(new RegExp(`sort=${order}`));
   }
 }
 

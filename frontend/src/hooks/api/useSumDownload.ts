@@ -11,13 +11,14 @@ import {
 interface SumDownloadSearchParams {
   keyword: string;
   page: number;
+  sortOrder?: 'asc' | 'desc';
 }
 
 // チーム検索フック
 export const useSumDownloadTeamSearch = (params: SumDownloadSearchParams) => {
   return useQuery({
-    queryKey: ['sumdownload', 'team', params.keyword, params.page],
-    queryFn: () => sumDLSearchTeam(params.keyword, params.page),
+    queryKey: ['sumdownload', 'team', params.keyword, params.page, params.sortOrder],
+    queryFn: () => sumDLSearchTeam(params.keyword, params.page, params.sortOrder),
     staleTime: 1000 * 60 * 5, // 5分間キャッシュ
     retry: (failureCount, error: any) => {
       // 認証エラーの場合はリトライしない
@@ -32,8 +33,8 @@ export const useSumDownloadTeamSearch = (params: SumDownloadSearchParams) => {
 // マッチ検索フック
 export const useSumDownloadMatchSearch = (params: SumDownloadSearchParams) => {
   return useQuery({
-    queryKey: ['sumdownload', 'match', params.keyword, params.page],
-    queryFn: () => sumDLSearchMatch(params.keyword, params.page),
+    queryKey: ['sumdownload', 'match', params.keyword, params.page, params.sortOrder],
+    queryFn: () => sumDLSearchMatch(params.keyword, params.page, params.sortOrder),
     staleTime: 1000 * 60 * 5, // 5分間キャッシュ
     retry: (failureCount, error: any) => {
       // 認証エラーの場合はリトライしない
