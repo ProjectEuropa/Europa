@@ -771,6 +771,9 @@ describe('SearchResults', () => {
       // 降順の場合は下向き矢印アイコンが表示される
       const sortButton = screen.getByText('新しい順').closest('button');
       expect(sortButton).toBeInTheDocument();
+      // ArrowDownアイコンの存在を確認
+      expect(screen.getByTestId('arrow-down-icon')).toBeInTheDocument();
+      expect(screen.queryByTestId('arrow-up-icon')).not.toBeInTheDocument();
     });
 
     it('should display correct arrow icon for ascending order', () => {
@@ -788,6 +791,9 @@ describe('SearchResults', () => {
       // 昇順の場合は上向き矢印アイコンが表示される
       const sortButton = screen.getByText('古い順').closest('button');
       expect(sortButton).toBeInTheDocument();
+      // ArrowUpアイコンの存在を確認
+      expect(screen.getByTestId('arrow-up-icon')).toBeInTheDocument();
+      expect(screen.queryByTestId('arrow-down-icon')).not.toBeInTheDocument();
     });
   });
 

@@ -5,11 +5,12 @@ import Header from '@/components/Header';
 import { useSumDownloadManager } from '@/hooks/useSumDownloadManager';
 import { useViewMode } from '@/hooks/useViewMode';
 import { ViewToggleButton } from '@/components/search/ViewToggleButton';
+import { SortButton } from '@/components/search/SortButton';
 import { SumDownloadForm } from '@/components/features/sumdownload/SumDownloadForm';
 import { SumDownloadTable } from '@/components/features/sumdownload/SumDownloadTable';
 import { SumDownloadPagination } from '@/components/features/sumdownload/SumDownloadPagination';
 import Footer from '@/components/Footer';
-import { AlertCircle, LayoutGrid, LayoutList, ArrowUp, ArrowDown } from 'lucide-react';
+import { AlertCircle, LayoutGrid, LayoutList } from 'lucide-react';
 
 interface SumDownloadSearchBaseProps {
     searchType: 'team' | 'match';
@@ -117,23 +118,7 @@ export const SumDownloadSearchBase: React.FC<SumDownloadSearchBaseProps> = ({
 
                             <div className="flex items-center gap-3">
                                 {/* ソート切り替えボタン */}
-                                <button
-                                    onClick={() => handleSortChange(sortOrder === 'desc' ? 'asc' : 'desc')}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900/80 border border-slate-700 rounded-lg text-sm text-slate-300 hover:text-cyan-400 hover:border-cyan-500/50 transition-all"
-                                    title={sortOrder === 'desc' ? '古い順に変更' : '新しい順に変更'}
-                                >
-                                    {sortOrder === 'desc' ? (
-                                        <>
-                                            <ArrowDown size={14} />
-                                            <span>新しい順</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <ArrowUp size={14} />
-                                            <span>古い順</span>
-                                        </>
-                                    )}
-                                </button>
+                                <SortButton sortOrder={sortOrder} onSortChange={handleSortChange} />
 
                                 {/* ビュー切り替えトグル */}
                                 {!isMobileOrTablet && (
