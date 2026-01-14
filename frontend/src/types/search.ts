@@ -29,6 +29,9 @@ export interface DateRange {
 
 export type SortField = 'name' | 'created_at' | 'downloadableAt' | 'ownerName';
 export type SortOrder = 'asc' | 'desc';
+
+/** デフォルトのソート順（新しい順） */
+export const DEFAULT_SORT_ORDER: SortOrder = 'desc';
 export type FileType = 'team' | 'match' | 'all';
 
 export interface SearchResult<T = BaseFile> {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { toast } from 'sonner';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -9,29 +9,21 @@ import { SearchForm } from '@/components/search/SearchForm';
 import { SearchResults } from '@/components/search/SearchResults';
 import { TagCloud } from '@/components/search/TagCloud';
 import { useMatchSearch, usePopularTags } from '@/hooks/useSearch';
+import { useSearchSort } from '@/hooks/useSearchSort';
 import type { MatchFile, TeamFile } from '@/types/file';
-import type { SearchParams, SortOrder } from '@/types/search';
+import type { SearchParams } from '@/types/search';
 import { tryDownloadTeamFile } from '@/utils/api';
 
 export default function ClientMatchSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-
-  // URLパラメータからページ番号とソート順を初期化
-  useEffect(() => {
-    const pageParam = searchParams.get('page');
-    const page = pageParam ? parseInt(pageParam, 10) : 1;
-    if (page > 0) {
-      setCurrentPage(page);
-    }
-
-    const sortParam = searchParams.get('sort');
-    if (sortParam === 'asc' || sortParam === 'desc') {
-      setSortOrder(sortParam);
-    }
-  }, [searchParams]);
+  const {
+    currentPage,
+    sortOrder,
+    handleSortChange,
+    handlePageChange,
+    resetPage,
+  } = useSearchSort();
 
   // 検索パラメータの構築
   const searchQuery = searchParams.get('keyword') || '';
@@ -45,21 +37,11 @@ export default function ClientMatchSearch() {
   const {
     data: searchResult,
     isLoading,
-    error,
     isError,
   } = useMatchSearch(searchParamsObj);
 
   // 人気タグを取得
   const { data: popularTags } = usePopularTags(10);
-
-  // キーワード変更時のみページをリセット（ページ変更時はリセットしない）
-  useEffect(() => {
-    const pageParam = searchParams.get('page');
-    // ページパラメータがない場合のみリセット（新しい検索の場合）
-    if (!pageParam) {
-      setCurrentPage(1);
-    }
-  }, [searchParams]);
 
   // ダウンロード処理
   const handleDownload = useCallback((file: TeamFile | MatchFile) => {
@@ -83,42 +65,19 @@ export default function ClientMatchSearch() {
       });
   }, []);
 
-  // ページ変更処理
-  const handlePageChange = useCallback(
-    (page: number) => {
-      setCurrentPage(page);
-
-      // URLを更新
-      const urlParams = new URLSearchParams(searchParams.toString());
-      urlParams.set('page', page.toString());
-      router.push(`?${urlParams.toString()}`);
-    },
-    [searchParams, router]
-  );
-
   // 検索処理 (フォームからのコールバック)
   const handleSearch = useCallback((_params: SearchParams) => {
-    setCurrentPage(1);
-  }, []);
+    resetPage();
+  }, [resetPage]);
 
   // タグクリック処理
   const handleTagClick = useCallback((tag: string) => {
-    setCurrentPage(1);
+    resetPage();
     const urlParams = new URLSearchParams(searchParams.toString());
     urlParams.set('keyword', tag);
     urlParams.set('page', '1');
     router.push(`?${urlParams.toString()}`);
-  }, [searchParams, router]);
-
-  // ソート順変更処理
-  const handleSortChange = useCallback((order: SortOrder) => {
-    setSortOrder(order);
-    setCurrentPage(1); // ソート変更時はページを1にリセット
-    const urlParams = new URLSearchParams(searchParams.toString());
-    urlParams.set('sort', order);
-    urlParams.set('page', '1');
-    router.push(`?${urlParams.toString()}`);
-  }, [searchParams, router]);
+  }, [searchParams, router, resetPage]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0818] text-white selection:bg-cyan-500/30">
@@ -195,4 +154,3 @@ export default function ClientMatchSearch() {
     </div>
   );
 }
-

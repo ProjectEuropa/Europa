@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import {
@@ -6,7 +6,21 @@ import {
   useSumDownloadMatchSearch,
   useSumDownloadTeamSearch,
 } from '@/hooks/api/useSumDownload';
-import type { SortOrder } from '@/types/search';
+import { DEFAULT_SORT_ORDER, type SortOrder } from '@/types/search';
+
+/**
+ * URLパラメータからソート順を安全にパースする
+ * 無効な値の場合はデフォルト値を返し、警告をログ出力
+ */
+const parseSortOrder = (value: string | null): SortOrder => {
+  if (value === 'asc' || value === 'desc') {
+    return value;
+  }
+  if (value !== null) {
+    console.warn(`Invalid sort order in URL: "${value}". Using default: "${DEFAULT_SORT_ORDER}"`);
+  }
+  return DEFAULT_SORT_ORDER;
+};
 
 interface UseSumDownloadManagerProps {
   searchType: 'team' | 'match';
@@ -20,29 +34,23 @@ export const useSumDownloadManager = ({
   const router = useRouter();
   const urlSearchParams = useSearchParams();
 
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  // レースコンディション対策: URL更新中フラグ
+  const isUpdatingRef = useRef(false);
 
-  // URLパラメータから初期化
-  useEffect(() => {
+  // URLパラメータから初期値を取得（useEffectではなく初期化時に読み取り）
+  const initialPage = (() => {
     const pageParam = urlSearchParams.get('page');
     const page = pageParam ? parseInt(pageParam, 10) : 1;
-    if (page > 0) {
-      setCurrentPage(page);
-    }
+    return page > 0 ? page : 1;
+  })();
 
-    const sortParam = urlSearchParams.get('sort');
-    if (sortParam === 'asc' || sortParam === 'desc') {
-      setSortOrder(sortParam);
-    }
+  const initialSortOrder = parseSortOrder(urlSearchParams.get('sort'));
+  const initialKeyword = urlSearchParams.get('keyword') || initialQuery;
 
-    const keywordParam = urlSearchParams.get('keyword');
-    if (keywordParam) {
-      setSearchQuery(keywordParam);
-    }
-  }, [urlSearchParams]);
+  const [searchQuery, setSearchQuery] = useState(initialKeyword);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(initialSortOrder);
 
   // 検索用のパラメータ
   const searchParams = {
@@ -61,6 +69,9 @@ export const useSumDownloadManager = ({
 
   // URLを更新するヘルパー関数
   const updateURL = useCallback((updates: { keyword?: string; page?: number; sort?: SortOrder }) => {
+    if (isUpdatingRef.current) return;
+    isUpdatingRef.current = true;
+
     const params = new URLSearchParams(urlSearchParams.toString());
 
     if (updates.keyword !== undefined) {
@@ -78,6 +89,11 @@ export const useSumDownloadManager = ({
     }
 
     router.push(`?${params.toString()}`);
+
+    // 次のティックで更新フラグをリセット
+    setTimeout(() => {
+      isUpdatingRef.current = false;
+    }, 0);
   }, [urlSearchParams, router]);
 
   // 検索実行
