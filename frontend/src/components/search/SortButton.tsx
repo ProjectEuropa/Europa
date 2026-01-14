@@ -33,6 +33,7 @@ export const SortButton: React.FC<SortButtonProps> = ({
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       className={`flex items-center gap-1.5 px-3 py-1.5 bg-slate-900/80 border border-slate-700 rounded-lg text-sm text-slate-300 hover:text-cyan-400 hover:border-cyan-500/50 transition-all ${className}`}
       title={isDescending ? '古い順に変更' : '新しい順に変更'}
