@@ -41,7 +41,7 @@ src/
 | Vitest | 3.x | ユニットテスト |
 | Playwright | 1.x | E2Eテスト |
 
-**Node.js**: 22.x（Volta管理）
+**Node.js**: 24.x（Volta管理、Active LTS）
 
 ## Development Workflow
 
