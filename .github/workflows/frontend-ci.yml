@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: '24'
   # Performance optimizations
   NODE_OPTIONS: '--max-old-space-size=4096'
   CI: true

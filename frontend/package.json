@@ -94,7 +94,7 @@
     "wrangler": "^4.28.1"
   },
   "volta": {
-    "node": "22.15.1"
+    "node": "24.13.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
