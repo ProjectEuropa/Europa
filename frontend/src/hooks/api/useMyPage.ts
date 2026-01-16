@@ -161,12 +161,19 @@ export const useMyEvents = () => {
           let eventType: EventType = 'other';
           const typeValue = item.type || item.event_type || '';
 
-          if (typeValue === '1' || typeValue === '大会' || typeValue === 'tournament') {
-            eventType = 'tournament';
-          } else if (typeValue === '告知' || typeValue === 'announcement') {
-            eventType = 'announcement';
-          } else {
-            eventType = 'other'; // '2' やその他の値
+          switch (String(typeValue)) {
+            case '1':
+            case '大会':
+            case 'tournament':
+              eventType = 'tournament';
+              break;
+            case '2':
+            case '告知':
+            case 'announcement':
+              eventType = 'announcement';
+              break;
+            default:
+              eventType = 'other';
           }
 
           return {
