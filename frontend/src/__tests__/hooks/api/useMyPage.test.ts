@@ -409,6 +409,69 @@ describe('useMyPage hooks', () => {
 
       expect(result.current.data?.[0]?.type).toBe('other');
     });
+
+    it('数値のイベントタイプを正しく変換する（1=tournament, 2=announcement）', async () => {
+      const mockApiResponse = [
+        {
+          id: '1',
+          name: '大会イベント',
+          details: '詳細1',
+          url: 'https://example.com',
+          deadline: '2023-12-31',
+          endDisplayDate: '2023-12-25',
+          type: '1',
+          registeredDate: '2023-01-01',
+        },
+        {
+          id: '2',
+          name: '告知イベント',
+          details: '詳細2',
+          url: 'https://example2.com',
+          deadline: '2023-11-30',
+          endDisplayDate: '2023-11-25',
+          type: '2',
+          registeredDate: '2023-01-02',
+        },
+      ];
+
+      vi.mocked(api.fetchMyEvents).mockResolvedValue(mockApiResponse);
+
+      const wrapper = createWrapper();
+      const { result } = renderHook(() => useMyEvents(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data?.[0]?.type).toBe('tournament');
+      expect(result.current.data?.[1]?.type).toBe('announcement');
+    });
+
+    it('event_typeフィールドからも数値のイベントタイプを正しく変換する', async () => {
+      const mockApiResponse = [
+        {
+          id: '1',
+          event_name: '大会イベント',
+          event_details: '詳細1',
+          event_reference_url: 'https://example.com',
+          event_closing_day: '2023-12-31',
+          event_displaying_day: '2023-12-25',
+          event_type: '1',
+          created_at: '2023-01-01T00:00:00Z',
+        },
+      ];
+
+      vi.mocked(api.fetchMyEvents).mockResolvedValue(mockApiResponse);
+
+      const wrapper = createWrapper();
+      const { result } = renderHook(() => useMyEvents(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data?.[0]?.type).toBe('tournament');
+    });
   });
 
   describe('useDeleteFile', () => {
