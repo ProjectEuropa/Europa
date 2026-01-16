@@ -161,12 +161,12 @@ export const useMyEvents = () => {
           let eventType: EventType = 'other';
           const typeValue = item.type || item.event_type || '';
 
-          if (typeValue === '大会' || typeValue === 'tournament') {
+          if (typeValue === '1' || typeValue === '大会' || typeValue === 'tournament') {
             eventType = 'tournament';
           } else if (typeValue === '告知' || typeValue === 'announcement') {
             eventType = 'announcement';
           } else {
-            eventType = 'other';
+            eventType = 'other'; // '2' やその他の値
           }
 
           return {
