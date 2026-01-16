@@ -16,7 +16,7 @@ CREATE TABLE events (
   event_name VARCHAR(255) NOT NULL,
   event_details VARCHAR(255) NOT NULL,
   event_reference_url VARCHAR(255),
-  event_type VARCHAR(255) NOT NULL,  -- 大会:1 その他:2
+  event_type VARCHAR(255) NOT NULL,  -- 大会:1 告知:2
   event_closing_day TIMESTAMP NOT NULL,
   event_displaying_day TIMESTAMP NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),

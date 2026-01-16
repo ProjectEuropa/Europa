@@ -157,16 +157,24 @@ export const useMyEvents = () => {
       try {
         const data = await fetchMyEvents();
         return data.map((item: any) => {
-          // APIから返される日本語の値を内部値に変換
+          // APIから返される値を内部値に変換
+          // DB: event_type - 大会:1, 告知:2
           let eventType: EventType = 'other';
           const typeValue = item.type || item.event_type || '';
 
-          if (typeValue === '大会' || typeValue === 'tournament') {
-            eventType = 'tournament';
-          } else if (typeValue === '告知' || typeValue === 'announcement') {
-            eventType = 'announcement';
-          } else {
-            eventType = 'other';
+          switch (String(typeValue)) {
+            case '1': // DB numeric ID
+            case '大会':
+            case 'tournament':
+              eventType = 'tournament';
+              break;
+            case '2': // DB numeric ID
+            case '告知':
+            case 'announcement':
+              eventType = 'announcement';
+              break;
+            default:
+              eventType = 'other';
           }
 
           return {
