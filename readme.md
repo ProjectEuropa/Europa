@@ -15,15 +15,17 @@ Next.js 15.xベースのフロントエンドアプリケーション
 ## 技術スタック
 
 ### バックエンド (hono-worker)
+*   **言語:** TypeScript
 *   **ランタイム:** Cloudflare Workers
-*   **フレームワーク:** Hono v4.4.0
+*   **フレームワーク:** Hono v4.11.4
 *   **データベース:** Neon (PostgreSQL)
 *   **ストレージ:** Cloudflare R2
 *   **バリデーション:** Zod v4.1.13
 *   **認証:** bcryptjs
 
 ### フロントエンド (frontend)
-*   **Next.js:** 15.4.10
+*   **言語:** TypeScript
+*   **Next.js:** 16.1.1
 *   **React:** 19.2.0
 *   **スタイリング:** TailwindCSS 4.1.7
 *   **UIコンポーネント:** shadcn/ui, Radix UI
@@ -32,6 +34,12 @@ Next.js 15.xベースのフロントエンドアプリケーション
 *   **フォーム:** React Hook Form
 *   **バリデーション:** Zod v4.0.5
 *   **アニメーション:** Framer Motion
+
+## 前提条件
+
+- **Node.js:** v24.13.0 以上（[Volta](https://volta.sh/) 推奨）
+- **npm:** Node.js に同梱
+- **Wrangler CLI:** Cloudflare Workers のデプロイに必要（npm install で自動インストール）
 
 ## 環境構築手順
 
@@ -171,7 +179,7 @@ graph TB
     end
 
     subgraph "Cloudflare Workers"
-        API[Hono API Server<br/>v4.4.0]
+        API[Hono API Server<br/>v4.11.4]
     end
 
     subgraph "データ層"
@@ -222,7 +230,7 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph "Frontend技術"
-        NextJS[Next.js 15.4.10]
+        NextJS[Next.js 16.1.1]
         React[React 19.2.0]
         TailwindCSS[TailwindCSS 4.1.7]
         TanStack[TanStack Query v5.83.0]
@@ -231,7 +239,7 @@ graph LR
     end
 
     subgraph "Backend技術"
-        Hono[Hono v4.4.0]
+        Hono[Hono v4.11.4]
         Workers[Cloudflare Workers]
         Zod[Zod v4.1.13]
         Bcrypt[bcryptjs]
