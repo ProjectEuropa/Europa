@@ -6,6 +6,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import FileListSection from '@/components/mypage/FileListSection';
 import * as useMyPageHooks from '@/hooks/api/useMyPage';
 import * as dateFormatters from '@/utils/dateFormatters';
+import {
+  createMockQueryResult,
+  createMockMutationResult,
+} from '../../utils/test-utils';
 
 // モック設定
 vi.mock('@/hooks/api/useMyPage', () => ({
@@ -88,23 +92,24 @@ describe('FileListSection', () => {
   };
 
   beforeEach(() => {
-    vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue({
-      data: mockTeamFiles,
-      isLoading: false,
-      error: null,
-    });
+    vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue(
+      createMockQueryResult({ data: mockTeamFiles })
+    );
 
-    vi.mocked(useMyPageHooks.useMyMatchFiles).mockReturnValue({
-      data: mockMatchFiles,
-      isLoading: false,
-      error: null,
-    });
+    vi.mocked(useMyPageHooks.useMyMatchFiles).mockReturnValue(
+      createMockQueryResult({ data: mockMatchFiles })
+    );
 
-    vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue(mockDeleteFile);
+    vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue(
+      createMockMutationResult({
+        mutateAsync: mockDeleteFile.mutateAsync,
+        isPending: false,
+      })
+    );
 
     // 日時フォーマット関数のモック設定
     vi.mocked(dateFormatters.formatDownloadDateTime).mockImplementation(
-      (dateString: string) => {
+      (dateString: string | null) => {
         if (!dateString) return '未設定';
         if (dateString === '2023-01-02T00:00:00Z') return '2023/01/02 09:00';
         if (dateString === '2023-01-06T00:00:00Z') return '2023/01/06 09:00';
@@ -113,7 +118,7 @@ describe('FileListSection', () => {
     );
 
     vi.mocked(dateFormatters.formatUploadDateTime).mockImplementation(
-      (dateString: string) => {
+      (dateString: string | null) => {
         if (!dateString) return '-';
         if (dateString === '2023-01-01T00:00:00Z') return '2023/01/01 09:00';
         if (dateString === '2023-01-03T00:00:00Z') return '2023/01/03 09:00';
@@ -124,7 +129,7 @@ describe('FileListSection', () => {
 
     vi.mocked(dateFormatters.getAccessibilityDateInfo).mockImplementation(
       (
-        _dateString: string,
+        _dateString: string | null,
         formattedValue: string,
         context: 'download' | 'upload'
       ) => {
@@ -179,11 +184,9 @@ describe('FileListSection', () => {
     });
 
     it('ファイルが存在しない場合のメッセージが表示される', () => {
-      vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue({
-        data: [],
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue(
+        createMockQueryResult({ data: [] })
+      );
 
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
@@ -280,10 +283,12 @@ describe('FileListSection', () => {
     });
 
     it('削除中はボタンが無効化される', () => {
-      vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue({
-        ...mockDeleteFile,
-        isPending: true,
-      });
+      vi.mocked(useMyPageHooks.useDeleteFile).mockReturnValue(
+        createMockMutationResult({
+          mutateAsync: mockDeleteFile.mutateAsync,
+          isPending: true,
+        })
+      );
 
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
@@ -385,11 +390,9 @@ describe('FileListSection', () => {
 
   describe('ローディング状態', () => {
     it('チームファイル読み込み中のメッセージが表示される', () => {
-      vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue({
-        data: undefined,
-        isLoading: true,
-        error: null,
-      });
+      vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue(
+        createMockQueryResult({ isLoading: true })
+      );
 
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
@@ -400,11 +403,9 @@ describe('FileListSection', () => {
     });
 
     it('マッチファイル読み込み中のメッセージが表示される', () => {
-      vi.mocked(useMyPageHooks.useMyMatchFiles).mockReturnValue({
-        data: undefined,
-        isLoading: true,
-        error: null,
-      });
+      vi.mocked(useMyPageHooks.useMyMatchFiles).mockReturnValue(
+        createMockQueryResult({ isLoading: true })
+      );
 
       const wrapper = createWrapper();
       render(<FileListSection type="match" />, { wrapper });
@@ -417,11 +418,9 @@ describe('FileListSection', () => {
 
   describe('エラー状態', () => {
     it('チームファイル取得エラー時のメッセージが表示される', () => {
-      vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue({
-        data: undefined,
-        isLoading: false,
-        error: new Error('取得エラー'),
-      });
+      vi.mocked(useMyPageHooks.useMyTeamFiles).mockReturnValue(
+        createMockQueryResult({ error: new Error('取得エラー'), isError: true })
+      );
 
       const wrapper = createWrapper();
       render(<FileListSection type="team" />, { wrapper });
@@ -432,11 +431,9 @@ describe('FileListSection', () => {
     });
 
     it('マッチファイル取得エラー時のメッセージが表示される', () => {
-      vi.mocked(useMyPageHooks.useMyMatchFiles).mockReturnValue({
-        data: undefined,
-        isLoading: false,
-        error: new Error('取得エラー'),
-      });
+      vi.mocked(useMyPageHooks.useMyMatchFiles).mockReturnValue(
+        createMockQueryResult({ error: new Error('取得エラー'), isError: true })
+      );
 
       const wrapper = createWrapper();
       render(<FileListSection type="match" />, { wrapper });

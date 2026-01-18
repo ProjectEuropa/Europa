@@ -137,7 +137,7 @@ describe('useToast', () => {
   it('should return generated id', () => {
     const { result } = renderHook(() => useToast());
 
-    let id: string;
+    let id: string | undefined;
     act(() => {
       id = result.current.toast({
         type: 'success',
@@ -147,7 +147,7 @@ describe('useToast', () => {
 
     expect(id).toBeDefined();
     expect(typeof id).toBe('string');
-    expect(id?.length).toBeGreaterThan(0);
+    expect(id!.length).toBeGreaterThan(0);
   });
 
   it('should call custom toast for unknown type', async () => {

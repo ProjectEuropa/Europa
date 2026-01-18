@@ -5,6 +5,7 @@ import React, { type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ProfileSection from '@/components/mypage/ProfileSection';
 import * as useMyPageHooks from '@/hooks/api/useMyPage';
+import { createMockMutationResult } from '../../utils/test-utils';
 
 // モック設定
 vi.mock('sonner', () => ({
@@ -51,12 +52,13 @@ describe('ProfileSection', () => {
       data: mockProfile,
       isLoading: false,
       error: null,
-      isError: false,
-      isSuccess: true,
     });
 
     vi.mocked(useMyPageHooks.useUpdateProfile).mockReturnValue(
-      mockUpdateProfile
+      createMockMutationResult({
+        mutateAsync: mockUpdateProfile.mutateAsync,
+        isPending: false,
+      })
     );
   });
 
@@ -162,9 +164,7 @@ describe('ProfileSection', () => {
         data: null,
         isLoading: true,
         error: null,
-        isError: false,
-        isSuccess: false,
-      });
+      } as ReturnType<typeof useMyPageHooks.useProfile>);
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });
@@ -176,10 +176,12 @@ describe('ProfileSection', () => {
 
     it('更新中は保存ボタンが無効化される', async () => {
       const user = userEvent.setup();
-      vi.mocked(useMyPageHooks.useUpdateProfile).mockReturnValue({
-        ...mockUpdateProfile,
-        isPending: true,
-      });
+      vi.mocked(useMyPageHooks.useUpdateProfile).mockReturnValue(
+        createMockMutationResult({
+          mutateAsync: mockUpdateProfile.mutateAsync,
+          isPending: true,
+        })
+      );
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });
@@ -199,8 +201,6 @@ describe('ProfileSection', () => {
         data: null,
         isLoading: false,
         error: new Error('取得エラー'),
-        isError: true,
-        isSuccess: false,
       });
 
       const wrapper = createWrapper();
@@ -216,9 +216,7 @@ describe('ProfileSection', () => {
         data: null,
         isLoading: false,
         error: null,
-        isError: false,
-        isSuccess: true,
-      });
+      } as ReturnType<typeof useMyPageHooks.useProfile>);
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });

@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from 'react';
 import { formatDate } from '@/utils/dateFormatters';
-import { formatDownloadableDate, SumDownloadItem } from './SumDownloadTable';
+import { formatDownloadableDate, type SumDownloadItem } from './SumDownloadTable';
 
 interface TableViewProps {
     data: SumDownloadItem[];
