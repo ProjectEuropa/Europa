@@ -100,11 +100,11 @@ export class SearchPage extends BasePage {
   }
 
   get viewToggleTableButton() {
-    return this.page.getByRole('button', { name: 'テーブル' });
+    return this.page.getByRole('button', { name: 'テーブル表示' });
   }
 
   get viewToggleCardButton() {
-    return this.page.getByRole('button', { name: 'カード' });
+    return this.page.getByRole('button', { name: 'カード表示' });
   }
 
   // Actions
