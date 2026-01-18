@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import type React from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 import type { SortOrder } from '@/types/search';
 

@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useAutocomplete, UseAutocompleteOptions } from '@/hooks/useAutocomplete';
+import { useAutocomplete, type UseAutocompleteOptions } from '@/hooks/useAutocomplete';
 import type { SearchSuggestion } from '@/hooks/useSearchSuggestions';
 
 const createMockSuggestions = (count: number): SearchSuggestion[] => {

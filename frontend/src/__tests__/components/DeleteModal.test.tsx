@@ -217,7 +217,7 @@ describe('DeleteModal', () => {
       await user.type(passwordInput, longPassword);
 
       // maxLength="100"により、100文字までしか入力されない
-      expect(passwordInput.value.length).toBeLessThanOrEqual(100);
+      expect((passwordInput as HTMLInputElement).value.length).toBeLessThanOrEqual(100);
     });
 
     it('should show correct character count for long input', async () => {
