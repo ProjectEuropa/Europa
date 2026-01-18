@@ -179,7 +179,7 @@ graph TB
     end
 
     subgraph "Cloudflare Workers"
-        API[Hono API Server<br/>v4.4.0]
+        API[Hono API Server<br/>v4.11.4]
     end
 
     subgraph "データ層"
@@ -230,7 +230,7 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph "Frontend技術"
-        NextJS[Next.js 15.4.10]
+        NextJS[Next.js 16.1.1]
         React[React 19.2.0]
         TailwindCSS[TailwindCSS 4.1.7]
         TanStack[TanStack Query v5.83.0]
@@ -239,7 +239,7 @@ graph LR
     end
 
     subgraph "Backend技術"
-        Hono[Hono v4.4.0]
+        Hono[Hono v4.11.4]
         Workers[Cloudflare Workers]
         Zod[Zod v4.1.13]
         Bcrypt[bcryptjs]
