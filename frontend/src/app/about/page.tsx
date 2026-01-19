@@ -67,8 +67,8 @@ export default function AboutPage() {
       <Paragraph>
         2016年の設立以来、Project
         Europaは継続的にサービスを拡充し、コミュニティのニーズに応えてきました。
-        最初はシンプルなデータ共有サイトとして始まりましたが、現在では検索機能、分析ツール、
-        コミュニティフォーラムなど、多様な機能を提供しています。
+        最初はシンプルなデータ共有サイトとして始まりましたが、現在ではタグ付けや検索機能、
+        イベント告知など、より便利な機能を提供しています。
       </Paragraph>
 
       {/* タイムライン */}
@@ -103,7 +103,6 @@ export default function AboutPage() {
       <InfoBox title="今後の開発予定">
         <List>
           <ListItem>AIを活用した戦術分析機能</ListItem>
-          <ListItem>コミュニティイベント管理システム</ListItem>
           <ListItem>デスクトップアプリとモバイルアプリの開発</ListItem>
         </List>
       </InfoBox>
