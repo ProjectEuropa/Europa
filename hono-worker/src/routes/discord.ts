@@ -120,6 +120,10 @@ discord.post('/interactions', async (c) => {
                 const user = interaction.member?.user || interaction.user;
                 const username = user?.global_name || user?.username || 'Unknown';
 
+                // コマンドが実行されたチャンネルに投稿
+                const channelId = interaction.channel_id || c.env.DISCORD_CHANNEL_ID;
+                const guildId = interaction.guild_id || c.env.DISCORD_GUILD_ID;
+
                 // Discordチャンネルに投稿
                 const message = createEventMessage({
                     eventName: formData.eventName,
@@ -131,14 +135,14 @@ discord.post('/interactions', async (c) => {
 
                 const postedMessage = await postMessage(
                     c.env.DISCORD_BOT_TOKEN,
-                    c.env.DISCORD_CHANNEL_ID,
+                    channelId,
                     message
                 );
 
                 // メッセージリンクを生成
                 const messageLink = createMessageLink(
-                    c.env.DISCORD_GUILD_ID,
-                    c.env.DISCORD_CHANNEL_ID,
+                    guildId,
+                    channelId,
                     postedMessage.id
                 );
 
@@ -174,7 +178,7 @@ discord.post('/interactions', async (c) => {
                     console.error('DB insert failed, deleting Discord message:', dbError);
                     await deleteMessage(
                         c.env.DISCORD_BOT_TOKEN,
-                        c.env.DISCORD_CHANNEL_ID,
+                        channelId,
                         postedMessage.id
                     );
                     throw dbError;
