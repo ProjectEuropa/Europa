@@ -79,25 +79,26 @@ export function AccentBox({ children }: ChildrenProps) {
     );
 }
 
-// タイムラインアイテム（縦型）
+// タイムラインアイテム（縦型）- 本格的なデザイン
 export function TimelineItem({ year, children }: TimelineItemProps) {
     return (
-        <div className="relative flex items-center gap-4 md:gap-6 pb-5 last:pb-0">
-            {/* 左側：年 */}
-            <time
-                dateTime={year}
-                className="text-lg md:text-xl font-bold text-cyan-400 font-mono w-14 md:w-16 text-right shrink-0"
-            >
-                {year}
-            </time>
+        <div className="relative pl-8 md:pl-10 pb-8 last:pb-0 group">
+            {/* 縦線（継続線） */}
+            <div className="absolute left-[11px] md:left-[13px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-500/80 via-cyan-500/40 to-cyan-500/20 group-last:bg-gradient-to-b group-last:from-cyan-500/80 group-last:to-transparent" />
 
-            {/* 中央：ドット */}
-            <div className="relative flex items-center shrink-0">
-                <div className="w-3 h-3 rounded-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+            {/* ノード（接続点） */}
+            <div className="absolute left-0 top-1 w-6 h-6 md:w-7 md:h-7 rounded-full border-2 border-cyan-500 bg-slate-900 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.5)]">
+                <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
             </div>
 
-            {/* 右側：説明 */}
-            <div className="flex-1">
+            {/* コンテンツカード */}
+            <div className="bg-slate-800/50 border border-cyan-500/20 rounded-lg p-4 hover:border-cyan-500/40 transition-colors">
+                <time
+                    dateTime={year}
+                    className="inline-block text-lg md:text-xl font-bold text-cyan-400 font-mono mb-2"
+                >
+                    {year}
+                </time>
                 <p className="text-slate-300 text-sm md:text-base leading-relaxed">{children}</p>
             </div>
         </div>
