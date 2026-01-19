@@ -9,7 +9,17 @@ vi.mock('@/lib/api/client', () => ({
   },
 }));
 
-// 仮想的な検索API
+// 仮想的な検索API - 戻り値型を定義
+interface SearchFilesResult {
+  files: unknown[];
+  total: number;
+}
+
+interface SearchUsersResult {
+  users: unknown[];
+  total: number;
+}
+
 const searchApi = {
   async searchFiles(
     query: string,
@@ -19,7 +29,7 @@ const searchApi = {
       dateTo?: string;
       size?: { min?: number; max?: number };
     }
-  ) {
+  ): Promise<SearchFilesResult> {
     const params = new URLSearchParams();
     params.append('q', query);
 
@@ -31,41 +41,41 @@ const searchApi = {
     if (filters?.size?.max)
       params.append('size_max', filters.size.max.toString());
 
-    const response = await apiClient.get(
+    const response = await apiClient.get<SearchFilesResult>(
       `/api/v1/search/files?${params.toString()}`
     );
     return response.data;
   },
 
-  async searchUsers(query: string, limit = 10) {
-    const response = await apiClient.get(
+  async searchUsers(query: string, limit = 10): Promise<SearchUsersResult> {
+    const response = await apiClient.get<SearchUsersResult>(
       `/api/v1/search/users?q=${encodeURIComponent(query)}&limit=${limit}`
     );
     return response.data;
   },
 
-  async getSearchSuggestions(query: string) {
-    const response = await apiClient.get(
+  async getSearchSuggestions(query: string): Promise<{ suggestions: string[] }> {
+    const response = await apiClient.get<{ suggestions: string[] }>(
       `/api/v1/search/suggestions?q=${encodeURIComponent(query)}`
     );
     return response.data;
   },
 
-  async saveSearch(query: string, filters?: Record<string, unknown>) {
-    const response = await apiClient.post('/api/v1/search/save', {
+  async saveSearch(query: string, filters?: Record<string, unknown>): Promise<{ id: string }> {
+    const response = await apiClient.post<{ id: string }>('/api/v1/search/save', {
       query,
       filters,
     });
     return response.data;
   },
 
-  async getSavedSearches() {
-    const response = await apiClient.get('/api/v1/search/saved');
+  async getSavedSearches(): Promise<{ searches: unknown[] }> {
+    const response = await apiClient.get<{ searches: unknown[] }>('/api/v1/search/saved');
     return response.data;
   },
 
-  async deleteSavedSearch(id: number) {
-    const response = await apiClient.post(`/api/v1/search/saved/${id}/delete`);
+  async deleteSavedSearch(id: number): Promise<{ success: boolean }> {
+    const response = await apiClient.post<{ success: boolean }>(`/api/v1/search/saved/${id}/delete`);
     return response.data;
   },
 };

@@ -130,7 +130,13 @@ const storage = {
 };
 
 // ストレージのモック
-const mockLocalStorage = {
+const mockLocalStorage: Record<string, unknown> & {
+  getItem: ReturnType<typeof vi.fn>;
+  setItem: ReturnType<typeof vi.fn>;
+  removeItem: ReturnType<typeof vi.fn>;
+  clear: ReturnType<typeof vi.fn>;
+  hasOwnProperty: ReturnType<typeof vi.fn>;
+} = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),
@@ -138,7 +144,13 @@ const mockLocalStorage = {
   hasOwnProperty: vi.fn(),
 };
 
-const mockSessionStorage = {
+const mockSessionStorage: Record<string, unknown> & {
+  getItem: ReturnType<typeof vi.fn>;
+  setItem: ReturnType<typeof vi.fn>;
+  removeItem: ReturnType<typeof vi.fn>;
+  clear: ReturnType<typeof vi.fn>;
+  hasOwnProperty: ReturnType<typeof vi.fn>;
+} = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),

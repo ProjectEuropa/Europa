@@ -2,11 +2,11 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // 仮想的なuseLocalStorageフック
-const useLocalStorage = <T>(key: string, initialValue: T) => {
-  const [storedValue, setStoredValue] = React.useState<T>(() => {
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = React.useState(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+      return item ? (JSON.parse(item) as T) : initialValue;
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
       return initialValue;

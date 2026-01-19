@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { usePasswordReset } from '@/hooks/usePasswordReset';
 import { useToast } from '@/hooks/useToast';
 import { authApi } from '@/lib/api/auth';
+import type { PasswordResetResponse } from '@/types/user';
 
 // モック
 vi.mock('@/lib/api/auth');
@@ -173,8 +174,8 @@ describe('usePasswordReset', () => {
 
   describe('loading state', () => {
     it('should manage loading state correctly', async () => {
-      let resolvePromise: (value: unknown) => void;
-      const mockPromise = new Promise(resolve => {
+      let resolvePromise: (value: PasswordResetResponse) => void;
+      const mockPromise = new Promise<PasswordResetResponse>(resolve => {
         resolvePromise = resolve;
       });
 

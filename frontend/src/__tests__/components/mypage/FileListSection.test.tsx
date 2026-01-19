@@ -118,8 +118,7 @@ describe('FileListSection', () => {
     );
 
     vi.mocked(dateFormatters.formatUploadDateTime).mockImplementation(
-      (dateString: string | null) => {
-        if (!dateString) return '-';
+      (dateString: string) => {
         if (dateString === '2023-01-01T00:00:00Z') return '2023/01/01 09:00';
         if (dateString === '2023-01-03T00:00:00Z') return '2023/01/03 09:00';
         if (dateString === '2023-01-05T00:00:00Z') return '2023/01/05 09:00';

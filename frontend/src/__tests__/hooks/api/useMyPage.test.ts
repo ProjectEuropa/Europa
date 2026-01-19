@@ -150,7 +150,7 @@ describe('useMyPage hooks', () => {
             id: '1',
             name: 'テストユーザー',
             email: 'test@example.com',
-            // created_atプロパティを設定しない
+            created_at: '', // 空文字で日付なしを表現
           },
           token: 'mock-token',
           isAuthenticated: true,
@@ -476,7 +476,7 @@ describe('useMyPage hooks', () => {
 
   describe('useDeleteFile', () => {
     it('ファイル削除が成功した場合、成功メッセージを表示する', async () => {
-      vi.mocked(api.deleteMyFile).mockResolvedValue(undefined);
+      vi.mocked(api.deleteMyFile).mockResolvedValue({ data: { message: '削除しました' } });
 
       const wrapper = createWrapper();
       const { result } = renderHook(() => useDeleteFile(), { wrapper });

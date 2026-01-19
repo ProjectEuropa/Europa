@@ -164,7 +164,7 @@ describe('ProfileSection', () => {
         data: null,
         isLoading: true,
         error: null,
-      } as ReturnType<typeof useMyPageHooks.useProfile>);
+      } as unknown as ReturnType<typeof useMyPageHooks.useProfile>);
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });
@@ -216,7 +216,7 @@ describe('ProfileSection', () => {
         data: null,
         isLoading: false,
         error: null,
-      } as ReturnType<typeof useMyPageHooks.useProfile>);
+      } as unknown as ReturnType<typeof useMyPageHooks.useProfile>);
 
       const wrapper = createWrapper();
       render(<ProfileSection />, { wrapper });

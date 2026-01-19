@@ -6,8 +6,8 @@ import type { SearchSuggestion } from '@/hooks/useSearchSuggestions';
 const createMockSuggestions = (count: number): SearchSuggestion[] => {
   return Array.from({ length: count }, (_, i) => ({
     value: `suggestion-${i}`,
-    label: `Suggestion ${i}`,
     type: 'tag' as const,
+    score: count - i,
   }));
 };
 
