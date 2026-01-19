@@ -116,8 +116,8 @@ export default function GuidePage() {
             </p>
             <InfoBox title="現在開発中の機能">
               <ul className="text-sm text-slate-400 list-none space-y-1">
-                <li>・AIレコメンド機能</li>
-                <li>・スマホアプリ</li>
+                <li>・AIを活用した戦術分析機能</li>
+                <li>・デスクトップアプリとモバイルアプリ</li>
               </ul>
             </InfoBox>
           </div>

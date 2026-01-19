@@ -103,7 +103,6 @@ export default function AboutPage() {
       <InfoBox title="今後の開発予定">
         <List>
           <ListItem>AIを活用した戦術分析機能</ListItem>
-          <ListItem>コミュニティイベント管理システム</ListItem>
           <ListItem>デスクトップアプリとモバイルアプリの開発</ListItem>
         </List>
       </InfoBox>
