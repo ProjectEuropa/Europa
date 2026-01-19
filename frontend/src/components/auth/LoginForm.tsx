@@ -119,8 +119,7 @@ export function LoginForm({
           placeholder="you@europa.work"
           {...register('email')}
           disabled={isSubmitting}
-          className={`w-full py-3 px-4 bg-[#111A2E] border ${errors.email ? 'border-red-500' : 'border-[#1E3A5F]'
-            } rounded-md text-white text-base outline-none transition-colors`}
+          className={`w-full py-3 px-4 bg-[#111A2E] border rounded-md text-white text-base outline-none transition-colors ${errors.email ? 'border-red-500' : 'border-[#1E3A5F]'}`}
         />
         {errors.email && (
           <p className="text-red-500 text-[0.8rem] mt-1">
@@ -144,8 +143,7 @@ export function LoginForm({
             placeholder="パスワードを入力"
             {...register('password')}
             disabled={isSubmitting}
-            className={`w-full py-3 px-4 pr-12 bg-[#111A2E] border ${errors.password ? 'border-red-500' : 'border-[#1E3A5F]'
-              } rounded-md text-white text-base outline-none transition-colors`}
+            className={`w-full py-3 px-4 pr-12 bg-[#111A2E] border rounded-md text-white text-base outline-none transition-colors ${errors.password ? 'border-red-500' : 'border-[#1E3A5F]'}`}
           />
           <button
             type="button"
@@ -183,10 +181,7 @@ export function LoginForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className={`w-full py-3.5 border-none rounded-md text-base font-bold mt-1 transition-all ${isSubmitting
-            ? 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-70'
-            : 'bg-[#00c8ff] text-[#020824] cursor-pointer'
-          }`}
+        className={`w-full py-3.5 border-none rounded-md text-base font-bold mt-1 transition-all ${isSubmitting ? 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-70' : 'bg-[#00c8ff] text-[#020824] cursor-pointer'}`}
       >
         {isSubmitting ? 'ログイン中...' : 'ログイン'}
       </button>
