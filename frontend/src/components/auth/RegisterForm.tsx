@@ -131,12 +131,11 @@ export function RegisterForm({
         <input
           id="name"
           type="text"
-          placeholder="山田太郎"
+          placeholder="ユーザー名を入力"
           {...register('name')}
           disabled={isSubmitting}
-          className={`w-full p-3 rounded-md border ${
-            errors.name ? 'border-red-500' : 'border-gray-700'
-          } bg-gray-800 text-gray-50 text-base outline-none`}
+          className={`w-full p-3 rounded-md border ${errors.name ? 'border-red-500' : 'border-gray-700'
+            } bg-gray-800 text-gray-50 text-base outline-none`}
         />
         {errors.name && (
           <p className="text-red-500 text-[0.8rem] mt-1">
@@ -156,12 +155,11 @@ export function RegisterForm({
         <input
           id="email"
           type="email"
-          placeholder="example@example.com"
+          placeholder="you@europa.work"
           {...register('email')}
           disabled={isSubmitting}
-          className={`w-full p-3 rounded-md border ${
-            errors.email ? 'border-red-500' : 'border-gray-700'
-          } bg-gray-800 text-gray-50 text-base outline-none`}
+          className={`w-full p-3 rounded-md border ${errors.email ? 'border-red-500' : 'border-gray-700'
+            } bg-gray-800 text-gray-50 text-base outline-none`}
         />
         {errors.email && (
           <p className="text-red-500 text-[0.8rem] mt-1">
@@ -185,9 +183,8 @@ export function RegisterForm({
             placeholder="パスワードを入力"
             {...register('password')}
             disabled={isSubmitting}
-            className={`w-full p-3 pr-12 rounded-md border ${
-              errors.password ? 'border-red-500' : 'border-gray-700'
-            } bg-gray-800 text-gray-50 text-base outline-none`}
+            className={`w-full p-3 pr-12 rounded-md border ${errors.password ? 'border-red-500' : 'border-gray-700'
+              } bg-gray-800 text-gray-50 text-base outline-none`}
           />
           <button
             type="button"
@@ -219,9 +216,8 @@ export function RegisterForm({
             placeholder="パスワードを再入力"
             {...register('passwordConfirmation')}
             disabled={isSubmitting}
-            className={`w-full p-3 pr-12 rounded-md border ${
-              errors.passwordConfirmation ? 'border-red-500' : 'border-gray-700'
-            } bg-gray-800 text-gray-50 text-base outline-none`}
+            className={`w-full p-3 pr-12 rounded-md border ${errors.passwordConfirmation ? 'border-red-500' : 'border-gray-700'
+              } bg-gray-800 text-gray-50 text-base outline-none`}
           />
           <button
             type="button"
@@ -248,11 +244,10 @@ export function RegisterForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className={`w-full p-3 border-none rounded-md text-base font-bold mt-2 ${
-          isSubmitting
+        className={`w-full p-3 border-none rounded-md text-base font-bold mt-2 ${isSubmitting
             ? 'bg-gray-700 text-white cursor-not-allowed opacity-60'
             : 'bg-[#00c8ff] text-white cursor-pointer'
-        }`}
+          }`}
       >
         {isSubmitting ? '登録中...' : 'アカウント作成'}
       </button>

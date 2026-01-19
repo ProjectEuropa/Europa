@@ -67,12 +67,11 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
         <input
           id="email"
           type="email"
-          placeholder="example@europa.com"
+          placeholder="you@europa.work"
           {...register('email')}
           disabled={isLoading}
-          className={`w-full py-3 px-4 bg-[#111A2E] border ${
-            errors.email ? 'border-red-500' : 'border-[#1E3A5F]'
-          } rounded-md text-white text-base outline-none transition-colors`}
+          className={`w-full py-3 px-4 bg-[#111A2E] border ${errors.email ? 'border-red-500' : 'border-[#1E3A5F]'
+            } rounded-md text-white text-base outline-none transition-colors`}
         />
         {errors.email && (
           <p className="text-red-500 text-[0.8rem] mt-1">
@@ -84,11 +83,10 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
       <button
         type="submit"
         disabled={isLoading}
-        className={`w-full py-3.5 border-none rounded-md text-base font-bold transition-all ${
-          isLoading
+        className={`w-full py-3.5 border-none rounded-md text-base font-bold transition-all ${isLoading
             ? 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-70'
             : 'bg-[#00c8ff] text-[#020824] cursor-pointer'
-        }`}
+          }`}
       >
         {isLoading ? '送信中...' : 'リセットリンクを送信'}
       </button>
