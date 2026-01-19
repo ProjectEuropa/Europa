@@ -16,7 +16,7 @@ import {
     validateEventFormData,
     MODAL_IDS,
 } from '../services/discord/modals';
-import { postMessage, createMessageLink } from '../services/discord/api';
+import { postMessage, createMessageLink, deleteMessage } from '../services/discord/api';
 import { createEventMessage, createSuccessMessage, createErrorMessage } from '../services/discord/embed';
 
 const discord = new Hono<{ Bindings: Env }>();
@@ -129,29 +129,40 @@ discord.post('/interactions', async (c) => {
                 // Europaのeventsテーブルに登録
                 const sql = neon(c.env.DATABASE_URL);
 
-                // 日付をISO形式に変換（23:59:59を追加）
-                const deadline = new Date(`${formData.eventDeadline}T23:59:59`).toISOString();
-                const displayEnd = new Date(`${formData.eventDisplayEnd}T23:59:59`).toISOString();
+                // 日付をISO形式に変換（23:59:59 JST）
+                const deadline = new Date(`${formData.eventDeadline}T23:59:59+09:00`).toISOString();
+                const displayEnd = new Date(`${formData.eventDisplayEnd}T23:59:59+09:00`).toISOString();
 
-                await sql`
-                    INSERT INTO events (
-                        register_user_id,
-                        event_name,
-                        event_details,
-                        event_reference_url,
-                        event_type,
-                        event_closing_day,
-                        event_displaying_day
-                    ) VALUES (
-                        NULL,
-                        ${formData.eventName},
-                        ${formData.eventDetails},
-                        ${messageLink},
-                        '1',
-                        ${deadline}::timestamptz AT TIME ZONE 'Asia/Tokyo',
-                        ${displayEnd}::timestamptz AT TIME ZONE 'Asia/Tokyo'
-                    )
-                `;
+                try {
+                    await sql`
+                        INSERT INTO events (
+                            register_user_id,
+                            event_name,
+                            event_details,
+                            event_reference_url,
+                            event_type,
+                            event_closing_day,
+                            event_displaying_day
+                        ) VALUES (
+                            NULL,
+                            ${formData.eventName},
+                            ${formData.eventDetails},
+                            ${messageLink},
+                            '1',
+                            ${deadline}::timestamptz,
+                            ${displayEnd}::timestamptz
+                        )
+                    `;
+                } catch (dbError) {
+                    // DB挿入失敗時はDiscord投稿を削除
+                    console.error('DB insert failed, deleting Discord message:', dbError);
+                    await deleteMessage(
+                        c.env.DISCORD_BOT_TOKEN,
+                        c.env.DISCORD_CHANNEL_ID,
+                        postedMessage.id
+                    );
+                    throw dbError;
+                }
 
                 // 成功レスポンス
                 const response: InteractionResponse = {
@@ -190,9 +201,16 @@ discord.post('/interactions', async (c) => {
 
 /**
  * POST /api/v2/discord/register-commands
- * スラッシュコマンドを登録（手動実行用）
+ * スラッシュコマンドを登録（手動実行用・内部API）
+ * INTERNAL_API_SECRET ヘッダーで保護
  */
 discord.post('/register-commands', async (c) => {
+    // 内部APIシークレットによる保護
+    const secret = c.req.header('X-Internal-Secret');
+    if (!c.env.INTERNAL_API_SECRET || secret !== c.env.INTERNAL_API_SECRET) {
+        throw new HTTPException(403, { message: 'Forbidden' });
+    }
+
     const { registerGuildCommands } = await import('../services/discord/api');
 
     try {

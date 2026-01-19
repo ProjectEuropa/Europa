@@ -32,4 +32,7 @@ export interface Env {
     DISCORD_BOT_TOKEN: string;
     DISCORD_GUILD_ID: string;
     DISCORD_CHANNEL_ID: string;
+
+    // 内部API保護用シークレット
+    INTERNAL_API_SECRET?: string;
 }

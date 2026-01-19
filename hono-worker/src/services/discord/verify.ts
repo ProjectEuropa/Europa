@@ -21,10 +21,7 @@ export async function verifyDiscordSignature(
         const cryptoKey = await crypto.subtle.importKey(
             'raw',
             keyData,
-            {
-                name: 'Ed25519',
-                namedCurve: 'Ed25519',
-            },
+            { name: 'Ed25519' },
             false,
             ['verify']
         );
@@ -37,7 +34,7 @@ export async function verifyDiscordSignature(
 
         // 署名を検証
         const isValid = await crypto.subtle.verify(
-            'Ed25519',
+            { name: 'Ed25519' },
             cryptoKey,
             signatureData,
             message
@@ -54,6 +51,9 @@ export async function verifyDiscordSignature(
  * 16進数文字列をArrayBufferに変換
  */
 function hexToArrayBuffer(hex: string): ArrayBuffer {
+    if (hex.length % 2 !== 0 || !/^[0-9a-fA-F]+$/.test(hex)) {
+        throw new Error('Invalid hex string');
+    }
     const bytes = new Uint8Array(hex.length / 2);
     for (let i = 0; i < hex.length; i += 2) {
         bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);

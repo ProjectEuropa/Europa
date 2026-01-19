@@ -50,6 +50,36 @@ export function createMessageLink(guildId: string, channelId: string, messageId:
  * @param applicationId Application ID
  * @param guildId Guild ID
  */
+/**
+ * Discordメッセージを削除
+ * @param botToken Bot Token
+ * @param channelId チャンネルID
+ * @param messageId メッセージID
+ */
+export async function deleteMessage(
+    botToken: string,
+    channelId: string,
+    messageId: string
+): Promise<void> {
+    const response = await fetch(`${DISCORD_API_BASE}/channels/${channelId}/messages/${messageId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bot ${botToken}`,
+        },
+    });
+
+    if (!response.ok && response.status !== 404) {
+        const error = await response.text();
+        console.error(`Failed to delete Discord message: ${response.status} - ${error}`);
+    }
+}
+
+/**
+ * スラッシュコマンドを登録（ギルドコマンド）
+ * @param botToken Bot Token
+ * @param applicationId Application ID
+ * @param guildId Guild ID
+ */
 export async function registerGuildCommands(
     botToken: string,
     applicationId: string,
