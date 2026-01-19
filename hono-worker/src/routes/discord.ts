@@ -5,6 +5,8 @@ import type { Env } from '../types/bindings';
 import {
     InteractionType,
     InteractionResponseType,
+    MESSAGE_FLAGS,
+    EVENT_TYPES,
     type DiscordInteraction,
     type InteractionResponse,
     type ModalSubmitInteractionData,
@@ -21,14 +23,28 @@ import { createEventMessage, createSuccessMessage, createErrorMessage } from '..
 
 const discord = new Hono<{ Bindings: Env }>();
 
-// Message Flags
-const EPHEMERAL = 1 << 6; // 64 - Only visible to the user who triggered the interaction
+// Discord環境変数の必須チェック
+const REQUIRED_DISCORD_ENV = [
+    'DISCORD_PUBLIC_KEY',
+    'DISCORD_BOT_TOKEN',
+    'DISCORD_CHANNEL_ID',
+    'DISCORD_GUILD_ID',
+    'DISCORD_APPLICATION_ID',
+] as const;
 
 /**
  * POST /api/v2/discord/interactions
  * Discord Interactions Endpoint
  */
 discord.post('/interactions', async (c) => {
+    // 環境変数の検証
+    for (const key of REQUIRED_DISCORD_ENV) {
+        if (!c.env[key]) {
+            console.error(`Missing required environment variable: ${key}`);
+            throw new HTTPException(500, { message: 'Server configuration error' });
+        }
+    }
+
     // 署名検証
     const signature = c.req.header('X-Signature-Ed25519');
     const timestamp = c.req.header('X-Signature-Timestamp');
@@ -72,7 +88,7 @@ discord.post('/interactions', async (c) => {
             type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             data: {
                 content: '❌ 不明なコマンドです',
-                flags: EPHEMERAL,
+                flags: MESSAGE_FLAGS.EPHEMERAL,
             },
         };
         return c.json(response);
@@ -94,7 +110,7 @@ discord.post('/interactions', async (c) => {
                         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                         data: {
                             content: createErrorMessage(validation.errors),
-                            flags: EPHEMERAL,
+                            flags: MESSAGE_FLAGS.EPHEMERAL,
                         },
                     };
                     return c.json(response);
@@ -148,7 +164,7 @@ discord.post('/interactions', async (c) => {
                             ${formData.eventName},
                             ${formData.eventDetails},
                             ${messageLink},
-                            '1',
+                            ${EVENT_TYPES.TOURNAMENT},
                             ${deadline}::timestamptz,
                             ${displayEnd}::timestamptz
                         )
@@ -169,7 +185,7 @@ discord.post('/interactions', async (c) => {
                     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                     data: {
                         content: createSuccessMessage(formData.eventName),
-                        flags: EPHEMERAL,
+                        flags: MESSAGE_FLAGS.EPHEMERAL,
                     },
                 };
                 return c.json(response);
@@ -180,7 +196,7 @@ discord.post('/interactions', async (c) => {
                     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                     data: {
                         content: createErrorMessage(['サーバーエラーが発生しました。しばらく後にお試しください。']),
-                        flags: EPHEMERAL,
+                        flags: MESSAGE_FLAGS.EPHEMERAL,
                     },
                 };
                 return c.json(response);
@@ -193,7 +209,7 @@ discord.post('/interactions', async (c) => {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
             content: '❌ このInteractionには対応していません',
-            flags: EPHEMERAL,
+            flags: MESSAGE_FLAGS.EPHEMERAL,
         },
     };
     return c.json(response);

@@ -6,6 +6,7 @@ import {
     type InteractionResponse,
     type ActionRowComponent,
     type TextInputComponent,
+    type ModalSubmitComponent,
 } from '../../types/discord';
 
 // Modal Custom IDs
@@ -98,7 +99,7 @@ export interface EventRegistrationFormData {
 }
 
 export function extractModalValues(
-    components: Array<{ type: number; components: Array<{ custom_id: string; value: string }> }>
+    components: ModalSubmitComponent[]
 ): EventRegistrationFormData {
     const values: Record<string, string> = {};
 
@@ -167,6 +168,13 @@ export function validateEventFormData(data: EventRegistrationFormData): Validati
 
     if (!isValidDateFormat(data.eventDisplayEnd)) {
         errors.push('表示最終日はYYYY-MM-DD形式で入力してください');
+    }
+
+    // 日付の論理チェック（両方が有効な形式の場合のみ）
+    if (isValidDateFormat(data.eventDeadline) && isValidDateFormat(data.eventDisplayEnd)) {
+        if (new Date(data.eventDisplayEnd) < new Date(data.eventDeadline)) {
+            errors.push('表示最終日は締切日以降の日付を指定してください');
+        }
     }
 
     return {

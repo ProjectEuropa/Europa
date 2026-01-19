@@ -45,12 +45,6 @@ export function createMessageLink(guildId: string, channelId: string, messageId:
 }
 
 /**
- * スラッシュコマンドを登録（ギルドコマンド）
- * @param botToken Bot Token
- * @param applicationId Application ID
- * @param guildId Guild ID
- */
-/**
  * Discordメッセージを削除
  * @param botToken Bot Token
  * @param channelId チャンネルID
