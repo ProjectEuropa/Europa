@@ -41,9 +41,9 @@ describe('RegisterForm', () => {
     render(<RegisterForm />);
 
     // 基本的なフォーム要素の存在確認
-    expect(screen.getByPlaceholderText('山田太郎')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('ユーザー名を入力')).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText('example@example.com')
+      screen.getByPlaceholderText('you@europa.work')
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText('パスワードを入力')).toBeInTheDocument();
     expect(
@@ -72,7 +72,7 @@ describe('RegisterForm', () => {
     const user = userEvent.setup();
     render(<RegisterForm />);
 
-    const emailInput = screen.getByPlaceholderText('example@example.com');
+    const emailInput = screen.getByPlaceholderText('you@europa.work');
     await user.type(emailInput, 'invalid-email');
 
     const submitButton = screen.getByRole('button', { name: /アカウント作成/ });
@@ -90,9 +90,9 @@ describe('RegisterForm', () => {
     render(<RegisterForm />);
 
     // 有効なデータを入力
-    await user.type(screen.getByPlaceholderText('山田太郎'), 'Test User');
+    await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
     await user.type(
-      screen.getByPlaceholderText('example@example.com'),
+      screen.getByPlaceholderText('you@europa.work'),
       'test@example.com'
     );
     await user.type(
@@ -133,9 +133,9 @@ describe('RegisterForm', () => {
     render(<RegisterForm />);
 
     // 有効なデータを入力
-    await user.type(screen.getByPlaceholderText('山田太郎'), 'Test User');
+    await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
     await user.type(
-      screen.getByPlaceholderText('example@example.com'),
+      screen.getByPlaceholderText('you@europa.work'),
       'test@example.com'
     );
     await user.type(
@@ -172,9 +172,9 @@ describe('RegisterForm', () => {
     render(<RegisterForm />);
 
     // フォームに入力
-    await user.type(screen.getByPlaceholderText('山田太郎'), 'Test User');
+    await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
     await user.type(
-      screen.getByPlaceholderText('example@example.com'),
+      screen.getByPlaceholderText('you@europa.work'),
       'test@example.com'
     );
     await user.type(
@@ -215,9 +215,9 @@ describe('RegisterForm', () => {
     render(<RegisterForm onSuccess={mockOnSuccess} />);
 
     // フォームに入力して送信
-    await user.type(screen.getByPlaceholderText('山田太郎'), 'Test User');
+    await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
     await user.type(
-      screen.getByPlaceholderText('example@example.com'),
+      screen.getByPlaceholderText('you@europa.work'),
       'test@example.com'
     );
     await user.type(
