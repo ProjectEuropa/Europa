@@ -39,7 +39,7 @@ describe('Form Types', () => {
     });
 
     it('should work with any data type when no generic is specified', () => {
-      const formState: FormState = {
+      const formState: FormState<{ anything: string }> = {
         data: { anything: 'goes here' },
         errors: {},
         isSubmitting: true,

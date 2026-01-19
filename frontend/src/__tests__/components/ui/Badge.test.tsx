@@ -136,7 +136,7 @@ describe('Badge', () => {
   });
 
   it('should handle empty children', () => {
-    render(<Badge data-testid="empty-badge"></Badge>);
+    render(<Badge data-testid="empty-badge">{''}</Badge>);
     const badge = screen.getByTestId('empty-badge');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveClass('inline-flex');

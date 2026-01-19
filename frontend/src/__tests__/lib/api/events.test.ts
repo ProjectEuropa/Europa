@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '@/lib/api/client';
-import { registerEvent, fetchEvents } from '@/lib/api/events';
-import type { Event, EventFormData } from '@/types/event';
+import { fetchEvents } from '@/lib/api/events';
+import type { Event, } from '@/types/event';
 
 // APIクライアントをモック
 vi.mock('@/lib/api/client', () => ({
