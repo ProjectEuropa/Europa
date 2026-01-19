@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import type React from 'react';
 import Header from '@/components/Header';
 import { useSumDownloadManager } from '@/hooks/useSumDownloadManager';
 import { useViewMode } from '@/hooks/useViewMode';

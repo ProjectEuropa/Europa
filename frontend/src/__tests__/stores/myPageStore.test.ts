@@ -51,8 +51,8 @@ describe('MyPageStore', () => {
       const { setActiveTab } = useMyPageStore.getState();
 
       // TypeScript エラーをテスト（実行時ではなくコンパイル時）
-      // @ts-expect-error - 無効なタブタイプ
-      setActiveTab('invalid-tab' as MyPageTab);
+      // 型アサーションで無効なタブを強制的に設定
+      setActiveTab('invalid-tab' as unknown as MyPageTab);
     });
   });
 

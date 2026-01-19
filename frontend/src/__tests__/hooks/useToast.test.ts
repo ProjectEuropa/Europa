@@ -137,7 +137,7 @@ describe('useToast', () => {
   it('should return generated id', () => {
     const { result } = renderHook(() => useToast());
 
-    let id: string;
+    let id: string | undefined;
     act(() => {
       id = result.current.toast({
         type: 'success',

@@ -1,13 +1,13 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useAutocomplete, UseAutocompleteOptions } from '@/hooks/useAutocomplete';
+import { useAutocomplete, type UseAutocompleteOptions } from '@/hooks/useAutocomplete';
 import type { SearchSuggestion } from '@/hooks/useSearchSuggestions';
 
 const createMockSuggestions = (count: number): SearchSuggestion[] => {
   return Array.from({ length: count }, (_, i) => ({
     value: `suggestion-${i}`,
-    label: `Suggestion ${i}`,
     type: 'tag' as const,
+    score: count - i,
   }));
 };
 

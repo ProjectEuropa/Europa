@@ -171,7 +171,7 @@ describe('FileUploadForm', () => {
     }, { timeout: 3000 });
 
     // タグ1のテキストを含む要素を探し、その親要素内のチェックボックスをクリック
-    const tag1Element = screen.getByText('タグ1');
+    const _tag1Element = screen.getByText('タグ1');
     const checkboxes = screen.getAllByRole('checkbox');
     
     // タグ1に対応するチェックボックスを見つけてクリック（最初のチェックボックスと仮定）
@@ -462,7 +462,7 @@ describe('FileUploadForm', () => {
 
       // RPGはサジェストに表示されない（既に選択済みのため）
       await waitFor(() => {
-        const suggestions = screen.queryAllByRole('button').filter(btn =>
+        const _suggestions = screen.queryAllByRole('button').filter(btn =>
           btn.textContent?.includes('RPG') &&
           !btn.querySelector('svg') // 削除ボタンではない
         );
@@ -629,7 +629,7 @@ describe('FileUploadForm', () => {
       // ハイライトクラスが適用されていることを確認
       await waitFor(() => {
         // ハイライトされた部分を持つspan要素を探す
-        const highlightedElements = screen.getAllByText((content, element) => {
+        const highlightedElements = screen.getAllByText((_content, element) => {
           return (
             element?.tagName.toLowerCase() === 'span' &&
             element.classList.contains('text-[#00c8ff]') &&

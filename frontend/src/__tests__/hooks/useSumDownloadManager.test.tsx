@@ -83,9 +83,6 @@ const mockSearchResponse = {
       file_comment: 'テストコメント1',
       downloadable_at: '2024-01-01T10:00:00Z',
       search_tag1: 'タグ1',
-      search_tag2: null,
-      search_tag3: null,
-      search_tag4: null,
     },
     {
       id: 2,
@@ -95,9 +92,6 @@ const mockSearchResponse = {
       file_comment: 'テストコメント2',
       downloadable_at: null,
       search_tag1: 'タグ2',
-      search_tag2: null,
-      search_tag3: null,
-      search_tag4: null,
     },
   ],
   current_page: 1,
@@ -114,7 +108,7 @@ describe('useSumDownloadManager', () => {
     // デフォルトのAPI応答をモック
     sumDLSearchTeam.mockResolvedValue(mockSearchResponse);
     sumDLSearchMatch.mockResolvedValue(mockSearchResponse);
-    sumDownload.mockResolvedValue(undefined);
+    sumDownload.mockResolvedValue(() => { });
   });
 
   describe('初期化', () => {

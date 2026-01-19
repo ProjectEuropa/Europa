@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll, afterEach, vi } from 'vitest';
-import { existsSync, readFileSync, unlinkSync } from 'fs';
-import { join } from 'path';
-import { execSync } from 'child_process';
+import { describe, it, expect, beforeAll, afterEach, } from 'vitest';
+import { existsSync, readFileSync, } from 'node:fs';
+import { join } from 'node:path';
+import { execSync } from 'node:child_process';
 import sharp from 'sharp';
 
 const ROOT_DIR = join(__dirname, '../../..');
@@ -82,7 +82,7 @@ describe('OG Image Generation Script', () => {
 
   it('should fail gracefully if background image is missing', () => {
     // 一時的にファイルを別名に変更してテスト
-    const tempPath = join(ROOT_DIR, 'public', 'main.jpg.backup');
+    const _tempPath = join(ROOT_DIR, 'public', 'main.jpg.backup');
     const mainExists = existsSync(BACKGROUND_PATH);
 
     if (!mainExists) {

@@ -57,7 +57,9 @@ describe('SearchForm', () => {
       refresh: vi.fn(),
       prefetch: vi.fn(),
     });
-    vi.mocked(useSearchParams).mockReturnValue(mockSearchParams);
+    vi.mocked(useSearchParams).mockReturnValue(
+      mockSearchParams as unknown as ReturnType<typeof useSearchParams>
+    );
   });
 
   describe('基本的なレンダリング', () => {
@@ -199,7 +201,9 @@ describe('SearchForm', () => {
   describe('URLパラメータからの初期化', () => {
     it('should initialize input from URL params', () => {
       const searchParams = new URLSearchParams('keyword=initial+query');
-      vi.mocked(useSearchParams).mockReturnValue(searchParams);
+      vi.mocked(useSearchParams).mockReturnValue(
+        searchParams as unknown as ReturnType<typeof useSearchParams>
+      );
 
       render(<SearchForm searchType="team" />);
 
@@ -209,7 +213,9 @@ describe('SearchForm', () => {
 
     it('should handle empty URL params', () => {
       const searchParams = new URLSearchParams();
-      vi.mocked(useSearchParams).mockReturnValue(searchParams);
+      vi.mocked(useSearchParams).mockReturnValue(
+        searchParams as unknown as ReturnType<typeof useSearchParams>
+      );
 
       render(<SearchForm searchType="team" />);
 
