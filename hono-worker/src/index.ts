@@ -8,6 +8,7 @@ import type { ErrorResponse } from './types/api';
 import auth from './routes/auth';
 import events from './routes/events';
 import files from './routes/files';
+import discord from './routes/discord';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -63,6 +64,7 @@ const api = new Hono<{ Bindings: Env }>();
 api.route('/auth', auth);
 api.route('/events', events);
 api.route('/files', files);
+api.route('/discord', discord);
 
 app.route('/api/v2', api);
 

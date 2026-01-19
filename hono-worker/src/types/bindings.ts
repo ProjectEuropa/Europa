@@ -25,4 +25,11 @@ export interface Env {
 
     // R2 Bucket
     FILES_BUCKET: R2Bucket;
-};
+
+    // Discord連携
+    DISCORD_APPLICATION_ID: string;
+    DISCORD_PUBLIC_KEY: string;
+    DISCORD_BOT_TOKEN: string;
+    DISCORD_GUILD_ID: string;
+    DISCORD_CHANNEL_ID: string;
+}
