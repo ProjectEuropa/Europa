@@ -115,10 +115,10 @@ export default function GuidePage() {
               バグの報告や機能要望、アカウントに関するトラブルは、お問い合わせフォームまたは公式Discordコミュニティまでご連絡ください。
             </p>
             <InfoBox title="現在開発中の機能">
-              <ul className="text-sm text-slate-400 list-none space-y-1">
-                <li>・AIレコメンド機能</li>
-                <li>・スマホアプリ</li>
-              </ul>
+              <List>
+                <ListItem>AIを活用した戦術分析機能</ListItem>
+                <ListItem>デスクトップアプリとモバイルアプリの開発</ListItem>
+              </List>
             </InfoBox>
           </div>
         </div>
