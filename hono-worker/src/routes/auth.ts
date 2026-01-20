@@ -25,7 +25,7 @@ auth.post('/register', async c => {
     // バリデーション
     const result = registerSchema.safeParse(body);
     if (!result.success) {
-        throw new HTTPException(400, {
+        throw new HTTPException(422, {
             message: 'Validation error',
             cause: result.error.issues,
         });
@@ -88,7 +88,7 @@ auth.post('/login', async c => {
     // バリデーション
     const result = loginSchema.safeParse(body);
     if (!result.success) {
-        throw new HTTPException(400, {
+        throw new HTTPException(422, {
             message: 'Validation error',
             cause: result.error.issues,
         });
@@ -202,7 +202,7 @@ auth.put('/me', authMiddleware, async c => {
     const { userUpdateSchema } = await import('../utils/validation');
     const result = userUpdateSchema.safeParse(body);
     if (!result.success) {
-        throw new HTTPException(400, {
+        throw new HTTPException(422, {
             message: 'Validation error',
             cause: result.error.issues,
         });
@@ -245,7 +245,7 @@ auth.post('/password/reset', async c => {
     const { passwordResetRequestSchema } = await import('../utils/validation');
     const result = passwordResetRequestSchema.safeParse(body);
     if (!result.success) {
-        throw new HTTPException(400, {
+        throw new HTTPException(422, {
             message: 'Validation error',
             cause: result.error,
         });
@@ -327,7 +327,7 @@ auth.post('/password/update', async c => {
     const { passwordResetUpdateSchema } = await import('../utils/validation');
     const result = passwordResetUpdateSchema.safeParse(body);
     if (!result.success) {
-        throw new HTTPException(400, {
+        throw new HTTPException(422, {
             message: 'Validation error',
             cause: result.error,
         });
@@ -391,14 +391,17 @@ auth.post('/password/update', async c => {
 auth.post('/password/check', async c => {
     const body = await c.req.json().catch(() => ({}));
 
-    const { token } = body;
-
-    if (!token || typeof token !== 'string') {
-        throw new HTTPException(400, {
-            message: 'トークンが必要です',
-            cause: { code: 'TOKEN_REQUIRED' },
+    // バリデーション
+    const { passwordResetCheckSchema } = await import('../utils/validation');
+    const result = passwordResetCheckSchema.safeParse(body);
+    if (!result.success) {
+        throw new HTTPException(422, {
+            message: 'Validation error',
+            cause: result.error,
         });
     }
+
+    const { token } = result.data;
 
     // データベース接続
     const sql = neon(c.env.DATABASE_URL);

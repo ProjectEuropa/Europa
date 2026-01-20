@@ -32,6 +32,13 @@ files.get('/', optionalAuthMiddleware, async c => {
     const queryParams = c.req.query();
     const result = fileQuerySchema.safeParse(queryParams);
 
+    if (!result.success) {
+        throw new HTTPException(422, {
+            message: 'Validation error',
+            cause: result.error.issues,
+        });
+    }
+
     const {
         page = 1,
         limit = 20,
@@ -41,7 +48,7 @@ files.get('/', optionalAuthMiddleware, async c => {
         keyword,
         data_type,
         sort_order = 'desc',
-    }: FileQueryInput = result.success ? result.data : { page: 1, limit: 20 };
+    }: FileQueryInput = result.data;
 
     // ページネーション計算
     const offset = (page - 1) * limit;
@@ -328,8 +335,19 @@ files.post('/', optionalAuthMiddleware, async c => {
         }
     }
 
-    // タグをパース
-    const tags = tagsString ? JSON.parse(tagsString) : [];
+    // タグをパース（JSON形式で送信される）
+    let tags: string[] = [];
+    if (tagsString) {
+        try {
+            tags = JSON.parse(tagsString);
+            if (!Array.isArray(tags)) {
+                throw new HTTPException(422, { message: 'Tags must be an array' });
+            }
+        } catch (e) {
+            if (e instanceof HTTPException) throw e;
+            throw new HTTPException(422, { message: 'Invalid tags format: must be valid JSON array' });
+        }
+    }
 
     // data_typeを判定（フロントエンドから送信された値を使用、デフォルトはチーム）
     const dataType = inputDataType === DATA_TYPE.MATCH ? DATA_TYPE.MATCH : DATA_TYPE.TEAM;
@@ -470,11 +488,18 @@ files.delete('/:id', optionalAuthMiddleware, async c => {
     } else {
         // 匿名ユーザー: 削除パスワードで検証
         const body = await c.req.json().catch(() => ({}));
-        const { deletePassword } = body;
 
-        if (!deletePassword) {
-            throw new HTTPException(401, { message: '削除パスワードが必要です' });
+        // バリデーション
+        const { fileDeletePasswordSchema } = await import('../utils/validation');
+        const result = fileDeletePasswordSchema.safeParse(body);
+        if (!result.success) {
+            throw new HTTPException(422, {
+                message: '削除パスワードが必要です',
+                cause: result.error.issues,
+            });
         }
+
+        const { deletePassword } = result.data;
 
         if (!file.delete_password) {
             throw new HTTPException(403, { message: '削除に失敗しました' });
@@ -510,16 +535,18 @@ files.delete('/:id', optionalAuthMiddleware, async c => {
  */
 files.post('/bulk-download', optionalAuthMiddleware, async c => {
     const body = await c.req.json().catch(() => ({}));
-    const { fileIds } = body;
 
     // バリデーション
-    if (!Array.isArray(fileIds) || fileIds.length === 0) {
-        throw new HTTPException(400, { message: 'ファイルIDのリストが必要です' });
+    const { bulkDownloadSchema } = await import('../utils/validation');
+    const result = bulkDownloadSchema.safeParse(body);
+    if (!result.success) {
+        throw new HTTPException(422, {
+            message: 'Validation error',
+            cause: result.error.issues,
+        });
     }
 
-    if (fileIds.length > 50) {
-        throw new HTTPException(400, { message: '一度に選択できるファイルは50個までです' });
-    }
+    const { fileIds } = result.data;
 
     // データベース接続
     const sql = neon(c.env.DATABASE_URL);

@@ -19,27 +19,37 @@ export interface EventEmbedData {
 }
 
 /**
+ * Discordマークダウンをエスケープ
+ * ユーザー入力をメッセージに含める際にインジェクションを防止
+ */
+function escapeDiscordMarkdown(text: string): string {
+    // Discord マークダウン特殊文字をエスケープ
+    return text.replace(/([*_`~|\\])/g, '\\$1');
+}
+
+/**
  * イベント告知用のEmbedを生成
+ * ユーザー入力値はエスケープしてマークダウンインジェクションを防止
  */
 export function createEventEmbed(data: EventEmbedData): DiscordEmbed {
     return {
-        title: `🎮 ${data.eventName}`,
-        description: data.eventDetails,
+        title: `🎮 ${escapeDiscordMarkdown(data.eventName)}`,
+        description: escapeDiscordMarkdown(data.eventDetails),
         color: COLORS.PRIMARY,
         fields: [
             {
                 name: '📅 締切日',
-                value: data.eventDeadline,
+                value: escapeDiscordMarkdown(data.eventDeadline),
                 inline: true,
             },
             {
                 name: '📆 表示最終日',
-                value: data.eventDisplayEnd,
+                value: escapeDiscordMarkdown(data.eventDisplayEnd),
                 inline: true,
             },
         ],
         footer: {
-            text: `登録者: ${data.registeredBy}`,
+            text: `登録者: ${escapeDiscordMarkdown(data.registeredBy)}`,
         },
         timestamp: new Date().toISOString(),
     };
@@ -53,15 +63,6 @@ export function createEventMessage(data: EventEmbedData): CreateMessageRequest {
         content: '📢 **新しい大会が登録されました！**',
         embeds: [createEventEmbed(data)],
     };
-}
-
-/**
- * Discordマークダウンをエスケープ
- * ユーザー入力をメッセージに含める際にインジェクションを防止
- */
-function escapeDiscordMarkdown(text: string): string {
-    // Discord マークダウン特殊文字をエスケープ
-    return text.replace(/([*_`~|\\])/g, '\\$1');
 }
 
 /**

@@ -31,7 +31,7 @@ export const eventQuerySchema = z.object({
 export const eventRegistrationSchema = z
     .object({
         name: z.string().min(1, 'Name is required').max(255),
-        details: z.string().min(1, 'Details are required').max(255),
+        details: z.string().min(1, 'Details are required'), // DB: TEXT型のため長さ制限なし
         url: z.string().url('Invalid URL').max(255).optional().or(z.literal('')),
         type: z.enum(['1', '2']), // 1: 大会, 2: その他
         deadline: z.string().datetime(),
@@ -82,8 +82,25 @@ export const passwordResetUpdateSchema = z.object({
     password: z.string().min(8, 'Password must be at least 8 characters').max(255),
 });
 
+export const passwordResetCheckSchema = z.object({
+    token: z.string().min(32, 'Token is required').max(32),
+});
+
+// ファイル削除用バリデーションスキーマ
+export const fileDeletePasswordSchema = z.object({
+    deletePassword: z.string().min(1, 'Delete password is required'),
+});
+
+// 一括ダウンロード用バリデーションスキーマ
+export const bulkDownloadSchema = z.object({
+    fileIds: z.array(z.number().int().positive()).max(50),
+});
+
 export type PasswordResetRequestInput = z.infer<typeof passwordResetRequestSchema>;
 export type PasswordResetUpdateInput = z.infer<typeof passwordResetUpdateSchema>;
+export type PasswordResetCheckInput = z.infer<typeof passwordResetCheckSchema>;
+export type FileDeletePasswordInput = z.infer<typeof fileDeletePasswordSchema>;
+export type BulkDownloadInput = z.infer<typeof bulkDownloadSchema>;
 export type FileQueryInput = z.infer<typeof fileQuerySchema>;
 
 export const userUpdateSchema = z.object({
