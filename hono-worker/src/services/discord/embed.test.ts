@@ -99,3 +99,150 @@ describe('createErrorMessage', () => {
         expect(typeof message).toBe('string');
     });
 });
+
+describe('Discordマークダウンインジェクション防止', () => {
+    describe('createEventEmbed', () => {
+        it('タイトル内の太字マークダウン(**text**)をエスケープする', () => {
+            const embed = createEventEmbed({
+                eventName: '**悪意のある太字**',
+                eventDetails: '詳細',
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: 'User',
+            });
+
+            // **がエスケープされて\*\*になることを確認
+            expect(embed.title).not.toContain('**悪意');
+            expect(embed.title).toContain('\\*\\*悪意のある太字\\*\\*');
+        });
+
+        it('説明文内のイタリックマークダウン(*text*)をエスケープする', () => {
+            const embed = createEventEmbed({
+                eventName: 'テスト',
+                eventDetails: '*イタリック攻撃*',
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: 'User',
+            });
+
+            // エスケープ後は \*イタリック攻撃\* となる
+            // 未エスケープの単独 * がないことを確認（\*は許容）
+            expect(embed.description).toContain('\\*イタリック攻撃\\*');
+            // 元のマークダウンパターン *text* が残っていないことを確認
+            expect(embed.description).not.toMatch(/(?<!\\)\*[^*]+(?<!\\)\*/);
+        });
+
+        it('アンダースコア(_text_)をエスケープする', () => {
+            const embed = createEventEmbed({
+                eventName: '_アンダースコア_',
+                eventDetails: '詳細',
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: 'User',
+            });
+
+            expect(embed.title).toContain('\\_アンダースコア\\_');
+        });
+
+        it('コードブロック(`)をエスケープする', () => {
+            const embed = createEventEmbed({
+                eventName: '`コード`インジェクション',
+                eventDetails: '詳細',
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: 'User',
+            });
+
+            expect(embed.title).toContain('\\`コード\\`');
+        });
+
+        it('取り消し線(~~text~~)をエスケープする', () => {
+            const embed = createEventEmbed({
+                eventName: '~~取り消し~~',
+                eventDetails: '詳細',
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: 'User',
+            });
+
+            expect(embed.title).toContain('\\~\\~取り消し\\~\\~');
+        });
+
+        it('スポイラー(||text||)をエスケープする', () => {
+            const embed = createEventEmbed({
+                eventName: '||スポイラー||',
+                eventDetails: '詳細',
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: 'User',
+            });
+
+            expect(embed.title).toContain('\\|\\|スポイラー\\|\\|');
+        });
+
+        it('バックスラッシュ(\\)をエスケープする', () => {
+            const embed = createEventEmbed({
+                eventName: 'パス\\パス',
+                eventDetails: '詳細',
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: 'User',
+            });
+
+            expect(embed.title).toContain('パス\\\\パス');
+        });
+
+        it('複合的なマークダウン攻撃をエスケープする', () => {
+            const maliciousInput = '**太字**_イタリック_`コード`~~取り消し~~||スポイラー||';
+            const embed = createEventEmbed({
+                eventName: maliciousInput,
+                eventDetails: maliciousInput,
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: maliciousInput,
+            });
+
+            // 元のマークダウン文字がそのまま残っていないことを確認
+            expect(embed.title).not.toMatch(/(?<!\\)\*\*/);
+            expect(embed.description).not.toMatch(/(?<!\\)`/);
+            expect(embed.footer?.text).not.toMatch(/(?<!\\)\|\|/);
+        });
+
+        it('フィールド値（締切日・表示最終日）もエスケープされる', () => {
+            const embed = createEventEmbed({
+                eventName: 'テスト',
+                eventDetails: '詳細',
+                eventDeadline: '**2025-12-31**',
+                eventDisplayEnd: '*2026-01-15*',
+                registeredBy: 'User',
+            });
+
+            const deadlineField = embed.fields?.find(f => f.name.includes('締切'));
+            const displayEndField = embed.fields?.find(f => f.name.includes('表示'));
+
+            expect(deadlineField?.value).toContain('\\*\\*2025-12-31\\*\\*');
+            expect(displayEndField?.value).toContain('\\*2026-01-15\\*');
+        });
+
+        it('登録者名（フッター）もエスケープされる', () => {
+            const embed = createEventEmbed({
+                eventName: 'テスト',
+                eventDetails: '詳細',
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2026-01-15',
+                registeredBy: '**Admin** `sudo`',
+            });
+
+            expect(embed.footer?.text).toContain('\\*\\*Admin\\*\\*');
+            expect(embed.footer?.text).toContain('\\`sudo\\`');
+        });
+    });
+
+    describe('createSuccessMessage', () => {
+        it('マークダウン文字をエスケープする', () => {
+            const message = createSuccessMessage('**太字大会**');
+            expect(message).toContain('\\*\\*太字大会\\*\\*');
+            expect(message).not.toMatch(/(?<!\\)\*\*太字/);
+        });
+    });
+});

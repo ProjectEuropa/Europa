@@ -48,6 +48,11 @@ export function createEventRegistrationModal(): InteractionResponse {
         placeholder: '大会の詳細情報を入力してください',
     };
 
+    /**
+     * 締切日入力フィールド
+     * 入力形式: YYYY-MM-DD（JST日付を想定）
+     * 例: 2025-12-31 → 2025年12月31日23:59:59 JSTが締切
+     */
     const deadlineInput: TextInputComponent = {
         type: ComponentType.TEXT_INPUT,
         custom_id: FIELD_IDS.EVENT_DEADLINE,
@@ -59,6 +64,11 @@ export function createEventRegistrationModal(): InteractionResponse {
         placeholder: '例: 2025-12-31',
     };
 
+    /**
+     * 表示最終日入力フィールド
+     * 入力形式: YYYY-MM-DD（JST日付を想定）
+     * 例: 2026-01-15 → 2026年1月15日23:59:59 JSTまで表示
+     */
     const displayEndInput: TextInputComponent = {
         type: ComponentType.TEXT_INPUT,
         custom_id: FIELD_IDS.EVENT_DISPLAY_END,

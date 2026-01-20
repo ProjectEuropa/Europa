@@ -155,7 +155,17 @@ discord.post('/interactions', async c => {
                 // Europaのeventsテーブルに登録
                 const sql = neon(c.env.DATABASE_URL);
 
-                // 日付をISO形式に変換（23:59:59 JST）
+                /**
+                 * 日付をISO形式（UTC）に変換
+                 *
+                 * タイムゾーンの想定:
+                 * - ユーザー入力: YYYY-MM-DD形式（JST日付を想定）
+                 * - 締切時刻: その日の23:59:59 JST（日本時間の1日の終わり）
+                 * - DB保存: UTC形式（timestamptz）
+                 *
+                 * 例: 2026-02-01（JST）→ 2026-02-01T14:59:59Z（UTC）
+                 * ※ JSTはUTC+9のため、23:59:59 JST = 14:59:59 UTC
+                 */
                 const deadline = new Date(`${formData.eventDeadline}T23:59:59+09:00`).toISOString();
                 const displayEnd = new Date(
                     `${formData.eventDisplayEnd}T23:59:59+09:00`
