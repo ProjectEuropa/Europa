@@ -28,21 +28,26 @@ export const eventQuerySchema = z.object({
     limit: z.string().regex(/^\d+$/).transform(Number).optional(),
 });
 
-export const eventRegistrationSchema = z.object({
-    name: z.string().min(1, 'Name is required').max(255),
-    details: z.string().min(1, 'Details are required').max(255),
-    url: z.string().url('Invalid URL').max(255).optional().or(z.literal('')),
-    type: z.enum(['1', '2']), // 1: 大会, 2: その他
-    deadline: z.string().datetime(),
-    endDisplayDate: z.string().datetime(),
-}).refine(data => {
-    const deadline = new Date(data.deadline);
-    const endDisplayDate = new Date(data.endDisplayDate);
-    return endDisplayDate >= deadline;
-}, {
-    message: "End display date must be after deadline",
-    path: ["endDisplayDate"],
-});
+export const eventRegistrationSchema = z
+    .object({
+        name: z.string().min(1, 'Name is required').max(255),
+        details: z.string().min(1, 'Details are required').max(255),
+        url: z.string().url('Invalid URL').max(255).optional().or(z.literal('')),
+        type: z.enum(['1', '2']), // 1: 大会, 2: その他
+        deadline: z.string().datetime(),
+        endDisplayDate: z.string().datetime(),
+    })
+    .refine(
+        data => {
+            const deadline = new Date(data.deadline);
+            const endDisplayDate = new Date(data.endDisplayDate);
+            return endDisplayDate >= deadline;
+        },
+        {
+            message: 'End display date must be after deadline',
+            path: ['endDisplayDate'],
+        }
+    );
 
 export const fileQuerySchema = z.object({
     page: z.string().regex(/^\d+$/).transform(Number).optional(),
@@ -51,7 +56,10 @@ export const fileQuerySchema = z.object({
     upload_user_id: z.string().regex(/^\d+$/).transform(Number).optional(),
     mine: z.string().optional(),
     keyword: z.string().max(255).optional(), // ファイル名・コメント検索用
-    data_type: z.string().regex(/^[12]$/).optional(), // チーム:1 or マッチ:2
+    data_type: z
+        .string()
+        .regex(/^[12]$/)
+        .optional(), // チーム:1 or マッチ:2
     sort_order: z.enum(['asc', 'desc']).optional(), // ソート順: asc=古い順, desc=新しい順
 });
 

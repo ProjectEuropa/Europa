@@ -1,12 +1,12 @@
 // Discord Modal定義
 import {
-    ComponentType,
-    TextInputStyle,
-    InteractionResponseType,
-    type InteractionResponse,
     type ActionRowComponent,
-    type TextInputComponent,
+    ComponentType,
+    type InteractionResponse,
+    InteractionResponseType,
     type ModalSubmitComponent,
+    type TextInputComponent,
+    TextInputStyle,
 } from '../../types/discord';
 
 // Modal Custom IDs
@@ -98,9 +98,7 @@ export interface EventRegistrationFormData {
     eventDisplayEnd: string;
 }
 
-export function extractModalValues(
-    components: ModalSubmitComponent[]
-): EventRegistrationFormData {
+export function extractModalValues(components: ModalSubmitComponent[]): EventRegistrationFormData {
     const values: Record<string, string> = {};
 
     for (const row of components) {

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMessageLink } from './api';
 
 // fetchのモック
@@ -34,15 +34,17 @@ describe('postMessage', () => {
 
         expect(mockFetch).toHaveBeenCalledWith(
             'https://discord.com/api/v10/channels/channel-id/messages',
-            {
+            expect.objectContaining({
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bot bot-token',
+                    Authorization: 'Bot bot-token',
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(message),
-            }
+            })
         );
+        // signal（タイムアウト用）が含まれていることを確認
+        expect(mockFetch.mock.calls[0][1]).toHaveProperty('signal');
         expect(result).toEqual({ id: '123', content: 'test' });
     });
 
@@ -54,8 +56,9 @@ describe('postMessage', () => {
         });
 
         const { postMessage } = await import('./api');
-        await expect(postMessage('invalid-token', 'channel-id', { content: 'test' }))
-            .rejects.toThrow('Discord API error: 401 - Unauthorized');
+        await expect(
+            postMessage('invalid-token', 'channel-id', { content: 'test' })
+        ).rejects.toThrow('Discord API error: 401 - Unauthorized');
     });
 });
 
@@ -74,13 +77,15 @@ describe('deleteMessage', () => {
 
         expect(mockFetch).toHaveBeenCalledWith(
             'https://discord.com/api/v10/channels/channel-id/messages/message-id',
-            {
+            expect.objectContaining({
                 method: 'DELETE',
                 headers: {
-                    'Authorization': 'Bot bot-token',
+                    Authorization: 'Bot bot-token',
                 },
-            }
+            })
         );
+        // signal（タイムアウト用）が含まれていることを確認
+        expect(mockFetch.mock.calls[0][1]).toHaveProperty('signal');
     });
 
     it('404エラーは無視する（既に削除済み）', async () => {
@@ -92,12 +97,12 @@ describe('deleteMessage', () => {
 
         const { deleteMessage } = await import('./api');
         // エラーを投げないことを確認
-        await expect(deleteMessage('bot-token', 'channel-id', 'message-id'))
-            .resolves.toBeUndefined();
+        await expect(
+            deleteMessage('bot-token', 'channel-id', 'message-id')
+        ).resolves.toBeUndefined();
     });
 
-    it('404以外のエラーはログに出力する', async () => {
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    it('404以外のエラーはエラーを投げる', async () => {
         mockFetch.mockResolvedValue({
             ok: false,
             status: 500,
@@ -105,12 +110,9 @@ describe('deleteMessage', () => {
         });
 
         const { deleteMessage } = await import('./api');
-        await deleteMessage('bot-token', 'channel-id', 'message-id');
-
-        expect(consoleSpy).toHaveBeenCalledWith(
+        await expect(deleteMessage('bot-token', 'channel-id', 'message-id')).rejects.toThrow(
             'Failed to delete Discord message: 500 - Internal Server Error'
         );
-        consoleSpy.mockRestore();
     });
 });
 
@@ -133,7 +135,7 @@ describe('registerGuildCommands', () => {
             expect.objectContaining({
                 method: 'PUT',
                 headers: {
-                    'Authorization': 'Bot bot-token',
+                    Authorization: 'Bot bot-token',
                     'Content-Type': 'application/json',
                 },
             })
@@ -148,7 +150,8 @@ describe('registerGuildCommands', () => {
         });
 
         const { registerGuildCommands } = await import('./api');
-        await expect(registerGuildCommands('bot-token', 'app-id', 'guild-id'))
-            .rejects.toThrow('Failed to register commands: 403 - Forbidden');
+        await expect(registerGuildCommands('bot-token', 'app-id', 'guild-id')).rejects.toThrow(
+            'Failed to register commands: 403 - Forbidden'
+        );
     });
 });

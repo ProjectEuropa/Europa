@@ -1,25 +1,29 @@
+import { neon } from '@neondatabase/serverless';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { neon } from '@neondatabase/serverless';
-import type { Env } from '../types/bindings';
+import { createMessageLink, deleteMessage, postMessage } from '../services/discord/api';
 import {
-    InteractionType,
-    InteractionResponseType,
-    MESSAGE_FLAGS,
-    EVENT_TYPES,
-    type DiscordInteraction,
-    type InteractionResponse,
-    type ModalSubmitInteractionData,
-} from '../types/discord';
-import { verifyDiscordSignature } from '../services/discord/verify';
+    createErrorMessage,
+    createEventMessage,
+    createSuccessMessage,
+} from '../services/discord/embed';
 import {
     createEventRegistrationModal,
     extractModalValues,
-    validateEventFormData,
     MODAL_IDS,
+    validateEventFormData,
 } from '../services/discord/modals';
-import { postMessage, createMessageLink, deleteMessage } from '../services/discord/api';
-import { createEventMessage, createSuccessMessage, createErrorMessage } from '../services/discord/embed';
+import { verifyDiscordSignature } from '../services/discord/verify';
+import type { Env } from '../types/bindings';
+import {
+    type DiscordInteraction,
+    EVENT_TYPES,
+    type InteractionResponse,
+    InteractionResponseType,
+    InteractionType,
+    MESSAGE_FLAGS,
+    type ModalSubmitInteractionData,
+} from '../types/discord';
 
 const discord = new Hono<{ Bindings: Env }>();
 
@@ -36,7 +40,7 @@ const REQUIRED_DISCORD_ENV = [
  * POST /api/v2/discord/interactions
  * Discord Interactions Endpoint
  */
-discord.post('/interactions', async (c) => {
+discord.post('/interactions', async c => {
     // 環境変数の検証
     for (const key of REQUIRED_DISCORD_ENV) {
         if (!c.env[key]) {
@@ -99,6 +103,10 @@ discord.post('/interactions', async (c) => {
         const modalData = interaction.data as ModalSubmitInteractionData;
 
         if (modalData.custom_id === MODAL_IDS.EVENT_REGISTRATION) {
+            // ユーザー情報（ログ用に先に取得）
+            const user = interaction.member?.user || interaction.user;
+            const username = user?.global_name || user?.username || 'Unknown';
+
             try {
                 // フォームデータを抽出
                 const formData = extractModalValues(modalData.components);
@@ -106,6 +114,12 @@ discord.post('/interactions', async (c) => {
                 // バリデーション
                 const validation = validateEventFormData(formData);
                 if (!validation.valid) {
+                    // バリデーションエラーをログに記録（デバッグ用）
+                    console.warn('Event form validation failed:', {
+                        errors: validation.errors,
+                        userId: user?.id,
+                        username: user?.username,
+                    });
                     const response: InteractionResponse = {
                         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                         data: {
@@ -115,10 +129,6 @@ discord.post('/interactions', async (c) => {
                     };
                     return c.json(response);
                 }
-
-                // ユーザー情報
-                const user = interaction.member?.user || interaction.user;
-                const username = user?.global_name || user?.username || 'Unknown';
 
                 // コマンドが実行されたチャンネルに投稿
                 const channelId = interaction.channel_id || c.env.DISCORD_CHANNEL_ID;
@@ -140,18 +150,16 @@ discord.post('/interactions', async (c) => {
                 );
 
                 // メッセージリンクを生成
-                const messageLink = createMessageLink(
-                    guildId,
-                    channelId,
-                    postedMessage.id
-                );
+                const messageLink = createMessageLink(guildId, channelId, postedMessage.id);
 
                 // Europaのeventsテーブルに登録
                 const sql = neon(c.env.DATABASE_URL);
 
                 // 日付をISO形式に変換（23:59:59 JST）
                 const deadline = new Date(`${formData.eventDeadline}T23:59:59+09:00`).toISOString();
-                const displayEnd = new Date(`${formData.eventDisplayEnd}T23:59:59+09:00`).toISOString();
+                const displayEnd = new Date(
+                    `${formData.eventDisplayEnd}T23:59:59+09:00`
+                ).toISOString();
 
                 try {
                     await sql`
@@ -174,13 +182,23 @@ discord.post('/interactions', async (c) => {
                         )
                     `;
                 } catch (dbError) {
-                    // DB挿入失敗時はDiscord投稿を削除
-                    console.error('DB insert failed, deleting Discord message:', dbError);
-                    await deleteMessage(
-                        c.env.DISCORD_BOT_TOKEN,
-                        channelId,
-                        postedMessage.id
-                    );
+                    // DB挿入失敗時はDiscord投稿を削除（ロールバック）
+                    console.error('DB insert failed, attempting rollback:', dbError);
+                    try {
+                        await deleteMessage(c.env.DISCORD_BOT_TOKEN, channelId, postedMessage.id);
+                        console.info('Rollback successful: Discord message deleted');
+                    } catch (deleteError) {
+                        // ロールバック失敗は重大なエラー（データ不整合の可能性）
+                        console.error(
+                            'CRITICAL: Rollback failed - Discord message remains but DB insert failed:',
+                            {
+                                messageId: postedMessage.id,
+                                channelId,
+                                dbError,
+                                deleteError,
+                            }
+                        );
+                    }
                     throw dbError;
                 }
 
@@ -193,13 +211,14 @@ discord.post('/interactions', async (c) => {
                     },
                 };
                 return c.json(response);
-
             } catch (error) {
                 console.error('Event registration failed:', error);
                 const response: InteractionResponse = {
                     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
                     data: {
-                        content: createErrorMessage(['サーバーエラーが発生しました。しばらく後にお試しください。']),
+                        content: createErrorMessage([
+                            'サーバーエラーが発生しました。しばらく後にお試しください。',
+                        ]),
                         flags: MESSAGE_FLAGS.EPHEMERAL,
                     },
                 };
@@ -224,7 +243,7 @@ discord.post('/interactions', async (c) => {
  * スラッシュコマンドを登録（手動実行用・内部API）
  * INTERNAL_API_SECRET ヘッダーで保護
  */
-discord.post('/register-commands', async (c) => {
+discord.post('/register-commands', async c => {
     // 内部APIシークレットによる保護
     const secret = c.req.header('X-Internal-Secret');
     if (!c.env.INTERNAL_API_SECRET || secret !== c.env.INTERNAL_API_SECRET) {

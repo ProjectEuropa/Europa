@@ -22,7 +22,8 @@ export const InteractionResponseType = {
     MODAL: 9,
 } as const;
 
-export type InteractionResponseTypeValue = (typeof InteractionResponseType)[keyof typeof InteractionResponseType];
+export type InteractionResponseTypeValue =
+    (typeof InteractionResponseType)[keyof typeof InteractionResponseType];
 
 // Component Types
 export const ComponentType = {

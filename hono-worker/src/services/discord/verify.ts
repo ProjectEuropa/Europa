@@ -1,6 +1,9 @@
 // Discord署名検証
 // https://discord.com/developers/docs/interactions/receiving-and-responding#security-and-authorization
 
+// リクエストの有効期限（5分）
+const MAX_REQUEST_AGE_MS = 5 * 60 * 1000;
+
 /**
  * Discord Interactionリクエストの署名を検証
  * @param publicKey Discord Application Public Key
@@ -16,6 +19,16 @@ export async function verifyDiscordSignature(
     body: string
 ): Promise<boolean> {
     try {
+        // タイムスタンプの有効期限チェック（リプレイ攻撃対策）
+        const requestTime = parseInt(timestamp, 10) * 1000;
+        if (Number.isNaN(requestTime) || Date.now() - requestTime > MAX_REQUEST_AGE_MS) {
+            console.warn('Discord request timestamp expired or invalid:', {
+                timestamp,
+                age: Date.now() - requestTime,
+            });
+            return false;
+        }
+
         // 公開鍵をCryptoKeyに変換
         const keyData = hexToArrayBuffer(publicKey);
         const cryptoKey = await crypto.subtle.importKey(

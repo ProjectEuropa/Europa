@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+    createErrorMessage,
     createEventEmbed,
     createEventMessage,
     createSuccessMessage,
-    createErrorMessage,
 } from './embed';
 
 describe('createEventEmbed', () => {

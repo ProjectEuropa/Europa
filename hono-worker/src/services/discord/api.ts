@@ -4,6 +4,32 @@ import type { CreateMessageRequest, DiscordMessage } from '../../types/discord';
 
 const DISCORD_API_BASE = 'https://discord.com/api/v10';
 
+// Discord APIタイムアウト（ミリ秒）
+// Discord Interactionsは3秒以内に応答が必要なため、余裕を持って2秒
+const DISCORD_API_TIMEOUT_MS = 2000;
+
+/**
+ * タイムアウト付きfetch
+ */
+async function fetchWithTimeout(
+    url: string,
+    options: RequestInit,
+    timeoutMs: number = DISCORD_API_TIMEOUT_MS
+): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal,
+        });
+        return response;
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
+
 /**
  * Discordチャンネルにメッセージを投稿
  * @param botToken Bot Token
@@ -16,10 +42,10 @@ export async function postMessage(
     channelId: string,
     message: CreateMessageRequest
 ): Promise<DiscordMessage> {
-    const response = await fetch(`${DISCORD_API_BASE}/channels/${channelId}/messages`, {
+    const response = await fetchWithTimeout(`${DISCORD_API_BASE}/channels/${channelId}/messages`, {
         method: 'POST',
         headers: {
-            'Authorization': `Bot ${botToken}`,
+            Authorization: `Bot ${botToken}`,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(message),
@@ -55,16 +81,19 @@ export async function deleteMessage(
     channelId: string,
     messageId: string
 ): Promise<void> {
-    const response = await fetch(`${DISCORD_API_BASE}/channels/${channelId}/messages/${messageId}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bot ${botToken}`,
-        },
-    });
+    const response = await fetchWithTimeout(
+        `${DISCORD_API_BASE}/channels/${channelId}/messages/${messageId}`,
+        {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bot ${botToken}`,
+            },
+        }
+    );
 
     if (!response.ok && response.status !== 404) {
         const error = await response.text();
-        console.error(`Failed to delete Discord message: ${response.status} - ${error}`);
+        throw new Error(`Failed to delete Discord message: ${response.status} - ${error}`);
     }
 }
 
@@ -87,16 +116,18 @@ export async function registerGuildCommands(
         },
     ];
 
-    const response = await fetch(
+    // コマンド登録は初期設定時のみなのでタイムアウトを長めに設定
+    const response = await fetchWithTimeout(
         `${DISCORD_API_BASE}/applications/${applicationId}/guilds/${guildId}/commands`,
         {
             method: 'PUT',
             headers: {
-                'Authorization': `Bot ${botToken}`,
+                Authorization: `Bot ${botToken}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(commands),
-        }
+        },
+        10000 // 10秒
     );
 
     if (!response.ok) {

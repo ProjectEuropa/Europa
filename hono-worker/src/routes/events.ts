@@ -1,10 +1,14 @@
+import { neon } from '@neondatabase/serverless';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { neon } from '@neondatabase/serverless';
-import type { Env } from '../types/bindings';
-import type { Event, SuccessResponse, PaginationMeta } from '../types/api';
-import { eventQuerySchema, eventRegistrationSchema, type EventQueryInput } from '../utils/validation';
 import { authMiddleware } from '../middleware/auth';
+import type { Event, PaginationMeta, SuccessResponse } from '../types/api';
+import type { Env } from '../types/bindings';
+import {
+    type EventQueryInput,
+    eventQuerySchema,
+    eventRegistrationSchema,
+} from '../utils/validation';
 
 const events = new Hono<{ Bindings: Env }>();
 
@@ -12,7 +16,7 @@ const events = new Hono<{ Bindings: Env }>();
  * GET /api/v2/events
  * イベント一覧取得（全体）
  */
-events.get('/', async (c) => {
+events.get('/', async c => {
     // クエリパラメータのバリデーション
     const queryParams = c.req.query();
     const result = eventQuerySchema.safeParse(queryParams);
@@ -67,7 +71,7 @@ events.get('/', async (c) => {
  * GET /api/v2/events/me
  * 自分が登録したイベント一覧取得（認証必須）
  */
-events.get('/me', authMiddleware, async (c) => {
+events.get('/me', authMiddleware, async c => {
     const user = c.get('user');
 
     // クエリパラメータのバリデーション
@@ -123,7 +127,7 @@ events.get('/me', authMiddleware, async (c) => {
  * GET /api/v2/events/:id
  * イベント詳細取得
  */
-events.get('/:id', async (c) => {
+events.get('/:id', async c => {
     const id = c.req.param('id');
 
     // IDのバリデーション
@@ -160,7 +164,7 @@ events.get('/:id', async (c) => {
  * POST /api/v2/events
  * イベント登録（認証必須）
  */
-events.post('/', authMiddleware, async (c) => {
+events.post('/', authMiddleware, async c => {
     const user = c.get('user');
     const body = await c.req.json().catch(() => ({}));
 
@@ -213,7 +217,7 @@ events.post('/', authMiddleware, async (c) => {
  * DELETE /api/v2/events/:id
  * イベント削除（認証必須、登録者のみ）
  */
-events.delete('/:id', authMiddleware, async (c) => {
+events.delete('/:id', authMiddleware, async c => {
     const id = c.req.param('id');
     const user = c.get('user');
 

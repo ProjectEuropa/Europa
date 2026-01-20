@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import { ComponentType } from '../../types/discord';
 import {
+    type EventRegistrationFormData,
+    extractModalValues,
     isValidDateFormat,
     validateEventFormData,
-    extractModalValues,
-    type EventRegistrationFormData,
 } from './modals';
-import { ComponentType } from '../../types/discord';
 
 describe('isValidDateFormat', () => {
     describe('有効な日付形式', () => {
@@ -133,7 +133,11 @@ describe('validateEventFormData', () => {
         });
 
         it('表示最終日が締切日より前の場合を拒否する', () => {
-            const data = { ...validData, eventDeadline: '2025-12-31', eventDisplayEnd: '2025-12-15' };
+            const data = {
+                ...validData,
+                eventDeadline: '2025-12-31',
+                eventDisplayEnd: '2025-12-15',
+            };
             const result = validateEventFormData(data);
             expect(result.valid).toBe(false);
             expect(result.errors).toContain('表示最終日は締切日以降の日付を指定してください');
@@ -160,19 +164,43 @@ describe('extractModalValues', () => {
         const components = [
             {
                 type: ComponentType.ACTION_ROW,
-                components: [{ type: ComponentType.TEXT_INPUT, custom_id: 'event_name', value: 'テスト大会' }],
+                components: [
+                    {
+                        type: ComponentType.TEXT_INPUT,
+                        custom_id: 'event_name',
+                        value: 'テスト大会',
+                    },
+                ],
             },
             {
                 type: ComponentType.ACTION_ROW,
-                components: [{ type: ComponentType.TEXT_INPUT, custom_id: 'event_details', value: '詳細情報' }],
+                components: [
+                    {
+                        type: ComponentType.TEXT_INPUT,
+                        custom_id: 'event_details',
+                        value: '詳細情報',
+                    },
+                ],
             },
             {
                 type: ComponentType.ACTION_ROW,
-                components: [{ type: ComponentType.TEXT_INPUT, custom_id: 'event_deadline', value: '2025-12-31' }],
+                components: [
+                    {
+                        type: ComponentType.TEXT_INPUT,
+                        custom_id: 'event_deadline',
+                        value: '2025-12-31',
+                    },
+                ],
             },
             {
                 type: ComponentType.ACTION_ROW,
-                components: [{ type: ComponentType.TEXT_INPUT, custom_id: 'event_display_end', value: '2026-01-15' }],
+                components: [
+                    {
+                        type: ComponentType.TEXT_INPUT,
+                        custom_id: 'event_display_end',
+                        value: '2026-01-15',
+                    },
+                ],
             },
         ];
 
@@ -189,7 +217,9 @@ describe('extractModalValues', () => {
         const components = [
             {
                 type: ComponentType.ACTION_ROW,
-                components: [{ type: ComponentType.TEXT_INPUT, custom_id: 'event_name', value: 'テスト' }],
+                components: [
+                    { type: ComponentType.TEXT_INPUT, custom_id: 'event_name', value: 'テスト' },
+                ],
             },
         ];
 

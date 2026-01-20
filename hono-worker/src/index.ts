@@ -1,14 +1,14 @@
 import { Hono } from 'hono';
+import { HTTPException } from 'hono/http-exception';
 import { logger } from 'hono/logger';
-import type { Env } from './types/bindings';
 import { setupCORS } from './middleware/cors';
 import { notFoundHandler } from './middleware/error';
-import { HTTPException } from 'hono/http-exception';
-import type { ErrorResponse } from './types/api';
 import auth from './routes/auth';
+import discord from './routes/discord';
 import events from './routes/events';
 import files from './routes/files';
-import discord from './routes/discord';
+import type { ErrorResponse } from './types/api';
+import type { Env } from './types/bindings';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -46,7 +46,7 @@ app.onError((error, c) => {
 });
 
 // ヘルスチェック
-app.get('/', (c) => {
+app.get('/', c => {
     return c.json({
         message: 'Hono Worker API',
         version: 'v2',
@@ -54,7 +54,7 @@ app.get('/', (c) => {
     });
 });
 
-app.get('/health', (c) => {
+app.get('/health', c => {
     return c.json({ status: 'ok' });
 });
 

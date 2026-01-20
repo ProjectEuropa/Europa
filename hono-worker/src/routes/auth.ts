@@ -1,12 +1,17 @@
+import { neon } from '@neondatabase/serverless';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { neon } from '@neondatabase/serverless';
-import type { Env } from '../types/bindings';
-import type { User, SuccessResponse } from '../types/api';
-import { registerSchema, loginSchema, type RegisterInput, type LoginInput } from '../utils/validation';
-import { hashPassword, verifyPassword } from '../utils/password';
-import { generateToken, createCookieHeader, createLogoutCookieHeader } from '../utils/jwt';
 import { authMiddleware } from '../middleware/auth';
+import type { SuccessResponse, User } from '../types/api';
+import type { Env } from '../types/bindings';
+import { createCookieHeader, createLogoutCookieHeader, generateToken } from '../utils/jwt';
+import { hashPassword, verifyPassword } from '../utils/password';
+import {
+    type LoginInput,
+    loginSchema,
+    type RegisterInput,
+    registerSchema,
+} from '../utils/validation';
 
 const auth = new Hono<{ Bindings: Env }>();
 
@@ -14,7 +19,7 @@ const auth = new Hono<{ Bindings: Env }>();
  * POST /api/v2/auth/register
  * ユーザー登録
  */
-auth.post('/register', async (c) => {
+auth.post('/register', async c => {
     const body = await c.req.json();
 
     // バリデーション
@@ -22,7 +27,7 @@ auth.post('/register', async (c) => {
     if (!result.success) {
         throw new HTTPException(400, {
             message: 'Validation error',
-            cause: result.error.issues
+            cause: result.error.issues,
         });
     }
 
@@ -77,7 +82,7 @@ auth.post('/register', async (c) => {
  * POST /api/v2/auth/login
  * ログイン
  */
-auth.post('/login', async (c) => {
+auth.post('/login', async c => {
     const body = await c.req.json();
 
     // バリデーション
@@ -85,7 +90,7 @@ auth.post('/login', async (c) => {
     if (!result.success) {
         throw new HTTPException(400, {
             message: 'Validation error',
-            cause: result.error.issues
+            cause: result.error.issues,
         });
     }
 
@@ -143,7 +148,7 @@ auth.post('/login', async (c) => {
  * POST /api/v2/auth/logout
  * ログアウト
  */
-auth.post('/logout', authMiddleware, async (c) => {
+auth.post('/logout', authMiddleware, async c => {
     const cookieHeader = createLogoutCookieHeader();
 
     const response: SuccessResponse<never> = {
@@ -159,7 +164,7 @@ auth.post('/logout', authMiddleware, async (c) => {
  * GET /api/v2/auth/me
  * 現在のユーザー情報を取得
  */
-auth.get('/me', authMiddleware, async (c) => {
+auth.get('/me', authMiddleware, async c => {
     const jwtPayload = c.get('user');
 
     // データベース接続
@@ -189,7 +194,7 @@ auth.get('/me', authMiddleware, async (c) => {
  * PUT /api/v2/auth/me
  * ユーザー情報を更新
  */
-auth.put('/me', authMiddleware, async (c) => {
+auth.put('/me', authMiddleware, async c => {
     const jwtPayload = c.get('user');
     const body = await c.req.json();
 
@@ -199,7 +204,7 @@ auth.put('/me', authMiddleware, async (c) => {
     if (!result.success) {
         throw new HTTPException(400, {
             message: 'Validation error',
-            cause: result.error.issues
+            cause: result.error.issues,
         });
     }
 
@@ -233,7 +238,7 @@ auth.put('/me', authMiddleware, async (c) => {
  * POST /api/v2/auth/password/reset
  * パスワードリセット申請
  */
-auth.post('/password/reset', async (c) => {
+auth.post('/password/reset', async c => {
     const body = await c.req.json().catch(() => ({}));
 
     // バリデーション
@@ -242,7 +247,7 @@ auth.post('/password/reset', async (c) => {
     if (!result.success) {
         throw new HTTPException(400, {
             message: 'Validation error',
-            cause: result.error
+            cause: result.error,
         });
     }
 
@@ -270,14 +275,14 @@ auth.post('/password/reset', async (c) => {
 
         // メール送信
         const resetUrl = `${c.env.FRONTEND_URL}/reset-password?token=${token}`;
-        
+
         if (c.env.RESEND_API_KEY) {
             // Resendを使用してメール送信
             const { sendEmail, generatePasswordResetEmail } = await import('../utils/email');
             const { html, text } = generatePasswordResetEmail(resetUrl, email);
-            
+
             const fromEmail = c.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-            
+
             const result = await sendEmail(
                 {
                     to: email,
@@ -303,16 +308,19 @@ auth.post('/password/reset', async (c) => {
     }
 
     // セキュリティ上、常に同じレスポンスを返す
-    return c.json({
-        message: 'パスワードリセットのメールを送信しました'
-    }, 200);
+    return c.json(
+        {
+            message: 'パスワードリセットのメールを送信しました',
+        },
+        200
+    );
 });
 
 /**
  * POST /api/v2/auth/password/update
  * パスワードリセット実行
  */
-auth.post('/password/update', async (c) => {
+auth.post('/password/update', async c => {
     const body = await c.req.json().catch(() => ({}));
 
     // バリデーション
@@ -321,7 +329,7 @@ auth.post('/password/update', async (c) => {
     if (!result.success) {
         throw new HTTPException(400, {
             message: 'Validation error',
-            cause: result.error
+            cause: result.error,
         });
     }
 
@@ -338,7 +346,7 @@ auth.post('/password/update', async (c) => {
     if (resets.length === 0) {
         throw new HTTPException(400, {
             message: '無効なトークンまたは有効期限切れです',
-            cause: { code: 'INVALID_TOKEN' }
+            cause: { code: 'INVALID_TOKEN' },
         });
     }
 
@@ -351,7 +359,7 @@ auth.post('/password/update', async (c) => {
         await sql`DELETE FROM password_resets WHERE token = ${token}`;
         throw new HTTPException(400, {
             message: '無効なトークンまたは有効期限切れです',
-            cause: { code: 'TOKEN_EXPIRED' }
+            cause: { code: 'TOKEN_EXPIRED' },
         });
     }
 
@@ -368,16 +376,19 @@ auth.post('/password/update', async (c) => {
     // トークン削除
     await sql`DELETE FROM password_resets WHERE token = ${token}`;
 
-    return c.json({
-        message: 'パスワードを更新しました'
-    }, 200);
+    return c.json(
+        {
+            message: 'パスワードを更新しました',
+        },
+        200
+    );
 });
 
 /**
  * POST /api/v2/auth/password/check
  * パスワードリセットトークンの検証
  */
-auth.post('/password/check', async (c) => {
+auth.post('/password/check', async c => {
     const body = await c.req.json().catch(() => ({}));
 
     const { token } = body;
@@ -385,7 +396,7 @@ auth.post('/password/check', async (c) => {
     if (!token || typeof token !== 'string') {
         throw new HTTPException(400, {
             message: 'トークンが必要です',
-            cause: { code: 'TOKEN_REQUIRED' }
+            cause: { code: 'TOKEN_REQUIRED' },
         });
     }
 
@@ -400,7 +411,7 @@ auth.post('/password/check', async (c) => {
     if (resets.length === 0) {
         throw new HTTPException(400, {
             message: '無効なトークンまたは有効期限切れです',
-            cause: { code: 'INVALID_TOKEN' }
+            cause: { code: 'INVALID_TOKEN' },
         });
     }
 
@@ -413,15 +424,17 @@ auth.post('/password/check', async (c) => {
         await sql`DELETE FROM password_resets WHERE token = ${token}`;
         throw new HTTPException(400, {
             message: '無効なトークンまたは有効期限切れです',
-            cause: { code: 'TOKEN_EXPIRED' }
+            cause: { code: 'TOKEN_EXPIRED' },
         });
     }
 
-    return c.json({
-        valid: true,
-        email: reset.email
-    }, 200);
+    return c.json(
+        {
+            valid: true,
+            email: reset.email,
+        },
+        200
+    );
 });
 
 export default auth;
-

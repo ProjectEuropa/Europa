@@ -1,13 +1,13 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-    registerSchema,
-    loginSchema,
-    fileUploadSchema,
     eventQuerySchema,
     eventRegistrationSchema,
     fileQuerySchema,
+    fileUploadSchema,
+    loginSchema,
     passwordResetRequestSchema,
     passwordResetUpdateSchema,
+    registerSchema,
 } from './validation';
 
 describe('validation schemas', () => {
@@ -61,7 +61,9 @@ describe('validation schemas', () => {
             const result = registerSchema.safeParse(invalidData);
             expect(result.success).toBe(false);
             if (!result.success) {
-                expect(result.error.issues[0].message).toBe('Password must be at least 8 characters');
+                expect(result.error.issues[0].message).toBe(
+                    'Password must be at least 8 characters'
+                );
             }
         });
 
@@ -322,7 +324,9 @@ describe('validation schemas', () => {
             const result = eventRegistrationSchema.safeParse(invalidData);
             expect(result.success).toBe(false);
             if (!result.success) {
-                expect(result.error.issues[0].message).toBe('End display date must be after deadline');
+                expect(result.error.issues[0].message).toBe(
+                    'End display date must be after deadline'
+                );
             }
         });
 
@@ -471,7 +475,9 @@ describe('validation schemas', () => {
             const result = passwordResetUpdateSchema.safeParse(invalidData);
             expect(result.success).toBe(false);
             if (!result.success) {
-                expect(result.error.issues[0].message).toBe('Password must be at least 8 characters');
+                expect(result.error.issues[0].message).toBe(
+                    'Password must be at least 8 characters'
+                );
             }
         });
 
