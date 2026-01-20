@@ -24,3 +24,13 @@ FRONTEND_URL=http://localhost:3000
 # RESEND_FROM_EMAIL=noreply@your-verified-domain.com
 # 注意: Resendではドメイン検証が必要です
 # 開発環境では onboarding@resend.dev が使えます
+
+# Discord連携
+# Discord Developer Portal (https://discord.com/developers/applications) で取得
+DISCORD_APPLICATION_ID=your-application-id
+DISCORD_PUBLIC_KEY=your-public-key
+DISCORD_BOT_TOKEN=your-bot-token
+# サーバーID（開発者モードON → サーバー右クリック → IDをコピー）
+DISCORD_GUILD_ID=your-guild-id
+# 投稿先チャンネルID（開発者モードON → チャンネル右クリック → IDをコピー）
+DISCORD_CHANNEL_ID=your-channel-id

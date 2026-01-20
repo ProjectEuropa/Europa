@@ -8,7 +8,7 @@ import type { Env } from '../types/bindings';
 export function setupCORS() {
     return async (c: Context<{ Bindings: Env }>, next: Next) => {
         const middleware = cors({
-            origin: (origin) => {
+            origin: origin => {
                 // 開発環境とフロントエンドURLを許可
                 const allowedOrigins = [
                     'http://localhost:3000',

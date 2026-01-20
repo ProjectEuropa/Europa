@@ -36,6 +36,8 @@ export function maskFileIfNotDownloadable(file: Record<string, unknown>): Record
  * @param files ファイルオブジェクトの配列
  * @returns マスク処理されたファイルオブジェクトの配列
  */
-export function maskFilesIfNotDownloadable(files: Record<string, unknown>[]): Record<string, unknown>[] {
+export function maskFilesIfNotDownloadable(
+    files: Record<string, unknown>[]
+): Record<string, unknown>[] {
     return files.map(maskFileIfNotDownloadable);
 }

@@ -14,7 +14,7 @@ CREATE TABLE events (
   id SERIAL PRIMARY KEY,
   register_user_id INTEGER REFERENCES users(id),
   event_name VARCHAR(255) NOT NULL,
-  event_details VARCHAR(255) NOT NULL,
+  event_details TEXT NOT NULL,
   event_reference_url VARCHAR(255),
   event_type VARCHAR(255) NOT NULL,  -- 大会:1 告知:2
   event_closing_day TIMESTAMP NOT NULL,

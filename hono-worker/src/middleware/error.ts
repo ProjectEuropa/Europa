@@ -15,14 +15,14 @@ export async function errorHandler(c: Context, next: Next) {
             console.log('[Error Middleware] HTTPException detected');
             console.log('[Error Middleware] Status:', error.status);
             console.log('[Error Middleware] Message:', error.message);
-            
+
             const response: ErrorResponse = {
                 error: {
                     message: error.message,
                     code: `HTTP_${error.status}`,
                 },
             };
-            
+
             console.log('[Error Middleware] Sending response:', JSON.stringify(response));
             return c.json(response, error.status);
         }

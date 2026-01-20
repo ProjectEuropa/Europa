@@ -27,10 +27,7 @@ export async function generateToken(
 /**
  * JWTトークンを検証
  */
-export async function verifyToken(
-    token: string,
-    secret: string
-): Promise<JWTPayload | null> {
+export async function verifyToken(token: string, secret: string): Promise<JWTPayload | null> {
     try {
         const payload = await verify(token, secret, JWT_ALGORITHM);
         return payload as JWTPayload;
@@ -62,12 +59,7 @@ export function createCookieHeader(
     secure: boolean = true,
     environment: string = 'production'
 ): string {
-    const cookieOptions = [
-        `token=${token}`,
-        `Max-Age=${maxAge}`,
-        'Path=/',
-        'HttpOnly',
-    ];
+    const cookieOptions = [`token=${token}`, `Max-Age=${maxAge}`, 'Path=/', 'HttpOnly'];
 
     // Cross-Origin Cookie対応
     // Chrome HTTPではSameSite=None + Secureが必須だがHTTPでは動作しない

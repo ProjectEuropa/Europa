@@ -1,6 +1,6 @@
 /**
  * パスワードハッシュユーティリティ
- * 
+ *
  * 既存のbcryptハッシュと新しいカスタムハッシュの両方に対応
  */
 
@@ -19,13 +19,14 @@ export async function hashPassword(password: string): Promise<string> {
  * パスワードを検証
  * 既存のbcryptハッシュと新しいカスタムハッシュの両方に対応
  */
-export async function verifyPassword(
-    password: string,
-    hashedPassword: string
-): Promise<boolean> {
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
     try {
         // bcryptハッシュの検証を試行
-        if (hashedPassword.startsWith('$2a$') || hashedPassword.startsWith('$2b$') || hashedPassword.startsWith('$2y$')) {
+        if (
+            hashedPassword.startsWith('$2a$') ||
+            hashedPassword.startsWith('$2b$') ||
+            hashedPassword.startsWith('$2y$')
+        ) {
             return bcrypt.compare(password, hashedPassword);
         }
 

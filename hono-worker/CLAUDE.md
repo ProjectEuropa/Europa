@@ -12,10 +12,18 @@ src/
 ├── routes/            # APIルート
 │   ├── auth.ts       # 認証エンドポイント
 │   ├── events.ts     # イベント管理
-│   └── files.ts      # ファイル管理
+│   ├── files.ts      # ファイル管理
+│   └── discord.ts    # Discord Interactions Endpoint
+├── services/          # サービス層
+│   └── discord/      # Discord連携
+│       ├── api.ts    # Discord REST APIクライアント
+│       ├── embed.ts  # Embed生成
+│       ├── modals.ts # Modal定義・バリデーション
+│       └── verify.ts # Ed25519署名検証
 ├── types/             # 型定義
 │   ├── api.ts        # APIレスポンス・リクエスト型
-│   └── bindings.ts   # Cloudflare Workers環境変数型
+│   ├── bindings.ts   # Cloudflare Workers環境変数型
+│   └── discord.ts    # Discord API型定義
 ├── utils/             # ユーティリティ
 │   ├── validation.ts # Zodスキーマ
 │   ├── jwt.ts        # JWT生成・検証
@@ -74,11 +82,14 @@ npm run deploy:production # 本番環境
 │   ├── GET  /               # イベント一覧（ページネーション）
 │   ├── POST /               # イベント作成（認証必須）
 │   └── GET  /:id            # イベント詳細
-└── /files
-    ├── GET    /             # ファイル一覧（フィルタリング）
-    ├── POST   /             # ファイルアップロード
-    ├── DELETE /:id          # ファイル削除
-    └── GET    /:id/download # ファイルダウンロード
+├── /files
+│   ├── GET    /             # ファイル一覧（フィルタリング）
+│   ├── POST   /             # ファイルアップロード
+│   ├── DELETE /:id          # ファイル削除
+│   └── GET    /:id/download # ファイルダウンロード
+└── /discord
+    ├── POST /interactions       # Discord Interactions Endpoint
+    └── POST /register-commands  # スラッシュコマンド登録（内部API）
 ```
 
 ### Response Format
@@ -505,6 +516,64 @@ describe('buildFileQueryWhere', () => {
 });
 ```
 
+## Discord Bot Integration
+
+### Architecture
+
+Discord Interactions Endpoint（HTTP方式）を使用。WebSocketベースのGateway APIではなく、HTTPリクエストで動作するためCloudflare Workersに最適。
+
+```text
+Discord (/大会登録 コマンド)
+    ↓ HTTP POST (署名付き)
+Cloudflare Workers (/api/v2/discord/interactions)
+    ├→ Ed25519署名検証
+    ├→ Modalレスポンス or メッセージ投稿
+    └→ eventsテーブルに登録
+```
+
+### Files
+
+| ファイル | 説明 |
+|---------|------|
+| `routes/discord.ts` | Interactions Endpoint、コマンドハンドラー |
+| `services/discord/verify.ts` | Ed25519署名検証（Web Crypto API） |
+| `services/discord/modals.ts` | Modal定義、フォームバリデーション |
+| `services/discord/embed.ts` | Embed形式メッセージ生成 |
+| `services/discord/api.ts` | Discord REST APIクライアント |
+| `types/discord.ts` | Discord API型定義 |
+
+### Environment Variables
+
+```bash
+# Discord Developer Portalから取得
+DISCORD_APPLICATION_ID=xxxx      # アプリケーションID
+DISCORD_PUBLIC_KEY=xxxx          # 署名検証用公開鍵
+DISCORD_BOT_TOKEN=xxxx           # Bot Token（REST API用）
+DISCORD_GUILD_ID=xxxx            # サーバーID
+DISCORD_CHANNEL_ID=xxxx          # フォールバック用チャンネルID
+
+# 内部API保護（オプション）
+INTERNAL_API_SECRET=xxxx         # /register-commands保護用
+```
+
+### Setup Steps
+
+1. Discord Developer PortalでBot作成
+2. Interactions Endpoint URLを設定: `https://<worker-url>/api/v2/discord/interactions`
+3. wrangler secretで環境変数設定
+4. スラッシュコマンド登録:
+   ```bash
+   curl -X POST https://<worker-url>/api/v2/discord/register-commands \
+     -H "X-Internal-Secret: <secret>"
+   ```
+
+### Features
+
+- `/大会登録` コマンド → Modalフォーム表示
+- コマンド実行チャンネルに告知投稿（Embed形式）
+- Europaのeventsテーブルに自動登録
+- DB登録失敗時はDiscord投稿を自動削除（ロールバック）
+
 ## Deployment
 
 ```bash
@@ -522,3 +591,4 @@ npm run deploy:production
 3. [ ] Database migrations applied
 4. [ ] R2 bucket configured
 5. [ ] CORS origins updated
+6. [ ] Discord secrets configured (if using Discord integration)
