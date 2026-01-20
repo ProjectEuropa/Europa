@@ -156,20 +156,18 @@ discord.post('/interactions', async c => {
                 const sql = neon(c.env.DATABASE_URL);
 
                 /**
-                 * 日付をISO形式（UTC）に変換
+                 * 日付をJST形式でDBに保存
                  *
                  * タイムゾーンの想定:
                  * - ユーザー入力: YYYY-MM-DD形式（JST日付を想定）
                  * - 締切時刻: その日の23:59:59 JST（日本時間の1日の終わり）
-                 * - DB保存: UTC形式（timestamptz）
+                 * - DB保存: AT TIME ZONE 'Asia/Tokyo' でJSTとして保存
                  *
-                 * 例: 2026-02-01（JST）→ 2026-02-01T14:59:59Z（UTC）
-                 * ※ JSTはUTC+9のため、23:59:59 JST = 14:59:59 UTC
+                 * 既存のevents.tsのPOST /api/v2/eventsと同じ形式で保存
+                 * ※ timestamptz型だが、AT TIME ZONEでJSTとして解釈される
                  */
-                const deadline = new Date(`${formData.eventDeadline}T23:59:59+09:00`).toISOString();
-                const displayEnd = new Date(
-                    `${formData.eventDisplayEnd}T23:59:59+09:00`
-                ).toISOString();
+                const deadline = `${formData.eventDeadline}T23:59:59`;
+                const displayEnd = `${formData.eventDisplayEnd}T23:59:59`;
 
                 try {
                     await sql`
@@ -187,8 +185,8 @@ discord.post('/interactions', async c => {
                             ${formData.eventDetails},
                             ${messageLink},
                             ${EVENT_TYPES.TOURNAMENT},
-                            ${deadline}::timestamptz,
-                            ${displayEnd}::timestamptz
+                            ${deadline}::timestamptz AT TIME ZONE 'Asia/Tokyo',
+                            ${displayEnd}::timestamptz AT TIME ZONE 'Asia/Tokyo'
                         )
                     `;
                 } catch (dbError) {
