@@ -22,6 +22,7 @@ Next.js 15.xベースのフロントエンドアプリケーション
 *   **ストレージ:** Cloudflare R2
 *   **バリデーション:** Zod v4.1.13
 *   **認証:** bcryptjs
+*   **Discord連携:** Discord Interactions API (HTTP方式)
 
 ### フロントエンド (frontend)
 *   **言語:** TypeScript
@@ -164,6 +165,33 @@ npm run clean            # キャッシュクリア
 └── readme.md
 ```
 
+## Discord Bot連携
+
+EuropaはDiscord Botと連携して、Discordから直接大会情報を登録できます。
+
+### 機能
+
+- `/大会登録` スラッシュコマンドでModalフォームを表示
+- Discordチャンネルへの告知投稿（Embed形式）
+- Europaのeventsテーブルへの自動登録
+
+### 使い方
+
+1. Discordで `/大会登録` コマンドを実行
+2. 表示されるフォームに大会情報を入力
+3. 送信すると、コマンドを実行したチャンネルに告知が投稿され、Europaにも登録される
+
+### Discord Bot環境変数
+
+```bash
+# Discord Developer Portalから取得
+DISCORD_APPLICATION_ID=xxxx
+DISCORD_PUBLIC_KEY=xxxx
+DISCORD_BOT_TOKEN=xxxx
+DISCORD_GUILD_ID=xxxx
+DISCORD_CHANNEL_ID=xxxx  # フォールバック用（通常はコマンド実行チャンネルに投稿）
+```
+
 ## アーキテクチャ
 
 ### システム全体構成
@@ -172,6 +200,7 @@ npm run clean            # キャッシュクリア
 graph TB
     subgraph "クライアント"
         Browser[Webブラウザ]
+        Discord[Discord<br/>スラッシュコマンド]
     end
 
     subgraph "Cloudflare CDN"
@@ -182,6 +211,10 @@ graph TB
         API[Hono API Server<br/>v4.11.4]
     end
 
+    subgraph "外部サービス"
+        DiscordAPI[Discord API<br/>メッセージ投稿]
+    end
+
     subgraph "データ層"
         DB[(Neon PostgreSQL)]
         R2[Cloudflare R2<br/>オブジェクトストレージ]
@@ -189,13 +222,17 @@ graph TB
 
     Browser --> Frontend
     Frontend --> API
+    Discord -->|Interactions| API
     API --> DB
     API --> R2
+    API -->|REST API| DiscordAPI
 
     style Frontend fill:#61dafb,stroke:#333,stroke-width:2px
     style API fill:#ff6b35,stroke:#333,stroke-width:2px
     style DB fill:#336791,stroke:#333,stroke-width:2px
     style R2 fill:#f38020,stroke:#333,stroke-width:2px
+    style Discord fill:#5865F2,stroke:#333,stroke-width:2px
+    style DiscordAPI fill:#5865F2,stroke:#333,stroke-width:2px
 ```
 
 ### データフロー
@@ -223,6 +260,35 @@ sequenceDiagram
     A->>D: メタデータ保存
     A-->>F: 成功レスポンス
     F-->>U: 完了通知
+```
+
+### Discord Bot連携フロー
+
+```mermaid
+sequenceDiagram
+    participant U as ユーザー
+    participant DC as Discord
+    participant A as API<br/>(Hono/Workers)
+    participant DA as Discord API
+    participant D as Database<br/>(Neon)
+
+    U->>DC: /大会登録 コマンド実行
+    DC->>A: Interaction (署名付き)
+    A->>A: Ed25519署名検証
+    A-->>DC: Modalフォーム表示
+
+    U->>DC: フォーム入力・送信
+    DC->>A: Modal Submit
+    A->>A: バリデーション
+    A->>DA: メッセージ投稿
+    DA-->>A: メッセージID
+    A->>D: イベント登録
+    D-->>A: 成功
+    A-->>DC: 完了通知（Ephemeral）
+    DC-->>U: 登録完了メッセージ
+
+    Note over A,D: DB登録失敗時
+    A->>DA: メッセージ削除（ロールバック）
 ```
 
 ### 技術スタック詳細

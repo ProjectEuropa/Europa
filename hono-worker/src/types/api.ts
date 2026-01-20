@@ -2,11 +2,11 @@
 
 // ファイルのデータタイプ定数
 export const DATA_TYPE = {
-  TEAM: '1',
-  MATCH: '2',
+    TEAM: '1',
+    MATCH: '2',
 } as const;
 
-export type DataType = typeof DATA_TYPE[keyof typeof DATA_TYPE];
+export type DataType = (typeof DATA_TYPE)[keyof typeof DATA_TYPE];
 
 export interface User {
     id: number;
@@ -32,13 +32,13 @@ export interface Event {
 export interface File {
     id: number;
     upload_user_id: number | null;
-    upload_owner_name: string;  // アップロード者名（匿名対応）
+    upload_owner_name: string; // アップロード者名（匿名対応）
     file_name: string;
     file_path: string;
     file_size: number;
     file_comment: string | null;
-    data_type: string;  // チーム:1 or マッチ:2
-    delete_password: string | null;  // 匿名ユーザー用削除パスワード（ハッシュ化）
+    data_type: string; // チーム:1 or マッチ:2
+    delete_password: string | null; // 匿名ユーザー用削除パスワード（ハッシュ化）
     downloadable_at: string | null;
     tags: string[];
     created_at: string;
