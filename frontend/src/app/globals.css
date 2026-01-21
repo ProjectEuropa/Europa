@@ -172,3 +172,28 @@ input[type="datetime-local"]::-moz-calendar-picker-indicator {
 input[type="datetime-local"]::-moz-calendar-picker-indicator:hover {
   opacity: 1;
 }
+
+/* カスタムスクロールバー */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 200, 255, 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 200, 255, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 200, 255, 0.5);
+}
+
+/* Firefox用スクロールバー */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 200, 255, 0.3) rgba(0, 200, 255, 0.1);
+}
