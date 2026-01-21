@@ -473,7 +473,7 @@ const Calendar: React.FC<CalendarProps> = ({
             <h3 id="event-modal-title" className="text-cyan-400 text-xl font-bold mb-4 pr-10">
               {modalEvent.title || 'イベント詳細'}
             </h3>
-            <div id="event-modal-description" className="mb-4 text-cyber-text leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto custom-scrollbar">
+            <div id="event-modal-description" tabIndex={0} className="mb-4 text-cyber-text leading-relaxed whitespace-pre-wrap max-h-60 sm:max-h-80 overflow-y-auto custom-scrollbar">
               {modalEvent.details}
             </div>
             {modalEvent.url && (
