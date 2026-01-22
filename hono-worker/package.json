@@ -50,7 +50,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.3.8",
-        "@cloudflare/workers-types": "^4.20241127.0",
+        "@cloudflare/workers-types": "^4.20260116.0",
         "@types/bcryptjs": "^2.4.6",
         "@types/pg": "^8.11.0",
         "@vitest/coverage-v8": "^4.0.15",
@@ -59,7 +59,7 @@
         "tsx": "^4.7.0",
         "typescript": "^5.3.3",
         "vitest": "^4.0.15",
-        "wrangler": "^4.51.0"
+        "wrangler": "^4.59.1"
     },
     "volta": {
         "node": "24.13.0"
