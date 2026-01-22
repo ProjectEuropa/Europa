@@ -20,7 +20,7 @@ Next.js 16.xベースのフロントエンドアプリケーション
 *   **フレームワーク:** Hono v4.11.4
 *   **データベース:** Neon (PostgreSQL)
 *   **ストレージ:** Cloudflare R2
-*   **バリデーション:** Zod v4.1.13
+*   **バリデーション:** Zod v4.3.5
 *   **認証:** bcryptjs
 *   **Discord連携:** Discord Interactions API (HTTP方式)
 
@@ -309,7 +309,7 @@ graph LR
     subgraph "Backend技術"
         Hono[Hono v4.11.4]
         Workers[Cloudflare Workers]
-        Zod[Zod v4.1.13]
+        Zod[Zod v4.3.5]
         Bcrypt[bcryptjs]
     end
 
