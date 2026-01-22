@@ -30,11 +30,11 @@ Next.js 16.xベースのフロントエンドアプリケーション
 *   **React:** 19.2.0
 *   **スタイリング:** TailwindCSS 4.1.7
 *   **UIコンポーネント:** shadcn/ui, Radix UI
-*   **状態管理:** Zustand
+*   **状態管理:** Zustand v5.0.10
 *   **データフェッチング:** TanStack Query v5.90.19
-*   **フォーム:** React Hook Form
+*   **フォーム:** React Hook Form v7.71.1
 *   **バリデーション:** Zod v4.3.5
-*   **アニメーション:** Framer Motion
+*   **アニメーション:** Framer Motion v12.27.0
 
 ## 前提条件
 
