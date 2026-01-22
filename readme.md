@@ -300,8 +300,8 @@ graph LR
         React[React 19.2.0]
         TailwindCSS[TailwindCSS 4.1.7]
         TanStack[TanStack Query v5.90.19]
-        Zustand[Zustand]
-        RHF[React Hook Form]
+        Zustand[Zustand v5.0.10]
+        RHF[React Hook Form v7.71.1]
     end
 
     subgraph "Backend技術"
