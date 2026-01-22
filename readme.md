@@ -20,7 +20,7 @@ Next.js 16.xベースのフロントエンドアプリケーション
 *   **フレームワーク:** Hono v4.11.4
 *   **データベース:** Neon (PostgreSQL)
 *   **ストレージ:** Cloudflare R2
-*   **バリデーション:** Zod v4.1.13
+*   **バリデーション:** Zod v4.3.5
 *   **認証:** bcryptjs
 *   **Discord連携:** Discord Interactions API (HTTP方式)
 
@@ -302,12 +302,14 @@ graph LR
         TanStack[TanStack Query v5.90.19]
         Zustand[Zustand v5.0.10]
         RHF[React Hook Form v7.71.1]
+        ZodFE[Zod v4.3.5]
+        Framer[Framer Motion v12.27.0]
     end
 
     subgraph "Backend技術"
         Hono[Hono v4.11.4]
         Workers[Cloudflare Workers]
-        Zod[Zod v4.1.13]
+        Zod[Zod v4.3.5]
         Bcrypt[bcryptjs]
     end
 
@@ -322,6 +324,8 @@ graph LR
     React --> TanStack
     React --> Zustand
     React --> RHF
+    RHF --> ZodFE
+    React --> Framer
 
     Hono --> Workers
     Hono --> Zod
