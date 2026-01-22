@@ -302,6 +302,8 @@ graph LR
         TanStack[TanStack Query v5.90.19]
         Zustand[Zustand v5.0.10]
         RHF[React Hook Form v7.71.1]
+        ZodFE[Zod v4.3.5]
+        Framer[Framer Motion v12.27.0]
     end
 
     subgraph "Backend技術"
@@ -322,6 +324,8 @@ graph LR
     React --> TanStack
     React --> Zustand
     React --> RHF
+    RHF --> ZodFE
+    React --> Framer
 
     Hono --> Workers
     Hono --> Zod
