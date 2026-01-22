@@ -10,7 +10,7 @@
 Cloudflare Workers上で動作するHonoベースのバックエンドAPI
 
 ### frontend (フロントエンド)
-Next.js 15.xベースのフロントエンドアプリケーション
+Next.js 16.xベースのフロントエンドアプリケーション
 
 ## 技術スタック
 
@@ -26,14 +26,14 @@ Next.js 15.xベースのフロントエンドアプリケーション
 
 ### フロントエンド (frontend)
 *   **言語:** TypeScript
-*   **Next.js:** 16.1.1
+*   **Next.js:** 16.1.3
 *   **React:** 19.2.0
 *   **スタイリング:** TailwindCSS 4.1.7
 *   **UIコンポーネント:** shadcn/ui, Radix UI
 *   **状態管理:** Zustand
-*   **データフェッチング:** TanStack Query v5.83.0
+*   **データフェッチング:** TanStack Query v5.90.19
 *   **フォーム:** React Hook Form
-*   **バリデーション:** Zod v4.0.5
+*   **バリデーション:** Zod v4.3.5
 *   **アニメーション:** Framer Motion
 
 ## 前提条件
@@ -296,10 +296,10 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph "Frontend技術"
-        NextJS[Next.js 16.1.1]
+        NextJS[Next.js 16.1.3]
         React[React 19.2.0]
         TailwindCSS[TailwindCSS 4.1.7]
-        TanStack[TanStack Query v5.83.0]
+        TanStack[TanStack Query v5.90.19]
         Zustand[Zustand]
         RHF[React Hook Form]
     end
