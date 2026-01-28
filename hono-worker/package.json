@@ -44,7 +44,7 @@
         "@neondatabase/serverless": "^0.9.0",
         "bcryptjs": "^2.4.3",
         "fflate": "^0.8.2",
-        "hono": "^4.11.4",
+        "hono": "^4.11.7",
         "resend": "^3.5.0",
         "zod": "^4.3.5"
     },
