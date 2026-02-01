@@ -45,7 +45,7 @@ jobs:
         if: steps.check-source.outputs.is_fork != 'true'
         id: changes
         # Pinned to v46.0.1 due to CVE-2025-30066 (supply-chain compromise in v44-v45.0.7)
-        uses: tj-actions/changed-files@v46.0.1
+        uses: tj-actions/changed-files@v47.0.1
         with:
           files: |
             frontend/src/components/**
