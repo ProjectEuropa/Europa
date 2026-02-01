@@ -47,7 +47,7 @@ jobs:
       # Cache node_modules separately for sharing across jobs
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: hono-worker/node_modules
           key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
@@ -76,7 +76,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: hono-worker/node_modules
           key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
@@ -107,14 +107,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: hono-worker/node_modules
           key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
 
       # Vitest cache
       - name: Cache Vitest
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             hono-worker/node_modules/.vitest
@@ -162,7 +162,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: hono-worker/node_modules
           key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
