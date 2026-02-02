@@ -136,7 +136,7 @@ jobs:
       # Claude Code cannot influence the commit message content.
       - name: Create fix PR
         if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "fix(e2e): auto-fix by Claude Code"
