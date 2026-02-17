@@ -2,7 +2,7 @@
 
 Cloudflare Workers + HonoバックエンドとNext.jsフロントエンドで構成されるWebアプリケーション。
 
-> **注記**: このプロジェクトは以前Laravel（PHP 8.4、Laravel 11.x）を使用していましたが、現在はCloudflare Workers + Honoアーキテクチャに移行しています。
+> **注記**: このプロジェクトは以前Laravel（PHP 8.4、Laravel 11.x）やDocker Composeを使用していましたが、現在はCloudflare Workers + Honoアーキテクチャに完全に移行し、Docker Composeは廃止されました。
 
 ## アーキテクチャ
 
@@ -169,6 +169,8 @@ graph LR
         RHF[React Hook Form v7.71.1]
         ZodFE[Zod v4.3.5]
         Framer[Framer Motion v12.27.0]
+        VitestFE[Vitest v3.0.5]
+        PlaywrightFE[Playwright v1.50.1]
     end
 
     subgraph "Backend技術"
@@ -176,6 +178,7 @@ graph LR
         Workers[Cloudflare Workers]
         Zod[Zod v4.3.5]
         Bcrypt[bcryptjs]
+        VitestBE[Vitest v3.0.5]
     end
 
     subgraph "インフラ"
@@ -189,12 +192,15 @@ graph LR
     React --> TanStack
     React --> Zustand
     React --> RHF
+    React --> VitestFE
+    React --> PlaywrightFE
     RHF --> ZodFE
     React --> Framer
 
     Hono --> Workers
     Hono --> Zod
     Hono --> Bcrypt
+    Hono --> VitestBE
 
     Workers --> Neon
     Workers --> R2

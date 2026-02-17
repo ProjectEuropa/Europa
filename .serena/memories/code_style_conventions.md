@@ -58,6 +58,9 @@ hono-worker/src/
 │   ├── files.ts         # ファイル管理
 │   └── discord.ts       # Discord連携
 ├── middleware/          # ミドルウェア
+│   ├── auth.ts          # JWT認証
+│   ├── cors.ts          # CORS設定
+│   └── error.ts         # エラーハンドリング
 ├── services/            # ビジネスロジック
 ├── types/               # 型定義
 │   └── bindings.ts      # Cloudflare bindings
