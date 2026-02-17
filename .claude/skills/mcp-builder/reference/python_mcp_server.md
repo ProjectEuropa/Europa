@@ -87,7 +87,7 @@ class ServiceToolInput(BaseModel):
 
     param1: str = Field(..., description="First parameter description (e.g., 'user123', 'project-abc')", min_length=1, max_length=100)
     param2: Optional[int] = Field(default=None, description="Optional integer parameter with constraints", ge=0, le=1000)
-    tags: Optional[List[str]] = Field(default_factory=list, description="List of tags to apply", max_items=10)
+    tags: Optional[List[str]] = Field(default_factory=list, description="List of tags to apply", max_length=10)
 
 @mcp.tool(
     name="service_tool_name",

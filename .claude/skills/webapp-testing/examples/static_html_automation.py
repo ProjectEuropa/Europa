@@ -1,10 +1,10 @@
 from playwright.sync_api import sync_playwright
-import os
+from pathlib import Path
 
 # Example: Automating interaction with static HTML files using file:// URLs
 
-html_file_path = os.path.abspath('path/to/your/file.html')
-file_url = f'file://{html_file_path}'
+html_file_path = Path('path/to/your/file.html').resolve()
+file_url = html_file_path.as_uri()
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)

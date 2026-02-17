@@ -41,7 +41,7 @@ def is_server_ready(port, timeout=30):
         try:
             with socket.create_connection(('localhost', port), timeout=1):
                 return True
-        except (socket.error, ConnectionRefusedError):
+        except OSError:
             time.sleep(0.5)
     return False
 
@@ -75,7 +75,7 @@ def main():
         sys.exit(1)
 
     servers = []
-    for cmd, port, cwd in zip(args.servers, args.ports, cwds):
+    for cmd, port, cwd in zip(args.servers, args.ports, cwds, strict=True):
         servers.append({'cmd': cmd, 'port': port, 'cwd': cwd})
 
     server_processes = []
@@ -90,7 +90,7 @@ def main():
             process = subprocess.Popen(
                 shlex.split(server['cmd']),
                 cwd=server['cwd'],
-                stdout=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE
             )
             server_processes.append(process)

@@ -15,7 +15,7 @@ To test local web applications, write native Python Playwright scripts.
 
 ## Decision Tree: Choosing Your Approach
 
-```
+```text
 User task → Is it static HTML?
     ├─ Yes → Read HTML file directly to identify selectors
     │         ├─ Success → Write Playwright script using selectors
@@ -44,8 +44,8 @@ python scripts/with_server.py --server "npm run dev" --port 5173 -- python your_
 **Multiple servers (e.g., backend + frontend):**
 ```bash
 python scripts/with_server.py \
-  --server "cd backend && python server.py" --port 3000 \
-  --server "cd frontend && npm run dev" --port 5173 \
+  --server "python server.py" --port 3000 --cwd backend \
+  --server "npm run dev" --port 5173 --cwd frontend \
   -- python your_automation.py
 ```
 
