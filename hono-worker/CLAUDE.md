@@ -38,11 +38,11 @@ src/
 
 | 技術 | バージョン | 用途 |
 |-----|-----------|------|
-| Hono | 4.11.4 | サーバーレスWebフレームワーク |
+| Hono | 4.11.7 | サーバーレスWebフレームワーク |
 | Cloudflare Workers | - | Edge Computing実行環境 |
 | Neon PostgreSQL | - | サーバーレスDB |
 | Cloudflare R2 | - | S3互換オブジェクトストレージ |
-| Zod | 4.3.5 | バリデーション |
+| Zod | 4.3.6 | バリデーション |
 | bcryptjs | 2.4.3 | パスワードハッシング |
 | Resend | 3.5.0 | メール送信 |
 | Biome | 2.3.8 | Lint/Format |

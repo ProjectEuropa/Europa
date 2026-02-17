@@ -49,7 +49,7 @@ frontend/src/
 ```
 
 ## バックエンド ディレクトリ構造
-```
+```text
 hono-worker/src/
 ├── index.ts             # エントリーポイント
 ├── routes/              # API ルート定義
