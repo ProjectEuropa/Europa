@@ -71,6 +71,18 @@ Cloudflare Workers + Hono バックエンドと Next.js 16 フロントエンド
 | 複雑なタスクで計画が必要 | Plan Agent | 実装前の設計が必要 |
 | 単純な1ファイル修正 | 直接実行 | 委譲不要 |
 
+### API Design Rules
+
+バックエンド（hono-worker）のAPI設計では以下の規約を遵守すること：
+
+- **エンドポイント形式**: `/api/v2/...`
+- **認証方式**: HttpOnly Cookie + `credentials: 'include'`
+- **バリデーション**: Zodスキーマによる入力検証必須
+- **レスポンス形式**:
+  - 成功: `{ data: {...}, message?: string }`
+  - エラー: `{ message: string, errors?: { [field]: string[] } }`
+- **エラーハンドリング**: 401（認証）→ 日本語メッセージ変換、422（バリデーション）→ フィールド別表示、500+（サーバー）→ 汎用メッセージ
+
 ### Skill Chaining Patterns
 
 複数のスキルを組み合わせて使用するパターン:

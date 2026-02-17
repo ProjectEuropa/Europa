@@ -50,6 +50,7 @@ graph TB
 ### 前提条件
 
 - **Node.js:** v24.13.0 以上（[Volta](https://volta.sh/) 推奨）
+- **パッケージマネージャー:** npm（プロジェクト標準）
 - **Wrangler CLI:** Cloudflare Workers のデプロイに必要
 
 ### セットアップ
