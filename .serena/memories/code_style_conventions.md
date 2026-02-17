@@ -1,6 +1,6 @@
 # コードスタイルと規約
 
-## TypeScript/React スタイル (Biome 2.5.2)
+## TypeScript/React スタイル (Biome v2.3.x)
 
 ### Biome設定
 - **インデント**: 2スペース

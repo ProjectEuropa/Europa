@@ -192,7 +192,7 @@ graph LR
         VitestFE[Vitest v4.0.18 - Frontend]
         PlaywrightFE[Playwright v1.50.1]
         VitestBE[Vitest v4.0.15 - Backend]
-        Biome[Biome v2.5.2]
+        Biome[Biome v2.3.x]
     end
 
     NextJS --> React

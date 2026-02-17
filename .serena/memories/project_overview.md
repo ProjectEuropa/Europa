@@ -14,7 +14,7 @@ Project EuropaはCarnage Heart EXA用のOKEファイルの共有・分析・コ�
 - **状態管理**: Zustand 5.x + TanStack Query 5.x
 - **フォーム**: React Hook Form 7.x + Zod 4.x
 - **テスト**: Vitest 4.0.18 (単体) + Playwright 1.50.1 (E2E)
-- **コード品質**: Biome 2.5.2 (lint/format)
+- **コード品質**: Biome 2.3.12 (lint/format)
 - **Node.js**: 24.13.0 (Volta管理)
 
 ### バックエンド (Hono on Cloudflare Workers)
@@ -24,7 +24,7 @@ Project EuropaはCarnage Heart EXA用のOKEファイルの共有・分析・コ�
 - **データベース**: Neon PostgreSQL
 - **ストレージ**: Cloudflare R2
 - **テスト**: Vitest 4.0.15
-- **コード品質**: Biome 2.5.2
+- **コード品質**: Biome 2.3.8
 - **Node.js**: 24.13.0 (Volta管理)
 
 ## アーキテクチャ

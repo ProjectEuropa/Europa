@@ -80,7 +80,7 @@ Cloudflare Workers + Hono バックエンドと Next.js 16 フロントエンド
 - **バリデーション**: Zodスキーマによる入力検証必須
 - **レスポンス形式**:
   - 成功: `{ data: {...}, message?: string }`
-  - エラー: `{ message: string, errors?: { [field]: string[] } }`
+  - エラー: `{ error: { message: string, code?: string } }`
 - **エラーハンドリング**: 401（認証）→ 日本語メッセージ変換、422（バリデーション）→ フィールド別表示、500+（サーバー）→ 汎用メッセージ
 
 ### Skill Chaining Patterns

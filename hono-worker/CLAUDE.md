@@ -45,7 +45,7 @@ src/
 | Zod | 4.3.5 | バリデーション |
 | bcryptjs | 2.4.3 | パスワードハッシング |
 | Resend | 3.5.0 | メール送信 |
-| Biome | 2.5.2 | Lint/Format |
+| Biome | 2.3.8 | Lint/Format |
 | Vitest | 4.0.15 | テストフレームワーク |
 
 ## Development Workflow
