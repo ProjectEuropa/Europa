@@ -40,16 +40,24 @@ jobs:
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            Please review this pull request and provide feedback on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - Performance considerations
-            - Security concerns
-            - Test coverage
+            このPRをレビューして、以下の観点でフィードバックしてください。
+            レビューコメントは**日本語**で記述してください。
 
-            Use the repository's CLAUDE.md for guidance on style and conventions. Be constructive and helpful in your feedback.
+            ## レビュー観点
+            1. **コード品質**: CLAUDE.md / Biomeのルールに準拠しているか
+            2. **型安全性**: `any`の使用禁止、適切な型定義
+            3. **セキュリティ**: SQLインジェクション、XSS、認証バイパス
+            4. **API設計**: `/api/v2/` 形式、Zodバリデーション
+            5. **パフォーマンス**: 不要な再レンダリング、N+1クエリ
+            6. **テストカバレッジ**: 変更に対応するテストの有無
+            7. **Zustand**: persist設定、hydrationパターンの適切さ
 
-            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
+            ## プロジェクト規約
+            - frontend: React 19, Next.js 16, TailwindCSS 4, shadcn/ui
+            - backend: Hono v4, Cloudflare Workers, Neon PostgreSQL
+            - 詳細は CLAUDE.md を参照
+
+            `gh pr diff` でdiffを取得し、`gh pr comment` でレビューを投稿してください。
 
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.claude.com/en/docs/claude-code/cli-reference for available options
