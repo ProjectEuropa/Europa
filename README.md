@@ -80,6 +80,7 @@ npm run dev  # http://localhost:3002
 │   ├── src/
 │   ├── e2e/
 │   └── CLAUDE.md        # 開発ガイド・コマンド・E2Eテスト規約
+├── CLAUDE.md            # プロジェクト全体の開発ガイド
 └── README.md
 ```
 
