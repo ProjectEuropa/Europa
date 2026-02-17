@@ -53,6 +53,10 @@ frontend/src/
 hono-worker/src/
 ├── index.ts             # エントリーポイント
 ├── routes/              # API ルート定義
+│   ├── auth.ts          # 認証エンドポイント
+│   ├── events.ts        # イベント管理
+│   ├── files.ts         # ファイル管理
+│   └── discord.ts       # Discord連携
 ├── middleware/          # ミドルウェア
 ├── services/            # ビジネスロジック
 ├── types/               # 型定義

@@ -28,18 +28,18 @@ src/
 
 | 技術 | バージョン | 用途 |
 |-----|-----------|------|
-| Next.js | 16.x | Webフレームワーク（App Router, 静的生成, Turbopack） |
-| React | 19.x | UIライブラリ |
-| TypeScript | 5.x | 型安全性（strict有効） |
-| Zustand | 5.x | 状態管理（persist middleware） |
-| React Hook Form | 7.x | フォーム管理 |
-| Zod | 4.x | バリデーション |
-| TanStack Query | 5.x | サーバー状態管理 |
-| Tailwind CSS | 4.x | スタイリング |
+| Next.js | 16.1.3 | Webフレームワーク（App Router, 静的生成, Turbopack） |
+| React | 19.2.0 | UIライブラリ |
+| TypeScript | 5.7.3 | 型安全性（strict有効） |
+| Zustand | 5.0.10 | 状態管理（persist middleware） |
+| React Hook Form | 7.54.2 | フォーム管理 |
+| Zod | 4.3.5 | バリデーション |
+| TanStack Query | 5.90.19 | サーバー状態管理 |
+| Tailwind CSS | 4.1.7 | スタイリング |
 | shadcn/ui | - | UIコンポーネント（Radix UI基盤） |
-| Biome | 2.x | Lint/Format |
-| Vitest | 3.x | ユニットテスト |
-| Playwright | 1.x | E2Eテスト |
+| Biome | 2.5.2 | Lint/Format |
+| Vitest | 3.0.5 | ユニットテスト |
+| Playwright | 1.50.1 | E2Eテスト |
 
 **Node.js**: 24.x（Volta管理、Active LTS）
 

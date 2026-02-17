@@ -163,7 +163,7 @@ Use evaluations to test whether LLMs can effectively use your MCP server to answ
 To create effective evaluations, follow the process outlined in the evaluation guide:
 
 1. **Tool Inspection**: List available tools and understand their capabilities
-2. **Content Exploration**: Use READ-ONLY operations to explore available data
+2. **Content Exploration**: Use read-only operations to explore available data
 3. **Question Generation**: Create 10 complex, realistic questions
 4. **Answer Verification**: Solve each question yourself to verify answers
 
