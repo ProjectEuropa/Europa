@@ -10,22 +10,22 @@ description: プロジェクト全体のlintエラーを修正する
 
 1. フロントエンドのBiomeエラーを自動修正:
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/frontend && npm run check:fix
+cd frontend && npm run check:fix
 ```
 
 2. フロントエンドの型チェック:
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/frontend && npm run type-check
+cd frontend && npm run type-check
 ```
 
 3. バックエンドのBiomeエラーを自動修正:
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/hono-worker && npm run check:fix
+cd hono-worker && npm run check:fix
 ```
 
 4. 残ったエラーがあれば手動で修正
 
 5. ビルド確認:
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/frontend && npm run ci
+cd frontend && npm run ci
 ```

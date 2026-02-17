@@ -10,7 +10,7 @@ description: 失敗しているテストを修正する
 
 1. ユニットテスト実行:
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/frontend && npm run test:run
+cd frontend && npm run test:run
 ```
 
 2. 失敗しているテストを特定
@@ -24,5 +24,5 @@ cd /Users/masato/Desktop/spa-auth/Europa/frontend && npm run test:run
 
 5. ビルド確認:
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/frontend && npm run build
+cd frontend && npm run build
 ```

@@ -22,7 +22,6 @@ description: 新しいAPIエンドポイントを作成する
 - パラメータ化クエリ使用（SQLインジェクション防止）
 
 ## 確認コマンド
-// turbo
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/hono-worker && npm run check:fix
+cd hono-worker && npm run check:fix
 ```

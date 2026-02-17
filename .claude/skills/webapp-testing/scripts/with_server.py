@@ -17,6 +17,14 @@ Usage:
     python scripts/with_server.py \
       --server "python server.py" --port 3000 --cwd backend \
       -- python test.py
+
+    # Multiple servers with different working directories
+    # Note: When using --cwd with multiple servers, you must provide
+    # one --cwd for each --server (use '.' for current directory).
+    python scripts/with_server.py \
+      --server "python server.py" --port 3000 --cwd backend \
+      --server "npm run dev" --port 5173 --cwd frontend \
+      -- python test.py
 """
 
 import subprocess

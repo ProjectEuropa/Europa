@@ -16,11 +16,11 @@ description: 新しいReactコンポーネントを作成する
 3. 必要に応じて Vitest ユニットテストを作成（`frontend/src/__tests__/` 配下）
 4. Biome lint確認:
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/frontend && npm run check:fix
+cd frontend && npm run check:fix
 ```
 5. 型チェック確認:
 ```bash
-cd /Users/masato/Desktop/spa-auth/Europa/frontend && npm run type-check
+cd frontend && npm run type-check
 ```
 
 ## 規約
