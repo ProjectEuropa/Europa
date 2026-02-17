@@ -42,7 +42,7 @@ src/
 | Tailwind CSS | 4.1.7 | スタイリング |
 | shadcn/ui | - | UIコンポーネント（Radix UI基盤） |
 | Biome | 2.5.2 | Lint/Format |
-| Vitest | 4.x | ユニットテスト |
+| Vitest | 4.0.18 | ユニットテスト |
 | Playwright | 1.50.1 | E2Eテスト |
 
 **Node.js**: 24.x（Volta管理、Active LTS）

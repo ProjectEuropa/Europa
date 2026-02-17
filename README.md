@@ -187,9 +187,9 @@ graph LR
     end
 
     subgraph "開発ツール"
-        VitestFE[Vitest v4.x - Frontend]
+        VitestFE[Vitest v4.0.18 - Frontend]
         PlaywrightFE[Playwright v1.50.1]
-        VitestBE[Vitest v4.x - Backend]
+        VitestBE[Vitest v4.0.15 - Backend]
         Biome[Biome v2.5.2]
     end
 
