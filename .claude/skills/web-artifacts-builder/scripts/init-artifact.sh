@@ -95,7 +95,7 @@ export default {
 EOF
 
 echo "📝 Configuring Tailwind with shadcn theme..."
-cat > tailwind.config.js << 'EOF'
+cat > tailwind.config.cjs << 'EOF'
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -291,7 +291,7 @@ cat > components.json << 'EOF'
   "rsc": false,
   "tsx": true,
   "tailwind": {
-    "config": "tailwind.config.js",
+    "config": "tailwind.config.cjs",
     "css": "src/index.css",
     "baseColor": "slate",
     "cssVariables": true,

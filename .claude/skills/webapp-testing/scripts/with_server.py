@@ -98,10 +98,18 @@ def main():
             # Wait for this server to be ready
             print(f"Waiting for server on port {server['port']}...")
             if not is_server_ready(server['port'], timeout=args.timeout):
-                # Show server output to help diagnose startup failures
-                stderr_output = process.stderr.read().decode() if process.stderr else ""
+                # Terminate the failed server and safely collect its stderr
+                process.terminate()
+                try:
+                    _, stderr_bytes = process.communicate(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    _, stderr_bytes = process.communicate()
+                stderr_output = stderr_bytes.decode(errors='replace') if stderr_bytes else ""
                 if stderr_output:
                     print(f"Server stderr:\n{stderr_output}")
+                # Remove from server_processes since we already cleaned it up
+                server_processes.remove(process)
                 raise RuntimeError(f"Server failed to start on port {server['port']} within {args.timeout}s")
 
             print(f"Server ready on port {server['port']}")
