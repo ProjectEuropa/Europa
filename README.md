@@ -171,8 +171,6 @@ graph LR
         RHF[React Hook Form v7.71.1]
         ZodFE[Zod v4.3.5]
         Framer[Framer Motion v12.27.0]
-        VitestFE[Vitest v4.x]
-        PlaywrightFE[Playwright v1.50.1]
     end
 
     subgraph "Backend技術"
@@ -180,13 +178,19 @@ graph LR
         Workers[Cloudflare Workers]
         Zod[Zod v4.3.5]
         Bcrypt[bcryptjs]
-        VitestBE[Vitest v4.x]
     end
 
     subgraph "インフラ"
         Neon[Neon PostgreSQL]
         R2[Cloudflare R2]
         CF[Cloudflare CDN]
+    end
+
+    subgraph "開発ツール"
+        VitestFE[Vitest v4.x - Frontend]
+        PlaywrightFE[Playwright v1.50.1]
+        VitestBE[Vitest v4.x - Backend]
+        Biome[Biome v2.5.2]
     end
 
     NextJS --> React
@@ -208,6 +212,9 @@ graph LR
     style NextJS fill:#000,color:#fff,stroke:#333,stroke-width:2px
     style Hono fill:#ff6b35,stroke:#333,stroke-width:2px
     style Neon fill:#336791,stroke:#333,stroke-width:2px
+    style VitestFE fill:#729b1b,stroke:#333,stroke-width:2px
+    style VitestBE fill:#729b1b,stroke:#333,stroke-width:2px
+    style Biome fill:#60a5fa,stroke:#333,stroke-width:2px
 ```
 
 ## 詳細ドキュメント
