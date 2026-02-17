@@ -23,11 +23,11 @@ else
   echo "✅ Using Vite $VITE_VERSION (Node 18 compatible)"
 fi
 
-# Detect OS and set sed syntax
+# Detect OS and set sed syntax (use arrays to avoid word-splitting issues)
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  SED_INPLACE="sed -i ''"
+  SED_INPLACE=(sed -i '')
 else
-  SED_INPLACE="sed -i"
+  SED_INPLACE=(sed -i)
 fi
 
 # Check if pnpm is installed
@@ -38,7 +38,13 @@ fi
 
 # Check if project name is provided
 if [ -z "$1" ]; then
-  echo "❌ Usage: ./create-react-shadcn-complete.sh <project-name>"
+  echo "❌ Usage: ./init-artifact.sh <project-name>"
+  exit 1
+fi
+
+# Validate project name (alphanumeric, hyphens, and underscores only)
+if [[ ! "$1" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+  echo "❌ Error: Project name must contain only alphanumeric characters, hyphens, and underscores"
   exit 1
 fi
 
@@ -62,8 +68,8 @@ pnpm create vite "$PROJECT_NAME" --template react-ts
 cd "$PROJECT_NAME"
 
 echo "🧹 Cleaning up Vite template..."
-$SED_INPLACE '/<link rel="icon".*vite\.svg/d' index.html
-$SED_INPLACE 's/<title>.*<\/title>/<title>'"$PROJECT_NAME"'<\/title>/' index.html
+"${SED_INPLACE[@]}" '/<link rel="icon".*vite\.svg/d' index.html
+"${SED_INPLACE[@]}" 's/<title>.*<\/title>/<title>'"$PROJECT_NAME"'<\/title>/' index.html
 
 echo "📦 Installing base dependencies..."
 pnpm install

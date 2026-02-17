@@ -9,12 +9,13 @@ Usage:
 
     # Multiple servers
     python scripts/with_server.py \
-      --server "cd backend && python server.py" --port 3000 \
-      --server "cd frontend && npm run dev" --port 5173 \
+      --server "python server.py" --port 3000 \
+      --server "npm run dev" --port 5173 \
       -- python test.py
 """
 
 import subprocess
+import shlex
 import socket
 import time
 import sys
@@ -65,12 +66,11 @@ def main():
         for i, server in enumerate(servers):
             print(f"Starting server {i+1}/{len(servers)}: {server['cmd']}")
 
-            # Use shell=True to support commands with cd and &&
+            # Split command string into list for safe execution (no shell=True)
             process = subprocess.Popen(
-                server['cmd'],
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                shlex.split(server['cmd']),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
             )
             server_processes.append(process)
 
@@ -81,7 +81,7 @@ def main():
 
             print(f"Server ready on port {server['port']}")
 
-        print(f"\nAll {len(servers)} server(s) ready")
+        print(f"\nAll {len(servers)} server(s) ready.")
 
         # Run the command
         print(f"Running: {' '.join(args.command)}\n")
@@ -90,7 +90,7 @@ def main():
 
     finally:
         # Clean up all servers
-        print(f"\nStopping {len(server_processes)} server(s)...")
+        print(f"\nStopping {len(server_processes)} server(s)...")  # noqa: F541
         for i, process in enumerate(server_processes):
             try:
                 process.terminate()

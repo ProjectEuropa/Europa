@@ -271,27 +271,42 @@ def init_skill(skill_name, path):
 
 
 def main():
-    if len(sys.argv) < 4 or sys.argv[2] != '--path':
-        print("Usage: init_skill.py <skill-name> --path <path>")
-        print("\nSkill name requirements:")
-        print("  - Kebab-case identifier (e.g., 'my-data-analyzer')")
-        print("  - Lowercase letters, digits, and hyphens only")
-        print("  - Max 64 characters")
-        print("  - Must match directory name exactly")
-        print("\nExamples:")
-        print("  init_skill.py my-new-skill --path skills/public")
-        print("  init_skill.py my-api-helper --path skills/private")
-        print("  init_skill.py custom-skill --path /custom/location")
-        sys.exit(1)
+    import argparse
+    import re
 
-    skill_name = sys.argv[1]
-    path = sys.argv[3]
+    parser = argparse.ArgumentParser(
+        description='Initialize a new skill from template',
+        epilog=(
+            "Skill name requirements:\n"
+            "  - Kebab-case identifier (e.g., 'my-data-analyzer')\n"
+            "  - Lowercase letters, digits, and hyphens only\n"
+            "  - Max 64 characters\n"
+            "  - Must match directory name exactly\n"
+            "\n"
+            "Examples:\n"
+            "  init_skill.py my-new-skill --path skills/public\n"
+            "  init_skill.py my-api-helper --path skills/private\n"
+            "  init_skill.py custom-skill --path /custom/location"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument('skill_name', help='Name of the skill (kebab-case)')
+    parser.add_argument('--path', required=True, help='Path where the skill directory should be created')
 
-    print(f"🚀 Initializing skill: {skill_name}")
-    print(f"   Location: {path}")
+    args = parser.parse_args()
+
+    # Validate skill name format (kebab-case)
+    if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', args.skill_name):
+        parser.error("Skill name must be kebab-case (lowercase letters, digits, and hyphens only)")
+
+    if len(args.skill_name) > 64:
+        parser.error("Skill name must be 64 characters or fewer")
+
+    print(f"🚀 Initializing skill: {args.skill_name}")
+    print(f"   Location: {args.path}")
     print()
 
-    result = init_skill(skill_name, path)
+    result = init_skill(args.skill_name, args.path)
 
     if result:
         sys.exit(0)

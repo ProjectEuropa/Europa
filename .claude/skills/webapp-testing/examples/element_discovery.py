@@ -34,7 +34,7 @@ with sync_playwright() as p:
         print(f"  - {name} ({input_type})")
 
     # Take screenshot for visual reference
-    page.screenshot(path='/tmp/page_discovery.png', full_page=True)
-    print("\nScreenshot saved to /tmp/page_discovery.png")
+    page.screenshot(path='page_discovery.png', full_page=True)
+    print("\nScreenshot saved to page_discovery.png")
 
     browser.close()
