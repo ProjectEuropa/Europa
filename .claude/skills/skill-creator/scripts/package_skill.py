@@ -83,22 +83,29 @@ def package_skill(skill_path, output_dir=None):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python utils/package_skill.py <path/to/skill-folder> [output-directory]")
-        print("\nExample:")
-        print("  python utils/package_skill.py skills/public/my-skill")
-        print("  python utils/package_skill.py skills/public/my-skill ./dist")
-        sys.exit(1)
+    import argparse
 
-    skill_path = sys.argv[1]
-    output_dir = sys.argv[2] if len(sys.argv) > 2 else None
+    parser = argparse.ArgumentParser(
+        description='Package a skill folder into a distributable .skill file',
+        epilog=(
+            "Examples:\n"
+            "  python utils/package_skill.py skills/public/my-skill\n"
+            "  python utils/package_skill.py skills/public/my-skill ./dist"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument('skill_path', help='Path to the skill folder')
+    parser.add_argument('output_dir', nargs='?', default=None,
+                        help='Output directory for the .skill file (default: current directory)')
 
-    print(f"📦 Packaging skill: {skill_path}")
-    if output_dir:
-        print(f"   Output directory: {output_dir}")
+    args = parser.parse_args()
+
+    print(f"📦 Packaging skill: {args.skill_path}")
+    if args.output_dir:
+        print(f"   Output directory: {args.output_dir}")
     print()
 
-    result = package_skill(skill_path, output_dir)
+    result = package_skill(args.skill_path, args.output_dir)
 
     if result:
         sys.exit(0)
