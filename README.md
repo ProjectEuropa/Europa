@@ -158,6 +158,8 @@ DISCORD_CHANNEL_ID=xxxx  # フォールバック用
 
 ## 技術スタック詳細
 
+> **凡例**: このグラフは技術スタック全体の可視化であり、実行時依存関係を示すものではありません。テストツール（Vitest/Playwright）はdevDependenciesです。
+
 ```mermaid
 graph LR
     subgraph "Frontend技術"
@@ -169,7 +171,7 @@ graph LR
         RHF[React Hook Form v7.71.1]
         ZodFE[Zod v4.3.5]
         Framer[Framer Motion v12.27.0]
-        VitestFE[Vitest v3.0.5]
+        VitestFE[Vitest v4.x]
         PlaywrightFE[Playwright v1.50.1]
     end
 
@@ -178,7 +180,7 @@ graph LR
         Workers[Cloudflare Workers]
         Zod[Zod v4.3.5]
         Bcrypt[bcryptjs]
-        VitestBE[Vitest v3.0.5]
+        VitestBE[Vitest v4.x]
     end
 
     subgraph "インフラ"
@@ -192,15 +194,12 @@ graph LR
     React --> TanStack
     React --> Zustand
     React --> RHF
-    React --> VitestFE
-    React --> PlaywrightFE
     RHF --> ZodFE
     React --> Framer
 
     Hono --> Workers
     Hono --> Zod
     Hono --> Bcrypt
-    Hono --> VitestBE
 
     Workers --> Neon
     Workers --> R2
