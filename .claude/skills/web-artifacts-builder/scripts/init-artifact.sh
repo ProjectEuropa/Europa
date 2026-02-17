@@ -19,7 +19,7 @@ if [ "$NODE_VERSION" -ge 20 ]; then
   VITE_VERSION="latest"
   echo "✅ Using Vite latest (Node 20+)"
 else
-  VITE_VERSION="5.4.11"
+  VITE_VERSION="5.4.12"
   echo "✅ Using Vite $VITE_VERSION (Node 18 compatible)"
 fi
 
@@ -61,8 +61,13 @@ fi
 
 echo "🚀 Creating new React + Vite project: $PROJECT_NAME"
 
-# Create new Vite project (always use latest create-vite, pin vite version later)
-pnpm create vite "$PROJECT_NAME" --template react-ts
+# Create new Vite project
+if [ "$NODE_VERSION" -lt 20 ]; then
+  # Pin create-vite to 5.x series for Node 18 compatibility
+  pnpm create vite@5 "$PROJECT_NAME" --template react-ts
+else
+  pnpm create vite "$PROJECT_NAME" --template react-ts
+fi
 
 # Navigate into project directory
 cd "$PROJECT_NAME"
@@ -242,14 +247,14 @@ fs.writeFileSync('tsconfig.json', JSON.stringify(config, null, 2));
 
 # Add path aliases to tsconfig.app.json
 echo "🔧 Adding path aliases to tsconfig.app.json..."
+# Install json5 for safe JSONC parsing (tsconfig files may contain comments)
+npm install --no-save json5 2>/dev/null
 node -e "
 const fs = require('fs');
+const JSON5 = require('json5');
 const path = 'tsconfig.app.json';
 const content = fs.readFileSync(path, 'utf8');
-// Remove comments manually
-const lines = content.split('\n').filter(line => !line.trim().startsWith('//'));
-const jsonContent = lines.join('\n');
-const config = JSON.parse(jsonContent.replace(/\/\*[\s\S]*?\*\//g, '').replace(/,(\s*[}\]])/g, '\$1'));
+const config = JSON5.parse(content);
 config.compilerOptions = config.compilerOptions || {};
 config.compilerOptions.baseUrl = '.';
 config.compilerOptions.paths = { '@/*': ['./src/*'] };
