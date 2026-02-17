@@ -178,7 +178,7 @@ graph LR
     subgraph "Backend技術"
         Hono[Hono v4.11.7]
         Workers[Cloudflare Workers]
-        Zod[Zod v4.3.5]
+        Zod[Zod v4.3.6]
         Bcrypt[bcryptjs]
     end
 
