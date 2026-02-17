@@ -1,6 +1,6 @@
 # コードスタイルと規約
 
-## TypeScript/React スタイル (Biome 2.x)
+## TypeScript/React スタイル (Biome v2.3.x)
 
 ### Biome設定
 - **インデント**: 2スペース
@@ -20,7 +20,7 @@
 - **パスエイリアス**: `@/*` → `./src/*`
 
 ### Pre-commit Hook (lint-staged + husky)
-```
+```text
 TypeScript/JavaScript: biome check --write + vitest related --run
 JSON/Markdown/CSS: biome format --write
 ```

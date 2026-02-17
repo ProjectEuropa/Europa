@@ -50,6 +50,7 @@ graph TB
 ### 前提条件
 
 - **Node.js:** v24.13.0 以上（[Volta](https://volta.sh/) 推奨）
+- **パッケージマネージャー:** npm（プロジェクト標準）
 - **Wrangler CLI:** Cloudflare Workers のデプロイに必要
 
 ### セットアップ
@@ -80,6 +81,7 @@ npm run dev  # http://localhost:3002
 │   ├── src/
 │   ├── e2e/
 │   └── CLAUDE.md        # 開発ガイド・コマンド・E2Eテスト規約
+├── CLAUDE.md            # プロジェクト全体の開発ガイド
 └── README.md
 ```
 
@@ -190,7 +192,7 @@ graph LR
         VitestFE[Vitest v4.0.18 - Frontend]
         PlaywrightFE[Playwright v1.50.1]
         VitestBE[Vitest v4.0.15 - Backend]
-        Biome[Biome v2.5.2]
+        Biome[Biome v2.3.x]
     end
 
     NextJS --> React

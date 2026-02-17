@@ -41,7 +41,7 @@ src/
 | TanStack Query | 5.90.19 | サーバー状態管理 |
 | Tailwind CSS | 4.1.7 | スタイリング |
 | shadcn/ui | - | UIコンポーネント（Radix UI基盤） |
-| Biome | 2.5.2 | Lint/Format |
+| Biome | 2.3.12 | Lint/Format |
 | Vitest | 4.0.18 | ユニットテスト |
 | Playwright | 1.50.1 | E2Eテスト |
 
