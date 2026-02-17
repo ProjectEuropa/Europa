@@ -46,7 +46,7 @@ src/
 | bcryptjs | 2.4.3 | パスワードハッシング |
 | Resend | 3.5.0 | メール送信 |
 | Biome | 2.5.2 | Lint/Format |
-| Vitest | 3.0.5 | テストフレームワーク |
+| Vitest | 4.0.15 | テストフレームワーク |
 
 ## Development Workflow
 

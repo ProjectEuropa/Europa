@@ -13,9 +13,9 @@ Project EuropaはCarnage Heart EXA用のOKEファイルの共有・分析・コ�
 - **コンポーネント**: shadcn/ui (Radix UI基盤)
 - **状態管理**: Zustand 5.x + TanStack Query 5.x
 - **フォーム**: React Hook Form 7.x + Zod 4.x
-- **テスト**: Vitest 4.x (単体) + Playwright 1.x (E2E)
-- **コード品質**: Biome 2.x (lint/format)
-- **Node.js**: 24.x (Volta管理)
+- **テスト**: Vitest 4.0.18 (単体) + Playwright 1.50.1 (E2E)
+- **コード品質**: Biome 2.5.2 (lint/format)
+- **Node.js**: 24.13.0 (Volta管理)
 
 ### バックエンド (Hono on Cloudflare Workers)
 - **Runtime**: Cloudflare Workers
@@ -23,9 +23,9 @@ Project EuropaはCarnage Heart EXA用のOKEファイルの共有・分析・コ�
 - **認証**: Cookie-based JWT
 - **データベース**: Neon PostgreSQL
 - **ストレージ**: Cloudflare R2
-- **テスト**: Vitest 4.x
-- **コード品質**: Biome 2.x
-- **Node.js**: 24.x (Volta管理)
+- **テスト**: Vitest 4.0.15
+- **コード品質**: Biome 2.5.2
+- **Node.js**: 24.13.0 (Volta管理)
 
 ## アーキテクチャ
 - **デプロイ**: 

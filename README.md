@@ -2,7 +2,7 @@
 
 Cloudflare Workers + HonoバックエンドとNext.jsフロントエンドで構成されるWebアプリケーション。
 
-> **注記**: このプロジェクトは以前Laravel（PHP 8.4、Laravel 11.x）を使用していましたが、現在はCloudflare Workers + Honoアーキテクチャに移行しています。
+> **注記**: このプロジェクトは以前Laravel（PHP 8.4、Laravel 11.x）やDocker Composeを使用していましたが、現在はCloudflare Workers + Honoアーキテクチャに完全に移行し、Docker Composeは廃止されました。
 
 ## アーキテクチャ
 
@@ -158,6 +158,8 @@ DISCORD_CHANNEL_ID=xxxx  # フォールバック用
 
 ## 技術スタック詳細
 
+> **凡例**: このグラフは技術スタック全体の可視化であり、実行時依存関係を示すものではありません。テストツール（Vitest/Playwright）はdevDependenciesです。
+
 ```mermaid
 graph LR
     subgraph "Frontend技術"
@@ -184,6 +186,13 @@ graph LR
         CF[Cloudflare CDN]
     end
 
+    subgraph "開発ツール"
+        VitestFE[Vitest v4.0.18 - Frontend]
+        PlaywrightFE[Playwright v1.50.1]
+        VitestBE[Vitest v4.0.15 - Backend]
+        Biome[Biome v2.5.2]
+    end
+
     NextJS --> React
     NextJS --> TailwindCSS
     React --> TanStack
@@ -203,6 +212,9 @@ graph LR
     style NextJS fill:#000,color:#fff,stroke:#333,stroke-width:2px
     style Hono fill:#ff6b35,stroke:#333,stroke-width:2px
     style Neon fill:#336791,stroke:#333,stroke-width:2px
+    style VitestFE fill:#729b1b,stroke:#333,stroke-width:2px
+    style VitestBE fill:#729b1b,stroke:#333,stroke-width:2px
+    style Biome fill:#60a5fa,stroke:#333,stroke-width:2px
 ```
 
 ## 詳細ドキュメント

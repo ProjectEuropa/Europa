@@ -1,3 +1,12 @@
+---
+name: e2e-write
+description: |
+  Create new E2E tests using Playwright with Page Object Model pattern and semantic locators.
+  Triggers: "E2Eテストを書いて", "テストを作成して", "新機能のテストが必要", "E2E test", "create test"
+  Use when: Creating E2E tests for new pages or components, after implementing new features.
+  Outputs: Page Object files (frontend/e2e/pages/) and spec files (frontend/e2e/*.spec.ts)
+---
+
 # E2E Test Writer
 
 新しいE2Eテストを作成するスキルです。Page Object Modelパターンに従い、セマンティックロケータを使用した高品質なテストを生成します。

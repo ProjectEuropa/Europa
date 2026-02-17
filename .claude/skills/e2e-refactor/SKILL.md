@@ -1,3 +1,12 @@
+---
+name: e2e-refactor
+description: |
+  Refactor existing E2E tests to use Page Object Model pattern and semantic locators.
+  Triggers: "テストをリファクタリング", "ロケータを改善", "Page Objectに変換", "refactor test", "improve locators"
+  Use when: Tests don't use semantic locators, Page Object pattern not applied, tests use deprecated patterns like class/ID selectors or fixed waits.
+  Outputs: Updated/new Page Objects and refactored spec files.
+---
+
 # E2E Test Refactorer
 
 既存のE2Eテストをリファクタリングし、Page Object Modelパターンとセマンティックロケータを適用するスキルです。

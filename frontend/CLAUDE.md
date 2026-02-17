@@ -26,6 +26,10 @@ src/
 
 ## Technology Stack
 
+- **Next.js**: 16.1.3 (App Router, 静的生成 `output: 'export'`)
+  - **重要**: 静的エクスポートのため **SSR (Server Side Rendering) は不可**。
+  - データ取得は基本クライアントサイド（TanStack Query）で行い、スケルトン表示やプリフェッチを併用すること。
+
 | 技術 | バージョン | 用途 |
 |-----|-----------|------|
 | Next.js | 16.1.3 | Webフレームワーク（App Router, 静的生成, Turbopack） |
@@ -38,7 +42,7 @@ src/
 | Tailwind CSS | 4.1.7 | スタイリング |
 | shadcn/ui | - | UIコンポーネント（Radix UI基盤） |
 | Biome | 2.5.2 | Lint/Format |
-| Vitest | 3.0.5 | ユニットテスト |
+| Vitest | 4.0.18 | ユニットテスト |
 | Playwright | 1.50.1 | E2Eテスト |
 
 **Node.js**: 24.x（Volta管理、Active LTS）
