@@ -18,7 +18,7 @@ graph TB
     end
 
     subgraph "Cloudflare Workers"
-        API[Hono API Server<br/>v4.11.4]
+        API[Hono API Server<br/>v4.11.7]
     end
 
     subgraph "外部サービス"
@@ -165,18 +165,18 @@ DISCORD_CHANNEL_ID=xxxx  # フォールバック用
 ```mermaid
 graph LR
     subgraph "Frontend技術"
-        NextJS[Next.js 16.1.3]
-        React[React 19.2.0]
+        NextJS[Next.js 16.1.5]
+        React[React 19.2.4]
         TailwindCSS[TailwindCSS 4.1.7]
-        TanStack[TanStack Query v5.90.19]
+        TanStack[TanStack Query v5.90.20]
         Zustand[Zustand v5.0.10]
         RHF[React Hook Form v7.71.1]
-        ZodFE[Zod v4.3.5]
+        ZodFE[Zod v4.3.6]
         Framer[Framer Motion v12.27.0]
     end
 
     subgraph "Backend技術"
-        Hono[Hono v4.11.4]
+        Hono[Hono v4.11.7]
         Workers[Cloudflare Workers]
         Zod[Zod v4.3.5]
         Bcrypt[bcryptjs]
@@ -190,7 +190,7 @@ graph LR
 
     subgraph "開発ツール"
         VitestFE[Vitest v4.0.18 - Frontend]
-        PlaywrightFE[Playwright v1.50.1]
+        PlaywrightFE[Playwright v1.58.0]
         VitestBE[Vitest v4.0.15 - Backend]
         Biome[Biome v2.3.x]
     end

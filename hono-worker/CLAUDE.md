@@ -38,7 +38,7 @@ src/
 
 | 技術 | バージョン | 用途 |
 |-----|-----------|------|
-| Hono | 4.11.4 | サーバーレスWebフレームワーク |
+| Hono | 4.11.7 | サーバーレスWebフレームワーク |
 | Cloudflare Workers | - | Edge Computing実行環境 |
 | Neon PostgreSQL | - | サーバーレスDB |
 | Cloudflare R2 | - | S3互換オブジェクトストレージ |
