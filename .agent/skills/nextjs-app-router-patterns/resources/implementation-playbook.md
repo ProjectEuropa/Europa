@@ -5,8 +5,17 @@ This file contains detailed patterns, checklists, and code samples referenced by
 ## Project Context (Europa)
 
 > [!IMPORTANT]
-> **Backend Service**: This project uses **Hono v4 + Cloudflare Workers** for backend services (refer to `CLAUDE.md` API Design Rules). 
+> **Backend Service**: This project uses **Hono v4 + Cloudflare Workers** for backend services (refer to `CLAUDE.md` API Design Rules).
 > **Route Handlers**: Next.js Route Handlers (`app/api/...`) should generally be avoided unless specifically required for Next.js internal features. Always prioritize `/api/v2/` endpoints hosted on the Hono backend.
+
+> [!WARNING]
+> **Static Export**: This project uses `output: 'export'` in `next.config.ts`.
+> The following patterns are **incompatible** and will break the build:
+> - Pattern 3 (Server Actions): `addToCart`, `checkout` functions
+> - Pattern 1/Caching: `next: { revalidate }`, `next: { tags }`
+> - Pattern 6 (Streaming): Suspense with async Server Components
+>
+> Use TanStack Query for client-side data fetching with skeleton loading instead.
 
 ## When to Use This Skill
 
@@ -31,7 +40,7 @@ This file contains detailed patterns, checklists, and code samples referenced by
 
 ### 2. File Conventions
 
-```
+```text
 app/
 ├── layout.tsx       # Shared UI wrapper
 ├── page.tsx         # Route UI
@@ -400,16 +409,12 @@ async function Recommendations({ productId }: { productId: string }) {
 
 ### Pattern 7: Route Handlers (API Routes)
 
-/*
-================================================================================
-⛔️ WARNING: DO NOT USE NEXT.JS ROUTE HANDLERS ⛔️
-
-This project uses Hono v4 + Cloudflare Workers for all backend logic.
-Do not implement API endpoints in `app/api/...`.
-
-Refer to `CLAUDE.md` for API Design Rules.
-================================================================================
-*/
+> [!WARNING]
+> **DO NOT USE NEXT.JS ROUTE HANDLERS**
+>
+> This project uses Hono v4 + Cloudflare Workers for all backend logic.
+> Do not implement API endpoints in `app/api/...`.
+> Refer to `CLAUDE.md` for API Design Rules.
 
 ### Pattern 8: Metadata and SEO
 
@@ -498,7 +503,7 @@ export async function updateProduct(id: string, data: ProductData) {
 - **Use Server Actions** - For mutations with progressive enhancement
 
 ### Don'ts
-- **Don't pass serializable data** - Server → Client boundary limitations
+- **Don't pass non-serializable data** - Server → Client boundary limitations (e.g., functions, class instances, Date objects)
 - **Don't use hooks in Server Components** - No useState, useEffect
 - **Don't use raw fetch() in Client Components** - Use Server Components or a data-fetching library (like React Query / SWR)
 - **Don't over-nest layouts** - Each layout adds to the component tree

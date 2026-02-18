@@ -19,7 +19,7 @@ This file contains detailed patterns, checklists, and code samples referenced by
 
 ### 2. POUR Principles
 
-```
+```text
 Perceivable:  Can users perceive the content?
 Operable:     Can users operate the interface?
 Understandable: Can users understand the content?
@@ -28,7 +28,7 @@ Robust:       Does it work with assistive tech?
 
 ### 3. Common Violations by Impact
 
-```
+```text
 Critical (Blockers):
 ├── Missing alt text for functional images
 ├── No keyboard access to interactive elements
@@ -299,8 +299,6 @@ Check:
 
 ### 3.1.2 Language of Parts (Level AA)
 
-### 3.1.2 Language of Parts (Level AA)
-
 - [ ] Language changes marked
 
 ```html
@@ -426,6 +424,7 @@ test('should have no accessibility violations', async ({ page }) => {
 
   expect(results.violations).toHaveLength(0);
 });
+```
 
 ```bash
 # CLI tools
