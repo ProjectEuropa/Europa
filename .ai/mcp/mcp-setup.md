@@ -1,6 +1,6 @@
-# AntiGravity MCP設定ガイド
+# MCP設定ガイド
 
-AntiGravityで利用するMCPサーバーの設定手順。
+Project Europaで利用するMCPサーバーの設定手順。
 
 ## VS Code MCP設定方法
 
@@ -19,7 +19,7 @@ Language Serverを利用した高度なシンボル検索・分析ツール。
     "serena": {
       "command": "uvx",
       "args": [
-        "--from", "git+https://github.com/oraios/serena",
+        "--from", "git+https://github.com/oraios/serena@v0.17.1",
         "serena-mcp-server",
         "--project-root", "${workspaceFolder}"
       ]
@@ -28,7 +28,7 @@ Language Serverを利用した高度なシンボル検索・分析ツール。
 }
 ```
 
-> **Note**: Serenaはnpmパッケージではなくgitリポジトリから直接インストールされます。特定バージョンに固定する場合は `git+https://github.com/oraios/serena@<commit-hash>` の形式を使用してください。
+> **Note**: バージョンを固定するには `git+https://github.com/oraios/serena@<tag-or-commit-hash>` の形式を使用してください。上記の例では `v0.17.1` タグを指定しています。利用可能なタグは [Serena Releases](https://github.com/oraios/serena/releases) で確認できます。
 
 ### 2. Context7（ライブラリドキュメント検索）
 
@@ -45,7 +45,7 @@ npmパッケージやライブラリのドキュメントを最新版で検索�
 }
 ```
 
-### 3. Memory（永続メモリ）⭐NEW
+### 3. Memory（永続メモリ）
 
 ナレッジグラフベースの永続メモリ。エンティティ・リレーション・観察を保存し、セッション間で情報を保持。
 
@@ -72,12 +72,15 @@ npmパッケージやライブラリのドキュメントを最新版で検索�
 - チームメンバーの担当範囲を管理
 - 頻出のトラブルシューティングパターンを蓄積
 
-## AntiGravityで不要なMCP
+## エージェント別のMCP対応状況
 
-以下はAntiGravityが内蔵ツールで代替可能:
+各エージェントで利用できるMCP・内蔵ツールの対応表:
 
-| Claude Code MCP | AntiGravity代替 |
-|-----------------|----------------|
-| `fetch` | `read_url_content` ツール |
-| `playwright` | `browser_subagent` ツール |
-| `sequential-thinking` | 内蔵の思考機能 |
+| 機能 | Claude Code | AntiGravity |
+|------|------------|-------------|
+| URL取得 | `fetch` MCP | `read_url_content` 内蔵ツール |
+| ブラウザ自動化 | `playwright` MCP | `browser_subagent` 内蔵ツール |
+| 段階的思考 | `sequential-thinking` MCP | 内蔵の思考機能 |
+| コードインテリジェンス | `serena` MCP | `serena` MCP |
+| ドキュメント検索 | `Context7` MCP | `Context7` MCP |
+| 永続メモリ | `memory` MCP | `memory` MCP |

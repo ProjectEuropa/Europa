@@ -11,7 +11,7 @@ description: |
 
 ブラウザ自動化を使用してローカルWebアプリケーションをテスト・検証するスキル。
 
-AntiGravityでは `browser_subagent` ツールを使用してブラウザ操作を行う。
+> **Note**: このスキルはAntiGravity専用です。Claude Codeでは `playwright` MCPを使用してください。
 
 ## Decision Tree
 
@@ -47,7 +47,7 @@ cd hono-worker && npm run dev
 
 ### 2. browser_subagentでテスト
 
-browser_subagentを呼び出す際のタスク記述例:
+`browser_subagent` ツールを呼び出す際のタスク記述例:
 
 ```text
 1. http://localhost:<port> にアクセス
@@ -68,7 +68,7 @@ browser_subagentを呼び出す際のタスク記述例:
 ## Best Practices
 
 - サーバー起動は `run_command` で行い、バックグラウンドで実行
-- browser_subagentのタスク記述は具体的かつ明確にする
+- `browser_subagent` のタスク記述は具体的かつ明確にする
 - テスト完了条件を明示する
 - セマンティックなセレクタを優先（`text=`, `role=`, aria属性）
 - スクリーンショットは検証結果の証拠として活用
