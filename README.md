@@ -151,12 +151,12 @@ sequenceDiagram
 
 ```bash
 # Discord Developer Portalから取得
-# ⚠️ BOT_TOKENは機密情報です。リポジトリにコミットせず、環境変数または.dev.varsで管理してください。
-DISCORD_APPLICATION_ID=xxxx
-DISCORD_PUBLIC_KEY=xxxx
-DISCORD_BOT_TOKEN=xxxx
-DISCORD_GUILD_ID=xxxx
-DISCORD_CHANNEL_ID=xxxx  # フォールバック用
+# ⚠️ 以下はすべて機密情報です。リポジトリにコミットせず、環境変数または.dev.varsで管理してください。
+DISCORD_APPLICATION_ID=xxxx    # 機密: アプリケーションID
+DISCORD_PUBLIC_KEY=xxxx        # 機密: 署名検証用公開鍵
+DISCORD_BOT_TOKEN=xxxx         # 機密: Botトークン（最重要）
+DISCORD_GUILD_ID=xxxx          # 非公開推奨: サーバーID
+DISCORD_CHANNEL_ID=xxxx        # 非公開推奨: フォールバック用チャンネルID
 ```
 
 ## 技術スタック詳細
