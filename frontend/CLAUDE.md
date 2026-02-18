@@ -28,6 +28,7 @@ src/
 
 - **Next.js**: 16.1.5 (App Router, 静的生成 `output: 'export'`)
   - **重要**: 静的エクスポートのため **SSR (Server Side Rendering) は不可**。
+  - **⚠️ 非互換機能**: Server Actions (`'use server'`)、ISR、Cache tags、Streaming、Route Handlers (`app/api/route.ts`)
   - データ取得は基本クライアントサイド（TanStack Query）で行い、スケルトン表示やプリフェッチを併用すること。
 
 | 技術 | バージョン | 用途 |
