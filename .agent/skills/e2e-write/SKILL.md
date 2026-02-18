@@ -86,8 +86,8 @@ import { [PageName]Page } from './pages/[PageName]Page';
 test.describe('[PageName]', () => {
   test('should display main content when page is loaded', async ({ page }) => {
     const [pageName]Page = new [PageName]Page(page);
-    await [pageName]Page.goto();
     await [pageName]Page.clearStorage();
+    await [pageName]Page.goto();
     await [pageName]Page.expectVisible();
   });
 });
@@ -108,6 +108,7 @@ test.use({ ...devices['iPhone 14'] });
 test.describe('[PageName] Mobile', () => {
   test('should display main content when viewed on mobile', async ({ page }) => {
     const [pageName]Page = new [PageName]Page(page);
+    await [pageName]Page.clearStorage();
     await [pageName]Page.goto();
     await [pageName]Page.expectVisible();
   });
