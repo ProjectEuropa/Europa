@@ -26,7 +26,7 @@ src/
 
 ## Technology Stack
 
-- **Next.js**: 16.1.3 (App Router, 静的生成 `output: 'export'`)
+- **Next.js**: 16.1.5 (App Router, 静的生成 `output: 'export'`)
   - **重要**: 静的エクスポートのため **SSR (Server Side Rendering) は不可**。
   - データ取得は基本クライアントサイド（TanStack Query）で行い、スケルトン表示やプリフェッチを併用すること。
 
