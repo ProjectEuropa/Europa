@@ -178,4 +178,4 @@ await page.route('**/api/v2/endpoint', async (route) => {
 
 > **Important**: テスト作成時はデスクトップ・モバイル**両方**のファイルを生成すること。
 
-作成後、`npm run test:e2e -- [page-name].spec.ts` でテストを実行して動作確認する。
+作成後、`cd frontend && npm run test:e2e -- [page-name].spec.ts` でテストを実行して動作確認する。

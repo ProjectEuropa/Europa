@@ -81,7 +81,7 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 
 各エージェントは自身のディレクトリ設定を優先的に参照します。
 
-> **Symlink 互換性**: `.agent/skills/` のシンボリックリンクは macOS、Linux、Git Bash on Windows で動作確認済みです。GitHub Actions では checkout action がデフォルトで symlink を解決します。
+> **Symlink 互換性**: `.agent/skills/` のシンボリックリンクは macOS、Linux、Git Bash on Windows で動作確認済みです。GitHub Actions の actions/checkout はデフォルトでリポジトリ内のシンボリックリンクを実際の symlink（git mode 120000）として保持します（展開・参照解除はしません）。
 
 ## Available Skills
 

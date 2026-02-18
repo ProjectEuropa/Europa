@@ -24,7 +24,7 @@ This file contains detailed patterns, checklists, and code samples referenced by
 - Implementing Server Components and streaming
 - Setting up parallel and intercepting routes
 - Optimizing data fetching and caching
-- Building full-stack features with Server Actions
+- Building full-stack features with Server Actions (only when using App Router with static export / Europa constraint)
 
 ## Core Concepts
 
@@ -73,25 +73,32 @@ app/
 
 ### Pattern 2: Client Components with 'use client'
 
+> [!IMPORTANT]
+> **Project Europa**: Server Actions は使用不可のため、API クライアントを使用した実装を推奨します。
+
 ```typescript
 // components/products/AddToCartButton.tsx
 'use client'
 
-import { useState, useTransition } from 'react'
-import { addToCart } from '@/app/actions/cart'
+import { useState } from 'react'
+import { apiClient } from '@/lib/api' // Client-side API helper
 
 export function AddToCartButton({ productId }: { productId: string }) {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setError(null)
-    startTransition(async () => {
-      const result = await addToCart(productId)
-      if (result.error) {
-        setError(result.error)
-      }
-    })
+    setIsPending(true)
+    
+    try {
+      // Use client-side API call instead of Server Action
+      await apiClient.post('/api/v2/cart', { productId })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setIsPending(false)
+    }
   }
 
   return (
@@ -113,8 +120,6 @@ export function AddToCartButton({ productId }: { productId: string }) {
 
 > [!WARNING]
 > 🚫 **このプロジェクトでは使用不可**: Server Actions (`'use server'`) は `output: 'export'` と非互換です。
->
-> 詳細は [Next.js 公式ドキュメント: Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations) を参照してください。
 > このプロジェクトでは Hono バックエンドの API を使用してください。
 
 ### Pattern 4: Parallel Routes
@@ -289,7 +294,7 @@ export default async function ProductPage({ params }: Props) {
 
 ## Caching Strategies
 
-### Data Cache
+### Compatible with output: 'export' (Static Export)
 
 ```typescript
 // No cache (always fresh)
@@ -297,14 +302,24 @@ fetch(url, { cache: 'no-store' })
 
 // Cache forever (static)
 fetch(url, { cache: 'force-cache' })
+```
 
-// ISR - revalidate after 60 seconds
+### Not compatible with output: 'export' / Server-only
+
+> [!WARNING]
+> The following strategies are **incompatible** with static export (`output: 'export'`).
+> - `next: { revalidate }`
+> - `next: { tags }`
+> - `revalidateTag`, `revalidatePath`
+
+```typescript
+// ISR - revalidate after 60 seconds (Incompatible)
 fetch(url, { next: { revalidate: 60 } })
 
-// Tag-based invalidation
+// Tag-based invalidation (Incompatible)
 fetch(url, { next: { tags: ['products'] } })
 
-// Invalidate via Server Action
+// Invalidate via Server Action (Incompatible)
 'use server'
 import { revalidateTag, revalidatePath } from 'next/cache'
 
@@ -322,7 +337,7 @@ export async function updateProduct(id: string, data: ProductData) {
 - **Colocate data fetching** - Fetch data where it's used
 - **Use Suspense boundaries** - Enable streaming for slow data
 - **Leverage parallel routes** - Independent loading states
-- **Use Server Actions** - For mutations with progressive enhancement
+- **Use Server Actions** - For mutations with progressive enhancement (only when using App Router with static export / Europa constraint)
 
 ### Don'ts
 - **Don't pass non-serializable data** - Server → Client boundary limitations (e.g., functions, class instances, Date objects)

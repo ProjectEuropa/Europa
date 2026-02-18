@@ -58,7 +58,7 @@ GitHub Actionsからの失敗レポートを分析:
 
 ```bash
 # JSONレポートから失敗テストを抽出
-cat test-results/test-results.json | jq '.. | .specs?[] | select(.ok | not) | {title: .title, file: .file}'
+cd frontend && cat test-results/test-results.json | jq '.. | .specs?[] | select(.ok | not) | {title: .title, file: .file}'
 ```
 
 ### 5. ロケータ変換ルール

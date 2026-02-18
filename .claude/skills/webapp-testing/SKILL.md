@@ -11,43 +11,26 @@ description: |
 
 ブラウザ自動化を使用してローカルWebアプリケーションをテスト・検証するスキル。
 
-> [!IMPORTANT]
-> このスキルは **AntiGravity専用** です（`.agent/skills/` はAntiGravity用のスキルディレクトリ）。
-> Claude Codeでは `.claude/skills/webapp-testing/` の `playwright` MCPベースのスキルを使用してください。
+> [!NOTE]
+> エージェントによって使用するツールが異なります:
+> - **AntiGravity**: `browser_subagent` (内蔵ツール)
+> - **Claude Code**: `playwright` (MCPツール)
 
 ## Decision Tree
 
 ```text
 タスク → 静的HTML?
     ├─ Yes → HTMLファイルを直接読んでセレクタを特定
-    │         └→ browser_subagentでブラウザテスト
+    │         └─ browser_subagent / Playwright MCP
     │
     └─ No (動的Webapp) → サーバーが起動している?
         ├─ No → run_commandでサーバーを起動
-        │        → browser_subagentでテスト
+        │        → browser_subagent / Playwright MCP
         │
-        └─ Yes → Reconnaissance-then-action:
-            1. ページに移動しロード完了を待つ
-            2. スクリーンショット取得 or DOM確認
-            3. セレクタを特定
-            4. アクション実行
+        └─ Yes → Reconnaissance-then-action
 ```
 
-## Usage Pattern
-
-### 1. サーバー起動（未起動の場合）
-
-```bash
-# フロントエンド開発サーバー
-cd frontend && npm run dev
-
-# バックエンド開発サーバー
-cd hono-worker && npm run dev
-```
-
-> **Note**: ポート番号は各 `package.json` の `scripts.dev` を確認してください。
-
-### 2. browser_subagentでテスト
+## AntiGravity Usage (browser_subagent)
 
 `browser_subagent` ツールを呼び出す際のタスク記述例:
 
@@ -58,6 +41,50 @@ cd hono-worker && npm run dev
 4. スクリーンショットを撮影
 5. 結果を報告
 ```
+
+## Claude Code Usage (Playwright MCP)
+
+Claude Codeでは、Playwright MCPサーバーを使用してブラウザ操作を行います。
+
+### 1. Setup & Tools
+
+必要に応じてPlaywrightブラウザをインストール:
+```bash
+npx playwright install --with-deps chromium
+```
+
+主要ツール:
+- `playwright_navigate`: ページ遷移
+- `playwright_click`: 要素のクリック
+- `playwright_fill`: フォーム入力
+- `playwright_evaluate`: JS実行
+- `playwright_screenshot`: スクリーンショット
+
+### 2. Page Object Model Example
+
+テストコードを作成する場合の推奨パターン:
+
+```typescript
+// pages/LoginPage.ts
+export class LoginPage {
+  constructor(private page: Page) {}
+
+  get emailInput() { return this.page.getByLabel('Email'); }
+  get loginButton() { return this.page.getByRole('button', { name: 'Login' }); }
+
+  async login(email: string) {
+    await this.emailInput.fill(email);
+    await this.loginButton.click();
+  }
+}
+```
+
+### 3. Example Workflow
+
+1. **Navigate**: `playwright_navigate(url="http://localhost:3000")`
+2. **Inspect**: `playwright_screenshot` でページ状態を確認
+3. **Action**: `playwright_click(selector="text=Login")`
+
 
 ### 3. Reconnaissance-Then-Action
 

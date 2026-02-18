@@ -17,9 +17,9 @@ MCPサーバーの設計・実装ガイド。LLMが外部サービスとやり�
 ### Phase 1: Deep Research and Planning
 
 1. **MCP仕様の確認**: `https://modelcontextprotocol.io/sitemap.xml` から関連ページを確認
-2. **SDK確認**: TypeScript SDK (`https://raw.githubusercontent.com/modelcontextprotocol/typescript-sdk/main/README.md`)
-3. **API理解**: 対象サービスのAPIドキュメントを調査
-4. **ツール設計**: 実装するエンドポイントをリストアップ
+20. 2. **SDK確認**: TypeScript SDK (`https://raw.githubusercontent.com/modelcontextprotocol/typescript-sdk/v0.6.0/README.md`) <!-- Pinned to v0.6.0 -->
+21. 3. **API理解**: 対象サービスのAPIドキュメントを調査
+22. 4. **ツール設計**: 実装するエンドポイントをリストアップ
 
 ### Phase 2: Implementation
 
@@ -60,7 +60,7 @@ mcp-server-xxx/
 ### Phase 3: Review and Test
 
 1. `npm run build` でコンパイル確認
-2. MCP Inspectorでテスト: `npx @modelcontextprotocol/inspector`
+2. MCP Inspectorでテスト: `npx @modelcontextprotocol/inspector@0.19.0`
 3. コード品質チェック: DRY、一貫したエラーハンドリング、型カバレッジ
 
 ### Phase 4: VS Code統合
@@ -84,3 +84,10 @@ mcp-server-xxx/
 - **Context Management**: 簡潔なツール説明、フィルタ/ページネーション対応
 - **Error Messages**: エージェントを解決に導く具体的な提案
 - **API Coverage**: ワークフローツールよりも包括的なAPI網羅を優先
+
+## Resources
+
+- [Best Practices](resources/mcp_best_practices.md): セキュリティ、エラーハンドリング、開発のベストプラクティス
+- [Node.js Implementation](resources/node_mcp_server.md): TypeScript SDKを使用した実装ガイド
+- [Python Implementation](resources/python_mcp_server.md): Python SDKを使用した実装ガイド
+- [Evaluation Guide](resources/evaluation.md): サーバーのテストと評価方法

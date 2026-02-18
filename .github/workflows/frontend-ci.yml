@@ -5,11 +5,15 @@ on:
     branches: [prd, master]
     paths:
       - 'frontend/**'
+      - '.agent/skills/**'
+      - '.claude/skills/**'
       - '.github/workflows/frontend-ci.yml'
   pull_request:
     branches: [prd, master]
     paths:
       - 'frontend/**'
+      - '.agent/skills/**'
+      - '.claude/skills/**'
       - '.github/workflows/frontend-ci.yml'
 
 # Concurrency: cancel running workflows on new pushes to the same branch/PR

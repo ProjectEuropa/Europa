@@ -26,12 +26,10 @@ Comprehensive guide to auditing web content against WCAG 2.2 guidelines with act
 ## Instructions
 
 1.  **Read resources/implementation-playbook.md for detailed audit guidelines and checklist.**
-2.  Run automated scans (axe, Lighthouse, WAVE) to collect initial findings.
+2.  Instruct the user to run automated scans (axe, Lighthouse, WAVE) to collect initial findings.
 3.  Perform manual checks (keyboard navigation, focus order, screen reader flows).
 4.  Map each issue to a WCAG criterion, severity, and remediation guidance.
 5.  Re-test after fixes and document residual risk and compliance status.
-
-Refer to `resources/implementation-playbook.md` for detailed patterns, checklists, and templates.
 
 ## Safety
 
