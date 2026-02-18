@@ -7,9 +7,83 @@ Cloudflare Workers + Hono バックエンドと Next.js 16 フロントエンド
 - `frontend/` - Next.js 16 + React 19 + TailwindCSS 4 + shadcn/ui（詳細: `frontend/CLAUDE.md`）
 - `hono-worker/` - Hono v4 + Cloudflare Workers + Neon PostgreSQL（詳細: `hono-worker/CLAUDE.md`）
 
+## デプロイ手順 (Staging)
+
+このセクションでは、Staging環境へのデプロイ手順を説明します。
+
+### 前提条件
+
+- Cloudflareアカウントが設定済みであること。
+- Neon PostgreSQLデータベースが設定済みであること。
+
+### デプロイ前チェックフェーズ
+
+1. フロントエンドのlint/format確認:
+```bash
+cd frontend && npm run check
+```
+
+2. フロントエンドのTypeScript型チェック:
+```bash
+cd frontend && npm run type-check
+```
+
+3. フロントエンドのユニットテスト:
+```bash
+cd frontend && npm run test:run
+```
+
+4. フロントエンドのビルド確認:
+```bash
+cd frontend && npm run build
+```
+
+5. バックエンドのlint/format確認:
+```bash
+cd hono-worker && npm run check
+```
+
+6. バックエンドのTypeScript型チェック:
+```bash
+cd hono-worker && npx tsc --noEmit
+```
+
+7. バックエンドのユニットテスト:
+```bash
+cd hono-worker && npm run test:run
+```
+
+### デプロイフェーズ
+
+8. バックエンドをStaging環境にデプロイ:
+```bash
+cd hono-worker && npm run deploy:staging
+```
+
+9. デプロイ結果を確認（ログやエラーがないか）
+
+### 自動デプロイ (AntiGravity)
+
+AntiGravityエージェントを使用する場合、以下のコマンドで全ステップを自動実行できます。
+
+```bash
+// turbo-all
+```
+> [!NOTE]
+> `// turbo-all` はAntiGravityワークフローのディレクティブで、定義された全ステップ（この場合はデプロイ前チェックとデプロイ）を自動的に実行するためのフラグです。
+
+## Agent Configuration & Directory Policy
+
+プロジェクトでは複数のエージェントを使い分けるため、以下のディレクトリ規約を遵守してください。
+
+- **`.agent/`**: **AntiGravity専用**ディレクトリ。スキル (`.agent/skills/`) やワークフロー (`.agent/workflows/`) を格納します。
+- **`.claude/`**: **Claude Code専用**ディレクトリ。固有のスキル (`.claude/skills/`) や設定を格納します。
+
+各エージェントは自身のディレクトリ設定を優先的に参照します。
+
 ## Available Skills
 
-以下のスキルが `.claude/skills/` に利用可能です。関連するタスクでは積極的に活用してください。
+以下のスキルが利用可能です。関連するタスクでは積極的に活用してください。
 
 ### 開発スキル（プロジェクト固有）
 
@@ -50,7 +124,7 @@ Cloudflare Workers + Hono バックエンドと Next.js 16 フロントエンド
 | アーティファクト作成 | `web-artifacts-builder` | 「デモを作って」「プロトタイプ」「インタラクティブなサンプル」 |
 | テーマ適用 | `theme-factory` | 「テーマを適用」「スタイルを変更」「色を変えて」 |
 | ビジュアルデザイン | `canvas-design` | 「ポスターを作成」「ビジュアルアート」「デザインを作って」 |
-| Webアプリテスト | `webapp-testing` | 「ブラウザでテスト」「UIの動作確認」「スクリーンショット」 |
+| Webアプリテスト | `webapp-testing` | 「ブラウザでテスト」「UIの動作確認」「スクリーンショット」（`playwright` MCPを使用） |
 
 ### MCP Tool Selection Rules
 
