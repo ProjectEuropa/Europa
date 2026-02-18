@@ -92,6 +92,10 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 | `e2e-write` | Playwright E2Eテスト作成（Page Object Model + セマンティックロケータ） |
 | `e2e-debug` | E2Eテスト失敗の分析・修正・CI自動修復 |
 | `e2e-refactor` | E2Eテストのリファクタリング（非推奨ロケータ→セマンティック変換） |
+| `nextjs-app-router-patterns` | Next.js App Router実装パターン |
+| `react-patterns` | Reactベストプラクティス |
+| `tailwind-patterns` | Tailwind CSSスタイリング |
+| `wcag-audit-patterns` | アクセシビリティ監査 |
 
 ### 公式スキル（Anthropic提供）
 
@@ -125,6 +129,10 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 | React パターン適用      | `react-patterns`              | 「Reactのベストプラクティスで」「カスタムフックを作成」 |
 | Tailwind CSS スタイリング | `tailwind-patterns`         | 「Tailwindでスタイリング」「レスポンシブデザイン」 |
 | アクセシビリティ監査     | `wcag-audit-patterns`        | 「アクセシビリティを確認」「WCAG準拠」 |
+| Webアプリテスト | `webapp-testing` | 「ブラウザテスト」「Playwrightで確認」 |
+| アーティファクト構築 | `web-artifacts-builder` | 「アーティファクトを作成」「React + shadcn/ui」 |
+| テーマ適用 | `theme-factory` | 「テーマを適用」「スタイルを変更」 |
+| Canvas作成 | `canvas-design` | 「ポスターを作成」「デザインを作って」 |
 
 ### MCP Tool Selection Rules
 

@@ -1,8 +1,8 @@
-<!-- SYNC WARNING: This file is synchronized from .agent/skills/nextjs-app-router-patterns/SKILL.md. Do not edit directly. -->
 ---
 name: nextjs-app-router-patterns
 description: Master Next.js 16+ App Router with Server Components, streaming, parallel routes, and advanced data fetching. Use when building Next.js applications, implementing SSR/SSG, or optimizing React Server Components.
 ---
+<!-- SYNC WARNING: This file is synchronized from .agent/skills/nextjs-app-router-patterns/SKILL.md. Do not edit directly. -->
 
 # Next.js App Router Patterns
 

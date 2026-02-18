@@ -1,9 +1,9 @@
-<!-- SYNC WARNING: This file is synchronized from .agent/skills/react-patterns/SKILL.md. Do not edit directly. -->
 ---
 name: react-patterns
 description: Modern React patterns and principles. Hooks, composition, performance, TypeScript best practices.
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
+<!-- SYNC WARNING: This file is synchronized from .agent/skills/react-patterns/SKILL.md. Do not edit directly. -->
 
 # React Patterns
 
