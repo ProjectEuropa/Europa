@@ -11,7 +11,9 @@ description: |
 
 ブラウザ自動化を使用してローカルWebアプリケーションをテスト・検証するスキル。
 
-> **Note**: このスキルはAntiGravity専用です。Claude Codeでは `playwright` MCPを使用してください。
+> [!IMPORTANT]
+> このスキルは **AntiGravity専用** です（`.agent/skills/` はAntiGravity用のスキルディレクトリ）。
+> Claude Codeでは `.claude/skills/webapp-testing/` の `playwright` MCPベースのスキルを使用してください。
 
 ## Decision Tree
 

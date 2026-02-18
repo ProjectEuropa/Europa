@@ -5,19 +5,20 @@ description: ステージング環境にデプロイする
 # ステージングデプロイ
 
 // turbo-all
+<!-- 上記はAntiGravityワークフローの自動実行ディレクティブです -->
 
 ## 手順
 
 ### 検証フェーズ
 
-1. バックエンドのlint/format確認:
+1. フロントエンドのlint/format確認:
 ```bash
-cd hono-worker && npm run check
+cd frontend && npm run check
 ```
 
-2. バックエンドのユニットテスト:
+2. フロントエンドのTypeScript型チェック:
 ```bash
-cd hono-worker && npm run test:run
+cd frontend && npm run type-check
 ```
 
 3. フロントエンドのビルド確認:
@@ -25,14 +26,24 @@ cd hono-worker && npm run test:run
 cd frontend && npm run build
 ```
 
+4. バックエンドのlint/format確認:
+```bash
+cd hono-worker && npm run check
+```
+
+5. バックエンドのユニットテスト:
+```bash
+cd hono-worker && npm run test:run
+```
+
 ### デプロイフェーズ
 
-4. バックエンドをStaging環境にデプロイ:
+6. バックエンドをStaging環境にデプロイ:
 ```bash
 cd hono-worker && npm run deploy:staging
 ```
 
-5. デプロイ結果を確認（ログやエラーがないか）
+7. デプロイ結果を確認（ログやエラーがないか）
 
 > **Note**: フロントエンド（Cloudflare Pages）はgit連携による自動デプロイです。stagingブランチへのpushで自動的にデプロイされます。
 

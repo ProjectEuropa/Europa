@@ -5,6 +5,7 @@ description: Playwright E2Eテストを実行する
 # E2Eテスト実行
 
 // turbo-all
+<!-- 上記はAntiGravityワークフローの自動実行ディレクティブです -->
 
 ## 手順
 
@@ -29,6 +30,7 @@ cd frontend && npx playwright test --headed [test-file].spec.ts
 ```
 
 ## 注意
-- 開発サーバー（ポート3002）が起動している必要がある
+- 開発サーバーが起動している必要がある（ポートは `frontend/package.json` の `scripts.dev` を参照）
 - テスト間の状態リークに注意（localStorage/sessionStorageのクリア）
 - CI環境ではworkers: 1で実行される
+- バックエンド（hono-worker）のテストはユニットテストのみ（`cd hono-worker && npm run test:run`）。E2Eテストは対象外
