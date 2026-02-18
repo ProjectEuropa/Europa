@@ -86,7 +86,7 @@ hono-worker/src/
 
 **レスポンス形式**:
 - 成功: `{ data: {...}, message?: string }`
-- エラー: `{ message: string, errors?: { [field]: string[] } }`
+- エラー: `{ error: { message: string, code?: string, details?: any } }`
 
 **エラーハンドリング**:
 - 401: 認証エラー → 日本語メッセージ自動変換

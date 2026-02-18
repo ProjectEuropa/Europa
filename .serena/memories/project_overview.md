@@ -13,7 +13,7 @@ Project EuropaはCarnage Heart EXA用のOKEファイルの共有・分析・コ�
 - **コンポーネント**: shadcn/ui (Radix UI基盤)
 - **状態管理**: Zustand 5.x + TanStack Query 5.x
 - **フォーム**: React Hook Form 7.x + Zod 4.x
-- **テスト**: Vitest 4.0.18 (単体) + Playwright 1.50.1 (E2E)
+- **テスト**: Vitest 4.0.18 (単体) + Playwright 1.58.0 (E2E)
 - **コード品質**: Biome 2.3.12 (lint/format)
 - **Node.js**: 24.13.0 (Volta管理)
 
