@@ -26,20 +26,24 @@ src/
 
 ## Technology Stack
 
+- **Next.js**: 16.1.5 (App Router, 静的生成 `output: 'export'`)
+  - **重要**: 静的エクスポートのため **SSR (Server Side Rendering) は不可**。
+  - データ取得は基本クライアントサイド（TanStack Query）で行い、スケルトン表示やプリフェッチを併用すること。
+
 | 技術 | バージョン | 用途 |
 |-----|-----------|------|
-| Next.js | 16.x | Webフレームワーク（App Router, 静的生成, Turbopack） |
-| React | 19.x | UIライブラリ |
-| TypeScript | 5.x | 型安全性（strict有効） |
-| Zustand | 5.x | 状態管理（persist middleware） |
-| React Hook Form | 7.x | フォーム管理 |
-| Zod | 4.x | バリデーション |
-| TanStack Query | 5.x | サーバー状態管理 |
-| Tailwind CSS | 4.x | スタイリング |
-| shadcn/ui | - | UIコンポーネント（Radix UI基盤） |
-| Biome | 2.x | Lint/Format |
-| Vitest | 3.x | ユニットテスト |
-| Playwright | 1.x | E2Eテスト |
+| Next.js | 16.1.5 | Webフレームワーク（App Router, 静的生成, Turbopack） |
+| React | 19.2.4 | UIライブラリ |
+| TypeScript | 5.9.3 | 型安全性（strict有効） |
+| Zustand | 5.0.10 | 状態管理（persist middleware） |
+| React Hook Form | 7.71.1 | フォーム管理 |
+| Zod | 4.3.6 | バリデーション |
+| TanStack Query | 5.90.20 | サーバー状態管理 |
+| Tailwind CSS | 4.1.7 | スタイリング |
+| shadcn/ui | 0.0.4 | UIコンポーネント（Radix UI基盤） |
+| Biome | 2.3.12 | Lint/Format |
+| Vitest | 4.0.18 | ユニットテスト |
+| Playwright | 1.58.0 | E2Eテスト |
 
 **Node.js**: 24.x（Volta管理、Active LTS）
 

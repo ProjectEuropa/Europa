@@ -38,15 +38,15 @@ src/
 
 | 技術 | バージョン | 用途 |
 |-----|-----------|------|
-| Hono | 4.x | サーバーレスWebフレームワーク |
+| Hono | 4.11.7 | サーバーレスWebフレームワーク |
 | Cloudflare Workers | - | Edge Computing実行環境 |
 | Neon PostgreSQL | - | サーバーレスDB |
 | Cloudflare R2 | - | S3互換オブジェクトストレージ |
-| Zod | 4.x | バリデーション |
-| bcryptjs | 2.x | パスワードハッシング |
-| Resend | 3.x | メール送信 |
-| Biome | 2.x | Lint/Format |
-| Vitest | 4.x | テストフレームワーク |
+| Zod | 4.3.6 | バリデーション |
+| bcryptjs | 2.4.3 | パスワードハッシング |
+| Resend | 3.5.0 | メール送信 |
+| Biome | 2.3.8 | Lint/Format |
+| Vitest | 4.0.15 | テストフレームワーク |
 
 ## Development Workflow
 
