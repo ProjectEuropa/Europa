@@ -26,7 +26,7 @@ JSON/Markdown/CSS: biome format --write
 ```
 
 ## フロントエンド ディレクトリ構造
-```
+```text
 frontend/src/
 ├── app/                 # Next.js App Router ページ
 │   ├── search/          # 検索ページ (team, match)
