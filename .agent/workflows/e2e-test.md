@@ -5,7 +5,8 @@ description: Playwright E2Eテストを実行する
 # E2Eテスト実行
 
 // turbo-all
-<!-- 上記はAntiGravityワークフローの自動実行ディレクティブです -->
+> [!NOTE]
+> `// turbo-all` はAntiGravityワークフローのディレクティブで、全ステップを自動実行するためのフラグです。
 
 ## 手順
 

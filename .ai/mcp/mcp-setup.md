@@ -60,6 +60,19 @@ npmパッケージやライブラリのドキュメントを最新版で検索�
 }
 ```
 
+## MCPサーバーのメンテナンスと更新
+
+プロジェクトの再現性を確保するため、MCPサーバーのバージョンは明示的に固定されています。最新バージョンへの更新を確認・実施する場合は以下のリソースを参照してください。
+
+| サーバー | バージョン確認先 | 最新版確認コマンド |
+|----------|-----------------|-------------------|
+| **Serena** | [GitHub Releases](https://github.com/oraios/serena/releases) | (git参照のためGitHubを確認) |
+| **Context7** | [npm page](https://www.npmjs.com/package/@upstash/context7-mcp) | `npm view @upstash/context7-mcp version` |
+| **Memory** | [npm page](https://www.npmjs.com/package/@modelcontextprotocol/server-memory) | `npm view @modelcontextprotocol/server-memory version` |
+
+> [!TIP]
+> ライブラリの大規模なアップデートがあった場合は、動作確認を行った上でこのドキュメントのバージョン記述を更新してください。
+
 **提供ツール:**
 - `create_entities` - エンティティ（ノード）の作成
 - `create_relations` - エンティティ間のリレーション作成
