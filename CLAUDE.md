@@ -115,12 +115,16 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 | タスクパターン | 使用スキル | トリガー例 |
 |--------------|-----------|-----------|
 | E2Eテスト作成 | `e2e-write` | 「E2Eテストを書いて」「テストを作成して」「新機能のテストが必要」 |
-| テスト失敗修正 | `e2e-debug` | 「テストが失敗している」「CIが落ちている」「テストをデバッグして」 |
+| テスト失敗修正 | `e2e-debug` | 「テストが失敗」「CIが落ちている」「テストをデバッグ」 |
 | テストリファクタリング | `e2e-refactor` | 「テストを改善して」「ロケータを修正」「Page Objectに変換」 |
 | UI/コンポーネント作成 | `frontend-design` | 「UIを作成」「コンポーネントを作って」「美しいページを」 |
 | ドキュメント作成 | `doc-coauthoring` | 「ドキュメントを書いて」「仕様書を作成」「READMEを更新」 |
 | MCP開発 | `mcp-builder` | 「MCPサーバーを作成」「外部API連携」「ツール統合」 |
 | スキル作成 | `skill-creator` | 「スキルを作成」「カスタムスキル」「ワークフロー定義」 |
+| Next.js App Router 実装 | `nextjs-app-router-patterns` | 「App Routerで実装」「Server Componentを使って」 |
+| React パターン適用      | `react-patterns`              | 「Reactのベストプラクティスで」「カスタムフックを作成」 |
+| Tailwind CSS スタイリング | `tailwind-patterns`         | 「Tailwindでスタイリング」「レスポンシブデザイン」 |
+| アクセシビリティ監査     | `wcag-audit-patterns`        | 「アクセシビリティを確認」「WCAG準拠」 |
 
 ### MCP Tool Selection Rules
 
@@ -138,7 +142,7 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 |------|--------|------|
 | コードベース全体の理解が必要 | Explore Agent | 広範囲の探索が必要 |
 | 複雑なタスクで計画が必要 | Plan Agent | 実装前の設計が必要 |
-| 単純な修正 | 直接実行 | 委譲不要 |
+| 局所的な修正（関連ファイルが明確な場合） | 直接実行 | 委譲不要 |
 
 ### API Design Rules
 

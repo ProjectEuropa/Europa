@@ -2,7 +2,7 @@
 name: e2e-refactor
 description: |
   Refactor tests to use semantic locators and POM.
-  Triggers: "テストをリファクタリング", "ロケータを改善"
+  Triggers: "テストをリファクタリング", "ロケータを改善", "テストを改善して", "ロケータを修正", "Page Objectに変換"
   Use when: Tests don't use semantic locators, Page Object pattern not applied, tests use deprecated patterns like class/ID selectors or fixed waits.
   Outputs: Updated/new Page Objects and refactored spec files.
 ---
