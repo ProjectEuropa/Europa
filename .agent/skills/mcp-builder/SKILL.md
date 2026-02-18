@@ -47,10 +47,13 @@ mcp-server-xxx/
 
 ```typescript
 {
-  readOnlyHint: true/false,
-  destructiveHint: true/false,
-  idempotentHint: true/false,
-  openWorldHint: true/false,
+  annotations: {
+    title: 'List all users',           // 人間が読めるツールの表示名
+    readOnlyHint: true,                // データを変更しない（読み取り専用）
+    destructiveHint: false,            // リソースを破壊しない
+    idempotentHint: true,              // 同じ入力で同じ結果を返す
+    openWorldHint: true,               // 外部サービスとやり取りする
+  },
 }
 ```
 

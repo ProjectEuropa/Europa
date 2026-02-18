@@ -13,17 +13,22 @@ description: ステージング環境にデプロイする
 cd hono-worker && npm run check:fix
 ```
 
-2. バックエンドをStaging環境にデプロイ:
+2. バックエンドのユニットテスト:
+```bash
+cd hono-worker && npm run test:run
+```
+
+3. バックエンドをStaging環境にデプロイ:
 ```bash
 cd hono-worker && npm run deploy:staging
 ```
 
-3. フロントエンドのビルド確認:
+4. フロントエンドのビルド確認:
 ```bash
 cd frontend && npm run build
 ```
 
-4. デプロイ結果を確認（ログやエラーがないか）
+5. デプロイ結果を確認（ログやエラーがないか）
 
 ## 注意
 - 環境変数（DATABASE_URL, JWT_SECRET等）がStaging環境に設定済みであること

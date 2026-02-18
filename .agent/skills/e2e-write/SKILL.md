@@ -75,7 +75,7 @@ export class [PageName]Page extends BasePage {
 export { [PageName]Page } from './[PageName]Page';
 ```
 
-### 4. テストファイルを作成
+### 4. デスクトップテストファイルを作成
 
 `frontend/e2e/[page-name].spec.ts` を作成:
 
@@ -84,10 +84,31 @@ import { test, expect } from '@playwright/test';
 import { [PageName]Page } from './pages/[PageName]Page';
 
 test.describe('[PageName]', () => {
-  test('should load correctly', async ({ page }) => {
+  test('should display main content when page is loaded', async ({ page }) => {
     const [pageName]Page = new [PageName]Page(page);
     await [pageName]Page.goto();
     await [pageName]Page.clearStorage();
+    await [pageName]Page.expectVisible();
+  });
+});
+```
+
+> **Note**: テスト名は `should [expected behavior] when [condition]` の形式に従うこと。
+
+### 5. モバイルテストファイルを作成
+
+プロジェクト規約に従い、`frontend/e2e/[page-name].mobile.spec.ts` も作成:
+
+```typescript
+import { test, expect, devices } from '@playwright/test';
+import { [PageName]Page } from './pages/[PageName]Page';
+
+test.use({ ...devices['iPhone 14'] });
+
+test.describe('[PageName] Mobile', () => {
+  test('should display main content when viewed on mobile', async ({ page }) => {
+    const [pageName]Page = new [PageName]Page(page);
+    await [pageName]Page.goto();
     await [pageName]Page.expectVisible();
   });
 });
@@ -150,7 +171,10 @@ await page.route('**/api/v2/endpoint', async (route) => {
 ## Output
 
 1. `frontend/e2e/pages/[PageName]Page.ts` - Page Object
-2. `frontend/e2e/[page-name].spec.ts` - テストファイル
-3. `frontend/e2e/pages/index.ts` の更新
+2. `frontend/e2e/[page-name].spec.ts` - デスクトップテストファイル
+3. `frontend/e2e/[page-name].mobile.spec.ts` - モバイルテストファイル
+4. `frontend/e2e/pages/index.ts` の更新
+
+> **Important**: テスト作成時はデスクトップ・モバイル**両方**のファイルを生成すること。
 
 作成後、`npm run test:e2e -- [page-name].spec.ts` でテストを実行して動作確認する。

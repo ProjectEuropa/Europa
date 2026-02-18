@@ -28,6 +28,8 @@ Language Serverを利用した高度なシンボル検索・分析ツール。
 }
 ```
 
+> **Note**: Serenaはnpmパッケージではなくgitリポジトリから直接インストールされます。特定バージョンに固定する場合は `git+https://github.com/oraios/serena@<commit-hash>` の形式を使用してください。
+
 ### 2. Context7（ライブラリドキュメント検索）
 
 npmパッケージやライブラリのドキュメントを最新版で検索。
@@ -37,7 +39,7 @@ npmパッケージやライブラリのドキュメントを最新版で検索�
   "servers": {
     "context7": {
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
+      "args": ["-y", "@upstash/context7-mcp@2.1.1"]
     }
   }
 }
@@ -52,7 +54,7 @@ npmパッケージやライブラリのドキュメントを最新版で検索�
   "servers": {
     "memory": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
+      "args": ["-y", "@modelcontextprotocol/server-memory@2026.1.26"]
     }
   }
 }

@@ -33,9 +33,14 @@ cd frontend && npm run build
 cd hono-worker && npm run check:fix
 ```
 
-6. バックエンドのユニットテスト:
+6. バックエンドのTypeScript型チェック:
+```bash
+cd hono-worker && npx tsc --noEmit
+```
+
+7. バックエンドのユニットテスト:
 ```bash
 cd hono-worker && npm run test:run
 ```
 
-7. エラーがあれば報告・修正
+8. エラーがあれば報告・修正

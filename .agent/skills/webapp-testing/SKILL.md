@@ -37,18 +37,20 @@ AntiGravityでは `browser_subagent` ツールを使用してブラウザ操作�
 
 ```bash
 # フロントエンド開発サーバー
-cd frontend && npm run dev  # ポート3002
+cd frontend && npm run dev
 
 # バックエンド開発サーバー
-cd hono-worker && npm run dev  # ポート8787
+cd hono-worker && npm run dev
 ```
+
+> **Note**: ポート番号は各 `package.json` の `scripts.dev` を確認してください。
 
 ### 2. browser_subagentでテスト
 
 browser_subagentを呼び出す際のタスク記述例:
 
-```
-1. http://localhost:3002 にアクセス
+```text
+1. http://localhost:<port> にアクセス
 2. ページのロードを待つ
 3. [対象要素]が表示されていることを確認
 4. スクリーンショットを撮影
