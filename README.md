@@ -69,6 +69,8 @@ cp .env.local.example .env.local  # 環境変数を設定
 npm run dev  # http://localhost:3002
 ```
 
+> 📖 環境変数の詳細設定やコマンドリファレンスは、各サブプロジェクトの [CLAUDE.md](hono-worker/CLAUDE.md) / [CLAUDE.md](frontend/CLAUDE.md) を参照してください。
+
 ## プロジェクト構成
 
 ```text
