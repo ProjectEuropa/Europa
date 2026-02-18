@@ -222,7 +222,7 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 - **エンティティ名**: `error_<簡潔な名前>`（例: `error_cors_mismatch`）
 - **観測内容**: 症状、原因、解決策
 
-```
+```text
 例: error_cors_mismatch
 - 症状: ブラウザでCORSエラー
 - 原因: ALLOWED_ORIGINS環境変数が未設定
