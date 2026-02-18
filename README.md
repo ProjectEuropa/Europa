@@ -71,7 +71,7 @@ npm run dev  # http://localhost:3002
 
 ## プロジェクト構成
 
-```
+```text
 .
 ├── hono-worker/         # Cloudflare Workers + Hono バックエンド
 │   ├── src/
@@ -172,7 +172,7 @@ graph LR
         Zustand[Zustand v5.0.10]
         RHF[React Hook Form v7.71.1]
         ZodFE[Zod v4.3.6]
-        Framer[Framer Motion v12.27.0]
+        Framer[Framer Motion v12.29.2]
     end
 
     subgraph "Backend技術"
