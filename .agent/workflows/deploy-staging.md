@@ -43,7 +43,12 @@ cd hono-worker && npm run test:run
 cd hono-worker && npm run deploy:staging
 ```
 
-7. デプロイ結果を確認（ログやエラーがないか）
+7. フロントエンドをStagingブランチにプッシュ（Cloudflare Pages自動デプロイ）:
+```bash
+git push origin staging
+```
+
+8. デプロイ結果を確認（ログやエラーがないか）
 
 > **Note**: フロントエンド（Cloudflare Pages）はgit連携による自動デプロイです。stagingブランチへのpushで自動的にデプロイされます。
 
