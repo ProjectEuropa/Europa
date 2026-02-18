@@ -2,7 +2,7 @@
 name: e2e-debug
 description: |
   Analyze and fix failing E2E tests. Includes CI auto-repair mode for GitHub Actions failures.
-  Triggers: 「テストが失敗している」「CIが落ちている」「テストをデバッグして」「test failed」「flaky test」
+  Triggers: 「テストが失敗」「CIが落ちている」「テストをデバッグ」「test failed」「flaky test」
   Use when: E2E tests are failing, tests are flaky/unstable, error messages need investigation.
   Outputs: Fixed Page Object and spec files, error analysis reports.
 ---
