@@ -4,7 +4,7 @@ This file contains detailed patterns, checklists, and code samples referenced by
 
 # Next.js App Router Patterns
 
-Comprehensive patterns for Next.js 14+ App Router architecture, Server Components, and modern full-stack React development.
+Comprehensive patterns for Next.js 16+ App Router architecture, Server Components, and modern full-stack React development.
 
 ## When to Use This Skill
 

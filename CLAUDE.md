@@ -121,6 +121,10 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 | ドキュメント作成 | `doc-coauthoring` | 「ドキュメントを書いて」「仕様書を作成」「READMEを更新」 |
 | MCP開発 | `mcp-builder` | 「MCPサーバーを作成」「外部API連携」「ツール統合」 |
 | スキル作成 | `skill-creator` | 「スキルを作成」「カスタムスキル」「ワークフロー定義」 |
+| Next.js App Router 実装 | `nextjs-app-router-patterns` | 「App Routerで実装」「Server Componentを使って」 |
+| React パターン適用      | `react-patterns`              | 「Reactのベストプラクティスで」「カスタムフックを作成」 |
+| Tailwind CSS スタイリング | `tailwind-patterns`         | 「Tailwindでスタイリング」「レスポンシブデザイン」 |
+| アクセシビリティ監査     | `wcag-audit-patterns`        | 「アクセシビリティを確認」「WCAG準拠」 |
 
 ### MCP Tool Selection Rules
 

@@ -364,7 +364,7 @@ Check:
 
 ### Robust (Principle 4)
 
-```markdown
+````markdown
 ## 4.1 Compatible
 
 ### 4.1.1 Parsing (Level A) - Obsolete in WCAG 2.2
@@ -385,7 +385,7 @@ Check:
      aria-labelledby="label">
 </div>
 <span id="label">Accept terms</span>
-````
+```
 
 ### 4.1.3 Status Messages (Level AA)
 
