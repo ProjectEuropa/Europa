@@ -1,0 +1,30 @@
+# React Patterns Implementation Playbook
+
+Detailed patterns and best practices for React 19 development.
+
+## Project Context (Europa)
+
+> [!IMPORTANT]
+> **Zustand Usage**:
+> - Always follow the **persist settings** and **hydration patterns** defined in `CLAUDE.md`.
+> - To avoid SSR hydration mismatches, use a hydration guard when accessing persisted stores in Client Components:
+> 
+> ```typescript
+> const [isHydrated, setIsHydrated] = useState(false)
+> useEffect(() => setIsHydrated(true), [])
+> const store = useStore()
+> if (!isHydrated) return null // or skeleton
+> ```
+
+## Patterns
+
+### 1. Modern Hooks (React 19)
+- Use `useActionState` for form handling.
+- Use `useOptimistic` for immediate UI feedback.
+
+### 2. Composition
+- Prefer Compound Components for complex UI widgets (Tabs, Accordions).
+
+## Best Practices
+- Keep components small and focused.
+- Colocate state as close to its usage as possible.
