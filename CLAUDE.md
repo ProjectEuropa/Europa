@@ -87,28 +87,29 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 
 ### 開発スキル（プロジェクト固有）
 
-| スキル | 用途 |
-|--------|------|
-| `e2e-write` | Playwright E2Eテスト作成（Page Object Model + セマンティックロケータ） |
-| `e2e-debug` | E2Eテスト失敗の分析・修正・CI自動修復 |
-| `e2e-refactor` | E2Eテストのリファクタリング（非推奨ロケータ→セマンティック変換） |
-| `nextjs-app-router-patterns` | Next.js App Router実装パターン |
-| `react-patterns` | Reactベストプラクティス |
-| `tailwind-patterns` | Tailwind CSSスタイリング |
-| `wcag-audit-patterns` | アクセシビリティ監査 |
+| スキル | 用途 | SKILL.md Description (EN) |
+|--------|------|---------------------------|
+| `e2e-write` | Playwright E2Eテスト作成（Page Object Model + セマンティックロケータ） | Create new E2E tests using Playwright with Page Object Model pattern and semantic locators |
+| `e2e-debug` | E2Eテスト失敗の分析・修正・CI自動修復 | Analyze and fix failing E2E tests. Includes CI auto-repair mode for GitHub Actions failures |
+| `e2e-refactor` | E2Eテストのリファクタリング（非推奨ロケータ→セマンティック変換） | Refactor existing E2E tests to use Page Object Model pattern and semantic locators |
+| `nextjs-app-router-patterns` | Next.js App Router実装パターン | Master Next.js 16+ App Router with Server Components, streaming, parallel routes, and advanced data fetching |
+| `react-patterns` | Reactベストプラクティス | Modern React patterns and principles. Hooks, composition, performance, TypeScript best practices |
+| `tailwind-patterns` | Tailwind CSSスタイリング | Tailwind CSS v4 principles. CSS-first configuration, container queries, modern patterns, design token architecture |
+| `wcag-audit-patterns` | アクセシビリティ監査 | Conduct WCAG 2.2 accessibility audits with automated testing, manual verification, and remediation guidance |
 
 ### 公式スキル（Anthropic提供）
 
 | スキル | 用途 |
 |--------|------|
 | `frontend-design` | 高品質なフロントエンドUI/UX設計。「AIスロップ」を回避する美学的指針 |
-| `webapp-testing` | Playwright + PythonでのWebアプリテスト自動化 |
 | `mcp-builder` | MCPサーバーの設計・実装ガイド |
 | `skill-creator` | 新しいカスタムスキルの作成方法 |
 | `doc-coauthoring` | ドキュメント共同作成ワークフロー |
 | `web-artifacts-builder` | React + shadcn/ui アーティファクト構築 |
 | `theme-factory` | プロフェッショナルなテーマ適用（10プリセット） |
 | `canvas-design` | デザイン哲学に基づくCanvas作成 |
+
+> **Note**: `webapp-testing` スキルは **AntiGravity専用** です。Claude Codeでブラウザ自動化が必要な場合は、`playwright` MCPを直接使用してください。
 
 ## Task Routing Rules
 
@@ -129,7 +130,6 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 | React パターン適用      | `react-patterns`              | 「Reactのベストプラクティスで」「カスタムフックを作成」 |
 | Tailwind CSS スタイリング | `tailwind-patterns`         | 「Tailwindでスタイリング」「レスポンシブデザイン」 |
 | アクセシビリティ監査     | `wcag-audit-patterns`        | 「アクセシビリティを確認」「WCAG準拠」 |
-| Webアプリテスト | `webapp-testing` | 「ブラウザテスト」「Playwrightで確認」 |
 | アーティファクト構築 | `web-artifacts-builder` | 「アーティファクトを作成」「React + shadcn/ui」 |
 | テーマ適用 | `theme-factory` | 「テーマを適用」「スタイルを変更」 |
 | Canvas作成 | `canvas-design` | 「ポスターを作成」「デザインを作って」 |
