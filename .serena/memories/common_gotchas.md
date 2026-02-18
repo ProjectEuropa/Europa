@@ -18,9 +18,10 @@
 - **解決**: 本番では `SameSite=None; Secure` を使用
 
 ## E2Eテスト
-- **ロケータ**: `data-testid` を優先使用
+- **Page Object Model**: `frontend/e2e/pages/` にPOMパターンを適用
+- **ロケータ**: セマンティックロケータ（`getByRole`, `getByLabel`）を優先、`data-testid` は補助的に使用
 - **非同期待機**: `waitFor` / `toBeVisible` を適切に使用
-- **認証状態**: テスト前に適切なログイン処理を実行
+- **認証状態**: HttpOnly Cookie のため `storageState` 単体では不十分。テスト前にログインAPIを実行してCookieを取得する
 
 ## 型定義
 - フロントエンド/バックエンドでZodスキーマを共有していない

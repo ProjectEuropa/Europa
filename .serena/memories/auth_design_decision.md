@@ -12,7 +12,10 @@
 - **Development**: `SameSite=Lax`（localhost cross-port対応）
 
 ### 実装箇所
-- バックエンド: `hono-worker/src/middleware/auth.ts`, `hono-worker/src/utils/jwt.ts`
+- バックエンド:
+  - `hono-worker/src/middleware/auth.ts` - JWT検証ミドルウェア
+  - `hono-worker/src/utils/jwt.ts` - JWT生成・検証ユーティリティ
+  - `hono-worker/src/routes/auth.ts` - 認証エンドポイント（/api/v2/auth/login, /register, /logout等）
 - フロントエンド: `frontend/src/stores/authStore.ts`（トークンは保存しない、user情報のみ）
 
 ### 重要な実装詳細
