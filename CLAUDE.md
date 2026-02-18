@@ -28,7 +28,9 @@ graph LR
 
 ### Database Tables
 
-`users` → `events`, `files` → `file_tags` ← `tags`, `password_resets`
+`users`, `events`, `files`, `tags`, `file_tags`, `password_resets`
+
+詳細は [hono-worker/src/db/schema.sql](hono-worker/src/db/schema.sql) を参照
 
 ### Key Files
 

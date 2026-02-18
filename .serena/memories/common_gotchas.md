@@ -28,4 +28,6 @@
 
 ## 環境変数
 - フロントエンド: `.env.local`（NEXT_PUBLIC_プレフィックス必須）
+  - 例: `NEXT_PUBLIC_API_URL=http://localhost:8787`
 - バックエンド: `.dev.vars`（ローカル）、Cloudflare Dashboard（本番）
+  - 例: `DATABASE_URL=postgresql://...`, `ALLOWED_ORIGINS=http://localhost:3000`
