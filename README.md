@@ -166,34 +166,34 @@ DISCORD_CHANNEL_ID=xxxx  # フォールバック用
 ```mermaid
 graph LR
     subgraph "Frontend技術"
-        NextJS[Next.js 16.1.5]
-        React[React 19.2.4]
-        TailwindCSS[TailwindCSS 4.1.7]
-        TanStack[TanStack Query v5.90.20]
-        Zustand[Zustand v5.0.10]
-        RHF[React Hook Form v7.71.1]
-        ZodFE[Zod v4.3.6]
-        Framer[Framer Motion v12.29.2]
+        NextJS["Next.js 16.1.5"]
+        React["React 19.2.4"]
+        TailwindCSS["TailwindCSS 4.1.7"]
+        TanStack["TanStack Query v5.90.20"]
+        Zustand["Zustand v5.0.10"]
+        RHF["React Hook Form v7.71.1"]
+        ZodFE["Zod v4.3.6"]
+        Framer["Framer Motion v12.29.2"]
     end
 
     subgraph "Backend技術"
-        Hono[Hono v4.11.7]
-        Workers[Cloudflare Workers]
-        Zod[Zod v4.3.6]
-        Bcrypt[bcryptjs]
+        Hono["Hono v4.11.7"]
+        Workers["Cloudflare Workers"]
+        Zod["Zod v4.3.5"]
+        Bcrypt["bcryptjs"]
     end
 
     subgraph "インフラ"
-        Neon[Neon PostgreSQL]
-        R2[Cloudflare R2]
-        CF[Cloudflare CDN]
+        Neon["Neon PostgreSQL"]
+        R2["Cloudflare R2"]
+        CF["Cloudflare CDN"]
     end
 
-    subgraph "開発ツール"
-        VitestFE[Vitest v4.0.18 - Frontend]
-        PlaywrightFE[Playwright v1.58.0]
-        VitestBE[Vitest v4.0.15 - Backend]
-        Biome[Biome v2.3.x]
+    subgraph "開発ツール (devDependencies)"
+        VitestFE["Vitest v4.0.18 - Frontend"]
+        PlaywrightFE["Playwright v1.58.0"]
+        VitestBE["Vitest v4.0.15 - Backend"]
+        Biome["Biome v2.3.x"]
     end
 
     NextJS --> React
