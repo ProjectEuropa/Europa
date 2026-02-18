@@ -51,7 +51,8 @@ jobs:
           ls -la .agent/skills/
           for link in .agent/skills/*; do
             if [ -L "$link" ] && [ ! -e "$link" ]; then
-              echo "ERROR: Broken symlink: $link"
+              target=$(readlink "$link")
+              echo "ERROR: Broken symlink: $link -> $target"
               exit 1
             fi
           done

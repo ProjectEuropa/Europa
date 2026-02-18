@@ -15,6 +15,9 @@ description: |
 > エージェントによって使用するツールが異なります:
 > - **AntiGravity**: `browser_subagent` (内蔵ツール)
 > - **Claude Code**: `playwright` (MCPツール)
+>
+> [!WARNING]
+> このスキルはAntiGravityの `browser_subagent` に最適化されています。Claude Codeで使用する場合は、`browser_subagent` ツールが利用できないため、手動で `playwright` MCPツールを呼び出す必要があります。自動実行は失敗する可能性があります。
 
 ## Decision Tree
 

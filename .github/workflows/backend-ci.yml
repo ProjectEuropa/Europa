@@ -5,11 +5,15 @@ on:
     branches: [prd, master]
     paths:
       - 'hono-worker/**'
+      - '.agent/skills/**'
+      - '.claude/skills/**'
       - '.github/workflows/backend-ci.yml'
   pull_request:
     branches: [prd, master]
     paths:
       - 'hono-worker/**'
+      - '.agent/skills/**'
+      - '.claude/skills/**'
       - '.github/workflows/backend-ci.yml'
 
 # Concurrency: cancel running workflows on new pushes to the same branch/PR
@@ -44,7 +48,8 @@ jobs:
           ls -la .agent/skills/
           for link in .agent/skills/*; do
             if [ -L "$link" ] && [ ! -e "$link" ]; then
-              echo "ERROR: Broken symlink: $link"
+              target=$(readlink "$link")
+              echo "ERROR: Broken symlink: $link -> $target"
               exit 1
             fi
           done
