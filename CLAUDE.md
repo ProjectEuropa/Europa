@@ -50,7 +50,7 @@ Cloudflare Workers + Hono バックエンドと Next.js 16 フロントエンド
 | アーティファクト作成 | `web-artifacts-builder` | 「デモを作って」「プロトタイプ」「インタラクティブなサンプル」 |
 | テーマ適用 | `theme-factory` | 「テーマを適用」「スタイルを変更」「色を変えて」 |
 | ビジュアルデザイン | `canvas-design` | 「ポスターを作成」「ビジュアルアート」「デザインを作って」 |
-| Webアプリテスト | `webapp-testing` | 「ブラウザでテスト」「UIの動作確認」「スクリーンショット」 |
+| Webアプリテスト | `webapp-testing` | 「ブラウザでテスト」「UIの動作確認」「スクリーンショット」（`playwright` MCPを使用） |
 
 ### MCP Tool Selection Rules
 

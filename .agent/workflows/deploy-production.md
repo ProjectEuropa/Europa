@@ -4,6 +4,8 @@ description: 本番環境にデプロイする
 
 # 本番デプロイ
 
+<!-- turbo-allは意図的に省略: 本番デプロイはユーザー確認が必須のため、各ステップを手動実行する -->
+
 ## 手順
 
 ### 検証フェーズ
@@ -54,7 +56,7 @@ cd hono-worker && npm run deploy:production
 
 10. デプロイ結果を確認
 
-> **Note**: フロントエンド（Cloudflare Pages）はgit連携による自動デプロイです。mainブランチへのマージで自動的にデプロイされます。
+> **Note**: フロントエンド（Cloudflare Pages）はmasterブランチへのpushでgit連携により自動デプロイされます。バックエンド（hono-worker）は `npm run deploy:production` で手動デプロイです。
 
 ## 注意
 - **必ずユーザーの明示的な許可を得てからデプロイすること**

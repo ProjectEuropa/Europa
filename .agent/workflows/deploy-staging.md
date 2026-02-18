@@ -43,14 +43,9 @@ cd hono-worker && npm run test:run
 cd hono-worker && npm run deploy:staging
 ```
 
-7. フロントエンドをStagingブランチにプッシュ（Cloudflare Pages自動デプロイ）:
-```bash
-git push origin staging
-```
+7. デプロイ結果を確認（ログやエラーがないか）
 
-8. デプロイ結果を確認（ログやエラーがないか）
-
-> **Note**: フロントエンド（Cloudflare Pages）はgit連携による自動デプロイです。stagingブランチへのpushで自動的にデプロイされます。
+> **Note**: フロントエンド（Cloudflare Pages）はmasterブランチへのpushでgit連携により自動デプロイされます。バックエンド（hono-worker）は `npm run deploy:staging` で手動デプロイです。
 
 ## 注意
 - 環境変数（DATABASE_URL, JWT_SECRET等）がStaging環境に設定済みであること
