@@ -5,7 +5,7 @@ This file contains detailed patterns, checklists, and code samples referenced by
 ## Project Context (Europa)
 
 > [!NOTE]
-> For this project, prioritize remediation of **Critical** and **Serious** violations identified by `axe-core`. Ensure all interactive terminal-like components meet the contrast requirements defined in `CLAUDE.md`.
+> For this project, prioritize remediation of **Critical** and **Serious** violations identified by `axe-core`. Ensure all interactive components meet WCAG AA contrast requirements (4.5:1 for text, 3:1 for UI components).
 
 ## Core Concepts
 

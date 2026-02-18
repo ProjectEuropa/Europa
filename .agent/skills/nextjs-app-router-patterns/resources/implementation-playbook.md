@@ -55,6 +55,9 @@ app/
 
 ## Quick Start
 
+> [!WARNING]
+> 🚫 **このプロジェクトでは使用不可**: 以下の例は `next: { revalidate }` を使用していますが、`output: 'export'` と非互換のためビルドエラーになります。
+
 ```typescript
 // app/layout.tsx
 import { Inter } from 'next/font/google'
@@ -104,6 +107,9 @@ export default async function HomePage() {
 ## Patterns
 
 ### Pattern 1: Server Components with Data Fetching
+
+> [!WARNING]
+> 🚫 **このプロジェクトでは使用不可**: `next: { tags }` によるキャッシュは `output: 'export'` と非互換です。TanStack Query を使用してください。
 
 ```typescript
 // app/products/page.tsx
@@ -206,6 +212,9 @@ export function AddToCartButton({ productId }: { productId: string }) {
 ```
 
 ### Pattern 3: Server Actions
+
+> [!WARNING]
+> 🚫 **このプロジェクトでは使用不可**: Server Actions (`'use server'`) は `output: 'export'` と非互換です。Hono バックエンドの API を使用してください。
 
 ```typescript
 // app/actions/cart.ts
@@ -362,6 +371,9 @@ export default function RootLayout({
 ```
 
 ### Pattern 6: Streaming with Suspense
+
+> [!WARNING]
+> 🚫 **このプロジェクトでは使用不可**: async Server Components による Streaming は `output: 'export'` と非互換です。Client Component + TanStack Query で実装してください。
 
 ```typescript
 // app/product/[id]/page.tsx
