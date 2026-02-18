@@ -7,6 +7,16 @@ description: Master Next.js 16+ App Router with Server Components, streaming, pa
 
 Comprehensive patterns for Next.js 16+ App Router architecture, Server Components, and modern full-stack React development.
 
+> [!CAUTION]
+> **Project Europa 制約**: このプロジェクトは `output: 'export'` (静的エクスポート) を使用しているため、以下の機能は**使用不可**です:
+> - Server Components (RSC)
+> - Server Actions (`'use server'`)
+> - Streaming / Suspense boundaries
+> - Route Handlers (API Routes)
+> - ISR / Cache tags
+>
+> 代替: TanStack Query でクライアントサイドデータ取得、Hono バックエンド (`/api/v2/`) を使用してください。
+
 ## Use this skill when
 
 - Building new Next.js applications with App Router (v16+)
