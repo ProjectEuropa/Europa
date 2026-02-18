@@ -1,96 +1,76 @@
 ---
 name: webapp-testing
-description: Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs.
-license: Complete terms in LICENSE.txt
+description: |
+  Test and verify local web applications using browser automation.
+  Triggers: 「ブラウザでテスト」「UIの動作確認」「スクリーンショット」「実際に動かして確認」
+  Use when: Verifying frontend functionality, debugging UI behavior, capturing screenshots.
+  Uses AntiGravity's browser_subagent for browser interaction.
 ---
 
 # Web Application Testing
 
-To test local web applications, write native Python Playwright scripts.
+ブラウザ自動化を使用してローカルWebアプリケーションをテスト・検証するスキル。
 
-**Helper Scripts Available**:
-- `scripts/with_server.py` - Manages server lifecycle (supports multiple servers)
+> [!IMPORTANT]
+> このスキルは **AntiGravity専用** です（`.agent/skills/` はAntiGravity用のスキルディレクトリ）。
+> Claude Codeでは `.claude/skills/webapp-testing/` の `playwright` MCPベースのスキルを使用してください。
 
-**Always run scripts with `--help` first** to see usage. DO NOT read the source until you try running the script first and find that a customized solution is absolutely necessary. These scripts can be very large and thus pollute your context window. They exist to be called directly as black-box scripts rather than ingested into your context window.
-
-## Decision Tree: Choosing Your Approach
+## Decision Tree
 
 ```text
-User task → Is it static HTML?
-    ├─ Yes → Read HTML file directly to identify selectors
-    │         ├─ Success → Write Playwright script using selectors
-    │         └─ Fails/Incomplete → Treat as dynamic (below)
+タスク → 静的HTML?
+    ├─ Yes → HTMLファイルを直接読んでセレクタを特定
+    │         └→ browser_subagentでブラウザテスト
     │
-    └─ No (dynamic webapp) → Is the server already running?
-        ├─ No → Run: python scripts/with_server.py --help
-        │        Then use the helper + write simplified Playwright script
+    └─ No (動的Webapp) → サーバーが起動している?
+        ├─ No → run_commandでサーバーを起動
+        │        → browser_subagentでテスト
         │
         └─ Yes → Reconnaissance-then-action:
-            1. Navigate and wait for networkidle
-            2. Take screenshot or inspect DOM
-            3. Identify selectors from rendered state
-            4. Execute actions with discovered selectors
+            1. ページに移動しロード完了を待つ
+            2. スクリーンショット取得 or DOM確認
+            3. セレクタを特定
+            4. アクション実行
 ```
 
-## Example: Using with_server.py
+## Usage Pattern
 
-To start a server, run `--help` first, then use the helper:
+### 1. サーバー起動（未起動の場合）
 
-**Single server:**
 ```bash
-python scripts/with_server.py --server "npm run dev" --port 5173 -- python your_automation.py
+# フロントエンド開発サーバー
+cd frontend && npm run dev
+
+# バックエンド開発サーバー
+cd hono-worker && npm run dev
 ```
 
-**Multiple servers (e.g., backend + frontend):**
-```bash
-python scripts/with_server.py \
-  --server "python server.py" --port 3000 --cwd backend \
-  --server "npm run dev" --port 5173 --cwd frontend \
-  -- python your_automation.py
+> **Note**: ポート番号は各 `package.json` の `scripts.dev` を確認してください。
+
+### 2. browser_subagentでテスト
+
+`browser_subagent` ツールを呼び出す際のタスク記述例:
+
+```text
+1. http://localhost:<port> にアクセス
+2. ページのロードを待つ
+3. [対象要素]が表示されていることを確認
+4. スクリーンショットを撮影
+5. 結果を報告
 ```
 
-To create an automation script, include only Playwright logic (servers are managed automatically):
-```python
-from playwright.sync_api import sync_playwright
+### 3. Reconnaissance-Then-Action
 
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True) # Always launch chromium in headless mode
-    page = browser.new_page()
-    page.goto('http://localhost:5173') # Server already running and ready
-    page.wait_for_load_state('networkidle') # CRITICAL: Wait for JS to execute
-    # ... your automation logic
-    browser.close()
-```
+**重要**: 動的アプリでは、DOM検査の前にページの完全なロードを待つこと。
 
-## Reconnaissance-Then-Action Pattern
-
-1. **Inspect rendered DOM**:
-   ```python
-   page.screenshot(path='/tmp/inspect.png', full_page=True)
-   content = page.content()
-   page.locator('button').all()
-   ```
-
-2. **Identify selectors** from inspection results
-
-3. **Execute actions** using discovered selectors
-
-## Common Pitfall
-
-❌ **Don't** inspect the DOM before waiting for `networkidle` on dynamic apps
-✅ **Do** wait for `page.wait_for_load_state('networkidle')` before inspection
+1. **ページに移動** → ロード完了を待つ
+2. **DOM/スクリーンショットを確認** → セレクタを特定
+3. **アクション実行** → 特定したセレクタを使用
 
 ## Best Practices
 
-- **Use bundled scripts as black-box scripts** - To accomplish a task, consider whether one of the scripts available in `scripts/` can help. These scripts handle common, complex workflows reliably without cluttering the context window. Use `--help` to see usage, then invoke directly. 
-- Use `sync_playwright()` for synchronous scripts
-- Always close the browser when done
-- Use descriptive selectors: `text=`, `role=`, CSS selectors, or IDs
-- Add appropriate waits: `page.wait_for_selector()` or `page.wait_for_timeout()`
-
-## Reference Files
-
-- **examples/** - Examples showing common patterns:
-  - `element_discovery.py` - Discovering buttons, links, and inputs on a page
-  - `static_html_automation.py` - Using file:// URLs for local HTML
-  - `console_logging.py` - Capturing console logs during automation
+- サーバー起動は `run_command` で行い、バックグラウンドで実行
+- `browser_subagent` のタスク記述は具体的かつ明確にする
+- テスト完了条件を明示する
+- セマンティックなセレクタを優先（`text=`, `role=`, aria属性）
+- スクリーンショットは検証結果の証拠として活用

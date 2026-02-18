@@ -56,122 +56,20 @@ app/
 ## Quick Start
 
 > [!WARNING]
-> 🚫 **このプロジェクトでは使用不可**: 以下の例は `next: { revalidate }` を使用していますが、`output: 'export'` と非互換のためビルドエラーになります。
-
-```typescript
-// app/layout.tsx
-import { Inter } from 'next/font/google'
-import { Providers } from './providers'
-
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata = {
-  title: { default: 'My App', template: '%s | My App' },
-  description: 'Built with Next.js App Router',
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  )
-}
-
-// app/page.tsx - Server Component by default
-async function getProducts() {
-  const res = await fetch('https://api.example.com/products', {
-    next: { revalidate: 3600 }, // ISR: revalidate every hour
-  })
-  return res.json()
-}
-
-export default async function HomePage() {
-  const products = await getProducts()
-
-  return (
-    <main>
-      <h1>Products</h1>
-      <ProductGrid products={products} />
-    </main>
-  )
-}
-```
+> 🚫 **このプロジェクトでは使用不可**: Next.js の ISR (`next: { revalidate }`) は `output: 'export'` と非互換です。
+>
+> 詳細は [Next.js 公式ドキュメント: Data Fetching](https://nextjs.org/docs/app/building-your-application/data-fetching) を参照してください。
+> このプロジェクトでは TanStack Query を使用したクライアントサイドフェッチを推奨します。
 
 ## Patterns
 
 ### Pattern 1: Server Components with Data Fetching
 
 > [!WARNING]
-> 🚫 **このプロジェクトでは使用不可**: `next: { tags }` によるキャッシュは `output: 'export'` と非互換です。TanStack Query を使用してください。
-
-```typescript
-// app/products/page.tsx
-import { Suspense } from 'react'
-import { ProductList, ProductListSkeleton } from '@/components/products'
-import { FilterSidebar } from '@/components/filters'
-
-interface SearchParams {
-  category?: string
-  sort?: 'price' | 'name' | 'date'
-  page?: string
-}
-
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
-  const params = await searchParams
-
-  return (
-    <div className="flex gap-8">
-      <FilterSidebar />
-      <Suspense
-        key={JSON.stringify(params)}
-        fallback={<ProductListSkeleton />}
-      >
-        <ProductList
-          category={params.category}
-          sort={params.sort}
-          page={Number(params.page) || 1}
-        />
-      </Suspense>
-    </div>
-  )
-}
-
-// components/products/ProductList.tsx - Server Component
-async function getProducts(filters: ProductFilters) {
-  const res = await fetch(
-    `${process.env.API_URL}/products?${new URLSearchParams(filters)}`,
-    { next: { tags: ['products'] } }
-  )
-  if (!res.ok) throw new Error('Failed to fetch products')
-  return res.json()
-}
-
-export async function ProductList({ category, sort, page }: ProductFilters) {
-  const { products, totalPages } = await getProducts({ category, sort, page })
-
-  return (
-    <div>
-      <div className="grid grid-cols-3 gap-4">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-      <Pagination currentPage={page} totalPages={totalPages} />
-    </div>
-  )
-}
-```
+> 🚫 **このプロジェクトでは使用不可**: `next: { tags }` によるキャッシュは `output: 'export'` と非互換です。
+>
+> 詳細は [Next.js 公式ドキュメント: Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components) を参照してください。
+> このプロジェクトでは TanStack Query を使用したクライアントサイドフェッチを推奨します。
 
 ### Pattern 2: Client Components with 'use client'
 
@@ -214,54 +112,10 @@ export function AddToCartButton({ productId }: { productId: string }) {
 ### Pattern 3: Server Actions
 
 > [!WARNING]
-> 🚫 **このプロジェクトでは使用不可**: Server Actions (`'use server'`) は `output: 'export'` と非互換です。Hono バックエンドの API を使用してください。
-
-```typescript
-// app/actions/cart.ts
-'use server'
-
-import { revalidateTag } from 'next/cache'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-
-export async function addToCart(productId: string) {
-  const cookieStore = await cookies()
-  const sessionId = cookieStore.get('session')?.value
-
-  if (!sessionId) {
-    redirect('/login')
-  }
-
-  try {
-    await db.cart.upsert({
-      where: { sessionId_productId: { sessionId, productId } },
-      update: { quantity: { increment: 1 } },
-      create: { sessionId, productId, quantity: 1 },
-    })
-
-    revalidateTag('cart')
-    return { success: true }
-  } catch (error) {
-    return { error: 'Failed to add item to cart' }
-  }
-}
-
-export async function checkout(formData: FormData) {
-  const address = formData.get('address') as string
-  const payment = formData.get('payment') as string
-
-  // Validate
-  if (!address || !payment) {
-    return { error: 'Missing required fields' }
-  }
-
-  // Process order
-  const order = await processOrder({ address, payment })
-
-  // Redirect to confirmation
-  redirect(`/orders/${order.id}/confirmation`)
-}
-```
+> 🚫 **このプロジェクトでは使用不可**: Server Actions (`'use server'`) は `output: 'export'` と非互換です。
+>
+> 詳細は [Next.js 公式ドキュメント: Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations) を参照してください。
+> このプロジェクトでは Hono バックエンドの API を使用してください。
 
 ### Pattern 4: Parallel Routes
 
@@ -374,50 +228,6 @@ export default function RootLayout({
 
 > [!WARNING]
 > 🚫 **このプロジェクトでは使用不可**: async Server Components による Streaming は `output: 'export'` と非互換です。Client Component + TanStack Query で実装してください。
-
-```typescript
-// app/product/[id]/page.tsx
-import { Suspense } from 'react'
-
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-
-  // This data loads first (blocking)
-  const product = await getProduct(id)
-
-  return (
-    <div>
-      {/* Immediate render */}
-      <ProductHeader product={product} />
-
-      {/* Stream in reviews */}
-      <Suspense fallback={<ReviewsSkeleton />}>
-        <Reviews productId={id} />
-      </Suspense>
-
-      {/* Stream in recommendations */}
-      <Suspense fallback={<RecommendationsSkeleton />}>
-        <Recommendations productId={id} />
-      </Suspense>
-    </div>
-  )
-}
-
-// These components fetch their own data
-async function Reviews({ productId }: { productId: string }) {
-  const reviews = await getReviews(productId) // Slow API
-  return <ReviewList reviews={reviews} />
-}
-
-async function Recommendations({ productId }: { productId: string }) {
-  const products = await getRecommendations(productId) // ML-based, slow
-  return <ProductCarousel products={products} />
-}
-```
 
 ### Pattern 7: Route Handlers (API Routes)
 
