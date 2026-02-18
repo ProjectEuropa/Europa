@@ -10,9 +10,9 @@ description: フロントエンド・バックエンド両方のフルチェッ�
 
 ## 手順
 
-1. フロントエンドのBiomeLint/Format:
+1. フロントエンドのチェック（Lint/Format）:
 ```bash
-cd frontend && npm run check:fix
+cd frontend && npm run check
 ```
 
 2. フロントエンドのTypeScript型チェック:
@@ -30,9 +30,9 @@ cd frontend && npm run test:run
 cd frontend && npm run build
 ```
 
-5. バックエンドのBiomeLint/Format:
+5. バックエンドのチェック（Lint/Format）:
 ```bash
-cd hono-worker && npm run check:fix
+cd hono-worker && npm run check
 ```
 
 6. バックエンドのTypeScript型チェック:

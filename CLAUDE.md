@@ -25,7 +25,7 @@ cd frontend && npm run check
 
 2. フロントエンドのTypeScript型チェック:
 ```bash
-cd frontend && npx tsc --noEmit
+cd frontend && npm run type-check
 ```
 
 3. フロントエンドのユニットテスト:
