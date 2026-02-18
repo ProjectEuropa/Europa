@@ -1,42 +1,63 @@
 ---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.
-license: Complete terms in LICENSE.txt
+description: |
+  Create distinctive, production-grade frontend interfaces with high design quality.
+  Use when building web components, pages, or applications. Generates creative, polished UI
+  that avoids generic "AI slop" aesthetics.
+  Triggers: 「UIを作成」「コンポーネントを作って」「美しいページを」「デザインを改善」
+  Project stack: Next.js 16 + React 19 + TailwindCSS 4 + shadcn/ui
 ---
 
-This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+# Frontend Design Skill
 
-The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
+高品質なフロントエンドUI/UXを設計・実装するスキル。「AIスロップ」を回避する美学的指針を提供する。
+
+## Project-Specific Stack
+
+- **Framework**: Next.js 16 (App Router, 静的生成 `output: 'export'`)
+- **UI Library**: React 19
+- **Styling**: TailwindCSS 4 + shadcn/ui (Radix UI基盤)
+- **Components**: `frontend/src/components/` に配置
+- **Path Alias**: `@/*` → `./src/*`
+- **Lint**: Biome 2（インデント2スペース、セミコロン付与、シングルクォート）
 
 ## Design Thinking
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
-- **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
-- **Constraints**: Technical requirements (framework, performance, accessibility).
-- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+コーディング前に、コンテキストを理解し**大胆な**美的方向性を決定する:
 
-**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work - the key is intentionality, not intensity.
+1. **Purpose**: このインターフェースが解決する問題は？誰が使う？
+2. **Tone**: 明確なトーンを選択（ミニマリスト、レトロフューチャー、ラグジュアリー、プレイフル等）
+3. **Constraints**: 技術的制約（パフォーマンス、アクセシビリティ）
+4. **Differentiation**: 何が**忘れられない**印象を与えるか？
 
-Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
-- Production-grade and functional
-- Visually striking and memorable
-- Cohesive with a clear aesthetic point-of-view
-- Meticulously refined in every detail
+## Aesthetics Guidelines
 
-## Frontend Aesthetics Guidelines
+### DO ✅
 
-Focus on:
-- **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
-- **Color & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
-- **Motion**: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
-- **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
-- **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
+- **Typography**: 美しく、ユニークなフォント選択。Google Fontsから特徴的なフォントを選ぶ
+- **Color**: CSS変数で一貫性を保つ。ドミナントカラー + シャープなアクセント
+- **Motion**: hover効果、マイクロアニメーション。CSS-onlyが理想
+- **Spatial**: 予想外のレイアウト。非対称。オーバーラップ。豊かなネガティブスペース
+- **Backgrounds**: 雰囲気と深度を作り出す。グラデーションメッシュ、ノイズテクスチャ、幾何学パターン
 
-NEVER use generic AI-generated aesthetics like overused font families (Inter, Roboto, Arial, system fonts), cliched color schemes (particularly purple gradients on white backgrounds), predictable layouts and component patterns, and cookie-cutter design that lacks context-specific character.
+### DON'T ❌
 
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices (Space Grotesk, for example) across generations.
+- Inter、Roboto、Arial、システムフォントの使用
+- 紫グラデーション on 白背景
+- 予測可能なレイアウトとコンポーネントパターン
+- 同じデザインの繰り返し（毎回異なるアプローチを取る）
 
-**IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
+## Implementation Rules
 
-Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+- `any` 禁止（TypeScript strict）
+- アクセシビリティ（aria属性、キーボード操作）を考慮
+- shadcn/uiコンポーネントを積極的に活用
+- `@/` パスエイリアスでインポート
+- Biome lint/formatに適合するコード
+
+## Output
+
+実装後、以下で確認:
+```bash
+cd frontend && npm run check:fix && npm run type-check
+```

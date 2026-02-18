@@ -5,11 +5,15 @@ on:
     branches: [prd, master]
     paths:
       - 'frontend/**'
+      - '.agent/skills/**'
+      - '.claude/skills/**'
       - '.github/workflows/frontend-ci.yml'
   pull_request:
     branches: [prd, master]
     paths:
       - 'frontend/**'
+      - '.agent/skills/**'
+      - '.claude/skills/**'
       - '.github/workflows/frontend-ci.yml'
 
 # Concurrency: cancel running workflows on new pushes to the same branch/PR
@@ -39,6 +43,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+
+      - name: Verify symlinks
+        working-directory: .
+        run: |
+          echo "=== Verifying .agent/skills symlinks ==="
+          ls -la .agent/skills/
+          for link in .agent/skills/*; do
+            if [ -L "$link" ] && [ ! -e "$link" ]; then
+              echo "ERROR: Broken symlink: $link"
+              exit 1
+            fi
+          done
+          echo "All symlinks are valid"
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
