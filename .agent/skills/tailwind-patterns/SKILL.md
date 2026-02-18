@@ -37,7 +37,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 
 ### Theme Definition
 
-```
+```css
 @theme {
   /* Colors - use semantic names */
   --color-primary: oklch(0.7 0.15 250);

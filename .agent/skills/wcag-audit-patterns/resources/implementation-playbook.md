@@ -69,7 +69,6 @@ Check:
 <img src="chart.png" />
 <img src="decorative-line.png" alt="decorative line" />
 ```
-````
 
 ## 1.2 Time-based Media
 
@@ -285,11 +284,11 @@ Check:
 - [ ] Focused element not fully hidden
 - [ ] Sticky headers don't obscure focus
 
-`````
+````
 
 ### Understandable (Principle 3)
 
-```markdown
+````markdown
 ## 3.1 Readable
 
 ### 3.1.1 Language of Page (Level A)
@@ -298,10 +297,12 @@ Check:
 
 ```html
 <html lang="en">
+```
 ````
 
 ### 3.1.2 Language of Parts (Level AA)
 
+````markdown
 - [ ] Language changes marked
 
 ```html

@@ -59,6 +59,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 | Server state | React Query, SWR |
 | Complex global | Zustand, Redux Toolkit |
 
+> [!NOTE]
+> **Project Specifics**: When using **Zustand**, follow the persist settings and hydration patterns defined in `CLAUDE.md`.
+
 ### State Placement
 
 | Scope | Where |

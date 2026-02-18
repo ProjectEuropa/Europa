@@ -398,6 +398,10 @@ async function Recommendations({ productId }: { productId: string }) {
 
 ### Pattern 7: Route Handlers (API Routes)
 
+> [!IMPORTANT]
+> **Project Policy**: This project uses **Hono v4 + Cloudflare Workers** for backend services (refer to `CLAUDE.md` API Design Rules). 
+> Next.js Route Handlers (`app/api/...`) should generally be avoided unless specifically required for Next.js internal features. Always prioritize `/api/v2/` endpoints hosted on the Hono backend.
+
 ```typescript
 // app/api/products/route.ts
 import { NextRequest, NextResponse } from 'next/server'
@@ -556,12 +560,12 @@ export async function updateProduct(id: string, data: ProductData) {
 ### Don'ts
 - **Don't pass serializable data** - Server → Client boundary limitations
 - **Don't use hooks in Server Components** - No useState, useEffect
-- **Don't fetch in Client Components** - Use Server Components or React Query
+- **Don't use raw fetch() in Client Components** - Use Server Components or a data-fetching library (like React Query / SWR)
 - **Don't over-nest layouts** - Each layout adds to the component tree
 - **Don't ignore loading states** - Always provide loading.tsx or Suspense
 
 ## Resources
 
-- [Next.js App Router Documentation](https://nextjs.org/docs/app)
-- [Server Components RFC](https://github.com/reactjs/rfcs/blob/main/text/0188-server-components.md)
-- [Vercel Templates](https://vercel.com/templates/next.js)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Server Components (Next.js)](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
+- [Data Fetching, Caching, and Revalidating](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating)
