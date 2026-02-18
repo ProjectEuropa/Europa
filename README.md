@@ -151,6 +151,7 @@ sequenceDiagram
 
 ```bash
 # Discord Developer Portalから取得
+# ⚠️ BOT_TOKENは機密情報です。リポジトリにコミットせず、環境変数または.dev.varsで管理してください。
 DISCORD_APPLICATION_ID=xxxx
 DISCORD_PUBLIC_KEY=xxxx
 DISCORD_BOT_TOKEN=xxxx
