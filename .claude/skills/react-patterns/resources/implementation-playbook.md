@@ -10,10 +10,14 @@ Detailed patterns and best practices for React 19 development.
 > - To avoid SSR hydration mismatches, use a hydration guard when accessing persisted stores in Client Components:
 > 
 > ```typescript
+> const store = useStore() // Always call hook at top level
 > const [isHydrated, setIsHydrated] = useState(false)
+> 
 > useEffect(() => setIsHydrated(true), [])
-> const store = useStore()
-> if (!isHydrated) return null // or skeleton
+> 
+> if (!isHydrated) {
+>   return <Skeleton className="h-10 w-full" /> // Avoid CLS with skeleton
+> }
 > ```
 
 ## Patterns

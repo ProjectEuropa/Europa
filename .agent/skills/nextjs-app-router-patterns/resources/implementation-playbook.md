@@ -400,74 +400,16 @@ async function Recommendations({ productId }: { productId: string }) {
 
 ### Pattern 7: Route Handlers (API Routes)
 
-```typescript
-// app/api/products/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
+/*
+================================================================================
+⛔️ WARNING: DO NOT USE NEXT.JS ROUTE HANDLERS ⛔️
 
-const createProductSchema = z.object({
-  name: z.string().min(1),
-  price: z.number().positive(),
-  description: z.string().optional(),
-  category: z.string().min(1),
-})
+This project uses Hono v4 + Cloudflare Workers for all backend logic.
+Do not implement API endpoints in `app/api/...`.
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams
-  const category = searchParams.get('category')
-
-  const products = await db.product.findMany({
-    where: category ? { category } : undefined,
-    take: 20,
-  })
-
-  return NextResponse.json(products)
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    
-    // Validate input with Zod
-    const validatedData = createProductSchema.parse(body)
-
-    const product = await db.product.create({
-      data: validatedData,
-    })
-
-    return NextResponse.json(product, { status: 201 })
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
-        { status: 400 }
-      )
-    }
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    )
-  }
-}
-
-// app/api/products/[id]/route.ts
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params
-  const product = await db.product.findUnique({ where: { id } })
-
-  if (!product) {
-    return NextResponse.json(
-      { error: 'Product not found' },
-      { status: 404 }
-    )
-  }
-
-  return NextResponse.json(product)
-}
-```
+Refer to `CLAUDE.md` for API Design Rules.
+================================================================================
+*/
 
 ### Pattern 8: Metadata and SEO
 

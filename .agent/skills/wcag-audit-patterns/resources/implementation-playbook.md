@@ -52,8 +52,7 @@ Moderate:
 
 ### Perceivable (Principle 1)
 
-````markdown
-## 1.1 Text Alternatives
+### 1.1 Text Alternatives
 
 ### 1.1.1 Non-text Content (Level A)
 
@@ -175,11 +174,8 @@ Tools: WebAIM Contrast Checker, axe DevTools
 - [ ] Letter spacing 0.12x font size
 - [ ] Word spacing 0.16x font size
 
-````
-
 ### Operable (Principle 2)
 
-````markdown
 ## 2.1 Keyboard Accessible
 
 ### 2.1.1 Keyboard (Level A)
@@ -289,11 +285,8 @@ Check:
 - [ ] Focused element not fully hidden
 - [ ] Sticky headers don't obscure focus
 
-````
-
 ### Understandable (Principle 3)
 
-````markdown
 ## 3.1 Readable
 
 ### 3.1.1 Language of Page (Level A)
@@ -303,11 +296,11 @@ Check:
 ```html
 <html lang="en">
 ```
-````
 
 ### 3.1.2 Language of Parts (Level AA)
 
-````markdown
+### 3.1.2 Language of Parts (Level AA)
+
 - [ ] Language changes marked
 
 ```html
@@ -366,11 +359,8 @@ Check:
 - [ ] Data checked before submission
 - [ ] User can review before submit
 
-````
-
 ### Robust (Principle 4)
 
-````markdown
 ## 4.1 Compatible
 
 ### 4.1.1 Parsing (Level A) - Obsolete in WCAG 2.2
@@ -404,8 +394,6 @@ Check:
 <div role="alert" aria-live="assertive">Error: Form submission failed</div>
 ```
 
-````
-
 ## Automated Testing
 
 ```javascript
@@ -438,7 +426,6 @@ test('should have no accessibility violations', async ({ page }) => {
 
   expect(results.violations).toHaveLength(0);
 });
-````
 
 ```bash
 # CLI tools

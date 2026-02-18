@@ -1,3 +1,4 @@
+<!-- SYNC WARNING: This file is synchronized from .agent/skills/tailwind-patterns/SKILL.md. Do not edit directly. -->
 ---
 name: tailwind-patterns
 description: Tailwind CSS v4 principles. CSS-first configuration, container queries, modern patterns, design token architecture.
