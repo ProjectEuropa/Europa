@@ -7,6 +7,40 @@ Cloudflare Workers + Hono バックエンドと Next.js 16 フロントエンド
 - `frontend/` - Next.js 16 + React 19 + TailwindCSS 4 + shadcn/ui（詳細: `frontend/CLAUDE.md`）
 - `hono-worker/` - Hono v4 + Cloudflare Workers + Neon PostgreSQL（詳細: `hono-worker/CLAUDE.md`）
 
+## Architecture Overview
+
+### System Diagram
+
+```mermaid
+graph LR
+    User([User]) --> Frontend[Next.js 16<br/>Static Export]
+    Frontend -->|credentials: include| Backend[Hono v4<br/>CF Workers]
+    Backend --> DB[(Neon PostgreSQL)]
+    Backend --> R2[Cloudflare R2<br/>File Storage]
+```
+
+### Authentication Flow
+
+- **方式**: JWT + HttpOnly Cookie（XSS対策、トークン漏洩防止）
+- **Production/Staging**: `SameSite=None; Secure`
+- **Development**: `SameSite=Lax`（localhost cross-port対応）
+- **有効期限**: 7日間
+
+### Database Tables
+
+`users`, `events`, `files`, `tags`, `file_tags`, `password_resets`
+
+詳細は [hono-worker/src/db/schema.sql](hono-worker/src/db/schema.sql) を参照
+
+### Key Files
+
+| 領域 | ファイル |
+|-----|---------|
+| 認証 | `hono-worker/src/middleware/auth.ts`, `frontend/src/stores/authStore.ts` |
+| API | `frontend/src/lib/api/client.ts`, `hono-worker/src/routes/` |
+| エラー処理 | `frontend/src/utils/apiErrorHandler.ts`, `hono-worker/src/middleware/error.ts` |
+| DBスキーマ | `hono-worker/src/db/schema.sql` |
+
 ## デプロイ手順 (Staging)
 
 このセクションでは、Staging環境へのデプロイ手順を説明します。
@@ -180,3 +214,24 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 **ドキュメント整備フロー**
 1. `doc-coauthoring` → ドキュメント作成
 2. `theme-factory` → スタイル適用（必要な場合）
+
+## Error Knowledge Accumulation
+
+**記録基準**: 以下に該当するエラーのみ記録する（些細なエラーは除外）
+- 再発しやすいエラー
+- 原因特定に時間がかかったエラー
+- 環境依存のエラー
+
+Memory MCPに以下の形式で記録する：
+
+- **エンティティ名**: `error_<簡潔な名前>`（例: `error_cors_mismatch`）
+- **観測内容**: 症状、原因、解決策
+
+```text
+例: error_cors_mismatch
+- 症状: ブラウザでCORSエラー
+- 原因: ALLOWED_ORIGINS環境変数が未設定
+- 解決: hono-worker/.dev.vars に ALLOWED_ORIGINS=http://localhost:3000 を追加
+```
+
+これにより、同じエラーに再度遭遇した際にMemory MCPから解決策を参照できる。
