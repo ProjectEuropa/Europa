@@ -175,7 +175,7 @@ Tools: WebAIM Contrast Checker, axe DevTools
 
 ### Operable (Principle 2)
 
-```markdown
+````markdown
 ## 2.1 Keyboard Accessible
 
 ### 2.1.1 Keyboard (Level A)
@@ -189,7 +189,7 @@ Check:
 // Custom button must be keyboard accessible
 <div role="button" tabindex="0"
      onkeydown="if(event.key === 'Enter' || event.key === ' ') activate()">
-````
+```
 
 ### 2.1.2 No Keyboard Trap (Level A)
 
@@ -285,7 +285,7 @@ Check:
 - [ ] Focused element not fully hidden
 - [ ] Sticky headers don't obscure focus
 
-````
+`````
 
 ### Understandable (Principle 3)
 

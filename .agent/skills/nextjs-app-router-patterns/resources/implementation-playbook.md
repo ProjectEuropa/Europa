@@ -401,6 +401,14 @@ async function Recommendations({ productId }: { productId: string }) {
 ```typescript
 // app/api/products/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+
+const createProductSchema = z.object({
+  name: z.string().min(1),
+  price: z.number().positive(),
+  description: z.string().optional(),
+  category: z.string().min(1),
+})
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -415,13 +423,29 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
+  try {
+    const body = await request.json()
+    
+    // Validate input with Zod
+    const validatedData = createProductSchema.parse(body)
 
-  const product = await db.product.create({
-    data: body,
-  })
+    const product = await db.product.create({
+      data: validatedData,
+    })
 
-  return NextResponse.json(product, { status: 201 })
+    return NextResponse.json(product, { status: 201 })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      )
+    }
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    )
+  }
 }
 
 // app/api/products/[id]/route.ts
