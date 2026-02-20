@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "organization": "Vercel Engineering",
+  "date": "January 2026",
+  "abstract": "Comprehensive performance optimization guide for React and Next.js applications, designed for AI agents and LLMs. Contains 57 rules total (49 applicable to Europa). Each rule includes detailed explanations, real-world examples comparing incorrect vs. correct implementations, and specific impact metrics to guide automated refactoring and code generation.",
+  "references": [
+    "https://react.dev",
+    "https://nextjs.org",
+    "https://swr.vercel.app",
+    "https://github.com/shuding/better-all",
+    "https://github.com/isaacs/node-lru-cache",
+    "https://vercel.com/blog/how-we-optimized-package-imports-in-next-js",
+    "https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast"
+  ]
+}
