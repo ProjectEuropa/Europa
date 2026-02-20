@@ -2481,38 +2481,68 @@ Use a Map (not a hook) so it works everywhere: utilities, event handlers, not ju
 
 **Cookie caching:**
 
+> ⚠️ **注意**: `document.cookie` は `HttpOnly` フラグ付き Cookie には**アクセス不可**です。
+> 認証トークンの取得には `fetch` の `credentials: 'include'` を使用してください。
+>
+> ⚠️ **SSR 注意**: 以下の関数はクライアントサイド専用です。必要に応じて `document` のガード句を追加しています。
+
 ```typescript
 let cookieCache: Record<string, string> | null = null
 
 function getCookie(name: string) {
+  if (typeof document === 'undefined') return undefined
   if (!cookieCache) {
     cookieCache = Object.fromEntries(
       document.cookie.split('; ').map(c => {
         const idx = c.indexOf('=')
         if (idx === -1) return [c, '']
-        return [c.slice(0, idx), decodeURIComponent(c.slice(idx + 1))]
+        
+        const rawName = c.slice(0, idx)
+        const rawValue = c.slice(idx + 1)
+        
+        let decodedName = rawName
+        let decodedValue = rawValue
+        
+        try { decodedName = decodeURIComponent(rawName) } catch { /* keep raw */ }
+        try { decodedValue = decodeURIComponent(rawValue) } catch { /* keep raw */ }
+        
+        return [decodedName, decodedValue]
       })
     )
   }
   return cookieCache[name]
+}
+
+function setCookie(name: string, value: string, options = '') {
+  // ⚠️ options は信頼できる値のみを渡してください。
+  // ユーザー入力をそのまま渡すと Cookie インジェクションのリスクがあります。
+  // 例: setCookie('theme', 'dark', 'path=/; SameSite=Lax')
+  // ⚠️ HttpOnly はサーバー側でのみ設定可能（JS からは設定不可）
+  if (typeof document === 'undefined') return
+  // Normalize options to ensure it starts with '; ' if provided
+  const opts = options && !options.startsWith(';') ? `; ${options}` : options
+  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}${opts}`
+  cookieCache = null  // keep cache in sync
 }
 ```
 
 **Important: invalidate on external changes**
 
 ```typescript
-window.addEventListener('storage', (e) => {
-  if (e.key) {
-    storageCache.delete(e.key)
-  }
-})
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key) {
+      storageCache.delete(e.key)
+    }
+  })
 
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    storageCache.clear()
-    cookieCache = null
-  }
-})
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      storageCache.clear()
+      cookieCache = null
+    }
+  })
+}
 ```
 
 If storage can change externally (another tab, server-set cookies), invalidate cache:
