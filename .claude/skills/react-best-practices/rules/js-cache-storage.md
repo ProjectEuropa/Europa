@@ -75,6 +75,8 @@ function getCookie(name: string) {
 }
 
 function setCookie(name: string, value: string, options = '') {
+  // 例: setCookie('theme', 'dark', 'path=/; SameSite=Lax')
+  // ⚠️ HttpOnly はサーバー側でのみ設定可能（JS からは設定不可）
   if (typeof document === 'undefined') return
   // Normalize options to ensure it starts with '; ' if provided
   const opts = options && !options.startsWith(';') ? `; ${options}` : options
