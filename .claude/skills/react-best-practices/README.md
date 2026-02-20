@@ -1,6 +1,9 @@
 # React Best Practices
 
-A structured repository for creating and maintaining React Best Practices optimized for agents and LLMs.
+React and Next.js performance optimization guidelines from Vercel Engineering.
+
+> **Note**: This is a curated copy from [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills).
+> Build scripts (`src/`, `package.json`) are not included. `AGENTS.md` and `rules/` are maintained directly.
 
 ## Structure
 
@@ -8,32 +11,13 @@ A structured repository for creating and maintaining React Best Practices optimi
   - `_sections.md` - Section metadata (titles, impacts, descriptions)
   - `_template.md` - Template for creating new rules
   - `area-description.md` - Individual rule files
-- `src/` - Build scripts and utilities
 - `metadata.json` - Document metadata (version, organization, abstract)
-- __`AGENTS.md`__ - Compiled output (generated)
-- __`test-cases.json`__ - Test cases for LLM evaluation (generated)
+- `AGENTS.md` - Full compiled document (maintained directly)
+- `SKILL.md` - Skill definition for Claude Code
 
-## Getting Started
+## Usage
 
-1. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-
-2. Build AGENTS.md from rules:
-   ```bash
-   pnpm build
-   ```
-
-3. Validate rule files:
-   ```bash
-   pnpm validate
-   ```
-
-4. Extract test cases:
-   ```bash
-   pnpm extract-tests
-   ```
+This skill is automatically loaded by Claude Code. Reference `AGENTS.md` for all rules, or individual files in `rules/` for specific rules.
 
 ## Creating a New Rule
 

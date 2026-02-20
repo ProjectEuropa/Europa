@@ -18,6 +18,19 @@ Comprehensive performance optimization guide for React and Next.js applications,
 
 ---
 
+> **⚠️ Europa プロジェクト向け注記**
+>
+> このプロジェクトは `output: 'export'`（Static Export）を使用しています。
+> 以下のルールは **適用外** です：
+> - `server-*` ルール（3章全体）— SSRランタイムなし
+> - `async-suspense-boundaries`（1.5節）— ストリーミングSSRなし
+>
+> **既に設定済み**:
+> - `optimizePackageImports`: `@tanstack/react-query`, `zustand`, `lucide-react`
+> - TanStack Query（`client-swr-dedup` 相当）
+
+---
+
 ## Table of Contents
 
 1. [Eliminating Waterfalls](#1-eliminating-waterfalls) — **CRITICAL**
