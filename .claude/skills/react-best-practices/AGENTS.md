@@ -190,7 +190,7 @@ This optimization is especially valuable when the skipped branch is frequently t
 
 **Impact: CRITICAL (2-10× improvement)**
 
-For operations with partial dependencies, use `better-all` to maximize parallelism. It automatically starts each task at the earliest possible moment.
+For operations with partial dependencies, chain Promises and use `Promise.all()` to maximize parallelism. It automatically starts each task at the earliest possible moment without relying on external libraries.
 
 > [!WARNING]
 > `better-all` は現在 `package.json` 未収録です。代わりに下記の Promise ベースパターンを使用してください。
