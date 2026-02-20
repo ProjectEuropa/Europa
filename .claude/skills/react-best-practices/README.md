@@ -33,7 +33,9 @@ This skill is automatically loaded by Claude Code. Reference `AGENTS.md` for all
    - `advanced-` for Advanced Patterns (Section 8)
 3. Fill in the frontmatter and content
 4. Ensure you have clear examples with explanations
-5. Run `pnpm build` to regenerate AGENTS.md and test-cases.json
+5. Manually update `AGENTS.md` to include the new rule
+
+> **Note**: Build scripts are not included in this curated copy. Update `AGENTS.md` directly instead of running `pnpm build`.
 
 ## Rule File Structure
 
@@ -66,6 +68,7 @@ Brief explanation of the rule and why it matters.
 Optional explanatory text after examples.
 
 Reference: [Link](https://example.com)
+```
 
 ## File Naming Convention
 
@@ -84,13 +87,6 @@ Reference: [Link](https://example.com)
 - `LOW-MEDIUM` - Low-medium gains
 - `LOW` - Incremental improvements
 
-## Scripts
-
-- `pnpm build` - Compile rules into AGENTS.md
-- `pnpm validate` - Validate all rule files
-- `pnpm extract-tests` - Extract test cases for LLM evaluation
-- `pnpm dev` - Build and validate
-
 ## Contributing
 
 When adding or modifying rules:
@@ -99,8 +95,10 @@ When adding or modifying rules:
 2. Follow the `_template.md` structure
 3. Include clear bad/good examples with explanations
 4. Add appropriate tags
-5. Run `pnpm build` to regenerate AGENTS.md and test-cases.json
-6. Rules are automatically sorted by title - no need to manage numbers!
+5. Manually update `AGENTS.md` to include the changes
+6. Rules are sorted alphabetically by title within each section
+
+> **Note**: This curated copy does not include build scripts. For the original build tools, see [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills).
 
 ## Acknowledgments
 
