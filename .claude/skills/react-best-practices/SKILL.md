@@ -131,7 +131,7 @@ Reference these guidelines when:
 
 Read individual rule files for detailed explanations and code examples:
 
-```
+```text
 rules/async-parallel.md
 rules/bundle-barrel-imports.md
 ```
