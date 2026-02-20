@@ -132,6 +132,7 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 | `react-patterns` | Reactベストプラクティス | Modern React patterns and principles. Hooks, composition, performance, TypeScript best practices |
 | `tailwind-patterns` | Tailwind CSSスタイリング | Tailwind CSS v4 principles. CSS-first configuration, container queries, modern patterns, design token architecture |
 | `wcag-audit-patterns` | アクセシビリティ監査 | Conduct WCAG 2.2 accessibility audits with automated testing, manual verification, and remediation guidance |
+| `react-best-practices` | React/Next.jsパフォーマンス最適化（Vercel Engineering提供、57ルール） | React and Next.js performance optimization guidelines from Vercel Engineering |
 
 ### 公式スキル（Anthropic提供）
 
@@ -166,9 +167,12 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 | React パターン適用      | `react-patterns`              | 「Reactのベストプラクティスで」「カスタムフックを作成」 |
 | Tailwind CSS スタイリング | `tailwind-patterns`         | 「Tailwindでスタイリング」「レスポンシブデザイン」 |
 | アクセシビリティ監査     | `wcag-audit-patterns`        | 「アクセシビリティを確認」「WCAG準拠」 |
+| React/Next.jsパフォーマンス最適化 | `react-best-practices` | 「パフォーマンスを改善」「バンドルサイズ削減」「ウォーターフォール排除」 |
 | アーティファクト構築 | `web-artifacts-builder` | 「アーティファクトを作成」「React + shadcn/ui」 |
 | テーマ適用 | `theme-factory` | 「テーマを適用」「スタイルを変更」 |
 | Canvas作成 | `canvas-design` | 「ポスターを作成」「デザインを作って」 |
+
+<!-- 注: "Reactのベストプラクティス" という単語は一般的なReact設計を指すため react-patterns にルーティングしています。パフォーマンス・レンダリング最適化に特化したタスクでのみ react-best-practices を呼び出すよう意図的に分離しています -->
 
 ### MCP Tool Selection Rules
 
