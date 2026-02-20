@@ -2514,6 +2514,8 @@ function getCookie(name: string) {
 }
 
 function setCookie(name: string, value: string, options = '') {
+  // ⚠️ options は信頼できる値のみを渡してください。
+  // ユーザー入力をそのまま渡すと Cookie インジェクションのリスクがあります。
   // 例: setCookie('theme', 'dark', 'path=/; SameSite=Lax')
   // ⚠️ HttpOnly はサーバー側でのみ設定可能（JS からは設定不可）
   if (typeof document === 'undefined') return
