@@ -2500,7 +2500,6 @@ function getCookie(name: string) {
 window.addEventListener('storage', (e) => {
   if (e.key) {
     storageCache.delete(e.key)
-    if (cookieCache) delete cookieCache[e.key]
   }
 })
 
