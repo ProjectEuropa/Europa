@@ -145,3 +145,6 @@ Each rule file contains:
 ## Full Compiled Document
 
 For the complete guide with all rules expanded: `AGENTS.md`
+
+> [!TIP]
+> **エージェント向け最適化**: トークン節約のため、原則として `rules/*.md` の個別ファイルを参照してください。`AGENTS.md` は全体の構成を俯瞰する必要がある場合のみ参照することを推奨します。
