@@ -2082,7 +2082,7 @@ function Timestamp() {
 
 Use React's `<Activity>` to preserve state/DOM for expensive components that frequently toggle visibility.
 
-> ℹ️ **安定API**: `<Activity>` は React 19.2 で安定版となりました（`react@canary` のインストールは不要です）。
+> ℹ️ **安定API**: `<Activity>` は React 19.2 で安定版となりました（詳細は [React Blog](https://react.dev/blog) を参照。`react@canary` のインストールは不要です）。
 
 **Usage:**
 
@@ -2949,7 +2949,7 @@ function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
 
 **Correct: using React's useEffectEvent:**
 
-> ℹ️ **安定API**: `useEffectEvent` は React 19.2 で安定版となりました（`react@experimental` のインストールは不要です）。古いバージョン（React 18.x や 19.0–19.1）のフォールバックとしては `useRef` パターンを使用してください。
+> ℹ️ **安定API**: `useEffectEvent` は React 19.2 で安定版となりました（詳細は [React Blog](https://react.dev/blog) を参照。`react@experimental` のインストールは不要です）。古いバージョン（React 18.x や 19.0–19.1）のフォールバックとしては `useRef` パターンを使用してください。
 
 ```tsx
 import { useEffectEvent } from 'react';
