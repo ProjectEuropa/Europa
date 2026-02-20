@@ -9,9 +9,9 @@ January 2026
 > generating, or refactoring React and Next.js codebases. Humans  
 > may also find it useful, but guidance here is optimized for automation  
 > and consistency by AI-assisted workflows.
->
-> > [!TIP]
-> > **エージェント向け最適化**: このファイルは巨大なため、トークン節約を優先する場合は原則として `rules/*.md` の個別ファイルを参照してください。
+
+> [!TIP]
+> **エージェント向け最適化**: このファイルは巨大なため、トークン節約を優先する場合は原則として `rules/*.md` の個別ファイルを参照してください。
 
 ---
 
