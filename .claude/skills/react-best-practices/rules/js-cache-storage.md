@@ -49,12 +49,17 @@ function getCookie(name: string) {
       document.cookie.split('; ').map(c => {
         const idx = c.indexOf('=')
         if (idx === -1) return [c, '']
-        const raw = c.slice(idx + 1)
-        try {
-          return [c.slice(0, idx), decodeURIComponent(raw)]
-        } catch {
-          return [c.slice(0, idx), raw]
-        }
+        
+        const rawName = c.slice(0, idx)
+        const rawValue = c.slice(idx + 1)
+        
+        let decodedName = rawName
+        let decodedValue = rawValue
+        
+        try { decodedName = decodeURIComponent(rawName) } catch { /* keep raw */ }
+        try { decodedValue = decodeURIComponent(rawValue) } catch { /* keep raw */ }
+        
+        return [decodedName, decodedValue]
       })
     )
   }
