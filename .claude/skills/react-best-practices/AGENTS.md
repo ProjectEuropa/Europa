@@ -1183,6 +1183,10 @@ useEffect(() => {
 
 **Impact: MEDIUM-HIGH (automatic deduplication)**
 
+> ⚠️ **Europa プロジェクト向け注記**
+> Europa ではデータフェッチおよびキャッシュ管理に **TanStack Query** を使用しています。`swr` パッケージはインストールしないでください。
+> 以下の例は「重複排除とキャッシュ」の概念を理解する参考として扱い、実際のコードでは `@tanstack/react-query` の `useQuery` 等の等価な機能を使用してください。
+
 SWR enables request deduplication, caching, and revalidation across component instances.
 
 **Incorrect: no deduplication, each instance fetches**
