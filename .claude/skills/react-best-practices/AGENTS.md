@@ -9,7 +9,7 @@ January 2026
 > generating, or refactoring React and Next.js codebases. Humans  
 > may also find it useful, but guidance here is optimized for automation  
 > and consistency by AI-assisted workflows.
-
+>
 > [!TIP]
 > **エージェント向け最適化**: このファイルは巨大なため、トークン節約を優先する場合は原則として `rules/*.md` の個別ファイルを参照してください。
 
@@ -81,7 +81,7 @@ Comprehensive performance optimization guide for React and Next.js applications,
    - 6.4 [Optimize SVG Precision](#64-optimize-svg-precision)
    - 6.5 [Prevent Hydration Mismatch Without Flickering](#65-prevent-hydration-mismatch-without-flickering)
    - 6.6 [Suppress Expected Hydration Mismatches](#66-suppress-expected-hydration-mismatches)
-   - 6.7 [Use Activity Component for Show/Hide (Experimental)](#67-use-activity-component-for-showhide-experimental)
+   - 6.7 [Use Activity Component for Show/Hide](#67-use-activity-component-for-showhide)
    - 6.8 [Use Explicit Conditional Rendering](#68-use-explicit-conditional-rendering)
    - 6.9 [Use useTransition Over Manual Loading States](#69-use-usetransition-over-manual-loading-states)
 7. [JavaScript Performance](#7-javascript-performance) — **LOW-MEDIUM**
@@ -1207,10 +1207,10 @@ function UserList() {
 **For immutable data:**
 
 ```tsx
-import { useImmutableSWR } from '@/lib/swr'
+import useSWRImmutable from 'swr/immutable'
 
 function StaticContent() {
-  const { data } = useImmutableSWR('/api/config', fetcher)
+  const { data } = useSWRImmutable('/api/config', fetcher)
 }
 ```
 
@@ -2076,14 +2076,13 @@ function Timestamp() {
 }
 ```
 
-### 6.7 Use Activity Component for Show/Hide (Experimental)
+### 6.7 Use Activity Component for Show/Hide
 
 **Impact: MEDIUM (preserves state/DOM)**
 
 Use React's `<Activity>` to preserve state/DOM for expensive components that frequently toggle visibility.
 
-> ⚠️ **実験的API**: `<Activity>` は React Canary チャンネルのみで利用可能です。
-> 安定版React 19では使用できません。`react@canary` インストールが必要です。
+> ℹ️ **安定API**: `<Activity>` は React 19.2 で安定版となりました（`react@canary` のインストールは不要です）。
 
 **Usage:**
 
@@ -2499,12 +2498,16 @@ function getCookie(name: string) {
 
 ```typescript
 window.addEventListener('storage', (e) => {
-  if (e.key) storageCache.delete(e.key)
+  if (e.key) {
+    storageCache.delete(e.key)
+    if (cookieCache) delete cookieCache[e.key]
+  }
 })
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     storageCache.clear()
+    cookieCache = null
   }
 })
 ```
@@ -2908,9 +2911,23 @@ function useWindowEvent(event: string, handler: (e) => void) {
 }
 ```
 
-**Alternative: use `useEffectEvent` if you're on latest React:**
+**Alternative (if not on latest React):**
 
-`useEffectEvent` provides a cleaner API for the same pattern: it creates a stable function reference that always calls the latest version of the handler.
+```tsx
+function useWindowEvent(event: string, handler: (e: Event) => void) {
+  const handlerRef = useRef(handler)
+
+  useEffect(() => {
+    handlerRef.current = handler
+  })
+
+  useEffect(() => {
+    const onEvent = (e: Event) => handlerRef.current(e)
+    window.addEventListener(event, onEvent)
+    return () => window.removeEventListener(event, onEvent)
+  }, [event])
+}
+```
 
 ### 8.3 useEffectEvent for Stable Callback Refs
 
@@ -2933,8 +2950,7 @@ function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
 
 **Correct: using React's useEffectEvent:**
 
-> ⚠️ **実験的API**: `useEffectEvent` は React Experimental チャンネルのみで利用可能です。
-> 安定版React 19では使用できません。`react@experimental` インストールが必要です。
+> ℹ️ **安定API**: `useEffectEvent` は React 19.2 で安定版となりました（`react@experimental` のインストールは不要です）。古いバージョン（React 18.x や 19.0–19.1）のフォールバックとしては `useRef` パターンを使用してください。
 
 ```tsx
 import { useEffectEvent } from 'react';
