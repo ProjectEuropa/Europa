@@ -22,7 +22,7 @@ const [user, config] = await Promise.all([
 const profile = await fetchProfile(user.id)
 ```
 
-**Correct (config and profile run in parallel):**
+**Correct (config and profile run in parallel) (Recommended):**
 
 We can create all the promises first, and do `Promise.all()` at the end.
 

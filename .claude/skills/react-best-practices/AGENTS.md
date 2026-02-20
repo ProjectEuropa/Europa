@@ -205,7 +205,7 @@ const [user, config] = await Promise.all([
 const profile = await fetchProfile(user.id)
 ```
 
-**Correct: config and profile run in parallel (Recommended)**
+**Correct (config and profile run in parallel) (Recommended):**
 
 ```typescript
 const userPromise = fetchUser()
@@ -608,7 +608,7 @@ The `typeof window !== 'undefined'` check prevents bundling preloaded modules fo
 
 ## 3. Server-Side Performance
 
-> [!CAUTION]
+> [!IMPORTANT]
 > **Europa 非適用**: このプロジェクトは `output: 'export'` を使用しており、以下のルールは **一切適用されません**。
 > 詳細は `rules/not-applicable/server-*.md` を参照してください。
 

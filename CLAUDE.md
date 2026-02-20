@@ -171,6 +171,7 @@ AntiGravityエージェントを使用する場合、以下のコマンドで全
 | アーティファクト構築 | `web-artifacts-builder` | 「アーティファクトを作成」「React + shadcn/ui」 |
 | テーマ適用 | `theme-factory` | 「テーマを適用」「スタイルを変更」 |
 | Canvas作成 | `canvas-design` | 「ポスターを作成」「デザインを作って」 |
+
 <!-- 注: "Reactのベストプラクティス" という単語は一般的なReact設計を指すため react-patterns にルーティングしています。パフォーマンス・レンダリング最適化に特化したタスクでのみ react-best-practices を呼び出すよう意図的に分離しています -->
 
 ### MCP Tool Selection Rules
