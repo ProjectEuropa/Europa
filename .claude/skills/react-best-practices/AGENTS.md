@@ -190,10 +190,10 @@ This optimization is especially valuable when the skipped branch is frequently t
 
 **Impact: CRITICAL (2-10× improvement)**
 
-For operations with partial dependencies, use `better-all` to maximize parallelism. It automatically starts each task at the earliest possible moment.
+For operations with partial dependencies, chain Promises and use `Promise.all()` to maximize parallelism. It automatically starts each task at the earliest possible moment without relying on external libraries.
 
-> [!NOTE]
-> Europa注: `better-all` は現在 `package.json` 未収録。`Promise.all` ベースの代替パターンを優先すること。
+> [!WARNING]
+> `better-all` は現在 `package.json` 未収録です。代わりに下記の Promise ベースパターンを使用してください。
 
 **Incorrect: profile waits for config unnecessarily**
 
@@ -205,21 +205,9 @@ const [user, config] = await Promise.all([
 const profile = await fetchProfile(user.id)
 ```
 
-**Correct: config and profile run in parallel**
+**Correct (config and profile run in parallel) (Recommended):**
 
-```typescript
-import { all } from 'better-all'
-
-const { user, config, profile } = await all({
-  async user() { return fetchUser() },
-  async config() { return fetchConfig() },
-  async profile() {
-    return fetchProfile((await this.$.user).id)
-  }
-})
-```
-
-**Alternative without extra dependencies (Recommended for Europa):**
+We can create all the promises first, and do `Promise.all()` at the end.
 
 ```typescript
 const userPromise = fetchUser()
@@ -232,7 +220,19 @@ const [user, config, profile] = await Promise.all([
 ])
 ```
 
-We can also create all the promises first, and do `Promise.all()` at the end.
+**Alternative with `better-all` (If installed):**
+
+```typescript
+import { all } from 'better-all'
+
+const { user, config, profile } = await all({
+  async user() { return fetchUser() },
+  async config() { return fetchConfig() },
+  async profile() {
+    return fetchProfile((await this.$.user).id)
+  }
+})
+```
 
 Reference: [https://github.com/shuding/better-all](https://github.com/shuding/better-all)
 
@@ -607,6 +607,10 @@ The `typeof window !== 'undefined'` check prevents bundling preloaded modules fo
 ---
 
 ## 3. Server-Side Performance
+
+> [!IMPORTANT]
+> **Europa 非適用**: このプロジェクトは `output: 'export'` を使用しており、以下のルールは **一切適用されません**。
+> 詳細は `rules/not-applicable/server-*.md` を参照してください。
 
 **Impact: HIGH**
 

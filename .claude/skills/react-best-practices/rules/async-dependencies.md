@@ -7,10 +7,10 @@ tags: async, parallelization, dependencies, better-all
 
 ## Dependency-Based Parallelization
 
-For operations with partial dependencies, use `better-all` to maximize parallelism. It automatically starts each task at the earliest possible moment.
+For operations with partial dependencies, chain Promises and use `Promise.all()` to maximize parallelism. It automatically starts each task at the earliest possible moment without relying on external libraries.
 
-> [!NOTE]
-> Europa注: `better-all` は現在 `package.json` 未収録。`Promise.all` ベースの代替パターンを優先すること。
+> [!WARNING]
+> `better-all` は現在 `package.json` 未収録です。代わりに下記の Promise ベースパターンを使用してください。
 
 **Incorrect (profile waits for config unnecessarily):**
 
@@ -22,7 +22,22 @@ const [user, config] = await Promise.all([
 const profile = await fetchProfile(user.id)
 ```
 
-**Correct (config and profile run in parallel):**
+**Correct (config and profile run in parallel) (Recommended):**
+
+We can create all the promises first, and do `Promise.all()` at the end.
+
+```typescript
+const userPromise = fetchUser()
+const profilePromise = userPromise.then(user => fetchProfile(user.id))
+
+const [user, config, profile] = await Promise.all([
+  userPromise,
+  fetchConfig(),
+  profilePromise
+])
+```
+
+**Alternative with `better-all` (If installed):**
 
 ```typescript
 import { all } from 'better-all'
@@ -34,21 +49,6 @@ const { user, config, profile } = await all({
     return fetchProfile((await this.$.user).id)
   }
 })
-```
-
-**Alternative without extra dependencies (Recommended for Europa):**
-
-We can also create all the promises first, and do `Promise.all()` at the end.
-
-```typescript
-const userPromise = fetchUser()
-const profilePromise = userPromise.then(user => fetchProfile(user.id))
-
-const [user, config, profile] = await Promise.all([
-  userPromise,
-  fetchConfig(),
-  profilePromise
-])
 ```
 
 Reference: [https://github.com/shuding/better-all](https://github.com/shuding/better-all)
