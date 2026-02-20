@@ -24,6 +24,9 @@ function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
 
 **Correct (using React's useEffectEvent):**
 
+> ⚠️ **実験的API**: `useEffectEvent` は React Experimental チャンネルのみで利用可能です。
+> 安定版React 19では使用できません。`react@experimental` インストールが必要です。
+
 ```tsx
 import { useEffectEvent } from 'react';
 

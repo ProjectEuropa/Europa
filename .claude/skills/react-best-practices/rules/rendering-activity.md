@@ -1,5 +1,5 @@
 ---
-title: Use Activity Component for Show/Hide
+title: Use Activity Component for Show/Hide (Experimental)
 impact: MEDIUM
 impactDescription: preserves state/DOM
 tags: rendering, activity, visibility, state-preservation
@@ -8,6 +8,9 @@ tags: rendering, activity, visibility, state-preservation
 ## Use Activity Component for Show/Hide
 
 Use React's `<Activity>` to preserve state/DOM for expensive components that frequently toggle visibility.
+
+> ⚠️ **実験的API**: `<Activity>` は React Canary チャンネルのみで利用可能です。
+> 安定版React 19では使用できません。`react@canary` インストールが必要です。
 
 **Usage:**
 
