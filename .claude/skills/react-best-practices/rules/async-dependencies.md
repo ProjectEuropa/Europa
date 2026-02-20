@@ -9,6 +9,9 @@ tags: async, parallelization, dependencies, better-all
 
 For operations with partial dependencies, use `better-all` to maximize parallelism. It automatically starts each task at the earliest possible moment.
 
+> [!NOTE]
+> Europa注: `better-all` は現在 `package.json` 未収録。`Promise.all` ベースの代替パターンを優先すること。
+
 **Incorrect (profile waits for config unnecessarily):**
 
 ```typescript
@@ -33,7 +36,7 @@ const { user, config, profile } = await all({
 })
 ```
 
-**Alternative without extra dependencies:**
+**Alternative without extra dependencies (Recommended for Europa):**
 
 We can also create all the promises first, and do `Promise.all()` at the end.
 

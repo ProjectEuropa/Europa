@@ -78,7 +78,7 @@ Comprehensive performance optimization guide for React and Next.js applications,
    - 6.4 [Optimize SVG Precision](#64-optimize-svg-precision)
    - 6.5 [Prevent Hydration Mismatch Without Flickering](#65-prevent-hydration-mismatch-without-flickering)
    - 6.6 [Suppress Expected Hydration Mismatches](#66-suppress-expected-hydration-mismatches)
-   - 6.7 [Use Activity Component for Show/Hide](#67-use-activity-component-for-showhide)
+   - 6.7 [Use Activity Component for Show/Hide (Experimental)](#67-use-activity-component-for-showhide-experimental)
    - 6.8 [Use Explicit Conditional Rendering](#68-use-explicit-conditional-rendering)
    - 6.9 [Use useTransition Over Manual Loading States](#69-use-usetransition-over-manual-loading-states)
 7. [JavaScript Performance](#7-javascript-performance) — **LOW-MEDIUM**
@@ -189,6 +189,9 @@ This optimization is especially valuable when the skipped branch is frequently t
 
 For operations with partial dependencies, use `better-all` to maximize parallelism. It automatically starts each task at the earliest possible moment.
 
+> [!NOTE]
+> Europa注: `better-all` は現在 `package.json` 未収録。`Promise.all` ベースの代替パターンを優先すること。
+
 **Incorrect: profile waits for config unnecessarily**
 
 ```typescript
@@ -213,7 +216,7 @@ const { user, config, profile } = await all({
 })
 ```
 
-**Alternative without extra dependencies:**
+**Alternative without extra dependencies (Recommended for Europa):**
 
 ```typescript
 const userPromise = fetchUser()
@@ -2070,11 +2073,14 @@ function Timestamp() {
 }
 ```
 
-### 6.7 Use Activity Component for Show/Hide
+### 6.7 Use Activity Component for Show/Hide (Experimental)
 
 **Impact: MEDIUM (preserves state/DOM)**
 
 Use React's `<Activity>` to preserve state/DOM for expensive components that frequently toggle visibility.
+
+> ⚠️ **実験的API**: `<Activity>` は React Canary チャンネルのみで利用可能です。
+> 安定版React 19では使用できません。`react@canary` インストールが必要です。
 
 **Usage:**
 
@@ -2922,7 +2928,7 @@ function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
 }
 ```
 
-**Correct: using React's useEffectEvent**
+**Correct: using React's useEffectEvent — ⚠️ Experimental, requires `react@experimental`:**
 
 ```tsx
 import { useEffectEvent } from 'react';

@@ -22,7 +22,7 @@ function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
 }
 ```
 
-**Correct (using React's useEffectEvent):**
+**Correct (using React's useEffectEvent) — ⚠️ Experimental, requires `react@experimental`:**
 
 ```tsx
 import { useEffectEvent } from 'react';
