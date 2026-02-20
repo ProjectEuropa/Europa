@@ -207,6 +207,8 @@ const profile = await fetchProfile(user.id)
 
 **Correct (config and profile run in parallel) (Recommended):**
 
+We can create all the promises first, and do `Promise.all()` at the end.
+
 ```typescript
 const userPromise = fetchUser()
 const profilePromise = userPromise.then(user => fetchProfile(user.id))
@@ -217,8 +219,6 @@ const [user, config, profile] = await Promise.all([
   profilePromise
 ])
 ```
-
-By creating all the promises first and doing `Promise.all()` at the end, we achieve the same parallelism without external dependencies.
 
 **Alternative with `better-all` (If installed):**
 
