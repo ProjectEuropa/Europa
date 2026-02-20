@@ -49,11 +49,21 @@ function getCookie(name: string) {
       document.cookie.split('; ').map(c => {
         const idx = c.indexOf('=')
         if (idx === -1) return [c, '']
-        return [c.slice(0, idx), decodeURIComponent(c.slice(idx + 1))]
+        const raw = c.slice(idx + 1)
+        try {
+          return [c.slice(0, idx), decodeURIComponent(raw)]
+        } catch {
+          return [c.slice(0, idx), raw]
+        }
       })
     )
   }
   return cookieCache[name]
+}
+
+function setCookie(name: string, value: string, options = '') {
+  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}${options}`
+  cookieCache = null  // keep cache in sync
 }
 ```
 
