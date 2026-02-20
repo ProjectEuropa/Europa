@@ -90,14 +90,16 @@ function setCookie(name: string, value: string, options = '') {
 If storage can change externally (another tab, server-set cookies), invalidate cache:
 
 ```typescript
-window.addEventListener('storage', (e) => {
-  if (e.key) storageCache.delete(e.key)
-})
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key) storageCache.delete(e.key)
+  })
 
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    storageCache.clear()
-    cookieCache = null
-  }
-})
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      storageCache.clear()
+      cookieCache = null
+    }
+  })
+}
 ```
