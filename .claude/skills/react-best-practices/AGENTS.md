@@ -2503,7 +2503,9 @@ function getCookie(name: string) {
 }
 
 function setCookie(name: string, value: string, options = '') {
-  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}${options}`
+  // Normalize options to ensure it starts with '; ' if provided
+  const opts = options && !options.startsWith(';') ? `; ${options}` : options
+  document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}${opts}`
   cookieCache = null  // keep cache in sync
 }
 ```
