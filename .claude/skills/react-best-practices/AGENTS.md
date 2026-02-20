@@ -2481,10 +2481,16 @@ Use a Map (not a hook) so it works everywhere: utilities, event handlers, not ju
 
 **Cookie caching:**
 
+> ⚠️ **注意**: `document.cookie` は `HttpOnly` フラグ付き Cookie には**アクセス不可**です。
+> 認証トークンの取得には `fetch` の `credentials: 'include'` を使用してください。
+>
+> ⚠️ **SSR 注意**: 以下の関数はクライアントサイド専用です。必要に応じて `document` のガード句を追加しています。
+
 ```typescript
 let cookieCache: Record<string, string> | null = null
 
 function getCookie(name: string) {
+  if (typeof document === 'undefined') return undefined
   if (!cookieCache) {
     cookieCache = Object.fromEntries(
       document.cookie.split('; ').map(c => {
@@ -2508,6 +2514,7 @@ function getCookie(name: string) {
 }
 
 function setCookie(name: string, value: string, options = '') {
+  if (typeof document === 'undefined') return
   // Normalize options to ensure it starts with '; ' if provided
   const opts = options && !options.startsWith(';') ? `; ${options}` : options
   document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}${opts}`
