@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description:
     'カルネージハート エクサのためのOKE共有・分析・コラボレーションプラットフォーム',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://project-europa.work'),
+  manifest: '/manifest.webmanifest',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
