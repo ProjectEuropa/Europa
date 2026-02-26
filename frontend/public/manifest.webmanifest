@@ -1,11 +1,12 @@
 {
+  "lang": "ja",
   "name": "EUROPA Platform",
   "short_name": "EUROPA",
   "description": "カルネージハート エクサのためのOKE共有・分析・コラボレーションプラットフォーム",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0818",
-  "theme_color": "#010220",
+  "theme_color": "#0a0818",
   "icons": [
     {
       "src": "/icon.svg",
