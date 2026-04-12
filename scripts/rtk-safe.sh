@@ -41,14 +41,7 @@ else
   fail "git repo 内で実行してください"
 fi
 
-case "${1}" in
-  aws|curl|wget|docker|kubectl)
-    fail "${1} は rtk-safe では禁止です"
-    ;;
-  gh)
-    fail "gh は rtk-safe では禁止です"
-    ;;
-esac
+
 
 case "${1}:${2:-}" in
   git:diff|git:status|git:log|git:show)
@@ -105,4 +98,6 @@ export RTK_TEE=0
 export RTK_SOURCE_URL
 export RTK_VERSION
 
+# NOTE: TOCTOU limitation — SHA256 verification and exec are not atomic.
+# This wrapper is designed for trusted local environments only.
 exec "${rtk_bin}" "$@"
