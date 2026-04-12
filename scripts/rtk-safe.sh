@@ -10,7 +10,9 @@ fail() {
   exit 2
 }
 
-if [[ "${CI:-}" == "1" || "${CI:-}" =~ ^[Tt][Rr][Uu][Ee]$ || -n "${GITHUB_ACTIONS:-}" ]]; then
+if [[ "${CI:-}" == "1" || "${CI:-}" =~ ^[Tt][Rr][Uu][Ee]$ ||
+  -n "${GITHUB_ACTIONS:-}" || -n "${CIRCLECI:-}" || -n "${TRAVIS:-}" ||
+  -n "${JENKINS_URL:-}" || -n "${GITLAB_CI:-}" || -n "${BITBUCKET_BUILD_NUMBER:-}" ]]; then
   fail "CI では rtk を使わないでください"
 fi
 
@@ -70,7 +72,7 @@ done
 for arg in "$@"; do
   lower_arg=$(printf '%s' "${arg}" | tr '[:upper:]' '[:lower:]')
   case "${lower_arg}" in
-    *.env*|*credentials*|*secret*|*token*|*password*)
+    *.env|*.env.*|*/.env|*/.env.*|*credentials*|--secret=*|--token=*|--password=*)
       fail "secret / .env / credentials を含む引数は禁止です: ${arg}"
       ;;
   esac
