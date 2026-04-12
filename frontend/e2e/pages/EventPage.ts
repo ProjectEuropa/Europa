@@ -69,6 +69,8 @@ export class EventPage extends BasePage {
   }
 
   async fillDate(input: Locator, value: string) {
+    // DatePicker uses readonly to force calendar interaction; remove it here
+    // so this E2E can provide deterministic dates without depending on calendar UI details.
     await input.evaluate(element => element.removeAttribute('readonly'));
     await input.fill(value);
   }
