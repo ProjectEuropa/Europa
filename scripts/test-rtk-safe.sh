@@ -72,6 +72,8 @@ expect_failure 'rejects disallowed command' "${RTK_SAFE}" bash -c whoami
 expect_failure 'rejects npm test' "${RTK_SAFE}" npm test
 expect_failure 'rejects --global' "${RTK_SAFE}" git log --global
 expect_failure 'rejects credential option' "${RTK_SAFE}" git log --token=abc
+expect_failure 'rejects aws keyword in args' "${RTK_SAFE}" git log -- src/aws-config.ts
+expect_failure 'rejects gh keyword in args' "${RTK_SAFE}" git show gh-pages
 
 set +e
 bad_hash_output=$(

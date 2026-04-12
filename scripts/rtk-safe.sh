@@ -59,6 +59,9 @@ for arg in "$@"; do
     --global|--global=*)
       fail "global 操作は禁止です"
       ;;
+    *aws*|*gh*|*curl*|*wget*|*docker*|*kubectl*)
+      fail "禁止されたツール名（aws, gh, curl等）を含む引数は禁止です: ${arg}"
+      ;;
     *.env|*.env.*|*credentials*|--secret=*|--token=*|--password=*)
       fail "secret / .env / credentials を含む引数は禁止です: ${arg}"
       ;;
