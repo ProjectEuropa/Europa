@@ -16,10 +16,12 @@ export async function errorHandler(c: Context, next: Next) {
             console.log('[Error Middleware] Status:', error.status);
             console.log('[Error Middleware] Message:', error.message);
 
+            const cause = (error as HTTPException & { cause?: unknown }).cause;
             const response: ErrorResponse = {
                 error: {
                     message: error.message,
                     code: `HTTP_${error.status}`,
+                    ...(cause ? { details: cause } : {}),
                 },
             };
 

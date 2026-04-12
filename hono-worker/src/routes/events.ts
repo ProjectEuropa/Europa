@@ -37,7 +37,7 @@ events.get('/', async c => {
       FROM events
       WHERE event_displaying_day >= NOW()
     `;
-    const total = parseInt(countResult[0].count as string);
+    const total = parseInt(countResult[0].count as string, 10);
 
     // イベント一覧を取得（表示期限内のもののみ）
     const eventsList = await sql`
@@ -93,7 +93,7 @@ events.get('/me', authMiddleware, async c => {
         SELECT COUNT(*) as count FROM events
         WHERE register_user_id = ${user.userId}
     `;
-    const total = parseInt(countResult[0].count as string);
+    const total = parseInt(countResult[0].count as string, 10);
 
     // イベント一覧を取得（認証ユーザーのみ）
     const eventsList = await sql`
@@ -131,9 +131,10 @@ events.get('/:id', async c => {
     const id = c.req.param('id');
 
     // IDのバリデーション
-    if (!/^\d+$/.test(id)) {
+    if (!id || !/^\d+$/.test(id)) {
         throw new HTTPException(400, { message: 'Invalid event ID' });
     }
+    const eventId = parseInt(id, 10);
 
     // データベース接続
     const sql = neon(c.env.DATABASE_URL);
@@ -144,7 +145,7 @@ events.get('/:id', async c => {
       id, register_user_id, event_name, event_details, event_reference_url,
       event_type, event_closing_day, event_displaying_day, created_at, updated_at
     FROM events
-    WHERE id = ${parseInt(id)}
+    WHERE id = ${eventId}
   `;
 
     if (eventsList.length === 0) {
@@ -171,7 +172,10 @@ events.post('/', authMiddleware, async c => {
     // バリデーション
     const result = eventRegistrationSchema.safeParse(body);
     if (!result.success) {
-        throw new HTTPException(400, { message: 'Validation failed', cause: result.error });
+        throw new HTTPException(400, {
+            message: 'Validation failed',
+            cause: result.error.flatten().fieldErrors,
+        });
     }
 
     const input = result.data;
@@ -222,16 +226,17 @@ events.delete('/:id', authMiddleware, async c => {
     const user = c.get('user');
 
     // IDのバリデーション
-    if (!/^\d+$/.test(id)) {
+    if (!id || !/^\d+$/.test(id)) {
         throw new HTTPException(400, { message: 'Invalid event ID' });
     }
+    const eventId = parseInt(id, 10);
 
     // データベース接続
     const sql = neon(c.env.DATABASE_URL);
 
     // イベントの存在確認と権限チェック
     const existingEvents = await sql`
-        SELECT register_user_id FROM events WHERE id = ${parseInt(id)}
+        SELECT register_user_id FROM events WHERE id = ${eventId}
     `;
 
     if (existingEvents.length === 0) {
@@ -247,7 +252,7 @@ events.delete('/:id', authMiddleware, async c => {
     }
 
     // イベントを削除
-    await sql`DELETE FROM events WHERE id = ${parseInt(id)}`;
+    await sql`DELETE FROM events WHERE id = ${eventId}`;
 
     return c.json({ message: 'Event deleted successfully' }, 200);
 });

@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '@/lib/api/client';
-import { fetchEvents } from '@/lib/api/events';
-import type { Event, } from '@/types/event';
+import { fetchEvents, registerEvent } from '@/lib/api/events';
+import { ApiErrorClass } from '@/types/api';
+import type { Event } from '@/types/event';
 
 // APIクライアントをモック
 vi.mock('@/lib/api/client', () => ({
@@ -21,8 +22,50 @@ describe('events API', () => {
   });
 
   describe('registerEvent', () => {
-    it.skip('should register event successfully (Not implemented in v2)', async () => {
-      // Skipped
+    it('should register event successfully', async () => {
+      const mockResponse = {
+        message: 'Event created successfully',
+        data: { event: { id: 1 } },
+      };
+      vi.mocked(apiClient.post).mockResolvedValueOnce(mockResponse);
+
+      const result = await registerEvent({
+        name: 'テストイベント',
+        details: 'テストイベントの詳細です',
+        url: 'https://example.com',
+        deadline: '2024-12-31',
+        endDisplayDate: '2025-01-31',
+        type: 'tournament',
+      });
+
+      expect(apiClient.post).toHaveBeenCalledWith('/api/v2/events', {
+        name: 'テストイベント',
+        details: 'テストイベントの詳細です',
+        url: 'https://example.com',
+        type: '1',
+        deadline: new Date('2024-12-31T23:59:59').toISOString(),
+        endDisplayDate: new Date('2025-01-31T23:59:59').toISOString(),
+      });
+      expect(result).toBe(mockResponse);
+    });
+
+    it('should throw API errors so React Query can call onError', async () => {
+      const apiError = new ApiErrorClass(400, {
+        message: 'Validation failed',
+        errors: { endDisplayDate: ['End display date must be after deadline'] },
+      });
+      vi.mocked(apiClient.post).mockRejectedValueOnce(apiError);
+
+      await expect(
+        registerEvent({
+          name: 'テストイベント',
+          details: 'テストイベントの詳細です',
+          url: '',
+          deadline: '2025-01-31',
+          endDisplayDate: '2024-12-31',
+          type: 'other',
+        })
+      ).rejects.toBe(apiError);
     });
   });
 
