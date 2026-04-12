@@ -16,7 +16,13 @@ printf 'fake-rtk:%s\n' "$*"
 FAKE_RTK
 chmod +x "${fake_rtk}"
 
-fake_sha=$(shasum -a 256 "${fake_rtk}" | awk '{print $1}')
+if command -v sha256sum >/dev/null 2>&1; then
+  fake_sha=$(sha256sum "${fake_rtk}" | awk '{print $1}')
+elif command -v shasum >/dev/null 2>&1; then
+  fake_sha=$(shasum -a 256 "${fake_rtk}" | awk '{print $1}')
+else
+  echo "sha256sum または shasum が見つかりません" >&2; exit 1
+fi
 
 run_rtk_safe() {
   env \
