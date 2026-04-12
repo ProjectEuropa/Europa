@@ -53,17 +53,12 @@ esac
 
 # The allowlist above rejects rtk-level init/hook commands. Do not block
 # generic flags such as -g here because they may be valid for allowed commands.
-for token in "$@"; do
-  case "${token}" in
-    --global|--global=*)
-      fail "global 操作は禁止です"
-      ;;
-  esac
-done
-
 for arg in "$@"; do
   lower_arg=$(printf '%s' "${arg}" | tr '[:upper:]' '[:lower:]')
   case "${lower_arg}" in
+    --global|--global=*)
+      fail "global 操作は禁止です"
+      ;;
     *.env|*.env.*|*credentials*|--secret=*|--token=*|--password=*)
       fail "secret / .env / credentials を含む引数は禁止です: ${arg}"
       ;;
