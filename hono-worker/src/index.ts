@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { logger } from 'hono/logger';
 import { setupCORS } from './middleware/cors';
-import { notFoundHandler } from './middleware/error';
+import { createHttpErrorResponse, notFoundHandler } from './middleware/error';
 import auth from './routes/auth';
 import discord from './routes/discord';
 import events from './routes/events';
@@ -19,13 +19,7 @@ app.use('*', setupCORS());
 // グローバルエラーハンドラー (onErrorを使用)
 app.onError((error, c) => {
     if (error instanceof HTTPException) {
-        const response: ErrorResponse = {
-            error: {
-                message: error.message,
-                code: `HTTP_${error.status}`,
-            },
-        };
-        return c.json(response, error.status);
+        return c.json(createHttpErrorResponse(error), error.status);
     }
 
     if (error instanceof Error) {

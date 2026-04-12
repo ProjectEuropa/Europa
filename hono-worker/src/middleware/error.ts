@@ -2,6 +2,37 @@ import type { Context, Next } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import type { ErrorResponse } from '../types/api';
 
+type ValidationErrorDetails = Record<string, string[]>;
+
+function isValidationErrorDetails(value: unknown): value is ValidationErrorDetails {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return false;
+    }
+
+    const fieldErrors = Object.values(value);
+    if (fieldErrors.length === 0) {
+        return false;
+    }
+
+    return fieldErrors.every(
+        fieldError =>
+            Array.isArray(fieldError) && fieldError.every(message => typeof message === 'string')
+    );
+}
+
+export function createHttpErrorResponse(error: HTTPException): ErrorResponse {
+    const cause = (error as HTTPException & { cause?: unknown }).cause;
+    const details = isValidationErrorDetails(cause) ? cause : undefined;
+
+    return {
+        error: {
+            message: error.message,
+            code: `HTTP_${error.status}`,
+            ...(details ? { details } : {}),
+        },
+    };
+}
+
 /**
  * グローバルエラーハンドリングミドルウェア
  */
@@ -16,12 +47,7 @@ export async function errorHandler(c: Context, next: Next) {
             console.log('[Error Middleware] Status:', error.status);
             console.log('[Error Middleware] Message:', error.message);
 
-            const response: ErrorResponse = {
-                error: {
-                    message: error.message,
-                    code: `HTTP_${error.status}`,
-                },
-            };
+            const response = createHttpErrorResponse(error);
 
             console.log('[Error Middleware] Sending response:', JSON.stringify(response));
             return c.json(response, error.status);
