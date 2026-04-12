@@ -92,7 +92,7 @@ export RTK_SHA256=<sha256-of-RTK_BIN>
 ./scripts/rtk-safe.sh git status
 ```
 
-この wrapper は `RTK_TELEMETRY_DISABLED=1` と `RTK_TEE=0` を設定します。RTK バイナリがこれらの環境変数を尊重することを前提にしているため、利用前に対象 version の挙動を確認してください。実行前には `RTK_BIN` の SHA256 を検証します。`rtk init` や hook 操作は許可コマンド外として拒否され、`--global`、`aws`、`gh`、`curl`、`wget`、`docker`、`kubectl`、`.env`、`credentials`、`--secret=*`、`--token=*`、`--password=*` を含む引数、CI での実行も拒否します。許可コマンドは `git diff/status/log/show` と `npm test` だけです。`git log -g` のように許可コマンド内で意味を持つ `-g` や、`token` を含む通常のファイルパス・ブランチ名はブロックしません。
+この wrapper は `RTK_TELEMETRY_DISABLED=1` と `RTK_TEE=0` を設定します。RTK バイナリがこれらの環境変数を尊重することを前提にしているため、利用前に対象 version の挙動を確認してください。実行前には `RTK_BIN` の SHA256 を検証します。`rtk init` や hook 操作は許可コマンド外として拒否され、`--global`、`aws`、`gh`、`curl`、`wget`、`docker`、`kubectl`、`.env`、`credentials`、`--secret=*`、`--token=*`、`--password=*` を含む引数、CI での実行も拒否します。許可コマンドは `git diff/status/log/show` だけです。`git log -g` のように許可コマンド内で意味を持つ `-g` や、`token` を含む通常のファイルパス・ブランチ名はブロックしません。
 
 ## プロジェクト構成
 

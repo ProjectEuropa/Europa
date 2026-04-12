@@ -23,7 +23,6 @@ Usage:
   ./scripts/rtk-safe.sh git status [args...]
   ./scripts/rtk-safe.sh git log [args...]
   ./scripts/rtk-safe.sh git show [args...]
-  ./scripts/rtk-safe.sh npm test [args...]
 
 Required environment:
   RTK_BIN=/absolute/path/to/rtk
@@ -52,10 +51,10 @@ case "${1}" in
 esac
 
 case "${1}:${2:-}" in
-  git:diff|git:status|git:log|git:show|npm:test)
+  git:diff|git:status|git:log|git:show)
     ;;
   *)
-    fail "許可コマンドは git diff/status/log/show と npm test のみです"
+    fail "許可コマンドは git diff/status/log/show のみです"
     ;;
 esac
 
