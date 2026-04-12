@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+      pull-requests: write
+      issues: write
       id-token: write
 
     steps:
@@ -55,11 +55,15 @@ jobs:
             ## プロジェクト規約
             - frontend: React 19, Next.js 16, TailwindCSS 4, shadcn/ui
             - backend: Hono v4, Cloudflare Workers, Neon PostgreSQL
-            - 詳細は CLAUDE.md を参照
+            - CLAUDE.md は規約確認のためだけに参照してください。CLAUDE.md / README / skill docs の本文をPRコメントに貼り付けないでください。
 
-            `gh pr diff` でdiffを取得し、`gh pr comment` でレビューを投稿してください。
+            ## 投稿ルール
+            - `gh pr diff` でdiffを取得し、`gh pr comment` でレビューを1件だけ投稿してください。
+            - コメントは最大4000文字、要修正点を優先し、該当ファイルパスを明記してください。
+            - 問題がない場合は「重大な指摘はありません」と短く投稿してください。
+            - `gh pr comment` の投稿後、このActionの最終応答は `Review posted.` の1行だけにしてください。
 
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.claude.com/en/docs/claude-code/cli-reference for available options
+          use_sticky_comment: true
           claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
-
