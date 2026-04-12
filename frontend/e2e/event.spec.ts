@@ -79,12 +79,12 @@ test.describe('イベント登録', () => {
       }
 
       await route.fulfill({
-        status: 400,
+        status: 422,
         contentType: 'application/json',
         body: JSON.stringify({
           error: {
             message: 'Validation failed',
-            code: 'HTTP_400',
+            code: 'HTTP_422',
             details: {
               endDisplayDate: ['End display date must be after deadline'],
             },

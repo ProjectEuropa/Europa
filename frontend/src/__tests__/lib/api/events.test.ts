@@ -77,7 +77,7 @@ describe('events API', () => {
     });
 
     it('should throw API errors so React Query can call onError', async () => {
-      const apiError = new ApiErrorClass(400, {
+      const apiError = new ApiErrorClass(422, {
         message: 'Validation failed',
         errors: { endDisplayDate: ['End display date must be after deadline'] },
       });

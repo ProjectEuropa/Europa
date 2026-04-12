@@ -172,7 +172,7 @@ events.post('/', authMiddleware, async c => {
     // バリデーション
     const result = eventRegistrationSchema.safeParse(body);
     if (!result.success) {
-        throw new HTTPException(400, {
+        throw new HTTPException(422, {
             message: 'Validation failed',
             cause: result.error.flatten().fieldErrors,
         });
