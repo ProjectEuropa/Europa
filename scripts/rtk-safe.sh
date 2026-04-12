@@ -71,7 +71,7 @@ done
 for arg in "$@"; do
   lower_arg=$(printf '%s' "${arg}" | tr '[:upper:]' '[:lower:]')
   case "${lower_arg}" in
-    *.env|*.env.*|*/.env|*/.env.*|*credentials*|--secret=*|--token=*|--password=*)
+    *.env|*.env.*|*credentials*|--secret=*|--token=*|--password=*)
       fail "secret / .env / credentials を含む引数は禁止です: ${arg}"
       ;;
   esac
@@ -89,13 +89,14 @@ rtk_bin="${RTK_BIN}"
 [[ "${RTK_SHA256}" =~ ^[a-fA-F0-9]{64}$ ]] || fail "RTK_SHA256 は64文字のhex文字列で指定してください"
 
 if command -v sha256sum >/dev/null 2>&1; then
-  actual_sha256=$(sha256sum "${rtk_bin}" | awk '{print $1}')
+  actual_sha256=$(sha256sum "${rtk_bin}" | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
 elif command -v shasum >/dev/null 2>&1; then
-  actual_sha256=$(shasum -a 256 "${rtk_bin}" | awk '{print $1}')
+  actual_sha256=$(shasum -a 256 "${rtk_bin}" | awk '{print $1}' | tr '[:upper:]' '[:lower:]')
 else
   fail "sha256sum または shasum が見つかりません"
 fi
-if [[ "${actual_sha256}" != "${RTK_SHA256}" ]]; then
+normalized_rtk_sha256=$(printf '%s' "${RTK_SHA256}" | tr '[:upper:]' '[:lower:]')
+if [[ "${actual_sha256}" != "${normalized_rtk_sha256}" ]]; then
   fail "RTK_BIN の SHA256 が一致しません: expected=${RTK_SHA256} actual=${actual_sha256}"
 fi
 

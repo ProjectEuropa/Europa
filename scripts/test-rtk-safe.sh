@@ -65,6 +65,7 @@ expect_failure() {
 cd "${APP_DIR}"
 
 expect_success 'allows git diff' "${RTK_SAFE}" git diff
+expect_success 'allows git show' "${RTK_SAFE}" git show
 expect_success 'allows token in normal git path' "${RTK_SAFE}" git log -- src/auth/token-service.ts
 expect_failure 'rejects CI' env CI=true "${RTK_SAFE}" git status
 expect_failure 'rejects disallowed command' "${RTK_SAFE}" bash -c whoami
@@ -100,5 +101,36 @@ if [[ ${missing_env_status} -ne 0 && "${missing_env_output}" == *"RTK_BIN"* ]]; 
   printf 'ok - rejects missing environment\n'
 else
   printf 'not ok - rejects missing environment\n%s\n' "${missing_env_output}" >&2
+  exit 1
+fi
+
+set +e
+bad_hash_show_output=$(
+  env \
+    RTK_BIN="${fake_rtk}" \
+    RTK_SOURCE_URL="https://github.com/rtk-ai/rtk/releases/tag/v0.0.0-test" \
+    RTK_VERSION="0.0.0-test" \
+    RTK_SHA256="0000000000000000000000000000000000000000000000000000000000000000" \
+    "${RTK_SAFE}" git show 2>&1
+)
+bad_hash_show_status=$?
+set -e
+
+if [[ ${bad_hash_show_status} -ne 0 && "${bad_hash_show_output}" == *"SHA256"* ]]; then
+  printf 'ok - rejects sha256 mismatch for git show\n'
+else
+  printf 'not ok - rejects sha256 mismatch for git show\n%s\n' "${bad_hash_show_output}" >&2
+  exit 1
+fi
+
+set +e
+missing_env_show_output=$(env -u RTK_BIN -u RTK_SOURCE_URL -u RTK_VERSION -u RTK_SHA256 "${RTK_SAFE}" git show 2>&1)
+missing_env_show_status=$?
+set -e
+
+if [[ ${missing_env_show_status} -ne 0 && "${missing_env_show_output}" == *"RTK_BIN"* ]]; then
+  printf 'ok - rejects missing environment for git show\n'
+else
+  printf 'not ok - rejects missing environment for git show\n%s\n' "${missing_env_show_output}" >&2
   exit 1
 fi
