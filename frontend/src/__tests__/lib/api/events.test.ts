@@ -49,6 +49,33 @@ describe('events API', () => {
       expect(result).toBe(mockResponse);
     });
 
+    it.each([
+      ['tournament', '1'],
+      ['announcement', '2'],
+      ['other', '3'],
+    ])('should convert %s event type to API type %s', async (eventType, apiType) => {
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        message: 'Event created successfully',
+        data: { event: { id: 1 } },
+      });
+
+      await registerEvent({
+        name: 'テストイベント',
+        details: 'テストイベントの詳細です',
+        url: '',
+        deadline: '2024-12-31',
+        endDisplayDate: '2025-01-31',
+        type: eventType,
+      });
+
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/v2/events',
+        expect.objectContaining({
+          type: apiType,
+        })
+      );
+    });
+
     it('should throw API errors so React Query can call onError', async () => {
       const apiError = new ApiErrorClass(400, {
         message: 'Validation failed',
@@ -91,7 +118,7 @@ describe('events API', () => {
           event_reference_url: 'https://example2.com',
           event_closing_day: '2024-12-31',
           event_displaying_day: '2024-12-31',
-          event_type: 'other',
+          event_type: '3',
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z',
           is_active: true,

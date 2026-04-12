@@ -47,6 +47,9 @@ const normalizeEventType = (type?: string | null): EventType => {
   if (type === '2' || type === 'announcement') {
     return 'announcement';
   }
+  if (type === '3' || type === 'other') {
+    return 'other';
+  }
   return 'other';
 };
 
@@ -55,10 +58,10 @@ const normalizeEventType = (type?: string | null): EventType => {
  */
 export const registerEvent = async (formData: EventFormData) => {
   // イベントタイプの変換
-  let type = '2'; // デフォルト: その他
+  let type = '3'; // デフォルト: その他
   if (formData.type === 'tournament') {
     type = '1';
-  } else if (formData.type === 'announcement' || formData.type === 'other') {
+  } else if (formData.type === 'announcement') {
     type = '2';
   }
 
