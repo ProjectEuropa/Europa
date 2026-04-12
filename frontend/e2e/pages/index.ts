@@ -14,9 +14,10 @@
  */
 
 export { BasePage } from './BasePage';
-export { LoginPage } from './LoginPage';
-export { RegisterPage } from './RegisterPage';
+export { EventPage } from './EventPage';
 export { HomePage } from './HomePage';
+export { LoginPage } from './LoginPage';
 export { MyPage } from './MyPage';
-export { SearchPage, TeamSearchPage, MatchSearchPage } from './SearchPage';
-export { UploadPage, TeamUploadPage, MatchUploadPage } from './UploadPage';
+export { RegisterPage } from './RegisterPage';
+export { MatchSearchPage, SearchPage, TeamSearchPage } from './SearchPage';
+export { MatchUploadPage, TeamUploadPage, UploadPage } from './UploadPage';

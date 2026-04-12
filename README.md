@@ -71,6 +71,29 @@ npm run dev  # http://localhost:3002
 
 > 📖 環境変数の詳細設定やコマンドリファレンスは、各サブプロジェクトの [CLAUDE.md](hono-worker/CLAUDE.md) / [CLAUDE.md](frontend/CLAUDE.md) を参照してください。
 
+## RTK の安全な試用
+
+RTK は [rtk-ai/rtk](https://github.com/rtk-ai/rtk) で公開されている外部 CLI です。公式 README では、LLM に渡るコマンド出力を圧縮して token 消費を削減する Rust 製の CLI proxy と説明されています。公式サイトは [https://www.rtk-ai.app](https://www.rtk-ai.app) です。GitHub 上では repository navigation に `Apache-2.0 license` が表示され、README badge には `License: MIT` も表示されているため、利用前に対象 version の repository と release artifact でライセンス表示を確認してください。
+
+この repository には RTK 本体やインストーラーは含めません。使用前に、チームで承認した公式 URL、ライセンス、バージョン、配布物の SHA256 を確認し、その値を環境変数で明示してください。承認済みの配布元とハッシュがない状態では使わないでください。
+
+RTK は global hook としては使わず、PR レビュー前に巨大 diff をざっと読む補助だけに限定します。この repo では [`scripts/rtk-safe.sh`](scripts/rtk-safe.sh#L1) 経由で実行してください。PATH 上の `rtk` は使用せず、検証済み binary の絶対パスを `RTK_BIN` で指定します。
+
+```bash
+export RTK_BIN=/absolute/path/to/rtk
+export RTK_SOURCE_URL=https://github.com/rtk-ai/rtk/releases/tag/<version>
+export RTK_VERSION=x.y.z
+export RTK_SHA256=<sha256-of-RTK_BIN>
+```
+
+```bash
+./scripts/rtk-safe.sh git diff
+./scripts/rtk-safe.sh git diff master...HEAD
+./scripts/rtk-safe.sh git status
+```
+
+この wrapper は `RTK_TELEMETRY_DISABLED=1` と `RTK_TEE=0` を設定します。RTK バイナリがこれらの環境変数を尊重することを前提にしているため、利用前に対象 version の挙動を確認してください。実行前には `RTK_BIN` の SHA256 を検証します。`rtk init` や hook 操作は許可コマンド外として拒否され、`--global`、`aws`、`gh`、`curl`、`wget`、`docker`、`kubectl`、`.env`、`credentials`、`--secret=*`、`--token=*`、`--password=*` を含む引数、CI での実行も拒否します。許可コマンドは `git diff/status/log/show` だけです。`git log -g` のように許可コマンド内で意味を持つ `-g` や、`token` を含む通常のファイルパス・ブランチ名はブロックしません。
+
 ## プロジェクト構成
 
 ```text
