@@ -53,12 +53,12 @@
         "@cloudflare/workers-types": "^4.20260116.0",
         "@types/bcryptjs": "^2.4.6",
         "@types/pg": "^8.11.0",
-        "@vitest/coverage-v8": "^4.0.15",
-        "@vitest/ui": "^4.0.15",
+        "@vitest/coverage-v8": "^4.1.8",
+        "@vitest/ui": "^4.1.8",
         "pg": "^8.11.3",
         "tsx": "^4.7.0",
         "typescript": "^5.3.3",
-        "vitest": "^4.0.15",
+        "vitest": "^4.1.8",
         "wrangler": "^4.81.1"
     },
     "volta": {
