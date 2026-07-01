@@ -68,7 +68,7 @@ jobs:
       # Cache node_modules separately for sharing across jobs
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
@@ -98,14 +98,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
 
       # Vitest cache with more aggressive caching
       - name: Cache Vitest
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             frontend/node_modules/.vitest
@@ -150,14 +150,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
 
       # More comprehensive Next.js caching
       - name: Cache Next.js build
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             frontend/.next/cache
@@ -206,7 +206,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore frontend dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
@@ -246,7 +246,7 @@ jobs:
         run: npx tsx scripts/neon-branch.ts seed "${{ steps.neon.outputs.database_url }}"
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
@@ -413,13 +413,13 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
