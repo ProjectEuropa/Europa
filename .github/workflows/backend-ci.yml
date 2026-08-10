@@ -214,7 +214,7 @@ jobs:
             echo "SLACK_WEBHOOK is not set, skipping notification"
             exit 0
           fi
-          curl -s -X POST -H 'Content-type: application/json' \
+          curl -sS --fail-with-body --max-time 10 -X POST -H 'Content-type: application/json' \
             --data "{
               \"text\": \"🚨 *Backend CI Pipeline Failed*\n• *Repo:* ${GITHUB_REPOSITORY}\n• *Ref:* ${GITHUB_REF}\n• *Author:* ${GITHUB_ACTOR}\n• *Lint:* ${{ needs.lint.result }}\n• *Test:* ${{ needs.test.result }}\n• *Type Check:* ${{ needs.type-check.result }}\n• *Details:* <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|View Workflow Run>\"
             }" \

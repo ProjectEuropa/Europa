@@ -381,7 +381,7 @@ jobs:
             echo "SLACK_WEBHOOK is not set, skipping notification"
             exit 0
           fi
-          curl -s -X POST -H 'Content-type: application/json' \
+          curl -sS --fail-with-body --max-time 10 -X POST -H 'Content-type: application/json' \
             --data "{
               \"text\": \"🎬 *E2E Test Failed*\n• *PR:* #${{ github.event.pull_request.number }}\n• *Author:* ${GITHUB_ACTOR}\n• *Artifacts:* <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|View Run Results>\"
             }" \
@@ -517,7 +517,7 @@ jobs:
             echo "SLACK_WEBHOOK is not set, skipping notification"
             exit 0
           fi
-          curl -s -X POST -H 'Content-type: application/json' \
+          curl -sS --fail-with-body --max-time 10 -X POST -H 'Content-type: application/json' \
             --data "{
               \"text\": \"🎬 *E2E Test Failed (Static)*\n• *Branch:* ${{ github.ref_name }}\n• *Author:* ${GITHUB_ACTOR}\n• *Artifacts:* <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|View Run Results>\"
             }" \
@@ -631,7 +631,7 @@ jobs:
             echo "SLACK_WEBHOOK is not set, skipping notification"
             exit 0
           fi
-          curl -s -X POST -H 'Content-type: application/json' \
+          curl -sS --fail-with-body --max-time 10 -X POST -H 'Content-type: application/json' \
             --data "{
               \"text\": \"🚨 *Frontend CI Pipeline Failed*\n• *Repo:* ${GITHUB_REPOSITORY}\n• *Ref:* ${GITHUB_REF}\n• *Author:* ${GITHUB_ACTOR}\n• *Test:* ${{ needs.test.result }}\n• *Build:* ${{ needs.build.result }}\n• *E2E:* ${{ github.event_name == 'pull_request' && needs.e2e.result || needs.e2e-static.result }}\n• *Details:* <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|View Workflow Run>\"
             }" \

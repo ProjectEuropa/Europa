@@ -77,7 +77,7 @@ jobs:
         run: |
           # E2Eテストが失敗した場合のみ自動修復を実行
           # playwright-reportにファイルが存在し、かつtest-resultsに失敗時のスクリーンショット等があるか確認
-          if [ -d "playwright-report" ] && [ -n "$(ls -A playwright-report 2>/devnull)" ]; then
+          if [ -d "playwright-report" ] && [ -n "$(ls -A playwright-report 2>/dev/null)" ]; then
             echo "has_artifacts=true" >> $GITHUB_OUTPUT
             echo "E2E test artifacts found - proceeding with auto-fix"
           else
@@ -144,7 +144,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH_NAME"
-          git add .
+          git add frontend/e2e
+          if git diff --staged --quiet; then
+            echo "No staged changes in frontend/e2e - skipping commit"
+            exit 0
+          fi
           git commit -m "fix(e2e): auto-fix by Claude Code"
           git push origin "$BRANCH_NAME"
 

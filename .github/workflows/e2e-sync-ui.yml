@@ -126,12 +126,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: fix/e2e-sync-${{ github.run_id }}
+          BASE_BRANCH: ${{ github.head_ref || 'master' }}
           CHANGED_FILES: ${{ steps.changes.outputs.all_changed_files }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH_NAME"
-          git add .
+          git add frontend/e2e
+          if git diff --staged --quiet; then
+            echo "No staged changes in frontend/e2e - skipping commit"
+            exit 0
+          fi
           git commit -m "fix(e2e): sync with UI component changes"
           git push origin "$BRANCH_NAME"
           
@@ -157,5 +162,5 @@ jobs:
           gh pr create \
             --title "fix(e2e): UI変更に追従 by Claude Code" \
             --body "$BODY" \
-            --base "${{ github.head_ref }}" \
+            --base "$BASE_BRANCH" \
             --label "auto-fix,e2e"
