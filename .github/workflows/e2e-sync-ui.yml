@@ -36,7 +36,7 @@ jobs:
 
       - name: Checkout repository
         if: steps.check-source.outputs.is_fork != 'true'
-        uses: actions/checkout@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -44,12 +44,14 @@ jobs:
       - name: Get changed files
         if: steps.check-source.outputs.is_fork != 'true'
         id: changes
-        # Pinned to v46.0.1 due to CVE-2025-30066 (supply-chain compromise in v44-v45.0.7)
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: |
-            frontend/src/components/**
-            frontend/src/app/**
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref || 'master' }}...HEAD -- 'frontend/src/components/**' 'frontend/src/app/**' | tr '\n' ' ')
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "any_changed=true" >> $GITHUB_OUTPUT
+            echo "all_changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          else
+            echo "any_changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Check if E2E update needed
         if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
@@ -59,7 +61,7 @@ jobs:
 
       - name: Setup Node.js
         if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
-        uses: actions/setup-node@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: '22'
 
