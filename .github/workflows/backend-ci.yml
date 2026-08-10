@@ -39,7 +39,7 @@ jobs:
       cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Verify symlinks
         working-directory: .
@@ -56,7 +56,7 @@ jobs:
           echo "All symlinks are valid"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -65,7 +65,7 @@ jobs:
       # Cache node_modules separately for sharing across jobs
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
         with:
           path: hono-worker/node_modules
           key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
@@ -74,7 +74,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
-        run: npm ci --prefer-offline --no-audit --no-fund
+        run: npm ci --ignore-scripts --prefer-offline --no-audit --no-fund
 
   # Lint job
   lint:
@@ -86,15 +86,15 @@ jobs:
         working-directory: ./hono-worker
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
         with:
           path: hono-worker/node_modules
           key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
@@ -117,22 +117,22 @@ jobs:
         working-directory: ./hono-worker
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
         with:
           path: hono-worker/node_modules
           key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
 
       # Vitest cache
       - name: Cache Vitest
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
         with:
           path: |
             hono-worker/node_modules/.vitest
@@ -172,15 +172,15 @@ jobs:
         working-directory: ./hono-worker
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
         with:
           path: hono-worker/node_modules
           key: ${{ runner.os }}-backend-deps-${{ hashFiles('hono-worker/package-lock.json') }}
@@ -205,16 +205,17 @@ jobs:
             echo "status=success" >> $GITHUB_OUTPUT
           fi
 
-      - name: Notify on failure
-        uses: 8398a7/action-slack@v3
+      - name: Notify Slack on failure
         if: steps.status.outputs.status == 'failure'
-        with:
-          status: failure
-          fields: repo,message,author,job,ref
-          text: |
-            🚨 Backend CI Pipeline Failed
-            Lint: ${{ needs.lint.result }}
-            Test: ${{ needs.test.result }}
-            Type Check: ${{ needs.type-check.result }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK is not set, skipping notification"
+            exit 0
+          fi
+          curl -sS --fail-with-body --max-time 10 -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \"🚨 *Backend CI Pipeline Failed*\n• *Repo:* ${GITHUB_REPOSITORY}\n• *Ref:* ${GITHUB_REF}\n• *Author:* ${GITHUB_ACTOR}\n• *Lint:* ${{ needs.lint.result }}\n• *Test:* ${{ needs.test.result }}\n• *Type Check:* ${{ needs.type-check.result }}\n• *Details:* <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|View Workflow Run>\"
+            }" \
+            "$SLACK_WEBHOOK_URL"

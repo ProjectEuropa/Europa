@@ -56,6 +56,7 @@ describe('SearchForm', () => {
       forward: vi.fn(),
       refresh: vi.fn(),
       prefetch: vi.fn(),
+      bfcacheId: '',
     });
     vi.mocked(useSearchParams).mockReturnValue(
       mockSearchParams as unknown as ReturnType<typeof useSearchParams>
@@ -288,6 +289,7 @@ describe('SearchForm', () => {
         forward: vi.fn(),
         refresh: vi.fn(),
         prefetch: vi.fn(),
+        bfcacheId: '',
       });
 
       const user = userEvent.setup();

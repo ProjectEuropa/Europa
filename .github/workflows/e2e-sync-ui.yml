@@ -36,7 +36,7 @@ jobs:
 
       - name: Checkout repository
         if: steps.check-source.outputs.is_fork != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -44,12 +44,14 @@ jobs:
       - name: Get changed files
         if: steps.check-source.outputs.is_fork != 'true'
         id: changes
-        # Pinned to v46.0.1 due to CVE-2025-30066 (supply-chain compromise in v44-v45.0.7)
-        uses: tj-actions/changed-files@v47.0.5
-        with:
-          files: |
-            frontend/src/components/**
-            frontend/src/app/**
+        run: |
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref || 'master' }}...HEAD -- 'frontend/src/components/**' 'frontend/src/app/**' | tr '\n' ' ')
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "any_changed=true" >> $GITHUB_OUTPUT
+            echo "all_changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          else
+            echo "any_changed=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Check if E2E update needed
         if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
@@ -59,13 +61,13 @@ jobs:
 
       - name: Setup Node.js
         if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: '22'
 
       - name: Install dependencies
         if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
-        run: npm ci
+        run: npm ci --ignore-scripts
         working-directory: ./frontend
 
       # E2E debugging instructions are centralized in .claude/skills/e2e-debug/SKILL.md
@@ -76,14 +78,14 @@ jobs:
       # to prevent prompt injection attacks.
       - name: Update E2E tests with Claude
         if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true'
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@c3d45e8e941e1b2ad7b278c57482d9c5bf1f35b3 # v1.0.99
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             以下のUIコンポーネントが変更されました:
             ${{ steps.changes.outputs.all_changed_files }}
 
-            これらの変更に関連するE2Eテストの更新が必要か確認してください。
+            豊富なコンテキストからE2Eテストの更新が必要か確認してください。
 
             ## 手順
             1. まず .claude/skills/e2e-debug/SKILL.md を読んで、E2Eデバッグの手順を確認してください
@@ -118,34 +120,47 @@ jobs:
             git diff --stat
           fi
 
-      # Security: Use PR instead of direct push to respect branch protection rules.
-      # Commit message is fixed to prevent prompt injection.
+      # Security: Use GitHub CLI directly to eliminate third-party Action dependencies.
       - name: Create sync PR
         if: steps.check-source.outputs.is_fork != 'true' && steps.changes.outputs.any_changed == 'true' && steps.git-diff.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v8
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "fix(e2e): sync with UI component changes"
-          title: "fix(e2e): UI変更に追従 by Claude Code"
-          body: |
-            ## 🤖 E2E同期 PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: fix/e2e-sync-${{ github.run_id }}
+          BASE_BRANCH: ${{ github.head_ref || 'master' }}
+          CHANGED_FILES: ${{ steps.changes.outputs.all_changed_files }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH_NAME"
+          git add frontend/e2e
+          if git diff --staged --quiet; then
+            echo "No staged changes in frontend/e2e - skipping commit"
+            exit 0
+          fi
+          git commit -m "fix(e2e): sync with UI component changes"
+          git push origin "$BRANCH_NAME"
+          
+          BODY=$(cat << EOF
+          ## 🤖 E2E同期 PR
 
-            UIコンポーネントの変更を検知し、Claude CodeがE2Eテストを更新しました。
+          UIコンポーネントの変更を検知し、Claude CodeがE2Eテストを更新しました。
 
-            ### 変更されたUIファイル
-            ```
-            ${{ steps.changes.outputs.all_changed_files }}
-            ```
+          ### 変更されたUIファイル
+          \`\`\`
+          ${CHANGED_FILES}
+          \`\`\`
 
-            ### 確認事項
-            - [ ] ロケータの更新が適切か確認
-            - [ ] テストが意図した動作を検証しているか確認
+          ### 確認事項
+          - [ ] ロケータの更新が適切か確認
+          - [ ] テストが意図した動作を検証しているか確認
 
-            ---
-            🤖 Generated with [Claude Code](https://claude.com/claude-code)
-          branch: fix/e2e-sync-${{ github.run_id }}
-          base: ${{ github.head_ref }}
-          labels: |
-            auto-fix
-            e2e
-          delete-branch: true
+          ---
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          EOF
+          )
+          
+          gh pr create \
+            --title "fix(e2e): UI変更に追従 by Claude Code" \
+            --body "$BODY" \
+            --base "$BASE_BRANCH" \
+            --label "auto-fix,e2e"
