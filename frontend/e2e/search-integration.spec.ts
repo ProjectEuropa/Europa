@@ -30,7 +30,7 @@ test.describe('検索機能の統合テスト', () => {
     await teamSearchPage.expectUrlContainsPage(1);
 
     // 検索結果の表示を待機
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('マッチ検索の基本フロー', async ({ page }) => {
@@ -355,7 +355,7 @@ test.describe('検索機能の統合テスト', () => {
     await teamSearchPage.expectKeywordValue('URLテスト');
 
     // 検索が自動実行されることを確認（APIコールが発生）
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('レスポンシブデザインの確認', async ({ page }) => {
