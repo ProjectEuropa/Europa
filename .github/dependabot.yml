@@ -41,21 +41,23 @@ updates:
           - "husky"
           - "lint-staged"
 
-  # Backend dependencies
-  - package-ecosystem: "composer"
-    directory: "/"
+  # Backend dependencies (hono-worker)
+  - package-ecosystem: "npm"
+    directory: "/hono-worker"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
       timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 5
     reviewers:
       - "m2"
     assignees:
       - "m2"
     commit-message:
-      prefix: "backend"
+      prefix: "hono-worker"
       include: "scope"
 
   # GitHub Actions

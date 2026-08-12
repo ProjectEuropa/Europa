@@ -68,3 +68,7 @@ CREATE INDEX idx_events_displaying_day ON events(event_displaying_day);
 CREATE INDEX idx_password_resets_token ON password_resets(token);
 CREATE INDEX idx_tags_tag_name ON tags(tag_name);
 CREATE INDEX idx_file_tags_tag_id ON file_tags(tag_id);
+
+-- 複合インデックス（検索・絞り込み・日付並び替えの高速化）
+CREATE INDEX idx_files_data_type_created ON files(data_type, created_at DESC);
+CREATE INDEX idx_events_display_closing ON events(event_displaying_day DESC, event_closing_day);
