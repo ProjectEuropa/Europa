@@ -68,7 +68,7 @@ jobs:
       # Cache node_modules separately for sharing across jobs
       - name: Cache dependencies
         id: cache-deps
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
@@ -98,14 +98,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
 
       # Vitest cache with more aggressive caching
       - name: Cache Vitest
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             frontend/node_modules/.vitest
@@ -150,14 +150,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
 
       # More comprehensive Next.js caching
       - name: Cache Next.js build
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             frontend/.next/cache
@@ -206,7 +206,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore frontend dependencies
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
@@ -246,7 +246,7 @@ jobs:
         run: npx tsx scripts/neon-branch.ts seed "${{ steps.neon.outputs.database_url }}"
 
       - name: Cache Playwright browsers
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
@@ -415,13 +415,13 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Restore dependencies
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-deps-${{ hashFiles('frontend/package-lock.json') }}
 
       - name: Cache Playwright browsers
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
