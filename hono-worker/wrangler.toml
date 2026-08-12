@@ -36,3 +36,6 @@ vars = { ENVIRONMENT = "e2e", API_VERSION = "v2", LOG_LEVEL = "debug", FRONTEND_
 [[env.e2e.r2_buckets]]
 binding = "FILES_BUCKET"
 bucket_name = "europa-files-stg" # E2EはSTGのR2を使用
+
+[observability]
+enabled = true
