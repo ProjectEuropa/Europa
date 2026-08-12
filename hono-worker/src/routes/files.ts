@@ -179,6 +179,13 @@ files.get('/', optionalAuthMiddleware, async c => {
         },
     };
 
+    if (mine !== 'true') {
+        c.header(
+            'Cache-Control',
+            'public, max-age=0, s-maxage=15, stale-while-revalidate=45',
+        );
+    }
+
     return c.json(response, 200);
 });
 

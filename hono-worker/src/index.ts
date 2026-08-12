@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { logger } from 'hono/logger';
+import { secureHeaders } from 'hono/secure-headers';
 import { setupCORS } from './middleware/cors';
 import { createHttpErrorResponse, notFoundHandler } from './middleware/error';
 import auth from './routes/auth';
@@ -13,6 +14,7 @@ import type { Env } from './types/bindings';
 const app = new Hono<{ Bindings: Env }>();
 
 // グローバルミドルウェア
+app.use('*', secureHeaders());
 app.use('*', logger());
 app.use('*', setupCORS());
 
