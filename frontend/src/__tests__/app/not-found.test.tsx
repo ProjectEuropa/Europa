@@ -17,6 +17,6 @@ describe('NotFound Page', () => {
     expect(homeLink).toHaveAttribute('href', '/');
 
     const searchLink = screen.getByRole('link', { name: /データ検索/i });
-    expect(searchLink).toHaveAttribute('href', '/search/match');
+    expect(searchLink).toHaveAttribute('href', '/search/team');
   });
 });
