@@ -114,7 +114,7 @@ jobs:
       # Available scripts: test:e2e (run tests), test:e2e:ui (interactive), test:e2e:report (view report)
       # CI only needs test:e2e to verify fixes.
       - name: Run Claude Code to fix E2E
-        if: steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true'
+        if: false && steps.check-source.outputs.is_fork != 'true' && steps.check-artifacts.outputs.has_artifacts == 'true' # Disabled: Claude Code subscription inactive
         uses: anthropics/claude-code-action@c3d45e8e941e1b2ad7b278c57482d9c5bf1f35b3 # v1.0.99
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
