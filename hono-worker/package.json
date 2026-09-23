@@ -43,23 +43,23 @@
         "@aws-sdk/client-s3": "^3.1003.0",
         "@neondatabase/serverless": "^0.9.0",
         "bcryptjs": "^2.4.3",
-        "fflate": "^0.8.2",
-        "hono": "^4.12.34",
+        "fflate": "^0.8.3",
+        "hono": "^4.13.8",
         "resend": "^6.18.1",
-        "zod": "^4.3.6"
+        "zod": "^4.4.3"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.3.8",
+        "@biomejs/biome": "^2.5.7",
         "@cloudflare/workers-types": "^4.20260116.0",
         "@types/bcryptjs": "^2.4.6",
         "@types/pg": "^8.11.0",
         "@vitest/coverage-v8": "^4.1.10",
         "@vitest/ui": "^4.1.10",
         "pg": "^8.11.3",
-        "tsx": "^4.7.0",
+        "tsx": "^4.23.7",
         "typescript": "^5.3.3",
-        "vitest": "^4.1.10",
-        "wrangler": "^4.120.0"
+        "vitest": "^4.1.11",
+        "wrangler": "^4.136.3"
     },
     "volta": {
         "node": "24.13.0"
