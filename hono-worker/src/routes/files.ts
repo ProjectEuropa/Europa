@@ -90,29 +90,15 @@ files.get('/', optionalAuthMiddleware, async c => {
         }
     }
 
-    // キーワード検索時にタグも検索対象にする
-    let keywordMatchedFileIds: number[] | undefined;
-    if (keyword && !tag) {
-        // ILIKE用の特殊文字（\, %, _）をエスケープ
-        const escapedKeyword = keyword.replace(/[\\%_]/g, '\\$&');
-        const keywordTagResults = await sql`
-      SELECT DISTINCT ft.file_id
-      FROM file_tags ft
-      INNER JOIN tags t ON ft.tag_id = t.id
-      WHERE t.tag_name ILIKE ${'%' + escapedKeyword + '%'} ESCAPE '\\'
-    `;
-        keywordMatchedFileIds = keywordTagResults.map((r: any) => r.file_id);
-    }
-
     // タグフィルタで結果が空でない場合のみクエリを実行
     if (!tag || (tagFilteredFileIds && tagFilteredFileIds.length > 0)) {
-        // WHERE条件を動的に構築
+        // WHERE条件を動的に構築（キーワード検索時はEXISTS句でタグも高速結合検索）
         const { whereClause, whereParams } = buildFileQueryWhere({
             data_type,
             targetUserId,
             keyword,
             tagFilteredFileIds: tagFilteredFileIds || undefined,
-            keywordMatchedFileIds,
+            includeTagSearch: !!keyword && !tag,
         });
 
         // 件数取得とリスト取得のクエリを並列実行

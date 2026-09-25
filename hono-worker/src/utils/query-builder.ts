@@ -9,6 +9,7 @@ export interface FileQueryFilters {
     keyword?: string;
     tagFilteredFileIds?: number[];
     keywordMatchedFileIds?: number[];
+    includeTagSearch?: boolean;
 }
 
 export interface QueryResult {
@@ -39,13 +40,24 @@ export function buildFileQueryWhere(filters: FileQueryFilters): QueryResult {
         // ILIKE用の特殊文字（\, %, _）をエスケープ
         const escapedKeyword = filters.keyword.replace(/[\\%_]/g, '\\$&');
 
-        // ILIKEパターンをSQL側で構築 - keywordパラメータを3回使用するため3回pushする
+        // ILIKEパターンをSQL側で構築
         const keywordIdx1 = whereParams.length + 1;
         const keywordIdx2 = whereParams.length + 2;
         const keywordIdx3 = whereParams.length + 3;
 
-        // タグにマッチしたファイルIDがある場合は、それも検索条件に含める
-        if (filters.keywordMatchedFileIds && filters.keywordMatchedFileIds.length > 0) {
+        if (filters.includeTagSearch) {
+            // タグ検索をEXISTS句で高速にインデックス結合（巨大配列転送を回避）
+            const keywordIdx4 = whereParams.length + 4;
+            whereConditions.push(
+                `(file_name ILIKE '%' || $${keywordIdx1} || '%' ESCAPE '\\' OR file_comment ILIKE '%' || $${keywordIdx2} || '%' ESCAPE '\\' OR upload_owner_name ILIKE '%' || $${keywordIdx3} || '%' ESCAPE '\\' OR EXISTS (SELECT 1 FROM file_tags ft INNER JOIN tags t ON ft.tag_id = t.id WHERE ft.file_id = files.id AND t.tag_name ILIKE '%' || $${keywordIdx4} || '%' ESCAPE '\\'))`
+            );
+            whereParams.push(
+                escapedKeyword,
+                escapedKeyword,
+                escapedKeyword,
+                escapedKeyword
+            );
+        } else if (filters.keywordMatchedFileIds && filters.keywordMatchedFileIds.length > 0) {
             const tagFileIdsIdx = whereParams.length + 4;
             whereConditions.push(
                 `(file_name ILIKE '%' || $${keywordIdx1} || '%' ESCAPE '\\' OR file_comment ILIKE '%' || $${keywordIdx2} || '%' ESCAPE '\\' OR upload_owner_name ILIKE '%' || $${keywordIdx3} || '%' ESCAPE '\\' OR id = ANY($${tagFileIdsIdx}))`

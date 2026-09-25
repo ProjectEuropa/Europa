@@ -48,6 +48,17 @@ describe('buildFileQueryWhere', () => {
             expect(result.whereParams.length).toBe(3);
         });
 
+        it('includeTagSearch: true の場合、EXISTS句が追加され4つのパラメータになる', () => {
+            const filters: FileQueryFilters = { keyword: 'ケイローン', includeTagSearch: true };
+            const result = buildFileQueryWhere(filters);
+
+            expect(result.whereClause).toBe(
+                "WHERE (file_name ILIKE '%' || $1 || '%' ESCAPE '\\' OR file_comment ILIKE '%' || $2 || '%' ESCAPE '\\' OR upload_owner_name ILIKE '%' || $3 || '%' ESCAPE '\\' OR EXISTS (SELECT 1 FROM file_tags ft INNER JOIN tags t ON ft.tag_id = t.id WHERE ft.file_id = files.id AND t.tag_name ILIKE '%' || $4 || '%' ESCAPE '\\')) AND (downloadable_at IS NULL OR downloadable_at <= NOW() AT TIME ZONE 'Asia/Tokyo')"
+            );
+            expect(result.whereParams).toEqual(['ケイローン', 'ケイローン', 'ケイローン', 'ケイローン']);
+            expect(result.whereParams.length).toBe(4);
+        });
+
         it('keywordに特殊文字が含まれる場合もそのまま渡される', () => {
             const filters: FileQueryFilters = { keyword: "test'OR'1'='1" };
             const result = buildFileQueryWhere(filters);
