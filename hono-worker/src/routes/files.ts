@@ -180,9 +180,11 @@ files.get('/', optionalAuthMiddleware, async c => {
     };
 
     if (mine !== 'true') {
+        const sMaxAge = keyword ? 30 : 60;
+        const swr = keyword ? 60 : 120;
         c.header(
             'Cache-Control',
-            'public, max-age=0, s-maxage=15, stale-while-revalidate=45',
+            `public, max-age=0, s-maxage=${sMaxAge}, stale-while-revalidate=${swr}`,
         );
     }
 
@@ -211,6 +213,11 @@ files.get('/tags', async c => {
     const response: SuccessResponse<{ tags: string[] }> = {
         data: { tags },
     };
+
+    c.header(
+        'Cache-Control',
+        'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+    );
 
     return c.json(response, 200);
 });

@@ -84,6 +84,12 @@ CREATE INDEX idx_password_resets_token ON password_resets(token);
 CREATE INDEX idx_tags_tag_name ON tags(tag_name);
 CREATE INDEX idx_file_tags_tag_id ON file_tags(tag_id);
 
+-- 部分一致・中間一致検索高速化用インデックス（pg_trgm + GIN）
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX idx_files_name_trgm ON files USING gin (file_name gin_trgm_ops);
+CREATE INDEX idx_files_comment_trgm ON files USING gin (file_comment gin_trgm_ops);
+CREATE INDEX idx_files_owner_trgm ON files USING gin (upload_owner_name gin_trgm_ops);
+
 -- 完了
 -- テーブル一覧を確認
 SELECT table_name 

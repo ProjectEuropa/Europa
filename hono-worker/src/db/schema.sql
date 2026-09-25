@@ -72,3 +72,9 @@ CREATE INDEX idx_file_tags_tag_id ON file_tags(tag_id);
 -- 複合インデックス（検索・絞り込み・日付並び替えの高速化）
 CREATE INDEX idx_files_data_type_created ON files(data_type, created_at DESC);
 CREATE INDEX idx_events_display_closing ON events(event_displaying_day DESC, event_closing_day);
+
+-- 部分一致・中間一致検索高速化用インデックス（pg_trgm + GIN）
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX idx_files_name_trgm ON files USING gin (file_name gin_trgm_ops);
+CREATE INDEX idx_files_comment_trgm ON files USING gin (file_comment gin_trgm_ops);
+CREATE INDEX idx_files_owner_trgm ON files USING gin (upload_owner_name gin_trgm_ops);
