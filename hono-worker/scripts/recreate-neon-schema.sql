@@ -6,6 +6,7 @@
 -- 1. 既存テーブルを削除（依存関係の逆順）
 DROP TABLE IF EXISTS file_tags CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
+DROP TABLE IF EXISTS login_otps CASCADE;
 DROP TABLE IF EXISTS password_resets CASCADE;
 DROP TABLE IF EXISTS files CASCADE;
 DROP TABLE IF EXISTS events CASCADE;
@@ -76,11 +77,25 @@ CREATE TABLE password_resets (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- login_otps テーブル
+CREATE TABLE login_otps (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  code_hash VARCHAR(255) NOT NULL,
+  session_token VARCHAR(255) UNIQUE NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  attempts INTEGER DEFAULT 0,
+  resend_available_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- 3. インデックス作成（パフォーマンス最適化）
 CREATE INDEX idx_files_upload_user_id ON files(upload_user_id);
 CREATE INDEX idx_files_downloadable_at ON files(downloadable_at);
 CREATE INDEX idx_events_displaying_day ON events(event_displaying_day);
 CREATE INDEX idx_password_resets_token ON password_resets(token);
+CREATE INDEX idx_login_otps_session_token ON login_otps(session_token);
+CREATE INDEX idx_login_otps_user_id ON login_otps(user_id);
 CREATE INDEX idx_tags_tag_name ON tags(tag_name);
 CREATE INDEX idx_file_tags_tag_id ON file_tags(tag_id);
 

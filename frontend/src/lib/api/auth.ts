@@ -4,8 +4,10 @@
 
 import type { ApiResponse } from '@/types/api';
 import type {
+  Login2FAResponse,
   LoginCredentials,
   LoginResponse,
+  LoginResult,
   PasswordResetData,
   PasswordResetRequest,
   PasswordResetResponse,
@@ -14,8 +16,10 @@ import type {
   PasswordResetTokenResponse,
   RegisterCredentials,
   RegisterResponse,
+  ResendOtpResponse,
   User,
   UserUpdateData,
+  VerifyOtpCredentials,
 } from '@/types/user';
 import { apiClient } from './client';
 
@@ -61,7 +65,7 @@ function normalizeAuthResponse<T extends LoginResponse | RegisterResponse>(
 }
 
 export const authApi = {
-  async login(credentials: LoginCredentials): Promise<LoginResponse> {
+  async login(credentials: LoginCredentials): Promise<LoginResult> {
     // CSRF Cookieを事前に取得
     try {
       await apiClient.getCsrfCookie();
@@ -69,7 +73,7 @@ export const authApi = {
       throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
     }
 
-    const response = await apiClient.post<LoginResponse>(
+    const response = await apiClient.post<any>(
       '/api/v2/auth/login',
       {
         email: credentials.email,
@@ -78,10 +82,54 @@ export const authApi = {
       }
     );
 
-    // レスポンス構造の正規化
-    const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
+    // 2FA（ワンタイムパスコード）要求レスポンスの判定
+    const responseData = response?.data || response;
+    if (responseData && responseData.requires2FA) {
+      return {
+        requires2FA: true,
+        sessionToken: responseData.sessionToken,
+        maskedEmail: responseData.maskedEmail,
+        expiresIn: responseData.expiresIn || 600,
+      } as Login2FAResponse;
+    }
 
+    // レスポンス構造の正規化（従来の直接ログイン形式）
+    const normalizedResponse = normalizeAuthResponse<LoginResponse>(response);
     return normalizedResponse;
+  },
+
+  /**
+   * 2段階認証コードの検証
+   */
+  async verifyOtp(credentials: VerifyOtpCredentials): Promise<LoginResponse> {
+    const response = await apiClient.post<any>(
+      '/api/v2/auth/verify-otp',
+      {
+        sessionToken: credentials.sessionToken,
+        code: credentials.code,
+        remember: credentials.remember,
+      }
+    );
+
+    return normalizeAuthResponse<LoginResponse>(response);
+  },
+
+  /**
+   * 認証コードの再送信
+   */
+  async resendOtp(sessionToken: string): Promise<ResendOtpResponse> {
+    const response = await apiClient.post<any>(
+      '/api/v2/auth/resend-otp',
+      {
+        sessionToken,
+      }
+    );
+
+    const data = response?.data || response;
+    return {
+      message: response?.message || '認証コードを再送信しました',
+      expiresIn: data?.expiresIn || 600,
+    };
   },
 
   async register(credentials: RegisterCredentials): Promise<RegisterResponse> {

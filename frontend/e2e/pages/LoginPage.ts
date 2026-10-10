@@ -39,6 +39,27 @@ export class LoginPage extends BasePage {
     return this.page.locator('p').filter({ hasText: /パスワード/ });
   }
 
+  // 2段階認証 (OTP) Locators
+  get otpInput() {
+    return this.page.getByRole('textbox', { name: /認証コード/ });
+  }
+
+  get otpSubmitButton() {
+    return this.page.getByRole('button', { name: '認証してログイン' });
+  }
+
+  get otpResendButton() {
+    return this.page.getByRole('button', { name: /コードを再送信/ });
+  }
+
+  get backToCredentialsButton() {
+    return this.page.getByRole('button', { name: /別のアカウントでログイン/ });
+  }
+
+  get otpError() {
+    return this.page.locator('p.text-red-400');
+  }
+
   // Actions
   async goto() {
     await this.page.goto('/login');
@@ -62,12 +83,37 @@ export class LoginPage extends BasePage {
     await this.submit();
   }
 
+  // 2段階認証 (OTP) Actions
+  async fillOtp(code: string = '000000') {
+    await this.otpInput.fill(code);
+  }
+
+  async submitOtp() {
+    await this.otpSubmitButton.click();
+  }
+
+  async verifyOtp(code: string = '000000') {
+    await this.fillOtp(code);
+    await this.submitOtp();
+  }
+
+  async loginWithOtp(email: string, password: string, code: string = '000000') {
+    await this.login(email, password);
+    await this.expectOtpStepVisible();
+    await this.verifyOtp(code);
+  }
+
   // Assertions
   async expectVisible() {
     await expect(this.page).toHaveURL('/login');
     await expect(this.emailInput).toBeVisible();
     await expect(this.passwordInput).toBeVisible();
     await expect(this.submitButton).toBeVisible();
+  }
+
+  async expectOtpStepVisible() {
+    await expect(this.otpInput).toBeVisible({ timeout: 10000 });
+    await expect(this.otpSubmitButton).toBeVisible();
   }
 
   async expectEmailError(message: string | RegExp) {
@@ -78,7 +124,25 @@ export class LoginPage extends BasePage {
     await expect(this.passwordError.filter({ hasText: message })).toBeVisible();
   }
 
+  async expectOtpError(message: string | RegExp) {
+    await expect(this.otpError.filter({ hasText: message })).toBeVisible();
+  }
+
   async expectLoginSuccess() {
+    // 2段階認証画面が表示された場合はテスト用固定コード 000000 を入力して認証を完了
+    try {
+      const otpVisible = await this.otpInput
+        .waitFor({ state: 'visible', timeout: 3000 })
+        .then(() => true)
+        .catch(() => false);
+
+      if (otpVisible) {
+        await this.verifyOtp('000000');
+      }
+    } catch {
+      // 直接リダイレクトされる場合（モック等）は何もしない
+    }
+
     await expect(this.page).toHaveURL('/');
     await this.expectAuthenticated();
   }
@@ -87,3 +151,4 @@ export class LoginPage extends BasePage {
     await this.expectToast(message);
   }
 }
+

@@ -90,6 +90,24 @@ export interface RegisterRequest {
 export interface LoginRequest {
     email: string;
     password: string;
+    remember?: boolean;
+}
+
+export interface Login2FAResponse {
+    requires2FA: true;
+    sessionToken: string;
+    maskedEmail: string;
+    expiresIn: number;
+}
+
+export interface VerifyOtpRequest {
+    sessionToken: string;
+    code: string;
+    remember?: boolean;
+}
+
+export interface ResendOtpRequest {
+    sessionToken: string;
 }
 
 export interface FileUploadRequest {
@@ -97,3 +115,4 @@ export interface FileUploadRequest {
     comment?: string;
     tags?: string[];
 }
+

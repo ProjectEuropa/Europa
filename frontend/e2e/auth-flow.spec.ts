@@ -101,6 +101,57 @@ test.describe('Authentication Flow', () => {
       expect(authStorage?.state?.isAuthenticated).toBeTruthy();
       expect(authStorage?.state?.user).toBeTruthy();
     });
+
+    test('should handle two-factor authentication (OTP) flow', async ({ page }) => {
+      const loginPage = new LoginPage(page);
+
+      // 1次認証（ログイン）モック: 2FAを要求
+      await page.route('**/api/v2/auth/login', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            data: {
+              requires2FA: true,
+              sessionToken: 'mock-session-token',
+              maskedEmail: 't***t@example.com',
+              expiresIn: 600,
+            },
+          }),
+        });
+      });
+
+      // 2次認証（OTP検証）モック: ログイン完了
+      await page.route('**/api/v2/auth/verify-otp', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            data: {
+              user: {
+                id: '1',
+                name: testUser.name,
+                email: testUser.email,
+                createdAt: '2024-01-01T00:00:00Z',
+              },
+            },
+            message: 'ログインに成功しました',
+          }),
+        });
+      });
+
+      await loginPage.goto();
+      await loginPage.login(testUser.email, testUser.password);
+
+      // 2段階認証画面（OTP入力欄）が表示されることを確認
+      await loginPage.expectOtpStepVisible();
+
+      // 固定コード 000000 を入力して認証
+      await loginPage.verifyOtp('000000');
+
+      // ログイン成功後のリダイレクトを確認
+      await loginPage.expectLoginSuccess();
+    });
   });
 
   test.describe('Registration Page', () => {
