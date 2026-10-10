@@ -129,6 +129,20 @@ export class LoginPage extends BasePage {
   }
 
   async expectLoginSuccess() {
+    // 2段階認証画面が表示された場合はテスト用固定コード 000000 を入力して認証を完了
+    try {
+      const otpVisible = await this.otpInput
+        .waitFor({ state: 'visible', timeout: 3000 })
+        .then(() => true)
+        .catch(() => false);
+
+      if (otpVisible) {
+        await this.verifyOtp('000000');
+      }
+    } catch {
+      // 直接リダイレクトされる場合（モック等）は何もしない
+    }
+
     await expect(this.page).toHaveURL('/');
     await this.expectAuthenticated();
   }

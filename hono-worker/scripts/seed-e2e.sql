@@ -1,7 +1,24 @@
 -- E2E Test Seed Data
 -- This file is used to seed the database for E2E tests
 
+-- Ensure login_otps table exists (for new features not yet migrated on default branch)
+CREATE TABLE IF NOT EXISTS login_otps (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  code_hash VARCHAR(255) NOT NULL,
+  session_token VARCHAR(255) UNIQUE NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  attempts INTEGER DEFAULT 0,
+  resend_available_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_login_otps_session_token ON login_otps(session_token);
+CREATE INDEX IF NOT EXISTS idx_login_otps_user_id ON login_otps(user_id);
+CREATE INDEX IF NOT EXISTS idx_login_otps_expires_at ON login_otps(expires_at);
+
 -- Clean up existing test data (if any)
+DELETE FROM login_otps WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'e2e%@test.com');
 DELETE FROM file_tags WHERE file_id IN (SELECT id FROM files WHERE upload_owner_name LIKE 'E2E%');
 DELETE FROM files WHERE upload_owner_name LIKE 'E2E%';
 DELETE FROM events WHERE event_name LIKE 'E2E%';
