@@ -2,7 +2,7 @@
 
 export interface Env {
     // 環境識別子
-    ENVIRONMENT: 'development' | 'staging' | 'production';
+    ENVIRONMENT: 'development' | 'staging' | 'production' | 'e2e';
 
     // APIバージョン
     API_VERSION: string;

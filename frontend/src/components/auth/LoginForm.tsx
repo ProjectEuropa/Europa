@@ -1,7 +1,16 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, CheckCircle2, Eye, EyeOff, KeyRound, Mail, RefreshCw, ShieldCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  KeyRound,
+  Mail,
+  RefreshCw,
+  ShieldCheck,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -9,6 +18,7 @@ import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { authApi } from '@/lib/api/auth';
+import { useAuthStore } from '@/stores/authStore';
 import { processApiError } from '@/utils/apiErrorHandler';
 
 // パスワードログインのバリデーションスキーマ
@@ -52,7 +62,8 @@ export function LoginForm({
   const [isResending, setIsResending] = useState<boolean>(false);
   const [expiresInSeconds, setExpiresInSeconds] = useState<number>(600);
 
-  const { login, verifyOtp } = useAuth();
+  const { login } = useAuth();
+  const verifyOtp = useAuthStore(state => state.verifyOtp);
   const { toast } = useToast();
   const router = useRouter();
   const otpInputRef = useRef<HTMLInputElement>(null);
@@ -84,8 +95,8 @@ export function LoginForm({
     if (step !== 'otp') return;
 
     const timer = setInterval(() => {
-      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
-      setExpiresInSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+      setResendCooldown(prev => (prev > 0 ? prev - 1 : 0));
+      setExpiresInSeconds(prev => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(timer);
@@ -97,7 +108,7 @@ export function LoginForm({
     try {
       const result = await login(data);
 
-      if ('requires2FA' in result && result.requires2FA) {
+      if (result && 'requires2FA' in result && result.requires2FA) {
         setSessionToken(result.sessionToken);
         setMaskedEmail(result.maskedEmail);
         setRememberMe(!!data.remember);
@@ -135,11 +146,13 @@ export function LoginForm({
         processedError.isValidationError &&
         Object.keys(processedError.fieldErrors).length > 0
       ) {
-        Object.entries(processedError.fieldErrors).forEach(([field, message]) => {
-          if (field === 'email' || field === 'password') {
-            setError(field, { message });
+        Object.entries(processedError.fieldErrors).forEach(
+          ([field, message]) => {
+            if (field === 'email' || field === 'password') {
+              setError(field, { message });
+            }
           }
-        });
+        );
       } else {
         toast({
           type: 'error',
@@ -166,11 +179,19 @@ export function LoginForm({
     setOtpError('');
 
     try {
-      await verifyOtp({
-        sessionToken,
-        code: cleanCode,
-        remember: rememberMe,
-      });
+      if (verifyOtp) {
+        await verifyOtp({
+          sessionToken,
+          code: cleanCode,
+          remember: rememberMe,
+        });
+      } else {
+        await authApi.verifyOtp({
+          sessionToken,
+          code: cleanCode,
+          remember: rememberMe,
+        });
+      }
 
       toast({
         type: 'success',
@@ -248,7 +269,9 @@ export function LoginForm({
             <ShieldCheck className="w-5 h-5 text-[#00c8ff]" />
           </div>
           <div className="text-left text-xs text-[#b0c4d8] leading-relaxed">
-            <span className="font-semibold text-white block text-sm">2段階認証</span>
+            <span className="font-semibold text-white block text-sm">
+              2段階認証
+            </span>
             {maskedEmail} に届いた6桁の認証コードを入力してください
           </div>
         </div>
@@ -256,12 +279,22 @@ export function LoginForm({
         {/* 認証コード入力欄 */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label htmlFor="otp-code" className="text-[#b0c4d8] text-[0.9rem] flex items-center gap-1.5 font-medium">
+            <label
+              htmlFor="otp-code"
+              className="text-[#b0c4d8] text-[0.9rem] flex items-center gap-1.5 font-medium"
+            >
               <KeyRound className="w-4 h-4 text-[#00c8ff]" />
               認証コード（6桁）
             </label>
             <span className="text-xs text-[#64748b]">
-              有効期限: <strong className={expiresInSeconds < 60 ? 'text-red-400' : 'text-[#00c8ff]'}>{formatTime(expiresInSeconds)}</strong>
+              有効期限:{' '}
+              <strong
+                className={
+                  expiresInSeconds < 60 ? 'text-red-400' : 'text-[#00c8ff]'
+                }
+              >
+                {formatTime(expiresInSeconds)}
+              </strong>
             </span>
           </div>
 
@@ -274,17 +307,23 @@ export function LoginForm({
             maxLength={6}
             placeholder="000000"
             value={otpCode}
-            onChange={(e) => {
+            onChange={e => {
               const val = e.target.value.replace(/\D/g, '').slice(0, 6);
               setOtpCode(val);
               if (otpError) setOtpError('');
             }}
             disabled={isSubmitting}
             className={`w-full py-3.5 px-4 bg-[#111A2E] border rounded-md text-white text-center text-2xl font-mono tracking-[0.5em] outline-none transition-all placeholder:text-[#334155] ${
-              otpError ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'border-[#1E3A5F] focus:border-[#00c8ff] focus:shadow-[0_0_12px_rgba(0,200,255,0.25)]'
+              otpError
+                ? 'border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
+                : 'border-[#1E3A5F] focus:border-[#00c8ff] focus:shadow-[0_0_12px_rgba(0,200,255,0.25)]'
             }`}
           />
-          {otpError && <p className="text-red-400 text-[0.8rem] mt-1.5 text-center">{otpError}</p>}
+          {otpError && (
+            <p className="text-red-400 text-[0.8rem] mt-1.5 text-center">
+              {otpError}
+            </p>
+          )}
         </div>
 
         {/* 認証ボタン */}
@@ -312,7 +351,9 @@ export function LoginForm({
                 : 'text-[#00c8ff] hover:text-[#38bdf8] cursor-pointer hover:underline'
             }`}
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isResending ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${isResending ? 'animate-spin' : ''}`}
+            />
             {resendCooldown > 0
               ? `コードを再送信（${resendCooldown}秒後に可能）`
               : '認証コードを再送信する'}
@@ -354,7 +395,9 @@ export function LoginForm({
           {...register('email')}
           disabled={isSubmitting}
           className={`w-full py-3 px-4 bg-[#111A2E] border rounded-md text-white text-base outline-none transition-colors ${
-            errors.email ? 'border-red-500' : 'border-[#1E3A5F] focus:border-[#00c8ff]'
+            errors.email
+              ? 'border-red-500'
+              : 'border-[#1E3A5F] focus:border-[#00c8ff]'
           }`}
         />
         {errors.email && (
@@ -380,7 +423,9 @@ export function LoginForm({
             {...register('password')}
             disabled={isSubmitting}
             className={`w-full py-3 px-4 pr-12 bg-[#111A2E] border rounded-md text-white text-base outline-none transition-colors ${
-              errors.password ? 'border-red-500' : 'border-[#1E3A5F] focus:border-[#00c8ff]'
+              errors.password
+                ? 'border-red-500'
+                : 'border-[#1E3A5F] focus:border-[#00c8ff]'
             }`}
           />
           <button
@@ -430,4 +475,3 @@ export function LoginForm({
     </form>
   );
 }
-

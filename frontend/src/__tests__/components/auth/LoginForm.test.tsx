@@ -8,6 +8,12 @@ import { useToast } from '@/hooks/useToast';
 // モック
 vi.mock('@/hooks/useAuth');
 vi.mock('@/hooks/useToast');
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: vi.fn(selector => {
+    const store = { verifyOtp: mockVerifyOtp };
+    return selector ? selector(store) : store;
+  }),
+}));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -22,7 +28,6 @@ describe('LoginForm', () => {
   beforeEach(() => {
     vi.mocked(useAuth).mockReturnValue({
       login: mockLogin,
-      verifyOtp: mockVerifyOtp,
       user: null,
       token: null,
       loading: false,
@@ -242,9 +247,13 @@ describe('LoginForm', () => {
 
       await waitFor(() => {
         // 翻訳されたエラーメッセージを確認
-        const emailError = screen.queryByText('有効なメールアドレスを入力してください。');
-        const passwordError = screen.queryByText('パスワードは6文字以上で入力してください。');
-        
+        const emailError = screen.queryByText(
+          '有効なメールアドレスを入力してください。'
+        );
+        const passwordError = screen.queryByText(
+          'パスワードは6文字以上で入力してください。'
+        );
+
         // いずれかのエラーメッセージが表示されていることを確認
         expect(emailError || passwordError).toBeTruthy();
       });
@@ -358,7 +367,10 @@ describe('LoginForm', () => {
 
       render(<LoginForm onSuccess={onSuccess} />);
 
-      await user.type(screen.getByLabelText(/メールアドレス/), 'test@example.com');
+      await user.type(
+        screen.getByLabelText(/メールアドレス/),
+        'test@example.com'
+      );
       await user.type(screen.getByLabelText('パスワード*'), 'password123');
       await user.click(screen.getByRole('button', { name: 'ログイン' }));
 
@@ -369,7 +381,9 @@ describe('LoginForm', () => {
       const otpInput = screen.getByLabelText(/認証コード/);
       await user.type(otpInput, '123456');
 
-      const verifyButton = screen.getByRole('button', { name: '認証してログイン' });
+      const verifyButton = screen.getByRole('button', {
+        name: '認証してログイン',
+      });
       await user.click(verifyButton);
 
       await waitFor(() => {
@@ -383,4 +397,3 @@ describe('LoginForm', () => {
     });
   });
 });
-

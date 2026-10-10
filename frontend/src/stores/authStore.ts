@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { authApi } from '@/lib/api/auth';
 import type {
   LoginCredentials,
+  LoginResponse,
   LoginResult,
   RegisterCredentials,
   User,
@@ -19,7 +20,7 @@ interface AuthState {
 
 interface AuthActions {
   login: (credentials: LoginCredentials) => Promise<LoginResult>;
-  verifyOtp: (credentials: VerifyOtpCredentials) => Promise<void>;
+  verifyOtp?: (credentials: VerifyOtpCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: (redirectCallback?: () => void) => Promise<void>;
   fetchUser: () => Promise<void>;
@@ -53,7 +54,8 @@ export const useAuthStore = create<AuthStore>()(
             return result;
           }
 
-          const { token, user } = result;
+          const loginResponse = result as LoginResponse;
+          const { token, user } = loginResponse;
 
           set({
             user,
@@ -151,7 +153,10 @@ export const useAuthStore = create<AuthStore>()(
           try {
             await authApi.logout();
           } catch (logoutError) {
-            console.warn('Logout after profile fetch failure failed:', logoutError);
+            console.warn(
+              'Logout after profile fetch failure failed:',
+              logoutError
+            );
           }
           set({
             user: null,
