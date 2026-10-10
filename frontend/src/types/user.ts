@@ -42,6 +42,27 @@ export interface LoginResponse {
   user: User;
 }
 
+export interface Login2FAResponse {
+  requires2FA: true;
+  sessionToken: string;
+  maskedEmail: string;
+  expiresIn: number;
+}
+
+export type LoginResult = LoginResponse | Login2FAResponse;
+
+export interface VerifyOtpCredentials {
+  sessionToken: string;
+  code: string;
+  remember?: boolean;
+}
+
+export interface ResendOtpResponse {
+  message: string;
+  expiresIn: number;
+}
+
+
 export interface RegisterResponse {
   token: string;
   user: User;

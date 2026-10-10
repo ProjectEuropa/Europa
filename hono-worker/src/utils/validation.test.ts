@@ -8,6 +8,8 @@ import {
     passwordResetRequestSchema,
     passwordResetUpdateSchema,
     registerSchema,
+    resendOtpSchema,
+    verifyOtpSchema,
 } from './validation';
 
 describe('validation schemas', () => {
@@ -488,6 +490,44 @@ describe('validation schemas', () => {
             };
 
             const result = passwordResetUpdateSchema.safeParse(invalidData);
+            expect(result.success).toBe(false);
+        });
+    });
+
+    describe('verifyOtpSchema', () => {
+        it('正常なOTP検証データを検証する', () => {
+            const validData = {
+                sessionToken: 'test-session-uuid',
+                code: '123456',
+                remember: true,
+            };
+
+            const result = verifyOtpSchema.safeParse(validData);
+            expect(result.success).toBe(true);
+        });
+
+        it('コードが6桁でない場合はエラーを返す', () => {
+            expect(verifyOtpSchema.safeParse({ sessionToken: 'abc', code: '12345' }).success).toBe(false);
+            expect(verifyOtpSchema.safeParse({ sessionToken: 'abc', code: '1234567' }).success).toBe(false);
+        });
+
+        it('コードが数字以外を含む場合はエラーを返す', () => {
+            expect(verifyOtpSchema.safeParse({ sessionToken: 'abc', code: '12345a' }).success).toBe(false);
+        });
+
+        it('sessionTokenが空の場合はエラーを返す', () => {
+            expect(verifyOtpSchema.safeParse({ sessionToken: '', code: '123456' }).success).toBe(false);
+        });
+    });
+
+    describe('resendOtpSchema', () => {
+        it('正常な再送リクエストを検証する', () => {
+            const result = resendOtpSchema.safeParse({ sessionToken: 'valid-token' });
+            expect(result.success).toBe(true);
+        });
+
+        it('sessionTokenが空の場合はエラーを返す', () => {
+            const result = resendOtpSchema.safeParse({ sessionToken: '' });
             expect(result.success).toBe(false);
         });
     });

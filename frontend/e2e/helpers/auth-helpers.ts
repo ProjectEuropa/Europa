@@ -92,6 +92,15 @@ export async function loginUser(page: Page, user: TestUser) {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
     await loginPage.login(user.email, user.password);
+
+    // 2段階認証画面が表示された場合はテスト用固定コード 000000 を入力
+    try {
+      await loginPage.otpInput.waitFor({ state: 'visible', timeout: 3000 });
+      await loginPage.verifyOtp('000000');
+    } catch {
+      // OTP入力画面が表示されず直接リダイレクトされる場合は何もしない
+    }
+
     // Wait for redirect after successful login
     await page.waitForURL(/\/(mypage)?$/, { timeout: 10000 });
     return;
