@@ -13,7 +13,7 @@ bucket_name = "europa-files-stg" # STG環境用
 
 # STG環境（デフォルト）
 [env.staging]
-vars = { ENVIRONMENT = "staging", API_VERSION = "v2", LOG_LEVEL = "debug", FRONTEND_URL = "https://pre.project-europa.work" }
+vars = { ENVIRONMENT = "staging", API_VERSION = "v2", LOG_LEVEL = "debug", FRONTEND_URL = "https://pre.project-europa.work", RESEND_FROM_EMAIL = "noreply@project-europa.work" }
 
 [[env.staging.r2_buckets]]
 binding = "FILES_BUCKET"
@@ -22,7 +22,7 @@ bucket_name = "europa-files-stg"
 # 本番環境
 [env.production]
 name = "hono-worker-prod"
-vars = { ENVIRONMENT = "production", API_VERSION = "v2", LOG_LEVEL = "info", FRONTEND_URL = "https://project-europa.work" }
+vars = { ENVIRONMENT = "production", API_VERSION = "v2", LOG_LEVEL = "info", FRONTEND_URL = "https://project-europa.work", RESEND_FROM_EMAIL = "noreply@project-europa.work" }
 
 [[env.production.r2_buckets]]
 binding = "FILES_BUCKET"
