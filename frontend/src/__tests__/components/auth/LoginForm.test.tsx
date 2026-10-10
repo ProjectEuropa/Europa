@@ -15,12 +15,14 @@ vi.mock('next/navigation', () => ({
 }));
 
 const mockLogin = vi.fn();
+const mockVerifyOtp = vi.fn();
 const mockToast = vi.fn();
 
 describe('LoginForm', () => {
   beforeEach(() => {
     vi.mocked(useAuth).mockReturnValue({
       login: mockLogin,
+      verifyOtp: mockVerifyOtp,
       user: null,
       token: null,
       loading: false,
@@ -313,4 +315,72 @@ describe('LoginForm', () => {
       expect(passwordInput).toHaveAttribute('type', 'password');
     });
   });
+
+  describe('Two-Factor Authentication (OTP)', () => {
+    it('should transition to OTP step when login requires 2FA', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockResolvedValue({
+        requires2FA: true,
+        sessionToken: 'test-session-token',
+        maskedEmail: 't***t@example.com',
+        expiresIn: 600,
+      });
+
+      render(<LoginForm />);
+
+      const emailInput = screen.getByLabelText(/メールアドレス/);
+      const passwordInput = screen.getByLabelText('パスワード*');
+      const submitButton = screen.getByRole('button', { name: 'ログイン' });
+
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('2段階認証')).toBeInTheDocument();
+        expect(screen.getByLabelText(/認証コード/)).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: '認証してログイン' })
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should verify OTP and complete login', async () => {
+      const user = userEvent.setup();
+      const onSuccess = vi.fn();
+      mockLogin.mockResolvedValue({
+        requires2FA: true,
+        sessionToken: 'test-session-token',
+        maskedEmail: 't***t@example.com',
+        expiresIn: 600,
+      });
+      mockVerifyOtp.mockResolvedValue(undefined);
+
+      render(<LoginForm onSuccess={onSuccess} />);
+
+      await user.type(screen.getByLabelText(/メールアドレス/), 'test@example.com');
+      await user.type(screen.getByLabelText('パスワード*'), 'password123');
+      await user.click(screen.getByRole('button', { name: 'ログイン' }));
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/認証コード/)).toBeInTheDocument();
+      });
+
+      const otpInput = screen.getByLabelText(/認証コード/);
+      await user.type(otpInput, '123456');
+
+      const verifyButton = screen.getByRole('button', { name: '認証してログイン' });
+      await user.click(verifyButton);
+
+      await waitFor(() => {
+        expect(mockVerifyOtp).toHaveBeenCalledWith({
+          sessionToken: 'test-session-token',
+          code: '123456',
+          remember: false,
+        });
+        expect(onSuccess).toHaveBeenCalled();
+      });
+    });
+  });
 });
+

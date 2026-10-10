@@ -21,14 +21,15 @@ graph LR
 
 ### Authentication Flow
 
-- **方式**: JWT + HttpOnly Cookie（XSS対策、トークン漏洩防止）
+- **方式**: 2段階認証（パスワード認証 + メールOTPコード） + JWT HttpOnly Cookie
+- **2FA OTP**: 有効期限10分、6桁乱数（SHA-256ハッシュ保存）、最大試行回数5回、再送インターバル60秒、Resendによるメール配信
 - **Production/Staging**: `SameSite=None; Secure`
 - **Development**: `SameSite=Lax`（localhost cross-port対応）
-- **有効期限**: 7日間
+- **有効期限**: 通常7日間、Remember Me時30日間
 
 ### Database Tables
 
-`users`, `events`, `files`, `tags`, `file_tags`, `password_resets`
+`users`, `events`, `files`, `tags`, `file_tags`, `password_resets`, `login_otps`
 
 詳細は [hono-worker/src/db/schema.sql](hono-worker/src/db/schema.sql) を参照
 

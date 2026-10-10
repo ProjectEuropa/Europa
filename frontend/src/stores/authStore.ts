@@ -1,7 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { authApi } from '@/lib/api/auth';
-import type { LoginCredentials, RegisterCredentials, User } from '@/types/user';
+import type {
+  LoginCredentials,
+  LoginResult,
+  RegisterCredentials,
+  User,
+  VerifyOtpCredentials,
+} from '@/types/user';
 
 interface AuthState {
   user: User | null;
@@ -12,7 +18,8 @@ interface AuthState {
 }
 
 interface AuthActions {
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<LoginResult>;
+  verifyOtp: (credentials: VerifyOtpCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: (redirectCallback?: () => void) => Promise<void>;
   fetchUser: () => Promise<void>;
@@ -35,20 +42,42 @@ export const useAuthStore = create<AuthStore>()(
       hasHydrated: false,
 
       // Actions
-      login: async (credentials: LoginCredentials) => {
+      login: async (credentials: LoginCredentials): Promise<LoginResult> => {
         set({ loading: true });
         try {
-          const data = await authApi.login(credentials);
-          const { token, user } = data;
+          const result = await authApi.login(credentials);
 
-          // Tokenベースの後方互換性のためTokenがある場合は保存
-          // if (typeof window !== 'undefined' && token) {
-          //   localStorage.setItem('token', token);
-          // }
+          // 2FAが必要な場合はまだログイン完了状態にしない
+          if ('requires2FA' in result && result.requires2FA) {
+            set({ loading: false });
+            return result;
+          }
+
+          const { token, user } = result;
 
           set({
             user,
-            token: token || null, // Cookie認証の場合tokenはnull
+            token: token || null,
+            isAuthenticated: true,
+            loading: false,
+          });
+
+          return result;
+        } catch (error) {
+          set({ loading: false });
+          throw error;
+        }
+      },
+
+      verifyOtp: async (credentials: VerifyOtpCredentials): Promise<void> => {
+        set({ loading: true });
+        try {
+          const data = await authApi.verifyOtp(credentials);
+          const { token, user } = data;
+
+          set({
+            user,
+            token: token || null,
             isAuthenticated: true,
             loading: false,
           });

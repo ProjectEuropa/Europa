@@ -108,3 +108,21 @@ export const userUpdateSchema = z.object({
 });
 
 export type UserUpdateInput = z.infer<typeof userUpdateSchema>;
+
+// 2段階認証（メールOTP）用バリデーションスキーマ
+export const verifyOtpSchema = z.object({
+    sessionToken: z.string().min(1, 'Session token is required'),
+    code: z
+        .string()
+        .min(6, 'Code must be 6 digits')
+        .max(6, 'Code must be 6 digits')
+        .regex(/^\d{6}$/, 'Code must be 6 numeric digits'),
+    remember: z.boolean().optional().default(false),
+});
+
+export const resendOtpSchema = z.object({
+    sessionToken: z.string().min(1, 'Session token is required'),
+});
+
+export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
+export type ResendOtpInput = z.infer<typeof resendOtpSchema>;
