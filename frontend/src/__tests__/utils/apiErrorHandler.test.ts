@@ -40,6 +40,19 @@ describe('processApiError', () => {
     expect(result.fieldErrors).toEqual({});
   });
 
+  it('should preserve specific 401 error message like OTP code failure', () => {
+    const error = new ApiErrorClass(401, {
+      message: '認証コードが正しくありません。残り試行可能回数: 4回',
+    });
+
+    const result = processApiError(error);
+
+    expect(result.isAuthError).toBe(true);
+    expect(result.message).toBe(
+      '認証コードが正しくありません。残り試行可能回数: 4回'
+    );
+  });
+
   it('should handle server errors (500)', () => {
     const error = new ApiErrorClass(500, {
       message: 'Internal Server Error',

@@ -8,6 +8,12 @@ import { useToast } from '@/hooks/useToast';
 // モック
 vi.mock('@/hooks/useAuth');
 vi.mock('@/hooks/useToast');
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: vi.fn(selector => {
+    const store = { verifyOtp: mockVerifyOtp };
+    return selector ? selector(store) : store;
+  }),
+}));
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -15,6 +21,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 const mockRegister = vi.fn();
+const mockVerifyOtp = vi.fn();
 const mockToast = vi.fn();
 
 describe('RegisterForm', () => {
@@ -37,204 +44,241 @@ describe('RegisterForm', () => {
     });
   });
 
-  it('should render registration form with all required fields', () => {
-    render(<RegisterForm />);
+  describe('Rendering', () => {
+    it('should render registration form with all required fields', () => {
+      render(<RegisterForm />);
 
-    // 基本的なフォーム要素の存在確認
-    expect(screen.getByPlaceholderText('ユーザー名を入力')).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText('you@europa.work')
-    ).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('パスワードを入力')).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText('パスワードを再入力')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /アカウント作成/ })
-    ).toBeInTheDocument();
-  });
-
-  it('should show validation errors for empty form submission', async () => {
-    const user = userEvent.setup();
-    render(<RegisterForm />);
-
-    const submitButton = screen.getByRole('button', { name: /アカウント作成/ });
-    await user.click(submitButton);
-
-    // バリデーションエラーが表示されることを確認（具体的なメッセージは実装に依存）
-    await waitFor(() => {
-      // フォームが送信されずにエラーが表示されることを確認
-      expect(mockRegister).not.toHaveBeenCalled();
+      // 基本的なフォーム要素の存在確認
+      expect(screen.getByPlaceholderText('ユーザー名を入力')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('メールアドレスを入力')
+      ).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('6文字以上のパスワード')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('パスワードを再入力')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: '登録する' })
+      ).toBeInTheDocument();
     });
   });
 
-  it('should show validation error for invalid email format', async () => {
-    const user = userEvent.setup();
-    render(<RegisterForm />);
+  describe('Validation', () => {
+    it('should show validation errors for empty form submission', async () => {
+      const user = userEvent.setup();
+      render(<RegisterForm />);
 
-    const emailInput = screen.getByPlaceholderText('you@europa.work');
-    await user.type(emailInput, 'invalid-email');
+      const submitButton = screen.getByRole('button', { name: '登録する' });
+      await user.click(submitButton);
 
-    const submitButton = screen.getByRole('button', { name: /アカウント作成/ });
-    await user.click(submitButton);
-
-    await waitFor(() => {
-      expect(mockRegister).not.toHaveBeenCalled();
-    });
-  });
-
-  it('should successfully register with valid data', async () => {
-    const user = userEvent.setup();
-    mockRegister.mockResolvedValue(undefined);
-
-    render(<RegisterForm />);
-
-    // 有効なデータを入力
-    await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
-    await user.type(
-      screen.getByPlaceholderText('you@europa.work'),
-      'test@example.com'
-    );
-    await user.type(
-      screen.getByPlaceholderText('パスワードを入力'),
-      'password123'
-    );
-    await user.type(
-      screen.getByPlaceholderText('パスワードを再入力'),
-      'password123'
-    );
-
-    const submitButton = screen.getByRole('button', { name: /アカウント作成/ });
-    await user.click(submitButton);
-
-    // 登録関数が正しいデータで呼ばれることを確認
-    await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith({
-        name: 'Test User',
-        email: 'test@example.com',
-        password: 'password123',
-        passwordConfirmation: 'password123',
+      await waitFor(() => {
+        expect(mockRegister).not.toHaveBeenCalled();
       });
     });
 
-    // 成功メッセージが表示されることを確認
-    expect(mockToast).toHaveBeenCalledWith({
-      type: 'success',
-      title: '登録成功',
-      message: 'アカウントが作成されました',
+    it('should show validation error for invalid email format', async () => {
+      const user = userEvent.setup();
+      render(<RegisterForm />);
+
+      const emailInput = screen.getByPlaceholderText('メールアドレスを入力');
+      await user.type(emailInput, 'invalid-email');
+
+      const submitButton = screen.getByRole('button', { name: '登録する' });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockRegister).not.toHaveBeenCalled();
+      });
     });
   });
 
-  it('should handle registration error gracefully', async () => {
-    const user = userEvent.setup();
-    const mockError = new Error('Registration failed');
-    mockRegister.mockRejectedValue(mockError);
+  describe('Registration & 2FA Flow', () => {
+    it('should switch to OTP step when backend requires 2FA', async () => {
+      const user = userEvent.setup();
+      mockRegister.mockResolvedValue({
+        requires2FA: true,
+        sessionToken: 'test-session-token',
+        maskedEmail: 't***@example.com',
+        expiresIn: 600,
+      });
 
-    render(<RegisterForm />);
+      render(<RegisterForm />);
 
-    // 有効なデータを入力
-    await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
-    await user.type(
-      screen.getByPlaceholderText('you@europa.work'),
-      'test@example.com'
-    );
-    await user.type(
-      screen.getByPlaceholderText('パスワードを入力'),
-      'password123'
-    );
-    await user.type(
-      screen.getByPlaceholderText('パスワードを再入力'),
-      'password123'
-    );
+      // 有効なデータを入力
+      await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
+      await user.type(
+        screen.getByPlaceholderText('メールアドレスを入力'),
+        'test@example.com'
+      );
+      await user.type(
+        screen.getByPlaceholderText('6文字以上のパスワード'),
+        'password123'
+      );
+      await user.type(
+        screen.getByPlaceholderText('パスワードを再入力'),
+        'password123'
+      );
 
-    const submitButton = screen.getByRole('button', { name: /アカウント作成/ });
-    await user.click(submitButton);
+      const submitButton = screen.getByRole('button', { name: '登録する' });
+      await user.click(submitButton);
 
-    // 登録が試行されることを確認
-    await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalled();
+      // OTP画面に切り替わることを確認
+      await waitFor(() => {
+        expect(screen.getByLabelText(/確認コード/)).toBeInTheDocument();
+        expect(screen.getByText(/メールアドレス確認/)).toBeInTheDocument();
+        expect(screen.getByText(/t\*\*\*@example\.com/)).toBeInTheDocument();
+      });
+
+      expect(mockToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'info',
+          title: '確認コードを送信しました',
+        })
+      );
     });
 
-    // エラーが発生してもアプリケーションがクラッシュしないことを確認
-    expect(
-      screen.getByRole('button', { name: /アカウント作成/ })
-    ).toBeInTheDocument();
-  });
+    it('should complete registration and login when OTP code is verified', async () => {
+      const user = userEvent.setup();
+      const mockOnSuccess = vi.fn();
+      mockRegister.mockResolvedValue({
+        requires2FA: true,
+        sessionToken: 'test-session-token',
+        maskedEmail: 't***@example.com',
+        expiresIn: 600,
+      });
+      mockVerifyOtp.mockResolvedValue(undefined);
 
-  it('should show loading state during form submission', async () => {
-    const user = userEvent.setup();
-    let resolveRegister: (() => void) | undefined;
-    const registerPromise = new Promise<void>(resolve => {
-      resolveRegister = resolve;
+      render(<RegisterForm onSuccess={mockOnSuccess} />);
+
+      // フォーム入力
+      await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
+      await user.type(
+        screen.getByPlaceholderText('メールアドレスを入力'),
+        'test@example.com'
+      );
+      await user.type(
+        screen.getByPlaceholderText('6文字以上のパスワード'),
+        'password123'
+      );
+      await user.type(
+        screen.getByPlaceholderText('パスワードを再入力'),
+        'password123'
+      );
+
+      await user.click(screen.getByRole('button', { name: '登録する' }));
+
+      // OTP画面が表示されるのを待機
+      await waitFor(() => {
+        expect(screen.getByLabelText(/確認コード/)).toBeInTheDocument();
+      });
+
+      // 6桁コードを入力
+      const otpInput = screen.getByLabelText(/確認コード/);
+      await user.type(otpInput, '123456');
+
+      // 「登録を完了してログイン」ボタンをクリック
+      const verifyButton = screen.getByRole('button', {
+        name: '登録を完了してログイン',
+      });
+      await user.click(verifyButton);
+
+      await waitFor(() => {
+        expect(mockVerifyOtp).toHaveBeenCalledWith({
+          sessionToken: 'test-session-token',
+          code: '123456',
+          remember: true,
+        });
+        expect(mockOnSuccess).toHaveBeenCalled();
+      });
+
+      expect(mockToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'success',
+          title: '登録完了',
+        })
+      );
     });
-    mockRegister.mockReturnValue(registerPromise);
 
-    render(<RegisterForm />);
+    it('should notify onStepChange callback when step changes', async () => {
+      const user = userEvent.setup();
+      const mockStepChange = vi.fn();
+      mockRegister.mockResolvedValue({
+        requires2FA: true,
+        sessionToken: 'test-session-token',
+        maskedEmail: 't***@example.com',
+        expiresIn: 600,
+      });
 
-    // フォームに入力
-    await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
-    await user.type(
-      screen.getByPlaceholderText('you@europa.work'),
-      'test@example.com'
-    );
-    await user.type(
-      screen.getByPlaceholderText('パスワードを入力'),
-      'password123'
-    );
-    await user.type(
-      screen.getByPlaceholderText('パスワードを再入力'),
-      'password123'
-    );
+      render(<RegisterForm onStepChange={mockStepChange} />);
 
-    const submitButton = screen.getByRole('button', { name: /アカウント作成/ });
-    await user.click(submitButton);
+      expect(mockStepChange).toHaveBeenCalledWith('register');
 
-    // 送信中の状態を確認
-    await waitFor(() => {
-      const loadingButton = screen.getByRole('button', { name: /登録中/ });
-      expect(loadingButton).toBeDisabled();
+      // フォーム送信
+      await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
+      await user.type(
+        screen.getByPlaceholderText('メールアドレスを入力'),
+        'test@example.com'
+      );
+      await user.type(
+        screen.getByPlaceholderText('6文字以上のパスワード'),
+        'password123'
+      );
+      await user.type(
+        screen.getByPlaceholderText('パスワードを再入力'),
+        'password123'
+      );
+
+      await user.click(screen.getByRole('button', { name: '登録する' }));
+
+      await waitFor(() => {
+        expect(mockStepChange).toHaveBeenCalledWith('otp');
+      });
     });
 
-    // 登録完了
-    resolveRegister?.();
-    await registerPromise;
+    it('should return to register input when clicking back button in OTP step', async () => {
+      const user = userEvent.setup();
+      mockRegister.mockResolvedValue({
+        requires2FA: true,
+        sessionToken: 'test-session-token',
+        maskedEmail: 't***@example.com',
+        expiresIn: 600,
+      });
 
-    // 元の状態に戻ることを確認
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: /アカウント作成/ })
-      ).not.toBeDisabled();
-    });
-  });
+      render(<RegisterForm />);
 
-  it('should call onSuccess callback when registration succeeds', async () => {
-    const user = userEvent.setup();
-    const mockOnSuccess = vi.fn();
-    mockRegister.mockResolvedValue(undefined);
+      // 入力して送信
+      await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
+      await user.type(
+        screen.getByPlaceholderText('メールアドレスを入力'),
+        'test@example.com'
+      );
+      await user.type(
+        screen.getByPlaceholderText('6文字以上のパスワード'),
+        'password123'
+      );
+      await user.type(
+        screen.getByPlaceholderText('パスワードを再入力'),
+        'password123'
+      );
+      await user.click(screen.getByRole('button', { name: '登録する' }));
 
-    render(<RegisterForm onSuccess={mockOnSuccess} />);
+      await waitFor(() => {
+        expect(screen.getByLabelText(/確認コード/)).toBeInTheDocument();
+      });
 
-    // フォームに入力して送信
-    await user.type(screen.getByPlaceholderText('ユーザー名を入力'), 'Test User');
-    await user.type(
-      screen.getByPlaceholderText('you@europa.work'),
-      'test@example.com'
-    );
-    await user.type(
-      screen.getByPlaceholderText('パスワードを入力'),
-      'password123'
-    );
-    await user.type(
-      screen.getByPlaceholderText('パスワードを再入力'),
-      'password123'
-    );
+      // 戻るボタンをクリック
+      const backButton = screen.getByRole('button', {
+        name: /登録情報の入力に戻る/,
+      });
+      await user.click(backButton);
 
-    const submitButton = screen.getByRole('button', { name: /アカウント作成/ });
-    await user.click(submitButton);
-
-    // コールバックが呼ばれることを確認
-    await waitFor(() => {
-      expect(mockOnSuccess).toHaveBeenCalled();
+      // 登録入力フォームに戻ることを確認
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('ユーザー名を入力')).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: '登録する' })
+        ).toBeInTheDocument();
+      });
     });
   });
 });

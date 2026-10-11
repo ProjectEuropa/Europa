@@ -19,6 +19,7 @@ const ERROR_TRANSLATIONS = {
   // 一般的なエラーメッセージ
   'The given data was invalid.': '入力されたデータが無効です。',
   'Validation failed': 'バリデーションに失敗しました。',
+  'Invalid credentials': 'メールアドレスまたはパスワードが正しくありません。',
   Unauthorized: 'メールアドレスまたはパスワードが正しくありません。',
   Forbidden: 'アクセスが拒否されました。',
   'Not Found': 'リソースが見つかりません。',
@@ -186,6 +187,24 @@ function handleApiError(error: ApiErrorClass): ProcessedError {
       message: translateErrorMessage(message),
       isValidationError: true,
     };
+  }
+
+  // 401 Unauthorized または 400 Bad Request でバックエンドから具体的なメッセージが返されている場合
+  // （例: OTP認証コードエラー、セッション有効期限切れなど）
+  if (status === 401 || status === 400) {
+    const customMessage = error.data?.message || error.message;
+    if (
+      customMessage &&
+      customMessage !== 'Unauthorized' &&
+      !customMessage.startsWith('HTTP ') &&
+      !customMessage.startsWith('API Error:')
+    ) {
+      return {
+        ...defaultError,
+        message: translateErrorMessage(customMessage),
+        isAuthError: true,
+      };
+    }
   }
 
   const statusError = handleStatusError(status);

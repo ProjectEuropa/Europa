@@ -27,7 +27,7 @@ export class RegisterPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.getByRole('button', { name: /アカウント作成/ });
+    return this.page.getByRole('button', { name: /アカウント作成|登録する/ });
   }
 
   override get loginLink() {

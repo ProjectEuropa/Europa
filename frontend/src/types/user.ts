@@ -68,6 +68,9 @@ export interface RegisterResponse {
   user: User;
 }
 
+export type Register2FAResponse = Login2FAResponse;
+export type RegisterResult = RegisterResponse | Register2FAResponse;
+
 export interface PasswordResetRequest {
   email: string;
 }
