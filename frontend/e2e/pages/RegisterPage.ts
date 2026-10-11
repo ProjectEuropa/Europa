@@ -27,7 +27,7 @@ export class RegisterPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.getByRole('button', { name: /アカウント作成/ });
+    return this.page.getByRole('button', { name: /アカウント作成|登録する/ });
   }
 
   override get loginLink() {
@@ -112,6 +112,24 @@ export class RegisterPage extends BasePage {
   }
 
   async expectRegisterSuccess() {
+    // メール確認（OTP）画面が表示された場合はテスト用固定コード 000000 を入力して認証を完了
+    try {
+      const otpInput = this.page.getByRole('textbox', { name: /確認コード/ });
+      const otpVisible = await otpInput
+        .waitFor({ state: 'visible', timeout: 3000 })
+        .then(() => true)
+        .catch(() => false);
+
+      if (otpVisible) {
+        await otpInput.fill('000000');
+        await this.page
+          .getByRole('button', { name: '登録を完了してログイン' })
+          .click();
+      }
+    } catch {
+      // 直接リダイレクトされる場合（モック等）は何もしない
+    }
+
     await expect(this.page).toHaveURL('/');
     await this.expectAuthenticated();
   }

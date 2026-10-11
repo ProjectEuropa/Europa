@@ -6,6 +6,8 @@ import type {
   LoginResponse,
   LoginResult,
   RegisterCredentials,
+  RegisterResponse,
+  RegisterResult,
   User,
   VerifyOtpCredentials,
 } from '@/types/user';
@@ -21,7 +23,7 @@ interface AuthState {
 interface AuthActions {
   login: (credentials: LoginCredentials) => Promise<LoginResult>;
   verifyOtp?: (credentials: VerifyOtpCredentials) => Promise<void>;
-  register: (credentials: RegisterCredentials) => Promise<void>;
+  register: (credentials: RegisterCredentials) => Promise<RegisterResult>;
   logout: (redirectCallback?: () => void) => Promise<void>;
   fetchUser: () => Promise<void>;
   setUser: (user: User | null) => void;
@@ -89,23 +91,28 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      register: async (credentials: RegisterCredentials) => {
+      register: async (credentials: RegisterCredentials): Promise<RegisterResult> => {
         set({ loading: true });
         try {
-          const data = await authApi.register(credentials);
-          const { token, user } = data;
+          const result = await authApi.register(credentials);
 
-          // Tokenベースの後方互換性のためTokenがある場合は保存
-          // if (typeof window !== 'undefined' && token) {
-          //   localStorage.setItem('token', token);
-          // }
+          // 2FAが必要な場合はまだログイン完了状態にしない
+          if ('requires2FA' in result && result.requires2FA) {
+            set({ loading: false });
+            return result;
+          }
+
+          const registerResponse = result as RegisterResponse;
+          const { token, user } = registerResponse;
 
           set({
             user,
-            token: token || null, // Cookie認証の場合tokenはnull
+            token: token || null,
             isAuthenticated: true,
             loading: false,
           });
+
+          return result;
         } catch (error) {
           set({ loading: false });
           throw error;

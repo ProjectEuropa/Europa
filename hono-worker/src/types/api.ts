@@ -93,12 +93,15 @@ export interface LoginRequest {
     remember?: boolean;
 }
 
-export interface Login2FAResponse {
+export interface Auth2FAResponse {
     requires2FA: true;
     sessionToken: string;
     maskedEmail: string;
     expiresIn: number;
 }
+
+export type Login2FAResponse = Auth2FAResponse;
+export type Register2FAResponse = Auth2FAResponse;
 
 export interface VerifyOtpRequest {
     sessionToken: string;

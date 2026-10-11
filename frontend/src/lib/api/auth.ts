@@ -14,8 +14,10 @@ import type {
   PasswordResetResult,
   PasswordResetTokenCheck,
   PasswordResetTokenResponse,
+  Register2FAResponse,
   RegisterCredentials,
   RegisterResponse,
+  RegisterResult,
   ResendOtpResponse,
   User,
   UserUpdateData,
@@ -132,7 +134,7 @@ export const authApi = {
     };
   },
 
-  async register(credentials: RegisterCredentials): Promise<RegisterResponse> {
+  async register(credentials: RegisterCredentials): Promise<RegisterResult> {
     // CSRF Cookieを事前に取得
     try {
       await apiClient.getCsrfCookie();
@@ -140,7 +142,7 @@ export const authApi = {
       throw new Error(`CSRF cookie取得に失敗しました。ネットワーク接続を確認してください: ${error}`);
     }
 
-    const response = await apiClient.post<RegisterResponse>(
+    const response = await apiClient.post<any>(
       '/api/v2/auth/register',
       {
         name: credentials.name,
@@ -150,7 +152,18 @@ export const authApi = {
       }
     );
 
-    // レスポンス構造の正規化
+    // 2FA（ワンタイムパスコード）要求レスポンスの判定
+    const responseData = response?.data || response;
+    if (responseData && responseData.requires2FA) {
+      return {
+        requires2FA: true,
+        sessionToken: responseData.sessionToken,
+        maskedEmail: responseData.maskedEmail,
+        expiresIn: responseData.expiresIn || 600,
+      } as Register2FAResponse;
+    }
+
+    // レスポンス構造の正規化（従来の直接登録形式）
     const normalizedResponse =
       normalizeAuthResponse<RegisterResponse>(response);
 
