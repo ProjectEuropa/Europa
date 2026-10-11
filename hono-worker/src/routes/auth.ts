@@ -67,25 +67,72 @@ auth.post('/register', async c => {
 
     const user = users[0] as User;
 
-    // JWTトークンを生成
-    const token = await generateToken(user.id, user.email, c.env.JWT_SECRET);
+    // アカウント作成成功: メール認証用のワンタイムパスコードを発行
+    const otpCode = generateOtpCode();
+    const codeHash = await hashOtpCode(otpCode);
+    const sessionToken = generateSessionToken();
 
-    // Cookieを設定
-    // Cookieを設定（Cross-Origin対応）
-    const cookieHeader = createCookieHeader(
-        token,
-        7 * 24 * 60 * 60,
-        c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
-        c.env.ENVIRONMENT
+    const expiresAt = new Date(Date.now() + OTP_CONFIG.EXPIRES_IN_SECONDS * 1000);
+    const resendAvailableAt = new Date(Date.now() + OTP_CONFIG.RESEND_COOLDOWN_SECONDS * 1000);
+
+    // login_otps に登録
+    await sql`
+        INSERT INTO login_otps (
+            user_id,
+            code_hash,
+            session_token,
+            expires_at,
+            resend_available_at
+        )
+        VALUES (
+            ${user.id},
+            ${codeHash},
+            ${sessionToken},
+            ${expiresAt.toISOString()},
+            ${resendAvailableAt.toISOString()}
+        )
+    `;
+
+    // メール送信（Resend）
+    if (c.env.RESEND_API_KEY) {
+        const { sendEmail, generateOtpEmail } = await import('../utils/email');
+        const { html, text } = generateOtpEmail(otpCode, user.email, Math.round(OTP_CONFIG.EXPIRES_IN_SECONDS / 60));
+        const fromEmail = c.env.RESEND_FROM_EMAIL || 'noreply@project-europa.work';
+
+        const emailResult = await sendEmail(
+            {
+                to: user.email,
+                subject: '【Europa】アカウント登録確認コード',
+                html,
+                text,
+            },
+            c.env.RESEND_API_KEY,
+            fromEmail
+        );
+
+        if (!emailResult.success) {
+            console.error('[Auth] Failed to send registration OTP email:', emailResult.error);
+        }
+    }
+
+    // 開発環境の場合はコンソールにもコードを出力
+    if (c.env.ENVIRONMENT === 'development' || !c.env.RESEND_API_KEY) {
+        const { logOtpToConsole } = await import('../utils/email');
+        logOtpToConsole(user.email, otpCode);
+    }
+
+    return c.json(
+        {
+            data: {
+                requires2FA: true,
+                sessionToken,
+                maskedEmail: maskEmail(user.email),
+                expiresIn: OTP_CONFIG.EXPIRES_IN_SECONDS,
+            },
+            message: 'アカウントが作成されました。認証コードを入力してください。',
+        },
+        201
     );
-
-    const response: SuccessResponse<{ user: User }> = {
-        data: { user },
-    };
-
-    return c.json(response, 201, {
-        'Set-Cookie': cookieHeader,
-    });
 });
 
 /**

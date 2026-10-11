@@ -27,6 +27,11 @@ test.describe('Authentication Integration Tests', () => {
       await loginPage.goto();
       await loginPage.login(testUsers.valid.email, testUsers.valid.password!);
 
+      if (useRealApi) {
+        await loginPage.expectOtpStepVisible();
+        await loginPage.verifyOtp('000000');
+      }
+
       // 成功後の状態を確認
       await loginPage.expectLoginSuccess();
     });
@@ -77,6 +82,13 @@ test.describe('Authentication Integration Tests', () => {
         password: newUser.password!,
         passwordConfirmation: newUser.password!,
       });
+
+      if (useRealApi) {
+        const otpInput = page.getByRole('textbox', { name: /確認コード/ });
+        await expect(otpInput).toBeVisible({ timeout: 10000 });
+        await otpInput.fill('000000');
+        await page.getByRole('button', { name: '登録を完了してログイン' }).click();
+      }
 
       // 成功後の状態を確認
       await registerPage.expectRegisterSuccess();
@@ -141,6 +153,11 @@ test.describe('Authentication Integration Tests', () => {
       await mockLoginSuccess(page, testUsers.valid);
       await loginPage.goto();
       await loginPage.login(testUsers.valid.email, testUsers.valid.password!);
+
+      if (useRealApi) {
+        await loginPage.expectOtpStepVisible();
+        await loginPage.verifyOtp('000000');
+      }
 
       // ログイン成功を確認
       await loginPage.expectLoginSuccess();
