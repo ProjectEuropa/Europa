@@ -58,6 +58,7 @@ export function LoginForm({
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [otpCode, setOtpCode] = useState<string>('');
   const [otpError, setOtpError] = useState<string>('');
+  const [trustDevice, setTrustDevice] = useState<boolean>(true);
   const [resendCooldown, setResendCooldown] = useState<number>(0);
   const [isResending, setIsResending] = useState<boolean>(false);
   const [expiresInSeconds, setExpiresInSeconds] = useState<number>(600);
@@ -184,12 +185,14 @@ export function LoginForm({
           sessionToken,
           code: cleanCode,
           remember: rememberMe,
+          trustDevice,
         });
       } else {
         await authApi.verifyOtp({
           sessionToken,
           code: cleanCode,
           remember: rememberMe,
+          trustDevice,
         });
       }
 
@@ -324,6 +327,23 @@ export function LoginForm({
               {otpError}
             </p>
           )}
+        </div>
+
+        {/* 信頼済み端末記憶チェックボックス */}
+        <div className="flex items-center gap-2 px-1 text-left">
+          <input
+            id="trust-device"
+            type="checkbox"
+            checked={trustDevice}
+            onChange={e => setTrustDevice(e.target.checked)}
+            className="w-4 h-4 rounded border-[#1E3A5F] bg-[#111A2E] text-[#00c8ff] focus:ring-[#00c8ff] focus:ring-offset-0 cursor-pointer accent-[#00c8ff]"
+          />
+          <label
+            htmlFor="trust-device"
+            className="text-xs text-[#b0c4d8] cursor-pointer select-none leading-normal"
+          >
+            この端末・ブラウザを30日間記憶する（次回から2FAをスキップ）
+          </label>
         </div>
 
         {/* 認証ボタン */}

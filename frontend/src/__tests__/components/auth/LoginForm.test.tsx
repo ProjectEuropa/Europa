@@ -391,6 +391,7 @@ describe('LoginForm', () => {
           sessionToken: 'test-session-token',
           code: '123456',
           remember: false,
+          trustDevice: true,
         });
         expect(onSuccess).toHaveBeenCalled();
       });
