@@ -79,6 +79,7 @@ CREATE TABLE trusted_devices (
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   device_token_hash VARCHAR(255) NOT NULL,
   expires_at TIMESTAMP NOT NULL,
+  last_used_at TIMESTAMP DEFAULT NOW(),
   created_at TIMESTAMP DEFAULT NOW()
 );
 

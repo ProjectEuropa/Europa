@@ -189,50 +189,54 @@ auth.post('/login', async c => {
     const deviceToken = getTrustedDeviceToken(rawCookie);
 
     if (deviceToken) {
-        const deviceTokenHash = await hashDeviceToken(deviceToken);
-        const trustedDevices = await sql`
-            SELECT id
-            FROM trusted_devices
-            WHERE user_id = ${user.id}
-              AND device_token_hash = ${deviceTokenHash}
-              AND expires_at > NOW()
-        `;
-
-        if (trustedDevices.length > 0) {
-            // 信頼済み端末が確認されたため、2FA（OTP）をスキップして直接ログイン
-            await sql`
-                UPDATE trusted_devices
-                SET last_used_at = NOW()
-                WHERE id = ${trustedDevices[0].id}
+        try {
+            const deviceTokenHash = await hashDeviceToken(deviceToken);
+            const trustedDevices = await sql`
+                SELECT id
+                FROM trusted_devices
+                WHERE user_id = ${user.id}
+                  AND device_token_hash = ${deviceTokenHash}
+                  AND expires_at > NOW()
             `;
 
-            // Remember Me: 30日間、通常: 7日間
-            const expiresIn = remember ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60;
-            const token = await generateToken(user.id, user.email, c.env.JWT_SECRET, expiresIn);
+            if (trustedDevices.length > 0) {
+                // 信頼済み端末が確認されたため、2FA（OTP）をスキップして直接ログイン
+                await sql`
+                    UPDATE trusted_devices
+                    SET last_used_at = NOW()
+                    WHERE id = ${trustedDevices[0].id}
+                `.catch(e => console.error('[Auth] Failed to update trusted device last_used_at:', e));
 
-            const cookieHeader = createCookieHeader(
-                token,
-                expiresIn,
-                c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
-                c.env.ENVIRONMENT
-            );
+                // Remember Me: 30日間、通常: 7日間
+                const expiresIn = remember ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60;
+                const token = await generateToken(user.id, user.email, c.env.JWT_SECRET, expiresIn);
 
-            const userObj: User = {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                created_at: user.created_at,
-                updated_at: user.updated_at,
-            };
+                const cookieHeader = createCookieHeader(
+                    token,
+                    expiresIn,
+                    c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
+                    c.env.ENVIRONMENT
+                );
 
-            const response: SuccessResponse<{ user: User }> = {
-                data: { user: userObj },
-                message: 'ログインに成功しました',
-            };
+                const userObj: User = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at,
+                };
 
-            return c.json(response, 200, {
-                'Set-Cookie': cookieHeader,
-            });
+                const response: SuccessResponse<{ user: User }> = {
+                    data: { user: userObj },
+                    message: 'ログインに成功しました',
+                };
+
+                return c.json(response, 200, {
+                    'Set-Cookie': cookieHeader,
+                });
+            }
+        } catch (deviceError) {
+            console.error('[Auth] Error checking trusted device, falling back to OTP:', deviceError);
         }
     }
 
@@ -409,32 +413,36 @@ auth.post('/verify-otp', async c => {
 
     // 信頼済み端末（Trusted Device）の記憶が有効な場合、端末Cookieを発行しDBに登録
     if (trustDevice !== false) {
-        const deviceToken = generateDeviceToken();
-        const deviceTokenHash = await hashDeviceToken(deviceToken);
-        const deviceExpiresAt = new Date(Date.now() + TRUSTED_DEVICE_CONFIG.EXPIRES_IN_SECONDS * 1000);
+        try {
+            const deviceToken = generateDeviceToken();
+            const deviceTokenHash = await hashDeviceToken(deviceToken);
+            const deviceExpiresAt = new Date(Date.now() + TRUSTED_DEVICE_CONFIG.EXPIRES_IN_SECONDS * 1000);
 
-        await sql`
-            INSERT INTO trusted_devices (
-                user_id,
-                device_token_hash,
-                expires_at,
-                last_used_at
-            )
-            VALUES (
-                ${record.user_id},
-                ${deviceTokenHash},
-                ${deviceExpiresAt.toISOString()},
-                NOW()
-            )
-        `;
+            await sql`
+                INSERT INTO trusted_devices (
+                    user_id,
+                    device_token_hash,
+                    expires_at,
+                    last_used_at
+                )
+                VALUES (
+                    ${record.user_id},
+                    ${deviceTokenHash},
+                    ${deviceExpiresAt.toISOString()},
+                    NOW()
+                )
+            `;
 
-        const deviceCookieHeader = createTrustedDeviceCookieHeader(
-            deviceToken,
-            TRUSTED_DEVICE_CONFIG.EXPIRES_IN_SECONDS,
-            c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
-            c.env.ENVIRONMENT
-        );
-        c.header('Set-Cookie', deviceCookieHeader, { append: true });
+            const deviceCookieHeader = createTrustedDeviceCookieHeader(
+                deviceToken,
+                TRUSTED_DEVICE_CONFIG.EXPIRES_IN_SECONDS,
+                c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
+                c.env.ENVIRONMENT
+            );
+            c.header('Set-Cookie', deviceCookieHeader, { append: true });
+        } catch (deviceError) {
+            console.error('[Auth] Failed to register trusted device, continuing login:', deviceError);
+        }
     }
 
     const userObj: User = {

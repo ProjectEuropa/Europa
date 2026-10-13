@@ -146,6 +146,7 @@ export async function logoutUser(page: Page) {
     localStorage.clear();
     sessionStorage.clear();
   });
+  await page.context().clearCookies();
 }
 
 /**
