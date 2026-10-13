@@ -55,6 +55,7 @@ export interface VerifyOtpCredentials {
   sessionToken: string;
   code: string;
   remember?: boolean;
+  trustDevice?: boolean;
 }
 
 export interface ResendOtpResponse {

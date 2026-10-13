@@ -107,6 +107,7 @@ export interface VerifyOtpRequest {
     sessionToken: string;
     code: string;
     remember?: boolean;
+    trustDevice?: boolean;
 }
 
 export interface ResendOtpRequest {

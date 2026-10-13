@@ -17,7 +17,21 @@ CREATE INDEX IF NOT EXISTS idx_login_otps_session_token ON login_otps(session_to
 CREATE INDEX IF NOT EXISTS idx_login_otps_user_id ON login_otps(user_id);
 CREATE INDEX IF NOT EXISTS idx_login_otps_expires_at ON login_otps(expires_at);
 
+-- Ensure trusted_devices table exists (for new features not yet migrated on default branch)
+CREATE TABLE IF NOT EXISTS trusted_devices (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  device_token_hash VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_trusted_devices_token_hash ON trusted_devices(device_token_hash);
+CREATE INDEX IF NOT EXISTS idx_trusted_devices_user_id ON trusted_devices(user_id);
+CREATE INDEX IF NOT EXISTS idx_trusted_devices_expires_at ON trusted_devices(expires_at);
+
 -- Clean up existing test data (if any)
+DELETE FROM trusted_devices WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'e2e%@test.com');
 DELETE FROM login_otps WHERE user_id IN (SELECT id FROM users WHERE email LIKE 'e2e%@test.com');
 DELETE FROM file_tags WHERE file_id IN (SELECT id FROM files WHERE upload_owner_name LIKE 'E2E%');
 DELETE FROM files WHERE upload_owner_name LIKE 'E2E%';
