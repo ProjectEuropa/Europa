@@ -59,7 +59,7 @@
         "tsx": "^4.23.7",
         "typescript": "^5.3.3",
         "vitest": "^4.1.11",
-        "wrangler": "^4.145.0"
+        "wrangler": "^4.149.0"
     },
     "volta": {
         "node": "24.13.0"
