@@ -83,3 +83,42 @@ export function createCookieHeader(
 export function createLogoutCookieHeader(): string {
     return createCookieHeader('', 0);
 }
+
+/**
+ * Cookieから信頼済み端末トークンを取得
+ */
+export function getTrustedDeviceToken(cookieHeader: string | null): string | null {
+    if (!cookieHeader) return null;
+
+    const cookies = cookieHeader.split(';').map(c => c.trim());
+    const deviceCookie = cookies.find(c => c.startsWith('trusted_device='));
+
+    if (!deviceCookie) return null;
+
+    const value = deviceCookie.substring('trusted_device='.length);
+    return value || null;
+}
+
+/**
+ * 信頼済み端末用のSet-Cookie ヘッダーを生成（デフォルト30日間）
+ */
+export function createTrustedDeviceCookieHeader(
+    token: string,
+    maxAge: number = 30 * 24 * 60 * 60, // 30日間（秒）
+    secure: boolean = true,
+    environment: string = 'production'
+): string {
+    const cookieOptions = [`trusted_device=${token}`, `Max-Age=${maxAge}`, 'Path=/', 'HttpOnly'];
+
+    if (environment === 'production' || environment === 'staging') {
+        cookieOptions.push('SameSite=None');
+        if (secure) {
+            cookieOptions.push('Secure');
+        }
+    } else {
+        cookieOptions.push('SameSite=Lax');
+    }
+
+    return cookieOptions.join('; ');
+}
+

@@ -118,6 +118,7 @@ export const verifyOtpSchema = z.object({
         .max(6, 'Code must be 6 digits')
         .regex(/^\d{6}$/, 'Code must be 6 numeric digits'),
     remember: z.boolean().optional().default(false),
+    trustDevice: z.boolean().optional().default(true),
 });
 
 export const resendOtpSchema = z.object({

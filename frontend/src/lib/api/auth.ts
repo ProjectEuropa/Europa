@@ -110,6 +110,7 @@ export const authApi = {
         sessionToken: credentials.sessionToken,
         code: credentials.code,
         remember: credentials.remember,
+        trustDevice: credentials.trustDevice,
       }
     );
 

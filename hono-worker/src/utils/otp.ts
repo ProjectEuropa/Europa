@@ -70,3 +70,32 @@ export function maskEmail(email: string): string {
     const visibleEnd = localPart.slice(-1);
     return `${visibleStart}***${visibleEnd}@${domain}`;
 }
+
+export const TRUSTED_DEVICE_CONFIG = {
+    /** 信頼済み端末の有効期間（秒）: 30日間 */
+    EXPIRES_IN_SECONDS: 30 * 24 * 60 * 60,
+};
+
+/**
+ * 信頼済み端末用のランダムトークンを生成
+ */
+export function generateDeviceToken(): string {
+    if (typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * 信頼済み端末トークンのSHA-256ハッシュ値を計算（DB照合・保存用）
+ */
+export async function hashDeviceToken(token: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(token);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
