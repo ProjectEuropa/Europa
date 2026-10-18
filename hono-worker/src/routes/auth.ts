@@ -4,7 +4,13 @@ import { HTTPException } from 'hono/http-exception';
 import { authMiddleware } from '../middleware/auth';
 import type { SuccessResponse, User } from '../types/api';
 import type { Env } from '../types/bindings';
-import { createCookieHeader, createLogoutCookieHeader, generateToken } from '../utils/jwt';
+import {
+    createCookieHeader,
+    createLogoutCookieHeader,
+    createTrustedDeviceCookieHeader,
+    generateToken,
+    getTrustedDeviceToken,
+} from '../utils/jwt';
 import { hashPassword, verifyPassword } from '../utils/password';
 import {
     type LoginInput,
@@ -15,11 +21,14 @@ import {
     verifyOtpSchema,
 } from '../utils/validation';
 import {
+    generateDeviceToken,
     generateOtpCode,
     generateSessionToken,
+    hashDeviceToken,
     hashOtpCode,
     maskEmail,
     OTP_CONFIG,
+    TRUSTED_DEVICE_CONFIG,
     verifyOtpCode,
 } from '../utils/otp';
 
@@ -175,6 +184,62 @@ auth.post('/login', async c => {
         throw new HTTPException(401, { message: 'Invalid credentials' });
     }
 
+    // パスワード認証成功: 信頼済み端末（Trusted Device）チェック
+    const rawCookie = c.req.header('cookie') || null;
+    const deviceToken = getTrustedDeviceToken(rawCookie);
+
+    if (deviceToken) {
+        try {
+            const deviceTokenHash = await hashDeviceToken(deviceToken);
+            const trustedDevices = await sql`
+                SELECT id
+                FROM trusted_devices
+                WHERE user_id = ${user.id}
+                  AND device_token_hash = ${deviceTokenHash}
+                  AND expires_at > NOW()
+            `;
+
+            if (trustedDevices.length > 0) {
+                // 信頼済み端末が確認されたため、2FA（OTP）をスキップして直接ログイン
+                await sql`
+                    UPDATE trusted_devices
+                    SET last_used_at = NOW()
+                    WHERE id = ${trustedDevices[0].id}
+                `.catch(e => console.error('[Auth] Failed to update trusted device last_used_at:', e));
+
+                // Remember Me: 30日間、通常: 7日間
+                const expiresIn = remember ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60;
+                const token = await generateToken(user.id, user.email, c.env.JWT_SECRET, expiresIn);
+
+                const cookieHeader = createCookieHeader(
+                    token,
+                    expiresIn,
+                    c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
+                    c.env.ENVIRONMENT
+                );
+
+                const userObj: User = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at,
+                };
+
+                const response: SuccessResponse<{ user: User }> = {
+                    data: { user: userObj },
+                    message: 'ログインに成功しました',
+                };
+
+                return c.json(response, 200, {
+                    'Set-Cookie': cookieHeader,
+                });
+            }
+        } catch (deviceError) {
+            console.error('[Auth] Error checking trusted device, falling back to OTP:', deviceError);
+        }
+    }
+
     // パスワード認証成功: 2段階認証用のワンタイムパスコードを発行
     const otpCode = generateOtpCode();
     const codeHash = await hashOtpCode(otpCode);
@@ -260,7 +325,7 @@ auth.post('/verify-otp', async c => {
         });
     }
 
-    const { sessionToken, code, remember } = result.data;
+    const { sessionToken, code, remember, trustDevice } = result.data;
 
     // データベース接続
     const sql = neon(c.env.DATABASE_URL);
@@ -337,13 +402,48 @@ auth.post('/verify-otp', async c => {
     // JWTトークンを生成
     const token = await generateToken(record.user_id, record.email, c.env.JWT_SECRET, expiresIn);
 
-    // Cookieを設定
-    const cookieHeader = createCookieHeader(
+    // 認証Cookieを設定
+    const authCookieHeader = createCookieHeader(
         token,
         expiresIn,
         c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
         c.env.ENVIRONMENT
     );
+    c.header('Set-Cookie', authCookieHeader);
+
+    // 信頼済み端末（Trusted Device）の記憶が有効な場合、端末Cookieを発行しDBに登録
+    if (trustDevice !== false) {
+        try {
+            const deviceToken = generateDeviceToken();
+            const deviceTokenHash = await hashDeviceToken(deviceToken);
+            const deviceExpiresAt = new Date(Date.now() + TRUSTED_DEVICE_CONFIG.EXPIRES_IN_SECONDS * 1000);
+
+            await sql`
+                INSERT INTO trusted_devices (
+                    user_id,
+                    device_token_hash,
+                    expires_at,
+                    last_used_at
+                )
+                VALUES (
+                    ${record.user_id},
+                    ${deviceTokenHash},
+                    ${deviceExpiresAt.toISOString()},
+                    NOW()
+                )
+            `;
+
+            const deviceCookieHeader = createTrustedDeviceCookieHeader(
+                deviceToken,
+                TRUSTED_DEVICE_CONFIG.EXPIRES_IN_SECONDS,
+                c.env.ENVIRONMENT === 'production' || c.env.ENVIRONMENT === 'staging',
+                c.env.ENVIRONMENT
+            );
+            c.header('Set-Cookie', deviceCookieHeader, { append: true });
+        } catch (deviceError) {
+            console.error('[Auth] Failed to register trusted device, continuing login:', deviceError);
+        }
+    }
 
     const userObj: User = {
         id: record.user_id,
@@ -358,9 +458,7 @@ auth.post('/verify-otp', async c => {
         message: 'ログインに成功しました',
     };
 
-    return c.json(response, 200, {
-        'Set-Cookie': cookieHeader,
-    });
+    return c.json(response, 200);
 });
 
 /**

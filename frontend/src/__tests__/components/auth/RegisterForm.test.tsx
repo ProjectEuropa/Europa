@@ -187,6 +187,7 @@ describe('RegisterForm', () => {
           sessionToken: 'test-session-token',
           code: '123456',
           remember: true,
+          trustDevice: true,
         });
         expect(mockOnSuccess).toHaveBeenCalled();
       });

@@ -73,6 +73,16 @@ CREATE TABLE login_otps (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- 信頼済み端末テーブル（30日間2段階認証スキップ用）
+CREATE TABLE trusted_devices (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  device_token_hash VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  last_used_at TIMESTAMP DEFAULT NOW(),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- インデックス作成（パフォーマンス最適化）
 CREATE INDEX idx_files_upload_user_id ON files(upload_user_id);
 CREATE INDEX idx_files_downloadable_at ON files(downloadable_at);
@@ -80,6 +90,9 @@ CREATE INDEX idx_events_displaying_day ON events(event_displaying_day);
 CREATE INDEX idx_password_resets_token ON password_resets(token);
 CREATE INDEX idx_login_otps_session_token ON login_otps(session_token);
 CREATE INDEX idx_login_otps_user_id ON login_otps(user_id);
+CREATE INDEX idx_trusted_devices_token_hash ON trusted_devices(device_token_hash);
+CREATE INDEX idx_trusted_devices_user_id ON trusted_devices(user_id);
+CREATE INDEX idx_trusted_devices_expires_at ON trusted_devices(expires_at);
 CREATE INDEX idx_tags_tag_name ON tags(tag_name);
 CREATE INDEX idx_file_tags_tag_id ON file_tags(tag_id);
 

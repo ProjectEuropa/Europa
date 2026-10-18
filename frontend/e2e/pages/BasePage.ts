@@ -80,6 +80,7 @@ export class BasePage {
       localStorage.clear();
       sessionStorage.clear();
     });
+    await this.page.context().clearCookies();
   }
 
   async getAuthStorage() {
