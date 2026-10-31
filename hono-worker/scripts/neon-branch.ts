@@ -12,7 +12,7 @@
  *   NEON_PROJECT_ID - Neon project ID
  */
 
-import { readFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Client } from 'pg';
 
@@ -134,7 +134,7 @@ async function createBranch(branchName: string): Promise<string> {
   const connectionUrl = `postgresql://${roleName}:${passwordResponse.password}@${endpoint.host}/neondb?sslmode=require`;
 
   console.log(`Branch created: ${branchName}`);
-  console.log(`Connection URL: ${connectionUrl.replace(passwordResponse.password, '***')}`);
+  console.log(`Connection URL: postgresql://${roleName}:***@${endpoint.host}/neondb?sslmode=require`);
 
   return connectionUrl;
 }
@@ -210,9 +210,15 @@ async function main(): Promise<void> {
           process.exit(1);
         }
         const connectionUrl = await createBranch(arg);
-        // Output connection URL for CI to capture (GitHub Actions format)
-        // Use special marker so CI can extract the URL reliably
-        console.log(`NEON_CONNECTION_URL=${connectionUrl}`);
+        // Write connection URL directly to GITHUB_OUTPUT (or NEON_OUTPUT_FILE)
+        // to avoid logging sensitive credentials in clear text to stdout
+        const outputPath = process.env.GITHUB_OUTPUT || process.env.NEON_OUTPUT_FILE;
+        if (outputPath) {
+          appendFileSync(outputPath, `database_url=${connectionUrl}\n`, 'utf-8');
+          console.log('Connection URL written to output file');
+        } else {
+          console.log('Branch ready. Set GITHUB_OUTPUT or NEON_OUTPUT_FILE to export the connection URL.');
+        }
         break;
       }
 
