@@ -21,6 +21,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   NODE_VERSION: '24'
   # Performance optimizations
@@ -222,10 +225,10 @@ jobs:
           BRANCH_NAME="pr-${{ github.event.pull_request.number }}"
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-          # Create branch and capture connection URL from special marker
-          OUTPUT=$(npx tsx scripts/neon-branch.ts create "$BRANCH_NAME")
-          echo "$OUTPUT"
-          CONNECTION_URL=$(echo "$OUTPUT" | grep "^NEON_CONNECTION_URL=" | cut -d'=' -f2-)
+          # Create branch (writes database_url directly to GITHUB_OUTPUT)
+          npx tsx scripts/neon-branch.ts create "$BRANCH_NAME"
+
+          CONNECTION_URL=$(grep "^database_url=" "$GITHUB_OUTPUT" | tail -n 1 | cut -d'=' -f2-)
           if [ -z "$CONNECTION_URL" ]; then
             echo "Error: Failed to get connection URL"
             exit 1
@@ -236,7 +239,6 @@ jobs:
             exit 1
           fi
           echo "::add-mask::$CONNECTION_URL"
-          echo "database_url=$CONNECTION_URL" >> $GITHUB_OUTPUT
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
           NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
@@ -529,6 +531,9 @@ jobs:
     timeout-minutes: 3
     needs: [build]
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
     defaults:
       run:
         working-directory: ./frontend

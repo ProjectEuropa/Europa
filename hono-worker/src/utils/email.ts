@@ -24,7 +24,6 @@ export async function sendEmail(
         console.log('[Email] To:', options.to);
         console.log('[Email] From:', fromEmail);
         console.log('[Email] Subject:', options.subject);
-        console.log('[Email] API Key length:', apiKey.length);
 
         const resend = new Resend(apiKey);
 
