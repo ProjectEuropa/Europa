@@ -24,10 +24,15 @@ app.onError((error, c) => {
         return c.json(createHttpErrorResponse(error), error.status);
     }
 
+    console.error('[Global Error]', error);
+
+    const isProduction = c.env?.ENVIRONMENT === 'production';
     if (error instanceof Error) {
         const response: ErrorResponse = {
             error: {
-                message: error.message || 'Internal server error',
+                message: isProduction
+                    ? 'Internal server error'
+                    : error.message || 'Internal server error',
             },
         };
         return c.json(response, 500);

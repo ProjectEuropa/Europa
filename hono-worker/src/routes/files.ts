@@ -12,7 +12,6 @@ import {
 import type { Env } from '../types/bindings';
 import { maskFilesIfNotDownloadable } from '../utils/file-mask';
 import {
-    generateDeletePassword,
     hashDeletePassword,
     verifyDeletePassword,
 } from '../utils/password';
@@ -283,12 +282,14 @@ files.get('/:id', async c => {
         throw new HTTPException(404, { message: 'File not found in storage' });
     }
 
-    // ファイルをストリーミング
+    // ファイルをストリーミング（ファイル名の制御文字・クォートをサニタイズしRFC 5987にも対応）
+    const sanitizedFileName = file.file_name.replace(/["\r\n\\]/g, '_');
     return new Response(object.body, {
         headers: {
             'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
-            'Content-Disposition': `attachment; filename="${file.file_name}"`,
+            'Content-Disposition': `attachment; filename="${sanitizedFileName}"; filename*=UTF-8''${encodeURIComponent(file.file_name)}`,
             'Content-Length': file.file_size.toString(),
+            'X-Content-Type-Options': 'nosniff',
         },
     });
 });
@@ -320,9 +321,17 @@ files.post('/', optionalAuthMiddleware, async c => {
         throw new HTTPException(400, { message: 'File size exceeds 10MB limit' });
     }
 
-    // コメントは必須
+    // コメントは必須（最大1000文字）
     if (!comment || !comment.trim()) {
         throw new HTTPException(400, { message: 'コメントを入力してください' });
+    }
+    if (comment.trim().length > 1000) {
+        throw new HTTPException(422, { message: 'コメントは1000文字以内で入力してください' });
+    }
+
+    // オーナー名の長さ制限（最大255文字）
+    if (inputOwnerName && inputOwnerName.trim().length > 255) {
+        throw new HTTPException(422, { message: 'オーナー名は255文字以内で入力してください' });
     }
 
     // 未認証ユーザーの場合、オーナー名と削除パスワードが必須
