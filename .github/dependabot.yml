@@ -59,27 +59,6 @@ updates:
     commit-message:
       prefix: "hono-worker"
       include: "scope"
-    groups:
-      production-dependencies:
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "@types/*"
-          - "@vitest/*"
-          - "vitest"
-          - "@biomejs/*"
-          - "tsx"
-          - "typescript"
-          - "wrangler"
-      development-dependencies:
-        patterns:
-          - "@types/*"
-          - "@vitest/*"
-          - "vitest"
-          - "@biomejs/*"
-          - "tsx"
-          - "typescript"
-          - "wrangler"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
