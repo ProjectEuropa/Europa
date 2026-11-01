@@ -12,9 +12,9 @@ updates:
       default-days: 7
     open-pull-requests-limit: 10
     reviewers:
-      - "m2"
+      - "ProjectEuropa"
     assignees:
-      - "m2"
+      - "ProjectEuropa"
     commit-message:
       prefix: "frontend"
       include: "scope"
@@ -51,11 +51,11 @@ updates:
       timezone: "Asia/Tokyo"
     cooldown:
       default-days: 7
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     reviewers:
-      - "m2"
+      - "ProjectEuropa"
     assignees:
-      - "m2"
+      - "ProjectEuropa"
     commit-message:
       prefix: "hono-worker"
       include: "scope"
@@ -70,9 +70,9 @@ updates:
       timezone: "Asia/Tokyo"
     open-pull-requests-limit: 5
     reviewers:
-      - "m2"
+      - "ProjectEuropa"
     assignees:
-      - "m2"
+      - "ProjectEuropa"
     commit-message:
       prefix: "ci"
       include: "scope"
