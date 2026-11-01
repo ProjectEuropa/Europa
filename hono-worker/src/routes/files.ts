@@ -12,7 +12,6 @@ import {
 import type { Env } from '../types/bindings';
 import { maskFilesIfNotDownloadable } from '../utils/file-mask';
 import {
-    generateDeletePassword,
     hashDeletePassword,
     verifyDeletePassword,
 } from '../utils/password';

@@ -76,21 +76,6 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 /**
- * ランダムな削除パスワードを生成（8文字の英数字・暗号学的に安全な乱数を使用）
- * 匿名ユーザーのファイル削除用
- */
-export function generateDeletePassword(): string {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; // 紛らわしい文字を除外
-    const randomValues = new Uint32Array(8);
-    crypto.getRandomValues(randomValues);
-    let password = '';
-    for (let i = 0; i < 8; i++) {
-        password += chars.charAt(randomValues[i] % chars.length);
-    }
-    return password;
-}
-
-/**
  * 削除パスワードをハッシュ化
  * bcryptを使用（より安全で環境非依存）
  * Workers環境での互換性のため同期メソッドを使用
