@@ -31,7 +31,7 @@ export const eventQuerySchema = z.object({
 export const eventRegistrationSchema = z
     .object({
         name: z.string().min(1, 'Name is required').max(255),
-        details: z.string().min(1, 'Details are required'), // DB: TEXT型のため長さ制限なし
+        details: z.string().min(1, 'Details are required').max(10000, 'Details must be at most 10000 characters'),
         url: z.string().url('Invalid URL').max(255).optional().or(z.literal('')),
         type: z.enum(['1', '2']), // 1: 大会, 2: その他
         deadline: z.string().datetime(),

@@ -54,9 +54,12 @@ export async function errorHandler(c: Context, next: Next) {
         }
 
         if (error instanceof Error) {
+            const isProduction = c.env?.ENVIRONMENT === 'production';
             const response: ErrorResponse = {
                 error: {
-                    message: error.message || 'Internal server error',
+                    message: isProduction
+                        ? 'Internal server error'
+                        : error.message || 'Internal server error',
                 },
             };
             return c.json(response, 500);

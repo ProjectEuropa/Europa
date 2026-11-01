@@ -3,13 +3,15 @@
  */
 
 /**
- * ランダムトークンを生成（32文字の英数字）
+ * ランダムトークンを生成（32文字の英数字・暗号学的に安全な乱数を使用）
  */
 export function generateResetToken(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const randomValues = new Uint32Array(32);
+    crypto.getRandomValues(randomValues);
     let token = '';
     for (let i = 0; i < 32; i++) {
-        token += chars.charAt(Math.floor(Math.random() * chars.length));
+        token += chars.charAt(randomValues[i] % chars.length);
     }
     return token;
 }

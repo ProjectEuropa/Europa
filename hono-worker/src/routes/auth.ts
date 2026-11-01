@@ -125,7 +125,7 @@ auth.post('/register', async c => {
     }
 
     // 開発環境の場合はコンソールにもコードを出力
-    if (c.env.ENVIRONMENT === 'development' || !c.env.RESEND_API_KEY) {
+    if (c.env.ENVIRONMENT === 'development') {
         const { logOtpToConsole } = await import('../utils/email');
         logOtpToConsole(user.email, otpCode);
     }
@@ -290,7 +290,7 @@ auth.post('/login', async c => {
     }
 
     // 開発環境の場合はコンソールにもコードを出力（テスト容易化）
-    if (c.env.ENVIRONMENT === 'development' || !c.env.RESEND_API_KEY) {
+    if (c.env.ENVIRONMENT === 'development') {
         const { logOtpToConsole } = await import('../utils/email');
         logOtpToConsole(user.email, otpCode);
     }
@@ -546,7 +546,7 @@ auth.post('/resend-otp', async c => {
         );
     }
 
-    if (c.env.ENVIRONMENT === 'development' || !c.env.RESEND_API_KEY) {
+    if (c.env.ENVIRONMENT === 'development') {
         const { logOtpToConsole } = await import('../utils/email');
         logOtpToConsole(record.email, newOtpCode);
     }
@@ -718,7 +718,7 @@ auth.post('/password/reset', async c => {
             } else {
                 console.log('Password reset email sent successfully to:', email);
             }
-        } else {
+        } else if (c.env.ENVIRONMENT === 'development') {
             // 開発環境：コンソールログ
             const { logEmailToConsole } = await import('../utils/email');
             logEmailToConsole(email, 'パスワードリセットのご案内', resetUrl, token);
