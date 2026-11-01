@@ -46,19 +46,19 @@
         "fflate": "^0.8.3",
         "hono": "^4.13.11",
         "resend": "^6.18.1",
-        "zod": "^4.6.6"
+        "zod": "^4.6.7"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.5.7",
         "@cloudflare/workers-types": "^5.20260923.1",
         "@types/bcryptjs": "^3.0.0",
         "@types/pg": "^8.11.0",
-        "@vitest/coverage-v8": "^4.1.10",
-        "@vitest/ui": "^4.1.10",
+        "@vitest/coverage-v8": "^4.1.12",
+        "@vitest/ui": "^4.1.12",
         "pg": "^8.11.3",
         "tsx": "^4.23.15",
         "typescript": "^5.3.3",
-        "vitest": "^4.1.11",
+        "vitest": "^4.1.12",
         "wrangler": "^4.156.0"
     },
     "volta": {
