@@ -51,10 +51,10 @@
     "devDependencies": {
         "@biomejs/biome": "^2.5.7",
         "@cloudflare/workers-types": "^5.20260923.1",
-        "@types/pg": "^8.11.0",
+        "@types/pg": "^8.23.1",
         "@vitest/coverage-v8": "^4.1.12",
         "@vitest/ui": "^4.1.12",
-        "pg": "^8.11.3",
+        "pg": "^8.23.1",
         "tsx": "^4.23.15",
         "typescript": "^5.3.3",
         "vitest": "^4.1.12",
