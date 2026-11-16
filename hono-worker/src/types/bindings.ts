@@ -35,4 +35,8 @@ export interface Env {
 
     // 内部API保護用シークレット
     INTERNAL_API_SECRET?: string;
+
+    // STG環境用Basic認証
+    BASIC_AUTH_USER?: string;
+    BASIC_AUTH_PASSWORD?: string;
 }

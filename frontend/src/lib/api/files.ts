@@ -19,7 +19,7 @@ import type {
   SortOrder,
   TeamSearchResult,
 } from '@/types/search';
-import { apiClient } from './client';
+import { apiClient, getBasicAuthHeader } from './client';
 import { extractDataFromResponse } from './utils';
 import { DATA_TYPE } from '@/utils/constants';
 
@@ -193,8 +193,13 @@ export const tryDownloadTeamFile = async (teamId: number): Promise<FileDownloadR
     const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v2/files/${teamId}`;
 
     // まずfetchでレスポンスを確認
+    const basicAuthHeaders =
+      typeof getBasicAuthHeader === 'function' ? getBasicAuthHeader() : {};
     const response = await fetch(url, {
       method: 'GET',
+      ...(Object.keys(basicAuthHeaders).length > 0
+        ? { headers: basicAuthHeaders }
+        : {}),
       credentials: 'include', // Cookieを含める
     });
 

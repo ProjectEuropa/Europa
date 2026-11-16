@@ -5,6 +5,8 @@ compatibility_date = "2024-12-01"
 # 環境変数（Cloudflare Secrets経由で設定）
 # wrangler secret put JWT_SECRET
 # wrangler secret put DATABASE_URL
+# wrangler secret put BASIC_AUTH_USER --env staging
+# wrangler secret put BASIC_AUTH_PASSWORD --env staging
 
 # R2 Bucket Bindings
 [[r2_buckets]]
