@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
+import { setupBasicAuth } from './middleware/basic-auth';
 import { setupCORS } from './middleware/cors';
 import { createHttpErrorResponse, notFoundHandler } from './middleware/error';
 import auth from './routes/auth';
@@ -17,6 +18,7 @@ const app = new Hono<{ Bindings: Env }>();
 app.use('*', secureHeaders());
 app.use('*', logger());
 app.use('*', setupCORS());
+app.use('*', setupBasicAuth());
 
 // グローバルエラーハンドラー (onErrorを使用)
 app.onError((error, c) => {

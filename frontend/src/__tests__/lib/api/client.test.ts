@@ -213,4 +213,60 @@ describe('ApiClient', () => {
       );
     });
   });
+
+  describe('Basic authentication header', () => {
+    const originalUser = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
+    const originalPassword = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
+
+    afterEach(() => {
+      if (originalUser === undefined) {
+        delete process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
+      } else {
+        process.env.NEXT_PUBLIC_BASIC_AUTH_USER = originalUser;
+      }
+      if (originalPassword === undefined) {
+        delete process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
+      } else {
+        process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD = originalPassword;
+      }
+    });
+
+    it('should include Authorization: Basic header when NEXT_PUBLIC_BASIC_AUTH_USER and PASSWORD are set', async () => {
+      process.env.NEXT_PUBLIC_BASIC_AUTH_USER = 'stg-user';
+      process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD = 'stg-password';
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ data: {} }),
+      });
+
+      const client = new ApiClient();
+      await client.get('/api/v2/files');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/v2/files'),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: `Basic ${btoa('stg-user:stg-password')}`,
+          }),
+        })
+      );
+    });
+
+    it('should not include Authorization header when Basic auth env vars are not set', async () => {
+      delete process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
+      delete process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ data: {} }),
+      });
+
+      const client = new ApiClient();
+      await client.get('/api/v2/files');
+
+      const calledOptions = mockFetch.mock.calls[0][1];
+      expect(calledOptions.headers.Authorization).toBeUndefined();
+    });
+  });
 });

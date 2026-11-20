@@ -11,6 +11,23 @@ export interface DownloadResult {
   headers: Headers;
 }
 
+/**
+ * STG環境用のBasic認証ヘッダーを生成
+ * NEXT_PUBLIC_BASIC_AUTH_USER / NEXT_PUBLIC_BASIC_AUTH_PASSWORD が設定されている場合のみ返す
+ */
+export function getBasicAuthHeader(): Record<string, string> {
+  const user = process.env.NEXT_PUBLIC_BASIC_AUTH_USER;
+  const password = process.env.NEXT_PUBLIC_BASIC_AUTH_PASSWORD;
+  if (!user || !password) {
+    return {};
+  }
+
+  const credentials = btoa(`${user}:${password}`);
+  return {
+    Authorization: `Basic ${credentials}`,
+  };
+}
+
 export class ApiClient {
   private baseURL: string;
   private defaultHeaders: Record<string, string>;
@@ -24,6 +41,7 @@ export class ApiClient {
       'Content-Type': 'application/json',
       Accept: 'application/json',
       'X-Requested-With': 'XMLHttpRequest', // SPA モードで必要
+      ...getBasicAuthHeader(),
       ...config?.defaultHeaders,
     };
   }
@@ -43,6 +61,7 @@ export class ApiClient {
   ): Promise<ApiResponse<T>> {
     const headers = {
       ...this.defaultHeaders,
+      ...getBasicAuthHeader(),
       ...this.processHeaders(options.headers),
     };
 
@@ -146,6 +165,7 @@ export class ApiClient {
   ): Promise<ApiResponse<T>> {
     const headers: Record<string, string> = {
       ...this.defaultHeaders,
+      ...getBasicAuthHeader(),
       ...this.processHeaders(options?.headers),
     };
 
@@ -208,6 +228,7 @@ export class ApiClient {
   async download(endpoint: string, data?: any): Promise<DownloadResult> {
     const headers = {
       ...this.defaultHeaders,
+      ...getBasicAuthHeader(),
     };
 
     try {
